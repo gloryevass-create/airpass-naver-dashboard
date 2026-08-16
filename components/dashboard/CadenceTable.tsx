@@ -7,10 +7,10 @@ export function CadenceTable({ data }: { data: DashboardData["cadence"] }) {
         <thead className="bg-canvas-cream text-left text-ink-mute">
           <tr>
             <th className="px-4 py-2 font-medium">블로그</th>
-            <th className="px-4 py-2 font-medium">평균 발행 간격</th>
+            <th className="px-4 py-2 font-medium">발행 간격</th>
             <th className="px-4 py-2 font-medium">최근 게시일</th>
-            <th className="px-4 py-2 font-medium">최근 30일 게시물 수</th>
-            <th className="px-4 py-2 font-medium">총 게시물 수</th>
+            <th className="px-4 py-2 font-medium">최근 30일</th>
+            <th className="px-4 py-2 font-medium">총 게시물</th>
           </tr>
         </thead>
         <tbody>

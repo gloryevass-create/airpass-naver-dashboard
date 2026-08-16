@@ -1,6 +1,6 @@
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { getDashboardData } from "@/lib/queries/dashboard";
-import { SovPieChart } from "@/components/dashboard/SovPieChart";
+import { SovChart } from "@/components/dashboard/SovChart";
 import { CadenceTable } from "@/components/dashboard/CadenceTable";
 import { ReportsList } from "@/components/dashboard/ReportsList";
 
@@ -24,7 +24,7 @@ export default async function BlogPage() {
           <h2 className="mb-3 text-sm font-semibold text-ink-mute">
             블로그 노출 점유율 (SOV)
           </h2>
-          <SovPieChart data={dashboard.sov} />
+          <SovChart data={dashboard.sov} />
         </div>
         <div className="rounded-xl border border-hairline p-4">
           <h2 className="mb-3 text-sm font-semibold text-ink-mute">블로그 포스팅 주기</h2>
