@@ -3,11 +3,11 @@
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import type { DashboardData } from "@/lib/queries/dashboard";
 
-const COLORS = ["#171717", "#525252", "#737373", "#a3a3a3", "#d4d4d4", "#f59e0b", "#0ea5e9", "#ef4444"];
+const COLORS = ["#4a154b", "#1264a3", "#611f69", "#3860be", "#8a5a8f", "#696969", "#c9a0cf", "#a3a3a3"];
 
 export function SovPieChart({ data }: { data: DashboardData["sov"] }) {
   if (data.length === 0) {
-    return <p className="py-10 text-center text-sm text-neutral-400">데이터가 없습니다.</p>;
+    return <p className="py-10 text-center text-sm text-ink-mute">데이터가 없습니다.</p>;
   }
 
   return (

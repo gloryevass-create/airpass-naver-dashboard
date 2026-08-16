@@ -12,8 +12,8 @@ export default async function AdminPage() {
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-col gap-8 p-6">
       <div>
-        <h1 className="text-xl font-semibold">관리자 — 팀원 초대</h1>
-        <p className="mt-1 text-sm text-neutral-500">
+        <h1 className="text-xl font-bold tracking-tight text-primary">관리자 — 팀원 초대</h1>
+        <p className="mt-1 text-sm text-ink-mute">
           공개 회원가입은 꺼져 있습니다. 이메일 초대로만 계정이 생성됩니다.
         </p>
       </div>
@@ -23,10 +23,10 @@ export default async function AdminPage() {
       </section>
 
       <section>
-        <h2 className="mb-3 text-sm font-semibold text-neutral-700">가입자 목록</h2>
-        <div className="overflow-hidden rounded-lg border border-neutral-200">
+        <h2 className="mb-3 text-sm font-semibold text-ink">가입자 목록</h2>
+        <div className="overflow-hidden rounded-xl border border-hairline">
           <table className="w-full text-sm">
-            <thead className="bg-neutral-50 text-left text-neutral-500">
+            <thead className="bg-canvas-cream text-left text-ink-mute">
               <tr>
                 <th className="px-4 py-2 font-medium">이메일</th>
                 <th className="px-4 py-2 font-medium">역할</th>
@@ -35,17 +35,17 @@ export default async function AdminPage() {
             </thead>
             <tbody>
               {(profiles ?? []).map((p) => (
-                <tr key={p.id} className="border-t border-neutral-100">
+                <tr key={p.id} className="border-t border-hairline">
                   <td className="px-4 py-2">{p.email}</td>
                   <td className="px-4 py-2">{p.role}</td>
-                  <td className="px-4 py-2 text-neutral-500">
+                  <td className="px-4 py-2 text-ink-mute">
                     {new Date(p.created_at).toLocaleDateString("ko-KR")}
                   </td>
                 </tr>
               ))}
               {(!profiles || profiles.length === 0) && (
                 <tr>
-                  <td colSpan={3} className="px-4 py-6 text-center text-neutral-400">
+                  <td colSpan={3} className="px-4 py-6 text-center text-ink-mute">
                     아직 가입자가 없습니다.
                   </td>
                 </tr>

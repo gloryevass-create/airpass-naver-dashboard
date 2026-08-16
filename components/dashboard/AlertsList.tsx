@@ -1,9 +1,9 @@
 import type { DashboardData } from "@/lib/queries/dashboard";
 
 const SEVERITY_STYLE: Record<string, string> = {
-  critical: "bg-red-50 text-red-700 border-red-200",
+  critical: "bg-[#fbeae4] text-semantic-error border-[#f0c9ba]",
   warning: "bg-amber-50 text-amber-700 border-amber-200",
-  info: "bg-neutral-50 text-neutral-600 border-neutral-200",
+  info: "bg-canvas-cream text-ink-mute border-hairline",
 };
 
 const SEVERITY_LABEL: Record<string, string> = {
@@ -14,7 +14,7 @@ const SEVERITY_LABEL: Record<string, string> = {
 
 export function AlertsList({ data }: { data: DashboardData["alerts"] }) {
   if (data.length === 0) {
-    return <p className="py-6 text-center text-sm text-neutral-400">오늘 발생한 알림이 없습니다.</p>;
+    return <p className="py-6 text-center text-sm text-ink-mute">오늘 발생한 알림이 없습니다.</p>;
   }
 
   return (
@@ -28,11 +28,11 @@ export function AlertsList({ data }: { data: DashboardData["alerts"] }) {
             <span className="rounded-full bg-white/60 px-2 py-0.5 text-xs font-medium">
               {SEVERITY_LABEL[alert.severity]}
             </span>
-            <span className="text-xs text-neutral-500">{alert.category}</span>
+            <span className="text-xs text-ink-mute">{alert.category}</span>
           </div>
           <p className="mt-1">{alert.message}</p>
           {alert.evidenceRef && (
-            <p className="mt-1 text-xs text-neutral-400">근거: {alert.evidenceRef}</p>
+            <p className="mt-1 text-xs text-ink-mute">근거: {alert.evidenceRef}</p>
           )}
         </li>
       ))}

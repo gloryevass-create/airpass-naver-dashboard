@@ -11,7 +11,7 @@ export function InviteUserForm() {
   return (
     <form action={formAction} className="flex max-w-md flex-col gap-3">
       <div className="flex flex-col gap-1">
-        <label htmlFor="email" className="text-sm font-medium text-neutral-700">
+        <label htmlFor="email" className="text-sm font-medium text-ink">
           초대할 팀원 이메일
         </label>
         <div className="flex gap-2">
@@ -21,19 +21,19 @@ export function InviteUserForm() {
             type="email"
             required
             placeholder="teammate@airpass.co.kr"
-            className="flex-1 rounded-md border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-500"
+            className="flex-1 rounded border border-hairline px-3 py-2 text-sm text-ink outline-none focus:border-primary"
           />
           <button
             type="submit"
             disabled={pending}
-            className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+            className="rounded-full bg-primary px-6 py-2 text-sm font-bold text-white hover:bg-primary-press disabled:opacity-50"
           >
             {pending ? "전송 중..." : "초대"}
           </button>
         </div>
       </div>
-      {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
-      {state?.success && <p className="text-sm text-green-600">{state.success}</p>}
+      {state?.error && <p className="text-sm text-semantic-error">{state.error}</p>}
+      {state?.success && <p className="text-sm text-semantic-success">{state.success}</p>}
     </form>
   );
 }

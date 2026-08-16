@@ -22,21 +22,26 @@ export function DashboardHeader({
   }
 
   return (
-    <header className="flex items-center justify-between border-b border-neutral-200 px-6 py-4">
+    <header className="flex items-center justify-between border-b border-hairline bg-background px-6 py-4">
       <div>
-        <h1 className="text-lg font-semibold">에어패스 네이버 마케팅 모니터링</h1>
-        <p className="text-xs text-neutral-500">
+        <h1 className="text-lg font-bold tracking-tight text-primary">
+          에어패스 네이버 마케팅 모니터링
+        </h1>
+        <p className="text-xs text-ink-mute">
           {latestDate ? `최근 수집일: ${latestDate}` : "아직 수집된 데이터가 없습니다"}
         </p>
       </div>
       <div className="flex items-center gap-4 text-sm">
-        <span className="text-neutral-500">{email}</span>
+        <span className="text-ink-mute">{email}</span>
         {isAdmin && (
-          <a href="/admin" className="text-neutral-700 hover:underline">
+          <a href="/admin" className="text-link-blue hover:text-link-hover hover:underline">
             관리자
           </a>
         )}
-        <button onClick={handleSignOut} className="text-neutral-700 hover:underline">
+        <button
+          onClick={handleSignOut}
+          className="text-link-blue hover:text-link-hover hover:underline"
+        >
           로그아웃
         </button>
       </div>

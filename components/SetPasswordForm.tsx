@@ -41,7 +41,7 @@ export function SetPasswordForm() {
   return (
     <form onSubmit={handleSubmit} className="flex w-full max-w-sm flex-col gap-4">
       <div className="flex flex-col gap-1">
-        <label htmlFor="password" className="text-sm font-medium text-neutral-700">
+        <label htmlFor="password" className="text-sm font-medium text-ink">
           새 비밀번호
         </label>
         <input
@@ -52,11 +52,11 @@ export function SetPasswordForm() {
           autoComplete="new-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="rounded-md border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-500"
+          className="rounded border border-hairline px-3 py-2 text-sm text-ink outline-none focus:border-primary"
         />
       </div>
       <div className="flex flex-col gap-1">
-        <label htmlFor="confirm" className="text-sm font-medium text-neutral-700">
+        <label htmlFor="confirm" className="text-sm font-medium text-ink">
           새 비밀번호 확인
         </label>
         <input
@@ -67,14 +67,14 @@ export function SetPasswordForm() {
           autoComplete="new-password"
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
-          className="rounded-md border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-500"
+          className="rounded border border-hairline px-3 py-2 text-sm text-ink outline-none focus:border-primary"
         />
       </div>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-semantic-error">{error}</p>}
       <button
         type="submit"
         disabled={pending}
-        className="rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
+        className="rounded-full bg-primary px-7 py-3.5 text-sm font-bold text-white hover:bg-primary-press disabled:opacity-50"
       >
         {pending ? "저장 중..." : "비밀번호 설정"}
       </button>

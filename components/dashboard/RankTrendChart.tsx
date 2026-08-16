@@ -21,12 +21,12 @@ export function RankTrendChart({ data }: { data: DashboardData["rankTrend"] }) {
     <div className="h-64 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={chartData} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
-          <XAxis dataKey="date" fontSize={12} stroke="#737373" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#e6e6e6" />
+          <XAxis dataKey="date" fontSize={12} stroke="#696969" />
           <YAxis
             reversed
             fontSize={12}
-            stroke="#737373"
+            stroke="#696969"
             allowDecimals={false}
             width={32}
           />
@@ -36,7 +36,7 @@ export function RankTrendChart({ data }: { data: DashboardData["rankTrend"] }) {
           <Line
             type="monotone"
             dataKey="avgRank"
-            stroke="#171717"
+            stroke="#4a154b"
             strokeWidth={2}
             dot={{ r: 3 }}
             connectNulls

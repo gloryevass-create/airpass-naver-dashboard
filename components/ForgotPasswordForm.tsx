@@ -29,7 +29,7 @@ export function ForgotPasswordForm() {
 
   if (sent) {
     return (
-      <p className="max-w-sm text-center text-sm text-neutral-600">
+      <p className="max-w-sm text-center text-sm text-ink-mute">
         입력하신 이메일로 재설정 링크를 보냈습니다. 메일함을 확인해주세요.
       </p>
     );
@@ -38,7 +38,7 @@ export function ForgotPasswordForm() {
   return (
     <form onSubmit={handleSubmit} className="flex w-full max-w-sm flex-col gap-4">
       <div className="flex flex-col gap-1">
-        <label htmlFor="email" className="text-sm font-medium text-neutral-700">
+        <label htmlFor="email" className="text-sm font-medium text-ink">
           이메일
         </label>
         <input
@@ -48,14 +48,14 @@ export function ForgotPasswordForm() {
           autoComplete="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="rounded-md border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-500"
+          className="rounded border border-hairline px-3 py-2 text-sm text-ink outline-none focus:border-primary"
         />
       </div>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-semantic-error">{error}</p>}
       <button
         type="submit"
         disabled={pending}
-        className="rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
+        className="rounded-full bg-primary px-7 py-3.5 text-sm font-bold text-white hover:bg-primary-press disabled:opacity-50"
       >
         {pending ? "전송 중..." : "재설정 링크 보내기"}
       </button>

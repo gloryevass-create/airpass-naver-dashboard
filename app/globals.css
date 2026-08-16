@@ -1,13 +1,38 @@
 @import "tailwindcss";
 
+/* Color tokens — DESIGN.md (Slack-inspired: aubergine primary, blue links, cream/lavender surfaces) */
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #1d1d1d;
+
+  --color-primary: #4a154b;
+  --color-primary-press: #611f69;
+  --color-link-blue: #1264a3;
+  --color-link-hover: #3860be;
+  --color-canvas-cream: #f4ede4;
+  --color-canvas-lavender: #f9f0ff;
+  --color-ink: #1d1d1d;
+  --color-ink-mute: #696969;
+  --color-hairline: #e6e6e6;
+  --color-semantic-error: #cc4117;
+  --color-semantic-success: #007a5a;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary: var(--color-primary);
+  --color-primary-press: var(--color-primary-press);
+  --color-link-blue: var(--color-link-blue);
+  --color-link-hover: var(--color-link-hover);
+  --color-canvas-cream: var(--color-canvas-cream);
+  --color-canvas-lavender: var(--color-canvas-lavender);
+  --color-ink: var(--color-ink);
+  --color-ink-mute: var(--color-ink-mute);
+  --color-hairline: var(--color-hairline);
+  --color-semantic-error: var(--color-semantic-error);
+  --color-semantic-success: var(--color-semantic-success);
+  /* system font stack only — next/font/google is avoided project-wide, see AGENTS.md */
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic",
     "Apple SD Gothic Neo", Roboto, Helvetica, Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,

@@ -14,16 +14,16 @@ const TRACK_LABEL: Record<string, string> = {
 
 export function ReportsList({ data }: { data: DashboardData["reports"] }) {
   if (data.length === 0) {
-    return <p className="py-6 text-center text-sm text-neutral-400">아직 생성된 리포트가 없습니다.</p>;
+    return <p className="py-6 text-center text-sm text-ink-mute">아직 생성된 리포트가 없습니다.</p>;
   }
 
   return (
-    <ul className="flex flex-col divide-y divide-neutral-100 rounded-lg border border-neutral-200">
+    <ul className="flex flex-col divide-y divide-hairline rounded-xl border border-hairline">
       {data.map((r) => (
         <li key={r.id} className="flex items-center justify-between gap-4 px-4 py-3 text-sm">
           <div>
             <p className="font-medium">{r.title}</p>
-            <p className="mt-0.5 text-xs text-neutral-500">
+            <p className="mt-0.5 text-xs text-ink-mute">
               {r.date} · {REPORT_TYPE_LABEL[r.reportType]} · {TRACK_LABEL[r.track]}
             </p>
           </div>

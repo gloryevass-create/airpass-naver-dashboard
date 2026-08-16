@@ -27,20 +27,9 @@ export type DashboardData = {
   kpi: {
     activeKeywordCount: number;
     avgRank: number | null;
-    totalEstSpend: number;
     alertCount: number;
   };
   rankTrend: { date: string; avgRank: number | null }[];
-  adSpendByCompetitor: {
-    competitorId: string;
-    competitorName: string;
-    totalSpend: number;
-    breakdown: {
-      keyword: string;
-      estimatedMonthlySpend: number;
-      calcBasis: unknown;
-    }[];
-  }[];
   keywordTable: {
     keywordId: string;
     keyword: string;
@@ -76,9 +65,8 @@ export type DashboardData = {
 
 const EMPTY: DashboardData = {
   latestDate: null,
-  kpi: { activeKeywordCount: 0, avgRank: null, totalEstSpend: 0, alertCount: 0 },
+  kpi: { activeKeywordCount: 0, avgRank: null, alertCount: 0 },
   rankTrend: [],
-  adSpendByCompetitor: [],
   keywordTable: [],
   sov: [],
   cadence: [],
@@ -97,7 +85,6 @@ export async function getDashboardData(supabase: Client): Promise<DashboardData>
     competitorsRes,
     metricsLatestRes,
     metricsTrendRes,
-    spendRes,
     sovRes,
     cadenceRes,
     alertsRes,
@@ -111,7 +98,6 @@ export async function getDashboardData(supabase: Client): Promise<DashboardData>
       .select("date, our_rank")
       .gte("date", trendStart)
       .lte("date", latestDate),
-    supabase.from("ad_spend_estimates").select("*").eq("date", latestDate),
     supabase.from("blog_sov_daily").select("*").eq("date", latestDate),
     supabase.from("posting_cadence").select("*").eq("date", latestDate),
     supabase
@@ -138,10 +124,6 @@ export async function getDashboardData(supabase: Client): Promise<DashboardData>
   const avgRank = ranks.length
     ? Math.round((ranks.reduce((a, b) => a + b, 0) / ranks.length) * 10) / 10
     : null;
-  const totalEstSpend = (spendRes.data ?? []).reduce(
-    (sum, r) => sum + Number(r.estimated_monthly_spend),
-    0
-  );
   const alertCount = (alertsRes.data ?? []).filter(
     (a) => a.severity === "warning" || a.severity === "critical"
   ).length;
@@ -166,48 +148,19 @@ export async function getDashboardData(supabase: Client): Promise<DashboardData>
     });
   }
 
-  // 경쟁사별 예상 광고비
-  const spendByCompetitor = new Map<
-    string,
-    { totalSpend: number; breakdown: DashboardData["adSpendByCompetitor"][number]["breakdown"] }
-  >();
-  for (const row of spendRes.data ?? []) {
-    const entry = spendByCompetitor.get(row.competitor_id) ?? {
-      totalSpend: 0,
-      breakdown: [],
+  // 키워드 상세 테이블 (기본 정렬은 화면에서 처리 — 월간검색수 PC+모바일 내림차순)
+  const keywordTable = (metricsLatestRes.data ?? []).map((m) => {
+    const kw = keywordMap.get(m.keyword_id);
+    return {
+      keywordId: m.keyword_id,
+      keyword: kw?.keyword ?? "(알 수 없는 키워드)",
+      ourRank: m.our_rank,
+      avgCpc: m.avg_cpc != null ? Number(m.avg_cpc) : null,
+      monthlySearchPc: m.monthly_search_pc,
+      monthlySearchMobile: m.monthly_search_mobile,
+      competitionLevel: m.competition_level,
     };
-    entry.totalSpend += Number(row.estimated_monthly_spend);
-    entry.breakdown.push({
-      keyword: keywordMap.get(row.keyword_id)?.keyword ?? "(알 수 없는 키워드)",
-      estimatedMonthlySpend: Number(row.estimated_monthly_spend),
-      calcBasis: row.calc_basis,
-    });
-    spendByCompetitor.set(row.competitor_id, entry);
-  }
-  const adSpendByCompetitor = Array.from(spendByCompetitor.entries())
-    .map(([competitorId, v]) => ({
-      competitorId,
-      competitorName: competitorMap.get(competitorId)?.name ?? "(알 수 없는 경쟁사)",
-      totalSpend: v.totalSpend,
-      breakdown: v.breakdown,
-    }))
-    .sort((a, b) => b.totalSpend - a.totalSpend);
-
-  // 키워드 상세 테이블
-  const keywordTable = (metricsLatestRes.data ?? [])
-    .map((m) => {
-      const kw = keywordMap.get(m.keyword_id);
-      return {
-        keywordId: m.keyword_id,
-        keyword: kw?.keyword ?? "(알 수 없는 키워드)",
-        ourRank: m.our_rank,
-        avgCpc: m.avg_cpc != null ? Number(m.avg_cpc) : null,
-        monthlySearchPc: m.monthly_search_pc,
-        monthlySearchMobile: m.monthly_search_mobile,
-        competitionLevel: m.competition_level,
-      };
-    })
-    .sort((a, b) => (a.ourRank ?? Infinity) - (b.ourRank ?? Infinity));
+  });
 
   // 블로그 SOV — 경쟁사별 평균 점유율
   const sovByCompetitor = new Map<string, number[]>();
@@ -253,9 +206,8 @@ export async function getDashboardData(supabase: Client): Promise<DashboardData>
 
   return {
     latestDate,
-    kpi: { activeKeywordCount, avgRank, totalEstSpend, alertCount },
+    kpi: { activeKeywordCount, avgRank, alertCount },
     rankTrend,
-    adSpendByCompetitor,
     keywordTable,
     sov,
     cadence,
