@@ -120,6 +120,45 @@ export type Database = {
         };
         Relationships: [];
       };
+      ad_account_daily_stats: {
+        Row: {
+          id: string;
+          date: string;
+          imp_cnt: number;
+          clk_cnt: number;
+          ccnt: number;
+          sales_amt: number;
+          ctr: number | null;
+          cpc: number | null;
+          bizmoney: number | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          date: string;
+          imp_cnt?: number;
+          clk_cnt?: number;
+          ccnt?: number;
+          sales_amt?: number;
+          ctr?: number | null;
+          cpc?: number | null;
+          bizmoney?: number | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          date?: string;
+          imp_cnt?: number;
+          clk_cnt?: number;
+          ccnt?: number;
+          sales_amt?: number;
+          ctr?: number | null;
+          cpc?: number | null;
+          bizmoney?: number | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       competitors: {
         Row: {
           id: string;

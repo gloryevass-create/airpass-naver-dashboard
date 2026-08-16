@@ -1,5 +1,6 @@
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { getDashboardData } from "@/lib/queries/dashboard";
+import { AdAccountStatsPanel } from "@/components/dashboard/AdAccountStatsPanel";
 import { KpiCards } from "@/components/dashboard/KpiCards";
 import { RankTrendChart } from "@/components/dashboard/RankTrendChart";
 import { HotKeywordTreemap } from "@/components/dashboard/HotKeywordTreemap";
@@ -21,6 +22,8 @@ export default async function KeywordsPage() {
           여기에 결과가 표시됩니다.
         </div>
       )}
+
+      <AdAccountStatsPanel data={dashboard.adAccountStats} />
 
       <KpiCards kpi={dashboard.kpi} />
 

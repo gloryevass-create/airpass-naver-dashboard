@@ -4,6 +4,7 @@ import type { Database } from "@/lib/types/database.types";
 type Client = SupabaseClient<Database>;
 
 const TREND_DAYS = 14;
+const ACCOUNT_STATS_TREND_DAYS = 7;
 
 function daysBefore(dateStr: string, days: number) {
   const d = new Date(`${dateStr}T00:00:00Z`);
@@ -28,6 +29,12 @@ export type DashboardData = {
     activeKeywordCount: number;
     avgRank: number | null;
     alertCount: number;
+  };
+  adAccountStats: {
+    latestDate: string | null;
+    bizmoney: number | null;
+    totals: { impCnt: number; clkCnt: number; ccnt: number };
+    trend: { date: string; impCnt: number; clkCnt: number; ccnt: number }[];
   };
   rankTrend: { date: string; avgRank: number | null }[];
   keywordTable: {
@@ -79,6 +86,12 @@ export type DashboardData = {
 const EMPTY: DashboardData = {
   latestDate: null,
   kpi: { activeKeywordCount: 0, avgRank: null, alertCount: 0 },
+  adAccountStats: {
+    latestDate: null,
+    bizmoney: null,
+    totals: { impCnt: 0, clkCnt: 0, ccnt: 0 },
+    trend: [],
+  },
   rankTrend: [],
   keywordTable: [],
   contentMatchedKeywords: [],
@@ -104,6 +117,7 @@ export async function getDashboardData(supabase: Client): Promise<DashboardData>
     blogPostsRes,
     alertsRes,
     reportsRes,
+    accountStatsRes,
   ] = await Promise.all([
     supabase.from("keywords").select("*").eq("is_excluded", false),
     supabase.from("competitors").select("*"),
@@ -129,6 +143,13 @@ export async function getDashboardData(supabase: Client): Promise<DashboardData>
       .select("id, date, report_type, track, title")
       .order("date", { ascending: false })
       .limit(10),
+    // 계정 전체 일별 성과지표 — 키워드 데이터의 latestDate와는 별도 파이프라인이라
+    // 자체적으로 최근 N일치를 가져온다(날짜 앵커를 공유하지 않음).
+    supabase
+      .from("ad_account_daily_stats")
+      .select("*")
+      .order("date", { ascending: false })
+      .limit(ACCOUNT_STATS_TREND_DAYS),
   ]);
 
   const keywordMap = new Map((keywordsRes.data ?? []).map((k) => [k.id, k]));
@@ -265,9 +286,36 @@ export async function getDashboardData(supabase: Client): Promise<DashboardData>
     title: r.title,
   }));
 
+  // 계정 전체 성과지표 — 최근 N일 오름차순으로 정렬해 차트에 바로 쓸 수 있게 한다.
+  const accountStatsRows = [...(accountStatsRes.data ?? [])].sort((a, b) =>
+    a.date < b.date ? -1 : 1
+  );
+  const accountTrend = accountStatsRows.map((r) => ({
+    date: r.date,
+    impCnt: r.imp_cnt,
+    clkCnt: r.clk_cnt,
+    ccnt: r.ccnt,
+  }));
+  const accountTotals = accountTrend.reduce(
+    (acc, r) => ({
+      impCnt: acc.impCnt + r.impCnt,
+      clkCnt: acc.clkCnt + r.clkCnt,
+      ccnt: acc.ccnt + r.ccnt,
+    }),
+    { impCnt: 0, clkCnt: 0, ccnt: 0 }
+  );
+  const latestAccountRow = accountStatsRows[accountStatsRows.length - 1] ?? null;
+  const adAccountStats: DashboardData["adAccountStats"] = {
+    latestDate: latestAccountRow?.date ?? null,
+    bizmoney: latestAccountRow?.bizmoney != null ? Number(latestAccountRow.bizmoney) : null,
+    totals: accountTotals,
+    trend: accountTrend,
+  };
+
   return {
     latestDate,
     kpi: { activeKeywordCount, avgRank, alertCount },
+    adAccountStats,
     rankTrend,
     keywordTable,
     contentMatchedKeywords,
