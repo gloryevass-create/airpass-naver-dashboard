@@ -2,6 +2,7 @@ import { requireAuthedClient } from "@/lib/supabase/authed";
 import { getDashboardData } from "@/lib/queries/dashboard";
 import { SovChart } from "@/components/dashboard/SovChart";
 import { CadenceTable } from "@/components/dashboard/CadenceTable";
+import { ContentMatchedKeywordTable } from "@/components/dashboard/ContentMatchedKeywordTable";
 import { ReportsList } from "@/components/dashboard/ReportsList";
 
 export default async function BlogPage() {
@@ -34,6 +35,19 @@ export default async function BlogPage() {
             수집된 건수입니다.
           </p>
         </div>
+      </section>
+
+      <section>
+        <h2 className="mb-3 text-sm font-semibold text-ink-mute">
+          콘텐츠 매칭 키워드 (경쟁사 게시물과 겹치는 주요 키워드 TOP 10)
+        </h2>
+        <ContentMatchedKeywordTable data={dashboard.contentMatchedKeywords} />
+        <p className="mt-2 text-[11px] text-ink-mute">
+          * 실제 수집된 경쟁사·에어패스 게시물 제목에 등장하는 단어와 겹치는 등록 키워드만
+          모아 제목 매칭 건수 기준 상위 10개를 표시합니다. CPC는 계정의 biz channel 연동 전이라
+          아직 채워지지 않았습니다. &ldquo;경쟁사별 이 키워드 광고 여부&rdquo;는 네이버가
+          제3자에게 공개하지 않는 정보라 표시하지 않습니다.
+        </p>
       </section>
 
       <section>

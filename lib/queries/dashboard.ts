@@ -39,6 +39,14 @@ export type DashboardData = {
     monthlySearchMobile: number | null;
     competitionLevel: string | null;
   }[];
+  contentMatchedKeywords: {
+    keywordId: string;
+    keyword: string;
+    monthlySearchPc: number | null;
+    monthlySearchMobile: number | null;
+    avgCpc: number | null;
+    matchCount: number;
+  }[];
   sov: { competitorId: string; competitorName: string; sharePct: number }[];
   cadence: {
     competitorId: string;
@@ -69,6 +77,7 @@ const EMPTY: DashboardData = {
   kpi: { activeKeywordCount: 0, avgRank: null, alertCount: 0 },
   rankTrend: [],
   keywordTable: [],
+  contentMatchedKeywords: [],
   sov: [],
   cadence: [],
   alerts: [],
@@ -104,7 +113,8 @@ export async function getDashboardData(supabase: Client): Promise<DashboardData>
     supabase.from("posting_cadence").select("*").eq("date", latestDate),
     // 총 게시물 수는 posting_cadence에 저장된 값이 아니라(스키마에 없음),
     // blog_posts에 지금까지 수집·누적된(url 기준 중복 제거) 전체 건수를 직접 센다.
-    supabase.from("blog_posts").select("competitor_id"),
+    // title은 콘텐츠 매칭 키워드 표 계산에도 재사용한다(아래).
+    supabase.from("blog_posts").select("competitor_id, title"),
     supabase
       .from("alerts")
       .select("*")
@@ -166,6 +176,26 @@ export async function getDashboardData(supabase: Client): Promise<DashboardData>
       competitionLevel: m.competition_level,
     };
   });
+
+  // 콘텐츠 매칭 키워드 — 실제 수집된 블로그 게시물 제목에 등장하는 단어와 겹치는 키워드만
+  // 골라 상위 10개(제목 매칭 건수 기준). airpass-naver-monitor의 블로그 SOV 검색어 선정
+  // 로직(scripts/lib/blog-keyword-scope.ts)과 같은 방식을 대시보드 쪽에서 재현한 것 —
+  // 이미 Supabase에 있는 keywords/blog_posts 데이터만으로 계산하므로 별도 동기화가 필요 없다.
+  const postTitles = (blogPostsRes.data ?? [])
+    .map((p) => p.title)
+    .filter((t): t is string => Boolean(t));
+  const contentMatchedKeywords = keywordTable
+    .map((k) => ({
+      keywordId: k.keywordId,
+      keyword: k.keyword,
+      monthlySearchPc: k.monthlySearchPc,
+      monthlySearchMobile: k.monthlySearchMobile,
+      avgCpc: k.avgCpc,
+      matchCount: postTitles.filter((t) => t.includes(k.keyword)).length,
+    }))
+    .filter((k) => k.matchCount > 0)
+    .sort((a, b) => b.matchCount - a.matchCount)
+    .slice(0, 10);
 
   // 블로그 SOV — 채널별 평균 점유율. 블로그 등록된(blog_id 있는) 채널은 오늘 노출 매칭이
   // 없었더라도 0%로 표시한다 — 매칭된 채널만 보이면 "우리가 몇 곳을 추적 중인지" 알 수 없다.
@@ -231,6 +261,7 @@ export async function getDashboardData(supabase: Client): Promise<DashboardData>
     kpi: { activeKeywordCount, avgRank, alertCount },
     rankTrend,
     keywordTable,
+    contentMatchedKeywords,
     sov,
     cadence,
     alerts,
