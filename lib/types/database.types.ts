@@ -90,6 +90,7 @@ export type Database = {
           our_rank: number | null;
           monthly_click_pc: number | null;
           monthly_click_mobile: number | null;
+          spend_7d: number | null;
           created_at: string;
         };
         Insert: {
@@ -103,6 +104,7 @@ export type Database = {
           our_rank?: number | null;
           monthly_click_pc?: number | null;
           monthly_click_mobile?: number | null;
+          spend_7d?: number | null;
           created_at?: string;
         };
         Update: {
@@ -116,6 +118,7 @@ export type Database = {
           our_rank?: number | null;
           monthly_click_pc?: number | null;
           monthly_click_mobile?: number | null;
+          spend_7d?: number | null;
           created_at?: string;
         };
         Relationships: [];

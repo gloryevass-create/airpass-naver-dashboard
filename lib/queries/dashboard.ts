@@ -60,6 +60,7 @@ export type DashboardData = {
     monthlyClickPc: number | null;
     monthlyClickMobile: number | null;
     competitionLevel: string | null;
+    spend7d: number | null;
   }[];
   contentMatchedKeywords: {
     keywordId: string;
@@ -242,6 +243,7 @@ export async function getDashboardData(
       monthlyClickPc: m.monthly_click_pc != null ? Number(m.monthly_click_pc) : null,
       monthlyClickMobile: m.monthly_click_mobile != null ? Number(m.monthly_click_mobile) : null,
       competitionLevel: m.competition_level,
+      spend7d: m.spend_7d != null ? Number(m.spend_7d) : null,
     };
   });
 

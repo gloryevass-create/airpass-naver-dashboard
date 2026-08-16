@@ -41,7 +41,6 @@ export default async function KeywordsPage({ searchParams }: { searchParams: Sea
           <RankTrendChart data={dashboard.rankTrend} />
         </div>
         <div className="rounded-xl border border-hairline p-4">
-          <h2 className="mb-3 text-sm font-semibold text-ink-mute">핫 키워드 TOP 10</h2>
           <HotKeywordTreemap keywordTable={dashboard.keywordTable} />
         </div>
       </section>
