@@ -6,10 +6,11 @@ export function CadenceTable({ data }: { data: DashboardData["cadence"] }) {
       <table className="w-full text-sm">
         <thead className="bg-canvas-cream text-left text-ink-mute">
           <tr>
-            <th className="px-4 py-2 font-medium">경쟁사</th>
+            <th className="px-4 py-2 font-medium">블로그</th>
             <th className="px-4 py-2 font-medium">평균 발행 간격</th>
             <th className="px-4 py-2 font-medium">최근 게시일</th>
             <th className="px-4 py-2 font-medium">최근 30일 게시물 수</th>
+            <th className="px-4 py-2 font-medium">총 게시물 수</th>
           </tr>
         </thead>
         <tbody>
@@ -21,11 +22,12 @@ export function CadenceTable({ data }: { data: DashboardData["cadence"] }) {
               </td>
               <td className="px-4 py-2">{row.lastPostAt ?? "-"}</td>
               <td className="px-4 py-2">{row.postCount30d ?? "-"}</td>
+              <td className="px-4 py-2">{row.totalPostCount.toLocaleString("ko-KR")}</td>
             </tr>
           ))}
           {data.length === 0 && (
             <tr>
-              <td colSpan={4} className="px-4 py-6 text-center text-ink-mute">
+              <td colSpan={5} className="px-4 py-6 text-center text-ink-mute">
                 데이터가 없습니다.
               </td>
             </tr>

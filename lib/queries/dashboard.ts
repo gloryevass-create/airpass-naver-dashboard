@@ -46,6 +46,7 @@ export type DashboardData = {
     avgIntervalDays: number | null;
     lastPostAt: string | null;
     postCount30d: number | null;
+    totalPostCount: number;
   }[];
   alerts: {
     id: string;
@@ -87,6 +88,7 @@ export async function getDashboardData(supabase: Client): Promise<DashboardData>
     metricsTrendRes,
     sovRes,
     cadenceRes,
+    blogPostsRes,
     alertsRes,
     reportsRes,
   ] = await Promise.all([
@@ -100,6 +102,9 @@ export async function getDashboardData(supabase: Client): Promise<DashboardData>
       .lte("date", latestDate),
     supabase.from("blog_sov_daily").select("*").eq("date", latestDate),
     supabase.from("posting_cadence").select("*").eq("date", latestDate),
+    // 총 게시물 수는 posting_cadence에 저장된 값이 아니라(스키마에 없음),
+    // blog_posts에 지금까지 수집·누적된(url 기준 중복 제거) 전체 건수를 직접 센다.
+    supabase.from("blog_posts").select("competitor_id"),
     supabase
       .from("alerts")
       .select("*")
@@ -162,7 +167,7 @@ export async function getDashboardData(supabase: Client): Promise<DashboardData>
     };
   });
 
-  // 블로그 SOV — 경쟁사별 평균 점유율
+  // 블로그 SOV — 채널별 평균 점유율
   const sovByCompetitor = new Map<string, number[]>();
   for (const row of sovRes.data ?? []) {
     const arr = sovByCompetitor.get(row.competitor_id) ?? [];
@@ -172,19 +177,29 @@ export async function getDashboardData(supabase: Client): Promise<DashboardData>
   const sov = Array.from(sovByCompetitor.entries())
     .map(([competitorId, arr]) => ({
       competitorId,
-      competitorName: competitorMap.get(competitorId)?.name ?? "(알 수 없는 경쟁사)",
+      competitorName: competitorMap.get(competitorId)?.name ?? "(알 수 없는 채널)",
       sharePct: Math.round((arr.reduce((a, b) => a + b, 0) / arr.length) * 10) / 10,
     }))
     .sort((a, b) => b.sharePct - a.sharePct);
+
+  // 총 게시물 수 — blog_posts에 지금까지 누적 수집된(url 기준 중복 제거) 건수를 채널별로 집계
+  const totalPostCountByCompetitor = new Map<string, number>();
+  for (const row of blogPostsRes.data ?? []) {
+    totalPostCountByCompetitor.set(
+      row.competitor_id,
+      (totalPostCountByCompetitor.get(row.competitor_id) ?? 0) + 1
+    );
+  }
 
   // 포스팅 주기
   const cadence = (cadenceRes.data ?? [])
     .map((row) => ({
       competitorId: row.competitor_id,
-      competitorName: competitorMap.get(row.competitor_id)?.name ?? "(알 수 없는 경쟁사)",
+      competitorName: competitorMap.get(row.competitor_id)?.name ?? "(알 수 없는 채널)",
       avgIntervalDays: row.avg_interval_days != null ? Number(row.avg_interval_days) : null,
       lastPostAt: row.last_post_at,
       postCount30d: row.post_count_30d,
+      totalPostCount: totalPostCountByCompetitor.get(row.competitor_id) ?? 0,
     }))
     .sort((a, b) => a.competitorName.localeCompare(b.competitorName));
 

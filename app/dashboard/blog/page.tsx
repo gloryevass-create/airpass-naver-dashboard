@@ -27,10 +27,12 @@ export default async function BlogPage() {
           <SovPieChart data={dashboard.sov} />
         </div>
         <div className="rounded-xl border border-hairline p-4">
-          <h2 className="mb-3 text-sm font-semibold text-ink-mute">
-            경쟁사 블로그 포스팅 주기
-          </h2>
+          <h2 className="mb-3 text-sm font-semibold text-ink-mute">블로그 포스팅 주기</h2>
           <CadenceTable data={dashboard.cadence} />
+          <p className="mt-2 text-[11px] text-ink-mute">
+            * 에어패스 자체 블로그를 포함합니다. 총 게시물 수는 모니터링을 시작한 이후 누적
+            수집된 건수입니다.
+          </p>
         </div>
       </section>
 
