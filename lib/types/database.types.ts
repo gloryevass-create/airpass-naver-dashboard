@@ -384,6 +384,90 @@ export type Database = {
         };
         Relationships: [];
       };
+      ad_strategy_memos: {
+        Row: {
+          id: string;
+          author_id: string;
+          author_email: string;
+          category: "keyword" | "blog" | "etc";
+          title: string;
+          content: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          author_id: string;
+          author_email: string;
+          category: "keyword" | "blog" | "etc";
+          title: string;
+          content: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          author_id?: string;
+          author_email?: string;
+          category?: "keyword" | "blog" | "etc";
+          title?: string;
+          content?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      ad_strategy_memo_attachments: {
+        Row: {
+          id: string;
+          memo_id: string;
+          file_name: string;
+          storage_path: string;
+          file_size: number | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          memo_id: string;
+          file_name: string;
+          storage_path: string;
+          file_size?: number | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          memo_id?: string;
+          file_name?: string;
+          storage_path?: string;
+          file_size?: number | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      ad_strategy_memo_comments: {
+        Row: {
+          id: string;
+          memo_id: string;
+          author_id: string;
+          author_email: string;
+          content: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          memo_id: string;
+          author_id: string;
+          author_email: string;
+          content: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          memo_id?: string;
+          author_id?: string;
+          author_email?: string;
+          content?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
