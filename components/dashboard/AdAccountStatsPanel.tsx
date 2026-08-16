@@ -110,6 +110,10 @@ export function AdAccountStatsPanel({ data }: { data: DashboardData["adAccountSt
         </button>
       </div>
 
+      <p className="mb-4 text-xs text-ink-mute">
+        조회 결과: {data.range.since} ~ {data.range.until} (데이터 {data.trend.length}일치)
+      </p>
+
       {data.trend.length === 0 ? (
         <p className="py-10 text-center text-sm text-ink-mute">선택한 기간에 데이터가 없습니다.</p>
       ) : (

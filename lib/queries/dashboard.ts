@@ -23,6 +23,18 @@ export async function getLatestDataDate(supabase: Client): Promise<string | null
   return data?.date ?? null;
 }
 
+/** ad_account_daily_stats도 같은 원칙 — 서버 시계(UTC)로 "오늘"을 계산하면 파이프라인의
+ * KST 기준과 자정 근처에 하루 어긋날 수 있으므로, 실제 수집된 마지막 날짜를 앵커로 쓴다. */
+async function getLatestAccountStatsDate(supabase: Client): Promise<string | null> {
+  const { data } = await supabase
+    .from("ad_account_daily_stats")
+    .select("date")
+    .order("date", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return data?.date ?? null;
+}
+
 export type DashboardData = {
   latestDate: string | null;
   kpi: {
@@ -113,8 +125,8 @@ export async function getDashboardData(
   if (!latestDate) return EMPTY;
 
   const trendStart = daysBefore(latestDate, TREND_DAYS - 1);
-  const todayStr = new Date().toISOString().slice(0, 10);
-  const defaultAccountStatsSince = daysBefore(todayStr, ACCOUNT_STATS_TREND_DAYS - 1);
+  const latestAccountStatsDate = (await getLatestAccountStatsDate(supabase)) ?? latestDate;
+  const defaultAccountStatsSince = daysBefore(latestAccountStatsDate, ACCOUNT_STATS_TREND_DAYS - 1);
 
   const [
     keywordsRes,
@@ -127,6 +139,7 @@ export async function getDashboardData(
     alertsRes,
     reportsRes,
     accountStatsRes,
+    latestBizmoneyRes,
   ] = await Promise.all([
     supabase.from("keywords").select("*").eq("is_excluded", false),
     supabase.from("competitors").select("*"),
@@ -154,7 +167,7 @@ export async function getDashboardData(
       .limit(10),
     // 계정 전체 일별 성과지표 — 키워드 데이터의 latestDate와는 별도 파이프라인이라
     // 자체적으로 날짜 범위를 가진다(날짜 앵커를 공유하지 않음). 사용자가 기간을 지정하면
-    // 그 범위를, 아니면 오늘 기준 최근 N일을 기본값으로 쓴다.
+    // 그 범위를, 아니면 실제 수집된 마지막 날짜 기준 최근 N일을 기본값으로 쓴다.
     options?.accountStatsSince && options?.accountStatsUntil
       ? supabase
           .from("ad_account_daily_stats")
@@ -166,8 +179,18 @@ export async function getDashboardData(
           .from("ad_account_daily_stats")
           .select("*")
           .gte("date", defaultAccountStatsSince)
-          .lte("date", todayStr)
+          .lte("date", latestAccountStatsDate)
           .order("date", { ascending: true }),
+    // 비즈머니 잔액은 차트 조회 기간과 무관하게 항상 "가장 최근에 확보된 값"을 보여준다
+    // — 과거 기간을 조회 중이어도 지금 남은 잔액을 알고 싶은 것이지, 그 날짜 당시 잔액을
+    // 보고 싶은 게 아니다(스냅샷은 파이프라인이 도는 그날 하루치만 채워짐).
+    supabase
+      .from("ad_account_daily_stats")
+      .select("date, bizmoney")
+      .not("bizmoney", "is", null)
+      .order("date", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
   ]);
 
   const keywordMap = new Map((keywordsRes.data ?? []).map((k) => [k.id, k]));
@@ -322,15 +345,14 @@ export async function getDashboardData(
     }),
     { impCnt: 0, clkCnt: 0, ccnt: 0 }
   );
-  const latestAccountRow = accountStatsRows[accountStatsRows.length - 1] ?? null;
   const adAccountStats: DashboardData["adAccountStats"] = {
-    latestDate: latestAccountRow?.date ?? null,
-    bizmoney: latestAccountRow?.bizmoney != null ? Number(latestAccountRow.bizmoney) : null,
+    latestDate: latestBizmoneyRes.data?.date ?? latestAccountStatsDate,
+    bizmoney: latestBizmoneyRes.data?.bizmoney != null ? Number(latestBizmoneyRes.data.bizmoney) : null,
     totals: accountTotals,
     trend: accountTrend,
     range: {
       since: options?.accountStatsSince ?? defaultAccountStatsSince,
-      until: options?.accountStatsUntil ?? todayStr,
+      until: options?.accountStatsUntil ?? latestAccountStatsDate,
     },
   };
 
