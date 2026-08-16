@@ -1,12 +1,20 @@
 "use client";
 
-import Link from "next/link";
+import Link, { useLinkStatus } from "next/link";
 import { usePathname } from "next/navigation";
 
 const ITEMS = [
   { href: "/dashboard/keywords", label: "네이버키워드" },
   { href: "/dashboard/blog", label: "네이버블로그" },
 ];
+
+function NavSpinner() {
+  const { pending } = useLinkStatus();
+  if (!pending) return null;
+  return (
+    <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-primary/30 border-t-primary" />
+  );
+}
 
 export function DashboardSidebar() {
   const pathname = usePathname();
@@ -19,13 +27,14 @@ export function DashboardSidebar() {
           <Link
             key={item.href}
             href={item.href}
-            className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+            className={`flex items-center justify-between rounded-md px-3 py-2 text-sm font-medium transition-colors ${
               active
                 ? "bg-canvas-lavender text-primary"
                 : "text-ink-mute hover:bg-canvas-cream hover:text-ink"
             }`}
           >
             {item.label}
+            <NavSpinner />
           </Link>
         );
       })}
