@@ -29,14 +29,26 @@ function spanDays(since: string, until: string) {
   return Math.round(ms / (1000 * 60 * 60 * 24)) + 1;
 }
 
+function Spinner({ dark = false }: { dark?: boolean }) {
+  return (
+    <span
+      className={`inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 ${
+        dark ? "border-ink-mute/30 border-t-ink" : "border-white/40 border-t-white"
+      }`}
+    />
+  );
+}
+
 export function AdAccountStatsPanel({ data }: { data: DashboardData["adAccountStats"] }) {
   const router = useRouter();
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
+  const [pendingAction, setPendingAction] = useState<"prev" | "next" | "apply" | null>(null);
   const [since, setSince] = useState(data.range.since);
   const [until, setUntil] = useState(data.range.until);
 
-  function applyRange(newSince: string, newUntil: string) {
+  function applyRange(newSince: string, newUntil: string, action: "prev" | "next" | "apply" = "apply") {
+    setPendingAction(action);
     const params = new URLSearchParams({ statsFrom: newSince, statsTo: newUntil });
     startTransition(() => {
       router.push(`${pathname}?${params.toString()}`);
@@ -49,7 +61,7 @@ export function AdAccountStatsPanel({ data }: { data: DashboardData["adAccountSt
     const newUntil = addDays(until, direction * days);
     setSince(newSince);
     setUntil(newUntil);
-    applyRange(newSince, newUntil);
+    applyRange(newSince, newUntil, direction === -1 ? "prev" : "next");
   }
 
   const chartData = data.trend.map((d) => ({
@@ -78,9 +90,9 @@ export function AdAccountStatsPanel({ data }: { data: DashboardData["adAccountSt
           onClick={() => shift(-1)}
           disabled={isPending}
           aria-label="이전 기간"
-          className="rounded-md border border-hairline px-2 py-1 hover:bg-canvas-cream disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex h-7 w-7 items-center justify-center rounded-md border border-hairline hover:bg-canvas-cream disabled:cursor-not-allowed disabled:opacity-50"
         >
-          ◀
+          {isPending && pendingAction === "prev" ? <Spinner dark /> : "◀"}
         </button>
         <input
           type="date"
@@ -104,20 +116,18 @@ export function AdAccountStatsPanel({ data }: { data: DashboardData["adAccountSt
           onClick={() => shift(1)}
           disabled={isPending}
           aria-label="다음 기간"
-          className="rounded-md border border-hairline px-2 py-1 hover:bg-canvas-cream disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex h-7 w-7 items-center justify-center rounded-md border border-hairline hover:bg-canvas-cream disabled:cursor-not-allowed disabled:opacity-50"
         >
-          ▶
+          {isPending && pendingAction === "next" ? <Spinner dark /> : "▶"}
         </button>
         <button
           type="button"
-          onClick={() => applyRange(since, until)}
+          onClick={() => applyRange(since, until, "apply")}
           disabled={isPending}
           className="flex items-center gap-2 rounded-md bg-primary px-3 py-1 font-medium text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isPending && (
-            <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
-          )}
-          {isPending ? "조회 중..." : "조회"}
+          {isPending && pendingAction === "apply" && <Spinner />}
+          {isPending && pendingAction === "apply" ? "조회 중..." : "조회"}
         </button>
       </div>
 
