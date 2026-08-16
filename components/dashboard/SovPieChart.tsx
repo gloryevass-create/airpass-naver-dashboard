@@ -21,10 +21,16 @@ export function SovPieChart({ data }: { data: DashboardData["sov"] }) {
             cx="50%"
             cy="50%"
             outerRadius={90}
-            label={(entry) => `${(entry as unknown as (typeof data)[number]).sharePct}%`}
+            label={(entry) => {
+              const pct = (entry as unknown as (typeof data)[number]).sharePct;
+              return pct > 0 ? `${pct}%` : "";
+            }}
           >
             {data.map((entry, index) => (
-              <Cell key={entry.competitorId} fill={COLORS[index % COLORS.length]} />
+              <Cell
+                key={entry.competitorId}
+                fill={entry.sharePct > 0 ? COLORS[index % COLORS.length] : "#e6e6e6"}
+              />
             ))}
           </Pie>
           <Tooltip formatter={(value) => [`${value}%`, "평균 노출 점유율"]} />

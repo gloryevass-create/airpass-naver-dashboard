@@ -3,7 +3,7 @@ import type { DashboardData } from "@/lib/queries/dashboard";
 export function CadenceTable({ data }: { data: DashboardData["cadence"] }) {
   return (
     <div className="overflow-x-auto rounded-xl border border-hairline">
-      <table className="w-full text-sm">
+      <table className="w-full whitespace-nowrap text-sm">
         <thead className="bg-canvas-cream text-left text-ink-mute">
           <tr>
             <th className="px-4 py-2 font-medium">블로그</th>

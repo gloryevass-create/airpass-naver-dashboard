@@ -167,19 +167,26 @@ export async function getDashboardData(supabase: Client): Promise<DashboardData>
     };
   });
 
-  // 블로그 SOV — 채널별 평균 점유율
+  // 블로그 SOV — 채널별 평균 점유율. 블로그 등록된(blog_id 있는) 채널은 오늘 노출 매칭이
+  // 없었더라도 0%로 표시한다 — 매칭된 채널만 보이면 "우리가 몇 곳을 추적 중인지" 알 수 없다.
   const sovByCompetitor = new Map<string, number[]>();
   for (const row of sovRes.data ?? []) {
     const arr = sovByCompetitor.get(row.competitor_id) ?? [];
     arr.push(Number(row.share_pct));
     sovByCompetitor.set(row.competitor_id, arr);
   }
-  const sov = Array.from(sovByCompetitor.entries())
-    .map(([competitorId, arr]) => ({
-      competitorId,
-      competitorName: competitorMap.get(competitorId)?.name ?? "(알 수 없는 채널)",
-      sharePct: Math.round((arr.reduce((a, b) => a + b, 0) / arr.length) * 10) / 10,
-    }))
+  const blogTrackedCompetitors = (competitorsRes.data ?? []).filter((c) => c.blog_id);
+  const sov = blogTrackedCompetitors
+    .map((c) => {
+      const arr = sovByCompetitor.get(c.id);
+      return {
+        competitorId: c.id,
+        competitorName: c.name,
+        sharePct: arr?.length
+          ? Math.round((arr.reduce((a, b) => a + b, 0) / arr.length) * 10) / 10
+          : 0,
+      };
+    })
     .sort((a, b) => b.sharePct - a.sharePct);
 
   // 총 게시물 수 — blog_posts에 지금까지 누적 수집된(url 기준 중복 제거) 건수를 채널별로 집계
