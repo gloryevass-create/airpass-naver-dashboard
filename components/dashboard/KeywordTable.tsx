@@ -59,6 +59,7 @@ export function KeywordTable({ data }: { data: Row[] }) {
       <table className="w-full text-sm">
         <thead className="bg-canvas-cream text-left text-ink-mute">
           <tr>
+            <th className="px-4 py-2 font-medium">#</th>
             {COLUMNS.map((col) => (
               <th key={col.key} className="px-4 py-2 font-medium">
                 <button
@@ -74,8 +75,9 @@ export function KeywordTable({ data }: { data: Row[] }) {
           </tr>
         </thead>
         <tbody>
-          {sorted.map((row) => (
+          {sorted.map((row, i) => (
             <tr key={row.keywordId} className="border-t border-hairline">
+              <td className="px-4 py-2 text-ink-mute">{i + 1}</td>
               <td className="px-4 py-2">{row.keyword}</td>
               <td className="px-4 py-2">{row.ourRank ?? "-"}</td>
               <td className="px-4 py-2">
@@ -93,7 +95,7 @@ export function KeywordTable({ data }: { data: Row[] }) {
           ))}
           {sorted.length === 0 && (
             <tr>
-              <td colSpan={COLUMNS.length} className="px-4 py-6 text-center text-ink-mute">
+              <td colSpan={COLUMNS.length + 1} className="px-4 py-6 text-center text-ink-mute">
                 데이터가 없습니다.
               </td>
             </tr>
