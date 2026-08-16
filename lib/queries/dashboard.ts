@@ -35,6 +35,7 @@ export type DashboardData = {
     bizmoney: number | null;
     totals: { impCnt: number; clkCnt: number; ccnt: number };
     trend: { date: string; impCnt: number; clkCnt: number; ccnt: number }[];
+    range: { since: string; until: string };
   };
   rankTrend: { date: string; avgRank: number | null }[];
   keywordTable: {
@@ -91,6 +92,7 @@ const EMPTY: DashboardData = {
     bizmoney: null,
     totals: { impCnt: 0, clkCnt: 0, ccnt: 0 },
     trend: [],
+    range: { since: "", until: "" },
   },
   rankTrend: [],
   keywordTable: [],
@@ -101,11 +103,18 @@ const EMPTY: DashboardData = {
   reports: [],
 };
 
-export async function getDashboardData(supabase: Client): Promise<DashboardData> {
+export type AccountStatsRangeOption = { accountStatsSince?: string; accountStatsUntil?: string };
+
+export async function getDashboardData(
+  supabase: Client,
+  options?: AccountStatsRangeOption
+): Promise<DashboardData> {
   const latestDate = await getLatestDataDate(supabase);
   if (!latestDate) return EMPTY;
 
   const trendStart = daysBefore(latestDate, TREND_DAYS - 1);
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const defaultAccountStatsSince = daysBefore(todayStr, ACCOUNT_STATS_TREND_DAYS - 1);
 
   const [
     keywordsRes,
@@ -144,12 +153,21 @@ export async function getDashboardData(supabase: Client): Promise<DashboardData>
       .order("date", { ascending: false })
       .limit(10),
     // 계정 전체 일별 성과지표 — 키워드 데이터의 latestDate와는 별도 파이프라인이라
-    // 자체적으로 최근 N일치를 가져온다(날짜 앵커를 공유하지 않음).
-    supabase
-      .from("ad_account_daily_stats")
-      .select("*")
-      .order("date", { ascending: false })
-      .limit(ACCOUNT_STATS_TREND_DAYS),
+    // 자체적으로 날짜 범위를 가진다(날짜 앵커를 공유하지 않음). 사용자가 기간을 지정하면
+    // 그 범위를, 아니면 오늘 기준 최근 N일을 기본값으로 쓴다.
+    options?.accountStatsSince && options?.accountStatsUntil
+      ? supabase
+          .from("ad_account_daily_stats")
+          .select("*")
+          .gte("date", options.accountStatsSince)
+          .lte("date", options.accountStatsUntil)
+          .order("date", { ascending: true })
+      : supabase
+          .from("ad_account_daily_stats")
+          .select("*")
+          .gte("date", defaultAccountStatsSince)
+          .lte("date", todayStr)
+          .order("date", { ascending: true }),
   ]);
 
   const keywordMap = new Map((keywordsRes.data ?? []).map((k) => [k.id, k]));
@@ -310,6 +328,10 @@ export async function getDashboardData(supabase: Client): Promise<DashboardData>
     bizmoney: latestAccountRow?.bizmoney != null ? Number(latestAccountRow.bizmoney) : null,
     totals: accountTotals,
     trend: accountTrend,
+    range: {
+      since: options?.accountStatsSince ?? defaultAccountStatsSince,
+      until: options?.accountStatsUntil ?? todayStr,
+    },
   };
 
   return {

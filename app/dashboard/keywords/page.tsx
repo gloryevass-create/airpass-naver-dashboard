@@ -8,9 +8,15 @@ import { KeywordTable } from "@/components/dashboard/KeywordTable";
 import { AlertsList } from "@/components/dashboard/AlertsList";
 import { ReportsList } from "@/components/dashboard/ReportsList";
 
-export default async function KeywordsPage() {
+type SearchParams = Promise<{ statsFrom?: string; statsTo?: string }>;
+
+export default async function KeywordsPage({ searchParams }: { searchParams: SearchParams }) {
+  const { statsFrom, statsTo } = await searchParams;
   const { supabase } = await requireAuthedClient();
-  const dashboard = await getDashboardData(supabase);
+  const dashboard = await getDashboardData(supabase, {
+    accountStatsSince: statsFrom,
+    accountStatsUntil: statsTo,
+  });
 
   const keywordReports = dashboard.reports.filter((r) => r.track !== "blog");
 

@@ -109,17 +109,19 @@ export function HotKeywordTreemap({ keywordTable }: { keywordTable: DashboardDat
   }
 
   return (
-    <div className="h-72 w-full">
-      <ResponsiveContainer width="100%" height="100%">
-        <Treemap
-          data={data}
-          dataKey="size"
-          aspectRatio={4 / 3}
-          content={<CustomContent />}
-        >
-          <Tooltip content={<CustomTooltip />} />
-        </Treemap>
-      </ResponsiveContainer>
+    <div className="w-full">
+      <div className="h-72 w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <Treemap
+            data={data}
+            dataKey="size"
+            aspectRatio={4 / 3}
+            content={<CustomContent />}
+          >
+            <Tooltip content={<CustomTooltip />} />
+          </Treemap>
+        </ResponsiveContainer>
+      </div>
       <p className="mt-2 text-[11px] text-ink-mute">
         * 월간검색수(PC+모바일) 기준 상위 10개 키워드 — 사각형 크기가 검색량에 비례합니다.
       </p>
