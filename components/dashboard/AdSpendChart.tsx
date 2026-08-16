@@ -47,6 +47,18 @@ function CustomTooltip({ active, payload }: TooltipContentProps) {
 }
 
 export function AdSpendChart({ data }: { data: DashboardData["adSpendByCompetitor"] }) {
+  if (data.length === 0) {
+    return (
+      <div className="flex h-64 flex-col items-center justify-center gap-1 text-center">
+        <p className="text-sm text-neutral-400">데이터 없음</p>
+        <p className="max-w-xs text-[11px] text-neutral-400">
+          경쟁사 광고비는 네이버가 제3자에게 공개하는 공식 API가 없고 자동 수집 경로(스크래핑)도
+          막혀 있어(robots.txt) 자동으로 수집하지 못합니다. 근거 없는 추정치를 표시하지 않습니다.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="h-64 w-full">
       <ResponsiveContainer width="100%" height="100%">
