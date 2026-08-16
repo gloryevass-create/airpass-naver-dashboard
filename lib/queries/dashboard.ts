@@ -178,9 +178,10 @@ export async function getDashboardData(supabase: Client): Promise<DashboardData>
   });
 
   // 콘텐츠 매칭 키워드 — 실제 수집된 블로그 게시물 제목에 등장하는 단어와 겹치는 키워드만
-  // 골라 상위 10개(제목 매칭 건수 기준). airpass-naver-monitor의 블로그 SOV 검색어 선정
+  // 골라 상위 20개(제목 매칭 건수 기준). airpass-naver-monitor의 블로그 SOV 검색어 선정
   // 로직(scripts/lib/blog-keyword-scope.ts)과 같은 방식을 대시보드 쪽에서 재현한 것 —
   // 이미 Supabase에 있는 keywords/blog_posts 데이터만으로 계산하므로 별도 동기화가 필요 없다.
+  const CONTENT_KEYWORD_DISPLAY_COUNT = 20;
   const postTitles = (blogPostsRes.data ?? [])
     .map((p) => p.title)
     .filter((t): t is string => Boolean(t));
@@ -195,7 +196,7 @@ export async function getDashboardData(supabase: Client): Promise<DashboardData>
     }))
     .filter((k) => k.matchCount > 0)
     .sort((a, b) => b.matchCount - a.matchCount)
-    .slice(0, 10);
+    .slice(0, CONTENT_KEYWORD_DISPLAY_COUNT);
 
   // 블로그 SOV — 채널별 평균 점유율. 블로그 등록된(blog_id 있는) 채널은 오늘 노출 매칭이
   // 없었더라도 0%로 표시한다 — 매칭된 채널만 보이면 "우리가 몇 곳을 추적 중인지" 알 수 없다.

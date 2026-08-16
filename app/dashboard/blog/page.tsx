@@ -39,7 +39,7 @@ export default async function BlogPage() {
 
       <section>
         <h2 className="mb-3 text-sm font-semibold text-ink-mute">
-          콘텐츠 매칭 키워드 (경쟁사 게시물과 겹치는 주요 키워드 TOP 10)
+          콘텐츠 매칭 키워드 (경쟁사 게시물과 겹치는 주요 키워드 TOP 20)
         </h2>
         <ContentMatchedKeywordTable data={dashboard.contentMatchedKeywords} />
         <p className="mt-2 text-[11px] text-ink-mute">
