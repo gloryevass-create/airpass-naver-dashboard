@@ -27,16 +27,27 @@ function buildData(keywordTable: DashboardData["keywordTable"]): TreemapNode[] {
     .map((k, i) => ({ ...k, rank: i + 1 }));
 }
 
+// Recharts는 렌더링 시점에 원본 데이터를 자체 트리맵 노드 구조(value/depth/root 등)와
+// 합쳐서 content 렌더러에 넘긴다 — dataKey로 지정한 "size"뿐 아니라 계산된 "value"도
+// 함께 들어올 수 있어 둘 다 안전하게 처리한다(하나가 없어도 절대 크래시하지 않도록).
 function CustomContent(props: unknown) {
-  const { x, y, width, height, index, name, size } = props as {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-    index: number;
-    name: string;
-    size: number;
+  const p = props as {
+    x?: number;
+    y?: number;
+    width?: number;
+    height?: number;
+    index?: number;
+    name?: string;
+    size?: number;
+    value?: number;
   };
+  const x = p.x ?? 0;
+  const y = p.y ?? 0;
+  const width = p.width ?? 0;
+  const height = p.height ?? 0;
+  const index = p.index ?? 0;
+  const name = p.name ?? "";
+  const value = p.size ?? p.value ?? 0;
 
   if (width < 2 || height < 2) return null;
   const showText = width > 50 && height > 30;
@@ -60,7 +71,7 @@ function CustomContent(props: unknown) {
             {name}
           </text>
           <text x={x + 8} y={y + 38} fontSize={11} fill="#ffffffcc">
-            {size.toLocaleString("ko-KR")}
+            {value.toLocaleString("ko-KR")}
           </text>
         </>
       )}
@@ -73,17 +84,19 @@ function CustomTooltip({
   payload,
 }: {
   active?: boolean;
-  payload?: { payload: TreemapNode }[];
+  payload?: { payload: Partial<TreemapNode> }[];
 }) {
   if (!active || !payload?.length) return null;
   const node = payload[0].payload;
   return (
     <div className="rounded-md border border-hairline bg-white p-3 text-xs shadow-md">
       <p className="mb-1 font-semibold">
-        {node.rank}위 · {node.name}
+        {node.rank ?? "-"}위 · {node.name ?? ""}
       </p>
-      <p className="text-ink-mute">월간검색수 합계: {node.size.toLocaleString("ko-KR")}</p>
-      <p className="text-ink-mute">PC {node.pc.toLocaleString("ko-KR")} · 모바일 {node.mobile.toLocaleString("ko-KR")}</p>
+      <p className="text-ink-mute">월간검색수 합계: {(node.size ?? 0).toLocaleString("ko-KR")}</p>
+      <p className="text-ink-mute">
+        PC {(node.pc ?? 0).toLocaleString("ko-KR")} · 모바일 {(node.mobile ?? 0).toLocaleString("ko-KR")}
+      </p>
     </div>
   );
 }
