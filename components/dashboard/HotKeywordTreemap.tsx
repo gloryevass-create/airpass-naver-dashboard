@@ -6,7 +6,7 @@ import type { DashboardData } from "@/lib/queries/dashboard";
 
 const COLORS = ["#4a154b", "#611f69", "#7c3aed", "#9b6bc9", "#b794d4", "#1264a3", "#3860be", "#5b8def", "#8bb4f0", "#c2d9f7"];
 
-type Mode = "search" | "spend";
+type Mode = "search" | "spend" | "cpc";
 
 type TreemapNode = {
   name: string;
@@ -18,21 +18,30 @@ type TreemapNode = {
 
 function buildData(keywordTable: DashboardData["keywordTable"], mode: Mode): TreemapNode[] {
   return [...keywordTable]
-    .map((k) =>
-      mode === "search"
-        ? {
-            name: k.keyword,
-            size: (k.monthlySearchPc ?? 0) + (k.monthlySearchMobile ?? 0),
-            sub1: k.monthlySearchPc ?? 0,
-            sub2: k.monthlySearchMobile ?? 0,
-          }
-        : {
-            name: k.keyword,
-            size: k.spend7d ?? 0,
-            sub1: k.avgCpc ?? 0,
-            sub2: (k.monthlyClickPc ?? 0) + (k.monthlyClickMobile ?? 0),
-          }
-    )
+    .map((k) => {
+      if (mode === "search") {
+        return {
+          name: k.keyword,
+          size: (k.monthlySearchPc ?? 0) + (k.monthlySearchMobile ?? 0),
+          sub1: k.monthlySearchPc ?? 0,
+          sub2: k.monthlySearchMobile ?? 0,
+        };
+      }
+      if (mode === "spend") {
+        return {
+          name: k.keyword,
+          size: k.spend7d ?? 0,
+          sub1: k.avgCpc ?? 0,
+          sub2: (k.monthlyClickPc ?? 0) + (k.monthlyClickMobile ?? 0),
+        };
+      }
+      return {
+        name: k.keyword,
+        size: k.avgCpc ?? 0,
+        sub1: k.spend7d ?? 0,
+        sub2: (k.monthlyClickPc ?? 0) + (k.monthlyClickMobile ?? 0),
+      };
+    })
     .filter((k) => k.size > 0)
     .sort((a, b) => b.size - a.size)
     .slice(0, 10)
@@ -110,18 +119,28 @@ function CustomTooltip({
       <p className="mb-1 font-semibold">
         {node.rank ?? "-"}위 · {node.name ?? ""}
       </p>
-      {mode === "search" ? (
+      {mode === "search" && (
         <>
           <p className="text-ink-mute">월간검색수 합계: {(node.size ?? 0).toLocaleString("ko-KR")}</p>
           <p className="text-ink-mute">
             PC {(node.sub1 ?? 0).toLocaleString("ko-KR")} · 모바일 {(node.sub2 ?? 0).toLocaleString("ko-KR")}
           </p>
         </>
-      ) : (
+      )}
+      {mode === "spend" && (
         <>
           <p className="text-ink-mute">최근 7일 지출액: {(node.size ?? 0).toLocaleString("ko-KR")}원</p>
           <p className="text-ink-mute">
             평균 CPC {(node.sub1 ?? 0).toLocaleString("ko-KR")}원 · 월간클릭수(PC+모바일){" "}
+            {(node.sub2 ?? 0).toLocaleString("ko-KR")}
+          </p>
+        </>
+      )}
+      {mode === "cpc" && (
+        <>
+          <p className="text-ink-mute">평균 CPC: {(node.size ?? 0).toLocaleString("ko-KR")}원</p>
+          <p className="text-ink-mute">
+            최근 7일 지출액 {(node.sub1 ?? 0).toLocaleString("ko-KR")}원 · 월간클릭수(PC+모바일){" "}
             {(node.sub2 ?? 0).toLocaleString("ko-KR")}
           </p>
         </>
@@ -133,12 +152,14 @@ function CustomTooltip({
 const TABS: { key: Mode; label: string }[] = [
   { key: "search", label: "핫 키워드 TOP10" },
   { key: "spend", label: "핫 비용 TOP10" },
+  { key: "cpc", label: "핫 CPC TOP10" },
 ];
 
 export function HotKeywordTreemap({ keywordTable }: { keywordTable: DashboardData["keywordTable"] }) {
   const [mode, setMode] = useState<Mode>("search");
   const data = buildData(keywordTable, mode);
-  const formatValue = (n: number) => (mode === "spend" ? `${n.toLocaleString("ko-KR")}원` : n.toLocaleString("ko-KR"));
+  const formatValue = (n: number) =>
+    mode === "search" ? n.toLocaleString("ko-KR") : `${n.toLocaleString("ko-KR")}원`;
 
   return (
     <div className="w-full">
@@ -176,9 +197,12 @@ export function HotKeywordTreemap({ keywordTable }: { keywordTable: DashboardDat
             </ResponsiveContainer>
           </div>
           <p className="mt-2 text-[11px] text-ink-mute">
-            {mode === "search"
-              ? "* 월간검색수(PC+모바일) 기준 상위 10개 키워드 — 사각형 크기가 검색량에 비례합니다."
-              : "* 최근 7일 실제 집행 지출액 기준 상위 10개 키워드 — 사각형 크기가 지출액에 비례합니다. 클릭이 없었던 키워드는 지출액도 0이라 제외됩니다."}
+            {mode === "search" &&
+              "* 월간검색수(PC+모바일) 기준 상위 10개 키워드 — 사각형 크기가 검색량에 비례합니다."}
+            {mode === "spend" &&
+              "* 최근 7일 실제 집행 지출액 기준 상위 10개 키워드 — 사각형 크기가 지출액에 비례합니다. 클릭이 없었던 키워드는 지출액도 0이라 제외됩니다."}
+            {mode === "cpc" &&
+              "* 최근 7일 실제 집행 평균 CPC 기준 상위 10개 키워드 — 사각형 크기가 CPC에 비례합니다. 클릭이 없었던 키워드는 CPC를 계산할 근거가 없어 제외됩니다."}
           </p>
         </>
       )}
