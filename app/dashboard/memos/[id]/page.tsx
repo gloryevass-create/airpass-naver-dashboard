@@ -1,7 +1,10 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { getMemoDetail } from "@/lib/queries/memos";
 import { MemoCommentForm } from "@/components/MemoCommentForm";
+import { DeleteMemoButton } from "@/components/DeleteMemoButton";
+import { deleteMemo } from "@/app/dashboard/memos/actions";
 
 const CATEGORY_LABEL: Record<string, string> = {
   keyword: "키워드",
@@ -30,10 +33,13 @@ type Params = Promise<{ id: string }>;
 
 export default async function MemoDetailPage({ params }: { params: Params }) {
   const { id } = await params;
-  const { supabase } = await requireAuthedClient();
+  const { supabase, user } = await requireAuthedClient();
   const memo = await getMemoDetail(supabase, id);
 
   if (!memo) notFound();
+
+  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
+  const canModify = memo.authorId === user.id || profile?.role === "admin";
 
   const attachmentsWithUrl = await Promise.all(
     memo.attachments.map(async (a) => {
@@ -46,14 +52,27 @@ export default async function MemoDetailPage({ params }: { params: Params }) {
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-6">
-      <div>
-        <span className="inline-block rounded-full bg-canvas-lavender px-3 py-1 text-xs font-medium text-primary">
-          {CATEGORY_LABEL[memo.category] ?? memo.category}
-        </span>
-        <h1 className="mt-2 text-xl font-bold tracking-tight text-primary">{memo.title}</h1>
-        <p className="mt-1 text-sm text-ink-mute">
-          {memo.authorEmail} · {formatDate(memo.createdAt)}
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <span className="inline-block rounded-full bg-canvas-lavender px-3 py-1 text-xs font-medium text-primary">
+            {CATEGORY_LABEL[memo.category] ?? memo.category}
+          </span>
+          <h1 className="mt-2 text-xl font-bold tracking-tight text-primary">{memo.title}</h1>
+          <p className="mt-1 text-sm text-ink-mute">
+            {memo.authorEmail} · {formatDate(memo.createdAt)}
+          </p>
+        </div>
+        {canModify && (
+          <div className="flex shrink-0 gap-2">
+            <Link
+              href={`/dashboard/memos/${memo.id}/edit`}
+              className="rounded-full border border-hairline px-4 py-1.5 text-sm font-medium text-ink hover:bg-canvas-cream"
+            >
+              수정
+            </Link>
+            <DeleteMemoButton action={deleteMemo.bind(null, memo.id)} />
+          </div>
+        )}
       </div>
 
       <div className="whitespace-pre-wrap rounded-xl border border-hairline p-4 text-sm text-ink">

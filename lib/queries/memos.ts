@@ -44,6 +44,7 @@ export async function getMemos(supabase: Client): Promise<MemoListItem[]> {
 
 export type MemoDetail = {
   id: string;
+  authorId: string;
   authorEmail: string;
   category: MemoCategory;
   title: string;
@@ -68,6 +69,7 @@ export async function getMemoDetail(supabase: Client, id: string): Promise<MemoD
 
   return {
     id: memo.id,
+    authorId: memo.author_id,
     authorEmail: memo.author_email,
     category: memo.category,
     title: memo.title,
