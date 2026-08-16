@@ -11,31 +11,33 @@ export function SovChart({ data }: { data: DashboardData["sov"] }) {
   }
 
   return (
-    <div className="h-72 w-full">
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e6e6e6" />
-          <XAxis
-            dataKey="competitorName"
-            fontSize={12}
-            stroke="#696969"
-            interval={0}
-            angle={-20}
-            textAnchor="end"
-            height={50}
-          />
-          <YAxis fontSize={12} stroke="#696969" width={40} unit="%" />
-          <Tooltip formatter={(value) => [`${value}%`, "평균 노출 점유율"]} />
-          <Bar dataKey="sharePct" radius={[4, 4, 0, 0]}>
-            {data.map((entry, index) => (
-              <Cell
-                key={entry.competitorId}
-                fill={entry.sharePct > 0 ? COLORS[index % COLORS.length] : "#e6e6e6"}
-              />
-            ))}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
+    <div className="w-full">
+      <div className="h-72 w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={data} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e6e6e6" />
+            <XAxis
+              dataKey="competitorName"
+              fontSize={12}
+              stroke="#696969"
+              interval={0}
+              angle={-20}
+              textAnchor="end"
+              height={50}
+            />
+            <YAxis fontSize={12} stroke="#696969" width={40} unit="%" />
+            <Tooltip formatter={(value) => [`${value}%`, "평균 노출 점유율"]} />
+            <Bar dataKey="sharePct" radius={[4, 4, 0, 0]}>
+              {data.map((entry, index) => (
+                <Cell
+                  key={entry.competitorId}
+                  fill={entry.sharePct > 0 ? COLORS[index % COLORS.length] : "#e6e6e6"}
+                />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
       <p className="mt-2 text-[11px] text-ink-mute">
         * 블로그별로 독립적으로 계산된 값이라 합계가 100%가 아닙니다 — 파이 차트가 아니라
         막대 차트로 표시합니다.
