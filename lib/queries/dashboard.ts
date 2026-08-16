@@ -37,6 +37,8 @@ export type DashboardData = {
     avgCpc: number | null;
     monthlySearchPc: number | null;
     monthlySearchMobile: number | null;
+    monthlyClickPc: number | null;
+    monthlyClickMobile: number | null;
     competitionLevel: string | null;
   }[];
   contentMatchedKeywords: {
@@ -44,6 +46,8 @@ export type DashboardData = {
     keyword: string;
     monthlySearchPc: number | null;
     monthlySearchMobile: number | null;
+    monthlyClickPc: number | null;
+    monthlyClickMobile: number | null;
     avgCpc: number | null;
     matchCount: number;
   }[];
@@ -173,6 +177,8 @@ export async function getDashboardData(supabase: Client): Promise<DashboardData>
       avgCpc: m.avg_cpc != null ? Number(m.avg_cpc) : null,
       monthlySearchPc: m.monthly_search_pc,
       monthlySearchMobile: m.monthly_search_mobile,
+      monthlyClickPc: m.monthly_click_pc != null ? Number(m.monthly_click_pc) : null,
+      monthlyClickMobile: m.monthly_click_mobile != null ? Number(m.monthly_click_mobile) : null,
       competitionLevel: m.competition_level,
     };
   });
@@ -191,6 +197,8 @@ export async function getDashboardData(supabase: Client): Promise<DashboardData>
       keyword: k.keyword,
       monthlySearchPc: k.monthlySearchPc,
       monthlySearchMobile: k.monthlySearchMobile,
+      monthlyClickPc: k.monthlyClickPc,
+      monthlyClickMobile: k.monthlyClickMobile,
       avgCpc: k.avgCpc,
       matchCount: postTitles.filter((t) => t.includes(k.keyword)).length,
     }))

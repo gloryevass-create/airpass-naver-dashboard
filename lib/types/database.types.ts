@@ -88,6 +88,8 @@ export type Database = {
           avg_cpc: number | null;
           competition_level: string | null;
           our_rank: number | null;
+          monthly_click_pc: number | null;
+          monthly_click_mobile: number | null;
           created_at: string;
         };
         Insert: {
@@ -99,6 +101,8 @@ export type Database = {
           avg_cpc?: number | null;
           competition_level?: string | null;
           our_rank?: number | null;
+          monthly_click_pc?: number | null;
+          monthly_click_mobile?: number | null;
           created_at?: string;
         };
         Update: {
@@ -110,6 +114,8 @@ export type Database = {
           avg_cpc?: number | null;
           competition_level?: string | null;
           our_rank?: number | null;
+          monthly_click_pc?: number | null;
+          monthly_click_mobile?: number | null;
           created_at?: string;
         };
         Relationships: [];
