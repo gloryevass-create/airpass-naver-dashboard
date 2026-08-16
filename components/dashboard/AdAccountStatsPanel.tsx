@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
   CartesianGrid,
@@ -32,12 +32,15 @@ function spanDays(since: string, until: string) {
 export function AdAccountStatsPanel({ data }: { data: DashboardData["adAccountStats"] }) {
   const router = useRouter();
   const pathname = usePathname();
+  const [isPending, startTransition] = useTransition();
   const [since, setSince] = useState(data.range.since);
   const [until, setUntil] = useState(data.range.until);
 
   function applyRange(newSince: string, newUntil: string) {
     const params = new URLSearchParams({ statsFrom: newSince, statsTo: newUntil });
-    router.push(`${pathname}?${params.toString()}`);
+    startTransition(() => {
+      router.push(`${pathname}?${params.toString()}`);
+    });
   }
 
   function shift(direction: -1 | 1) {
@@ -73,8 +76,9 @@ export function AdAccountStatsPanel({ data }: { data: DashboardData["adAccountSt
         <button
           type="button"
           onClick={() => shift(-1)}
+          disabled={isPending}
           aria-label="이전 기간"
-          className="rounded-md border border-hairline px-2 py-1 hover:bg-canvas-cream"
+          className="rounded-md border border-hairline px-2 py-1 hover:bg-canvas-cream disabled:cursor-not-allowed disabled:opacity-50"
         >
           ◀
         </button>
@@ -82,35 +86,42 @@ export function AdAccountStatsPanel({ data }: { data: DashboardData["adAccountSt
           type="date"
           value={since}
           max={until}
+          disabled={isPending}
           onChange={(e) => setSince(e.target.value)}
-          className="rounded-md border border-hairline px-2 py-1"
+          className="rounded-md border border-hairline px-2 py-1 disabled:cursor-not-allowed disabled:opacity-50"
         />
         <span className="text-ink-mute">→</span>
         <input
           type="date"
           value={until}
           min={since}
+          disabled={isPending}
           onChange={(e) => setUntil(e.target.value)}
-          className="rounded-md border border-hairline px-2 py-1"
+          className="rounded-md border border-hairline px-2 py-1 disabled:cursor-not-allowed disabled:opacity-50"
         />
         <button
           type="button"
           onClick={() => shift(1)}
+          disabled={isPending}
           aria-label="다음 기간"
-          className="rounded-md border border-hairline px-2 py-1 hover:bg-canvas-cream"
+          className="rounded-md border border-hairline px-2 py-1 hover:bg-canvas-cream disabled:cursor-not-allowed disabled:opacity-50"
         >
           ▶
         </button>
         <button
           type="button"
           onClick={() => applyRange(since, until)}
-          className="rounded-md bg-primary px-3 py-1 font-medium text-white hover:opacity-90"
+          disabled={isPending}
+          className="flex items-center gap-2 rounded-md bg-primary px-3 py-1 font-medium text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          조회
+          {isPending && (
+            <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+          )}
+          {isPending ? "조회 중..." : "조회"}
         </button>
       </div>
 
-      <p className="mb-4 text-xs text-ink-mute">
+      <p className="mb-4 flex items-center gap-2 text-xs text-ink-mute">
         조회 결과: {data.range.since} ~ {data.range.until} (데이터 {data.trend.length}일치)
       </p>
 
@@ -118,7 +129,9 @@ export function AdAccountStatsPanel({ data }: { data: DashboardData["adAccountSt
         <p className="py-10 text-center text-sm text-ink-mute">선택한 기간에 데이터가 없습니다.</p>
       ) : (
         <>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div
+            className={`grid grid-cols-1 gap-4 transition-opacity sm:grid-cols-3 ${isPending ? "opacity-40" : ""}`}
+          >
             <div className="rounded-lg border border-hairline p-3">
               <p className="text-xs font-bold uppercase tracking-wide text-[#c0392b]">총 노출수</p>
               <p className="mt-1 text-2xl font-bold tracking-tight text-primary">
@@ -139,7 +152,7 @@ export function AdAccountStatsPanel({ data }: { data: DashboardData["adAccountSt
             </div>
           </div>
 
-          <div className="mt-4 h-64 w-full">
+          <div className={`mt-4 h-64 w-full transition-opacity ${isPending ? "opacity-40" : ""}`}>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e6e6e6" />
