@@ -129,8 +129,9 @@ export async function getDashboardData(supabase: Client): Promise<DashboardData>
   const keywordMap = new Map((keywordsRes.data ?? []).map((k) => [k.id, k]));
   const competitorMap = new Map((competitorsRes.data ?? []).map((c) => [c.id, c]));
 
-  // KPI
-  const activeKeywordCount = keywordsRes.data?.length ?? 0;
+  // KPI: "활성 키워드"는 제외되지 않았고(is_excluded=false) 계정에서 여전히 ELIGIBLE인 것만 센다
+  // — 캠페인/광고그룹이 일시중지되면 에이전트가 status를 'REMOVED'로 바꿔주므로 그 값을 그대로 신뢰한다.
+  const activeKeywordCount = (keywordsRes.data ?? []).filter((k) => k.status === "ELIGIBLE").length;
   const ranks = (metricsLatestRes.data ?? [])
     .map((m) => m.our_rank)
     .filter((r): r is number => r != null);
