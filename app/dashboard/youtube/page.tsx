@@ -3,6 +3,7 @@ import { getChannelStats, getYoutubeVideos } from "@/lib/queries/youtube";
 import { YoutubeChannelStats } from "@/components/dashboard/YoutubeChannelStats";
 import { YoutubeVideoTable } from "@/components/dashboard/YoutubeVideoTable";
 import { MonitorDateRangeFilter } from "@/components/dashboard/MonitorDateRangeFilter";
+import { NavIcon } from "@/components/icons/NavIcon";
 
 type SearchParams = Promise<{ from?: string; to?: string }>;
 
@@ -17,7 +18,10 @@ export default async function YoutubePage({ searchParams }: { searchParams: Sear
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 p-6">
       <div>
-        <h1 className="text-xl font-bold tracking-tight text-primary">유튜브 채널 분석</h1>
+        <h1 className="flex items-center gap-2 text-xl font-bold tracking-tight text-primary">
+          <NavIcon name="play" className="h-5 w-5" />
+          유튜브 채널 분석
+        </h1>
         <p className="mt-1 text-sm text-ink-mute">
           에어패스 공식 유튜브 채널(
           <a

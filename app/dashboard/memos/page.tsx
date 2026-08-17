@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { getMemos } from "@/lib/queries/memos";
+import { NavIcon } from "@/components/icons/NavIcon";
 
 const CATEGORY_LABEL: Record<string, string> = {
   keyword: "키워드",
@@ -16,7 +17,10 @@ export default async function MemosPage() {
     <main className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-primary">광고전략메모</h1>
+          <h1 className="flex items-center gap-2 text-xl font-bold tracking-tight text-primary">
+            <NavIcon name="clipboard" className="h-5 w-5" />
+            광고전략메모
+          </h1>
           <p className="mt-1 text-sm text-ink-mute">키워드·블로그 운영 관련 논의와 결정을 기록합니다.</p>
         </div>
         <Link
