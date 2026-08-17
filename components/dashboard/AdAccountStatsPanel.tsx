@@ -68,8 +68,8 @@ export function AdAccountStatsPanel({ data }: { data: DashboardData["adAccountSt
     date: d.date.slice(5),
     노출수: d.impCnt,
     클릭수: d.clkCnt,
-    전환수: d.ccnt,
     평균CPC: d.cpc,
+    CPM: d.cpm,
   }));
 
   return (
@@ -156,15 +156,15 @@ export function AdAccountStatsPanel({ data }: { data: DashboardData["adAccountSt
               </p>
             </div>
             <div className="rounded-lg border border-hairline p-3">
-              <p className="text-xs font-bold uppercase tracking-wide text-[#1264a3]">총 전환수</p>
-              <p className="mt-1 text-2xl font-bold tracking-tight text-primary">
-                {data.totals.ccnt.toLocaleString("ko-KR")}
-              </p>
-            </div>
-            <div className="rounded-lg border border-hairline p-3">
               <p className="text-xs font-bold uppercase tracking-wide text-[#16a085]">평균 CPC</p>
               <p className="mt-1 text-2xl font-bold tracking-tight text-primary">
                 {data.totals.avgCpc.toLocaleString("ko-KR")}원
+              </p>
+            </div>
+            <div className="rounded-lg border border-hairline p-3">
+              <p className="text-xs font-bold uppercase tracking-wide text-[#1264a3]">평균 CPM</p>
+              <p className="mt-1 text-2xl font-bold tracking-tight text-primary">
+                {data.totals.avgCpm.toLocaleString("ko-KR")}원
               </p>
             </div>
           </div>
@@ -180,13 +180,13 @@ export function AdAccountStatsPanel({ data }: { data: DashboardData["adAccountSt
                     비교가 아니라 추이 모양을 보기 위한 차트). */}
                 <YAxis yAxisId="imp" hide domain={["auto", "auto"]} />
                 <YAxis yAxisId="clk" hide domain={["auto", "auto"]} />
-                <YAxis yAxisId="ccnt" hide domain={["auto", "auto"]} />
                 <YAxis yAxisId="cpc" hide domain={["auto", "auto"]} />
+                <YAxis yAxisId="cpm" hide domain={["auto", "auto"]} />
                 <Tooltip />
                 <Line yAxisId="imp" type="monotone" dataKey="노출수" stroke="#c0392b" strokeWidth={2} dot={{ r: 3 }} />
                 <Line yAxisId="clk" type="monotone" dataKey="클릭수" stroke="#d68910" strokeWidth={2} dot={{ r: 3 }} />
-                <Line yAxisId="ccnt" type="monotone" dataKey="전환수" stroke="#1264a3" strokeWidth={2} dot={{ r: 3 }} />
                 <Line yAxisId="cpc" type="monotone" dataKey="평균CPC" stroke="#16a085" strokeWidth={2} dot={{ r: 3 }} />
+                <Line yAxisId="cpm" type="monotone" dataKey="CPM" stroke="#1264a3" strokeWidth={2} dot={{ r: 3 }} />
               </LineChart>
             </ResponsiveContainer>
           </div>
