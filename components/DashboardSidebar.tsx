@@ -4,12 +4,12 @@ import Link, { useLinkStatus } from "next/link";
 import { usePathname } from "next/navigation";
 
 const ITEMS = [
-  { href: "/dashboard/keywords", label: "네이버키워드" },
-  { href: "/dashboard/blog", label: "네이버블로그" },
-  { href: "/dashboard/memos", label: "광고전략메모" },
-  { href: "/dashboard/news", label: "뉴스모니터링" },
-  { href: "/dashboard/budget", label: "공고모니터링" },
-  { href: "/dashboard/youtube", label: "유튜브채널분석" },
+  { href: "/dashboard/keywords", label: "네이버키워드", icon: "🔑" },
+  { href: "/dashboard/blog", label: "네이버블로그", icon: "📝" },
+  { href: "/dashboard/memos", label: "광고전략메모", icon: "🗒️" },
+  { href: "/dashboard/news", label: "뉴스모니터링", icon: "📰" },
+  { href: "/dashboard/budget", label: "공고모니터링", icon: "📢" },
+  { href: "/dashboard/youtube", label: "유튜브채널분석", icon: "▶️" },
 ];
 
 function NavSpinner() {
@@ -37,7 +37,10 @@ export function DashboardSidebar() {
                 : "text-ink-mute hover:bg-canvas-cream hover:text-ink"
             }`}
           >
-            {item.label}
+            <span className="flex items-center gap-2">
+              <span aria-hidden="true">{item.icon}</span>
+              {item.label}
+            </span>
             <NavSpinner />
           </Link>
         );
