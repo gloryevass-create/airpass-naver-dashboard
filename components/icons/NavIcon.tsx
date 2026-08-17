@@ -17,7 +17,10 @@ export type IconName =
   | "tag"
   | "paperclip"
   | "chat"
-  | "sparkle";
+  | "sparkle"
+  | "wallet"
+  | "shield"
+  | "logout";
 
 export function NavIcon({ name, ...props }: { name: IconName } & SVGProps<SVGSVGElement>) {
   const shared = {
@@ -137,6 +140,30 @@ export function NavIcon({ name, ...props }: { name: IconName } & SVGProps<SVGSVG
         <svg {...shared} {...props}>
           <path d="M12 3l1.6 4.9L18.5 9l-4.9 1.6L12 15.5l-1.6-4.9L5.5 9l4.9-1.6L12 3z" />
           <path d="M19 15.5l.6 1.9 1.9.6-1.9.6-.6 1.9-.6-1.9-1.9-.6 1.9-.6.6-1.9z" />
+        </svg>
+      );
+    case "wallet":
+      return (
+        <svg {...shared} {...props}>
+          <path d="M3 7.5A2.5 2.5 0 0 1 5.5 5H18a2 2 0 0 1 2 2v1" />
+          <path d="M3 7.5v9A2.5 2.5 0 0 0 5.5 19H19a1 1 0 0 0 1-1v-3.5" />
+          <rect x="14" y="10.5" width="6.5" height="5" rx="1" />
+          <circle cx="16.7" cy="13" r=".6" fill="currentColor" stroke="none" />
+        </svg>
+      );
+    case "shield":
+      return (
+        <svg {...shared} {...props}>
+          <path d="M12 3l7 3v5.5c0 4.5-3 7.7-7 9.5-4-1.8-7-5-7-9.5V6z" />
+          <path d="M9 12l2 2 4-4.5" />
+        </svg>
+      );
+    case "logout":
+      return (
+        <svg {...shared} {...props}>
+          <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3" />
+          <path d="M10 8l-4 4 4 4" />
+          <path d="M6 12h12" />
         </svg>
       );
   }

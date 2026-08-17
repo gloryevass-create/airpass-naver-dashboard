@@ -80,7 +80,8 @@ export function AdAccountStatsPanel({ data }: { data: DashboardData["adAccountSt
           <NavIcon name="chart" className="h-4 w-4" />
           광고 성과지표
         </h2>
-        <div className="rounded-lg bg-canvas-cream px-3 py-1.5 text-xs text-ink-mute">
+        <div className="flex items-center gap-1 rounded-lg bg-canvas-cream px-3 py-1.5 text-xs text-ink-mute">
+          <NavIcon name="wallet" className="h-3.5 w-3.5" />
           비즈머니 잔액{" "}
           <span className="font-bold text-primary">{formatWon(data.bizmoney)}</span>
           {data.latestDate && (

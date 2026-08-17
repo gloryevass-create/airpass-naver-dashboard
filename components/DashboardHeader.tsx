@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { NavIcon } from "@/components/icons/NavIcon";
 
 export function DashboardHeader({
   email,
@@ -34,14 +35,19 @@ export function DashboardHeader({
       <div className="flex items-center gap-4 text-sm">
         <span className="text-ink-mute">{email}</span>
         {isAdmin && (
-          <a href="/admin" className="text-link-blue hover:text-link-hover hover:underline">
+          <a
+            href="/admin"
+            className="flex items-center gap-1 text-link-blue hover:text-link-hover hover:underline"
+          >
+            <NavIcon name="shield" className="h-3.5 w-3.5" />
             관리자
           </a>
         )}
         <button
           onClick={handleSignOut}
-          className="text-link-blue hover:text-link-hover hover:underline"
+          className="flex items-center gap-1 text-link-blue hover:text-link-hover hover:underline"
         >
+          <NavIcon name="logout" className="h-3.5 w-3.5" />
           로그아웃
         </button>
       </div>
