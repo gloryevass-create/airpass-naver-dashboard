@@ -1,7 +1,9 @@
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { getNewsArticles } from "@/lib/queries/news";
 import { getMonitorKeywords } from "@/lib/queries/monitorKeywords";
+import { extractHotKeywords } from "@/lib/newsKeywordFrequency";
 import { NewsList } from "@/components/dashboard/NewsList";
+import { NewsHotKeywords } from "@/components/dashboard/NewsHotKeywords";
 import { MonitorDateRangeFilter } from "@/components/dashboard/MonitorDateRangeFilter";
 import { MonitorKeywordManager } from "@/components/dashboard/MonitorKeywordManager";
 
@@ -14,6 +16,7 @@ export default async function NewsPage({ searchParams }: { searchParams: SearchP
     getNewsArticles(supabase, { since: from, until: to }),
     getMonitorKeywords(supabase, "news"),
   ]);
+  const hotKeywords = extractHotKeywords(articles.map((a) => a.title));
 
   return (
     <main className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-6">
@@ -26,6 +29,7 @@ export default async function NewsPage({ searchParams }: { searchParams: SearchP
       </div>
       <MonitorKeywordManager track="news" keywords={keywords} path="/dashboard/news" />
       <MonitorDateRangeFilter basePath="/dashboard/news" range={range} resultCount={articles.length} />
+      <NewsHotKeywords keywords={hotKeywords} />
       <NewsList articles={articles} registeredKeywords={keywords.map((k) => k.keyword)} />
     </main>
   );
