@@ -52,6 +52,13 @@ export default async function MemoDetailPage({ params }: { params: Params }) {
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-6">
+      <Link
+        href="/dashboard/memos"
+        className="flex w-fit items-center gap-1 text-sm text-ink-mute hover:text-ink"
+      >
+        ← 목록으로
+      </Link>
+
       <div className="flex items-start justify-between gap-4">
         <div>
           <span className="inline-block rounded-full bg-canvas-lavender px-3 py-1 text-xs font-medium text-primary">
