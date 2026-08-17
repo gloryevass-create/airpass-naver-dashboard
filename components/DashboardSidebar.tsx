@@ -9,6 +9,7 @@ const ITEMS = [
   { href: "/dashboard/memos", label: "광고전략메모" },
   { href: "/dashboard/news", label: "뉴스모니터링" },
   { href: "/dashboard/budget", label: "공고모니터링" },
+  { href: "/dashboard/youtube", label: "유튜브채널분석" },
 ];
 
 function NavSpinner() {

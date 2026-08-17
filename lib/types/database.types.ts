@@ -576,6 +576,72 @@ export type Database = {
         };
         Relationships: [];
       };
+      youtube_channel_stats: {
+        Row: {
+          id: string;
+          date: string;
+          subscriber_count: number;
+          view_count: number;
+          video_count: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          date: string;
+          subscriber_count?: number;
+          view_count?: number;
+          video_count?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          date?: string;
+          subscriber_count?: number;
+          view_count?: number;
+          video_count?: number;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      youtube_videos: {
+        Row: {
+          id: string;
+          video_id: string;
+          title: string;
+          published_at: string | null;
+          view_count: number;
+          like_count: number;
+          comment_count: number;
+          duration_seconds: number | null;
+          thumbnail_url: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          video_id: string;
+          title: string;
+          published_at?: string | null;
+          view_count?: number;
+          like_count?: number;
+          comment_count?: number;
+          duration_seconds?: number | null;
+          thumbnail_url?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          video_id?: string;
+          title?: string;
+          published_at?: string | null;
+          view_count?: number;
+          like_count?: number;
+          comment_count?: number;
+          duration_seconds?: number | null;
+          thumbnail_url?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
