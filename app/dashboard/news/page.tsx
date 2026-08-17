@@ -1,10 +1,19 @@
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { getNewsArticles } from "@/lib/queries/news";
+import { getMonitorKeywords } from "@/lib/queries/monitorKeywords";
 import { NewsList } from "@/components/dashboard/NewsList";
+import { MonitorDateRangeFilter } from "@/components/dashboard/MonitorDateRangeFilter";
+import { MonitorKeywordManager } from "@/components/dashboard/MonitorKeywordManager";
 
-export default async function NewsPage() {
+type SearchParams = Promise<{ from?: string; to?: string }>;
+
+export default async function NewsPage({ searchParams }: { searchParams: SearchParams }) {
+  const { from, to } = await searchParams;
   const { supabase } = await requireAuthedClient();
-  const articles = await getNewsArticles(supabase);
+  const [{ articles, range }, keywords] = await Promise.all([
+    getNewsArticles(supabase, { since: from, until: to }),
+    getMonitorKeywords(supabase, "news"),
+  ]);
 
   return (
     <main className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-6">
@@ -15,6 +24,8 @@ export default async function NewsPage() {
           뉴스를 네이버 뉴스 검색 기반으로 모읍니다.
         </p>
       </div>
+      <MonitorKeywordManager track="news" keywords={keywords} path="/dashboard/news" />
+      <MonitorDateRangeFilter basePath="/dashboard/news" range={range} resultCount={articles.length} />
       <NewsList articles={articles} />
     </main>
   );
