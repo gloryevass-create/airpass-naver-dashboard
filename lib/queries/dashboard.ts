@@ -301,7 +301,7 @@ export async function getDashboardData(
     );
   }
 
-  // 포스팅 주기
+  // 포스팅 주기 — 에어패스 자체 블로그를 맨 위로, 나머지는 이름순
   const cadence = (cadenceRes.data ?? [])
     .map((row) => ({
       competitorId: row.competitor_id,
@@ -311,7 +311,11 @@ export async function getDashboardData(
       postCount30d: row.post_count_30d,
       totalPostCount: totalPostCountByCompetitor.get(row.competitor_id) ?? 0,
     }))
-    .sort((a, b) => a.competitorName.localeCompare(b.competitorName));
+    .sort((a, b) => {
+      if (a.competitorName === "에어패스") return -1;
+      if (b.competitorName === "에어패스") return 1;
+      return a.competitorName.localeCompare(b.competitorName);
+    });
 
   const alerts = (alertsRes.data ?? []).map((a) => ({
     id: a.id,

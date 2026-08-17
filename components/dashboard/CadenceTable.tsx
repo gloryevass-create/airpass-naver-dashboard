@@ -14,17 +14,27 @@ export function CadenceTable({ data }: { data: DashboardData["cadence"] }) {
           </tr>
         </thead>
         <tbody>
-          {data.map((row) => (
-            <tr key={row.competitorId} className="border-t border-hairline">
-              <td className="px-4 py-2">{row.competitorName}</td>
-              <td className="px-4 py-2">
-                {row.avgIntervalDays != null ? `${row.avgIntervalDays}일` : "-"}
-              </td>
-              <td className="px-4 py-2">{row.lastPostAt ?? "-"}</td>
-              <td className="px-4 py-2">{row.postCount30d ?? "-"}</td>
-              <td className="px-4 py-2">{row.totalPostCount.toLocaleString("ko-KR")}</td>
-            </tr>
-          ))}
+          {data.map((row) => {
+            const isAirpass = row.competitorName === "에어패스";
+            return (
+              <tr
+                key={row.competitorId}
+                className={`border-t border-hairline ${
+                  isAirpass ? "relative ring-1 ring-inset ring-primary" : ""
+                }`}
+              >
+                <td className={`px-4 py-2 ${isAirpass ? "font-semibold text-primary" : ""}`}>
+                  {row.competitorName}
+                </td>
+                <td className="px-4 py-2">
+                  {row.avgIntervalDays != null ? `${row.avgIntervalDays}일` : "-"}
+                </td>
+                <td className="px-4 py-2">{row.lastPostAt ?? "-"}</td>
+                <td className="px-4 py-2">{row.postCount30d ?? "-"}</td>
+                <td className="px-4 py-2">{row.totalPostCount.toLocaleString("ko-KR")}</td>
+              </tr>
+            );
+          })}
           {data.length === 0 && (
             <tr>
               <td colSpan={5} className="px-4 py-6 text-center text-ink-mute">
