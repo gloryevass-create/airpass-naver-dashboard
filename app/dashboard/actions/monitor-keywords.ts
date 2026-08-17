@@ -2,9 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { requireAuthedClient } from "@/lib/supabase/authed";
+import { backfillMonitorKeyword } from "@/lib/server/keywordBackfill";
 import type { MonitorTrack } from "@/lib/queries/monitorKeywords";
 
-export type AddKeywordState = { error?: string } | undefined;
+export type AddKeywordState = { error?: string; success?: string } | undefined;
 
 export async function addMonitorKeyword(
   track: MonitorTrack,
@@ -24,7 +25,19 @@ export async function addMonitorKeyword(
   }
 
   revalidatePath(path);
-  return undefined;
+
+  // 키워드는 이미 등록됐으니, 즉시 수집이 실패하더라도 등록 자체는 실패로 보지 않는다
+  // (다음 날 정기 파이프라인이 대신 채워준다) — 대신 경고 메시지로 알려준다.
+  try {
+    const { count } = await backfillMonitorKeyword(track, keyword);
+    revalidatePath(path);
+    return { success: `"${keyword}" 등록 완료 — 지금 바로 ${count}건 수집했습니다.` };
+  } catch (e) {
+    return {
+      success: `"${keyword}" 등록 완료.`,
+      error: `다만 즉시 수집에는 실패했습니다(내일 자동 수집 시 다시 시도됩니다): ${(e as Error).message}`,
+    };
+  }
 }
 
 // formData는 폼 action 시그니처를 맞추기 위해서만 받는다(내용은 쓰지 않음).

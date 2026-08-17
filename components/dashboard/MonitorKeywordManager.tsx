@@ -71,9 +71,10 @@ export function MonitorKeywordManager({
             disabled={pending}
             className="rounded-full bg-primary px-4 py-1.5 text-sm font-bold text-white hover:bg-primary-press disabled:opacity-50"
           >
-            {pending ? "추가 중..." : "추가"}
+            {pending ? "추가 및 수집 중..." : "추가"}
           </button>
         </form>
+        {state?.success && <p className="text-sm text-semantic-success">{state.success}</p>}
         {state?.error && <p className="text-sm text-semantic-error">{state.error}</p>}
       </div>
     </details>
