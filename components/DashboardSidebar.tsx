@@ -7,6 +7,7 @@ const ITEMS = [
   { href: "/dashboard/keywords", label: "네이버키워드" },
   { href: "/dashboard/blog", label: "네이버블로그" },
   { href: "/dashboard/memos", label: "광고전략메모" },
+  { href: "/dashboard/news", label: "뉴스모니터링" },
 ];
 
 function NavSpinner() {
