@@ -76,6 +76,7 @@ export type DashboardData = {
   cadence: {
     competitorId: string;
     competitorName: string;
+    blogId: string | null;
     avgIntervalDays: number | null;
     lastPostAt: string | null;
     postCount30d: number | null;
@@ -306,6 +307,7 @@ export async function getDashboardData(
     .map((row) => ({
       competitorId: row.competitor_id,
       competitorName: competitorMap.get(row.competitor_id)?.name ?? "(알 수 없는 채널)",
+      blogId: competitorMap.get(row.competitor_id)?.blog_id ?? null,
       avgIntervalDays: row.avg_interval_days != null ? Number(row.avg_interval_days) : null,
       lastPostAt: row.last_post_at,
       postCount30d: row.post_count_30d,

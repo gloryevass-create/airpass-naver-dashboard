@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { DashboardData } from "@/lib/queries/dashboard";
+import { naverSearchUrl } from "@/lib/naverLinks";
 
 type Row = DashboardData["keywordTable"][number];
 type SortKey = "keyword" | "ourRank" | "avgCpc" | "totalSearch" | "competitionLevel";
@@ -108,7 +109,16 @@ export function KeywordTable({ data }: { data: Row[] }) {
             {visible.map((row, i) => (
               <tr key={row.keywordId} className="border-t border-hairline">
                 <td className="px-4 py-2 text-ink-mute">{i + 1}</td>
-                <td className="px-4 py-2">{row.keyword}</td>
+                <td className="px-4 py-2">
+                  <a
+                    href={naverSearchUrl(row.keyword)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-link-blue hover:underline"
+                  >
+                    {row.keyword}
+                  </a>
+                </td>
                 <td className="px-4 py-2">{row.ourRank ?? "-"}</td>
                 <td className="px-4 py-2">
                   {row.avgCpc != null ? `${row.avgCpc.toLocaleString("ko-KR")}원` : "-"}

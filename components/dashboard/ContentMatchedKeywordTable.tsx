@@ -1,4 +1,5 @@
 import type { DashboardData } from "@/lib/queries/dashboard";
+import { naverSearchUrl } from "@/lib/naverLinks";
 
 function formatClicks(pc: number | null, mobile: number | null) {
   if (pc == null && mobile == null) return "-";
@@ -25,7 +26,16 @@ export function ContentMatchedKeywordTable({
         <tbody>
           {data.map((row) => (
             <tr key={row.keywordId} className="border-t border-hairline">
-              <td className="px-4 py-2">{row.keyword}</td>
+              <td className="px-4 py-2">
+                <a
+                  href={naverSearchUrl(row.keyword)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-link-blue hover:underline"
+                >
+                  {row.keyword}
+                </a>
+              </td>
               <td className="px-4 py-2">
                 {((row.monthlySearchPc ?? 0) + (row.monthlySearchMobile ?? 0)).toLocaleString(
                   "ko-KR"

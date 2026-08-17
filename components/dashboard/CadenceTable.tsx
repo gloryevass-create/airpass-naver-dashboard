@@ -1,4 +1,5 @@
 import type { DashboardData } from "@/lib/queries/dashboard";
+import { naverBlogUrl } from "@/lib/naverLinks";
 
 export function CadenceTable({ data }: { data: DashboardData["cadence"] }) {
   return (
@@ -24,7 +25,18 @@ export function CadenceTable({ data }: { data: DashboardData["cadence"] }) {
                 }`}
               >
                 <td className={`px-4 py-2 ${isAirpass ? "font-semibold text-primary" : ""}`}>
-                  {row.competitorName}
+                  {row.blogId ? (
+                    <a
+                      href={naverBlogUrl(row.blogId)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:underline"
+                    >
+                      {row.competitorName}
+                    </a>
+                  ) : (
+                    row.competitorName
+                  )}
                 </td>
                 <td className="px-4 py-2">
                   {row.avgIntervalDays != null ? `${row.avgIntervalDays}일` : "-"}
