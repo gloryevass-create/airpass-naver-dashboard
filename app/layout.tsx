@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "에어패스 네이버 마케팅 모니터링",
+  title: "AIRPASS MAKETING AGNENT",
   description: "에어패스 네이버 키워드광고·블로그 경쟁사 모니터링 대시보드",
 };
 
