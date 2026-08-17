@@ -69,6 +69,7 @@ export function AdAccountStatsPanel({ data }: { data: DashboardData["adAccountSt
     노출수: d.impCnt,
     클릭수: d.clkCnt,
     전환수: d.ccnt,
+    평균CPC: d.cpc,
   }));
 
   return (
@@ -140,7 +141,7 @@ export function AdAccountStatsPanel({ data }: { data: DashboardData["adAccountSt
       ) : (
         <>
           <div
-            className={`grid grid-cols-1 gap-4 transition-opacity sm:grid-cols-3 ${isPending ? "opacity-40" : ""}`}
+            className={`grid grid-cols-2 gap-4 transition-opacity sm:grid-cols-4 ${isPending ? "opacity-40" : ""}`}
           >
             <div className="rounded-lg border border-hairline p-3">
               <p className="text-xs font-bold uppercase tracking-wide text-[#c0392b]">총 노출수</p>
@@ -160,6 +161,12 @@ export function AdAccountStatsPanel({ data }: { data: DashboardData["adAccountSt
                 {data.totals.ccnt.toLocaleString("ko-KR")}
               </p>
             </div>
+            <div className="rounded-lg border border-hairline p-3">
+              <p className="text-xs font-bold uppercase tracking-wide text-[#16a085]">평균 CPC</p>
+              <p className="mt-1 text-2xl font-bold tracking-tight text-primary">
+                {data.totals.avgCpc.toLocaleString("ko-KR")}원
+              </p>
+            </div>
           </div>
 
           <div className={`mt-4 h-64 w-full transition-opacity ${isPending ? "opacity-40" : ""}`}>
@@ -167,11 +174,19 @@ export function AdAccountStatsPanel({ data }: { data: DashboardData["adAccountSt
               <LineChart data={chartData} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e6e6e6" />
                 <XAxis dataKey="date" fontSize={12} stroke="#696969" />
-                <YAxis fontSize={12} stroke="#696969" width={40} allowDecimals={false} />
+                {/* 지표마다 값의 규모 차이가 커서(노출수는 수천, 클릭수는 수십) 하나의
+                    세로축을 공유하면 작은 값의 선이 바닥에 붙어 모양이 안 보인다 — 지표별로
+                    숨긴 축을 따로 둬서 각자 자기 범위에 맞게 꽉 차게 그려지도록 한다(단위
+                    비교가 아니라 추이 모양을 보기 위한 차트). */}
+                <YAxis yAxisId="imp" hide domain={["auto", "auto"]} />
+                <YAxis yAxisId="clk" hide domain={["auto", "auto"]} />
+                <YAxis yAxisId="ccnt" hide domain={["auto", "auto"]} />
+                <YAxis yAxisId="cpc" hide domain={["auto", "auto"]} />
                 <Tooltip />
-                <Line type="monotone" dataKey="노출수" stroke="#c0392b" strokeWidth={2} dot={{ r: 3 }} />
-                <Line type="monotone" dataKey="클릭수" stroke="#d68910" strokeWidth={2} dot={{ r: 3 }} />
-                <Line type="monotone" dataKey="전환수" stroke="#1264a3" strokeWidth={2} dot={{ r: 3 }} />
+                <Line yAxisId="imp" type="monotone" dataKey="노출수" stroke="#c0392b" strokeWidth={2} dot={{ r: 3 }} />
+                <Line yAxisId="clk" type="monotone" dataKey="클릭수" stroke="#d68910" strokeWidth={2} dot={{ r: 3 }} />
+                <Line yAxisId="ccnt" type="monotone" dataKey="전환수" stroke="#1264a3" strokeWidth={2} dot={{ r: 3 }} />
+                <Line yAxisId="cpc" type="monotone" dataKey="평균CPC" stroke="#16a085" strokeWidth={2} dot={{ r: 3 }} />
               </LineChart>
             </ResponsiveContainer>
           </div>

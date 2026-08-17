@@ -45,8 +45,8 @@ export type DashboardData = {
   adAccountStats: {
     latestDate: string | null;
     bizmoney: number | null;
-    totals: { impCnt: number; clkCnt: number; ccnt: number };
-    trend: { date: string; impCnt: number; clkCnt: number; ccnt: number }[];
+    totals: { impCnt: number; clkCnt: number; ccnt: number; avgCpc: number };
+    trend: { date: string; impCnt: number; clkCnt: number; ccnt: number; cpc: number }[];
     range: { since: string; until: string };
   };
   rankTrend: { date: string; avgRank: number | null }[];
@@ -103,7 +103,7 @@ const EMPTY: DashboardData = {
   adAccountStats: {
     latestDate: null,
     bizmoney: null,
-    totals: { impCnt: 0, clkCnt: 0, ccnt: 0 },
+    totals: { impCnt: 0, clkCnt: 0, ccnt: 0, avgCpc: 0 },
     trend: [],
     range: { since: "", until: "" },
   },
@@ -342,15 +342,25 @@ export async function getDashboardData(
     impCnt: r.imp_cnt,
     clkCnt: r.clk_cnt,
     ccnt: r.ccnt,
+    cpc: r.cpc != null ? Number(r.cpc) : 0,
   }));
-  const accountTotals = accountTrend.reduce(
+  const accountSums = accountStatsRows.reduce(
     (acc, r) => ({
-      impCnt: acc.impCnt + r.impCnt,
-      clkCnt: acc.clkCnt + r.clkCnt,
+      impCnt: acc.impCnt + r.imp_cnt,
+      clkCnt: acc.clkCnt + r.clk_cnt,
       ccnt: acc.ccnt + r.ccnt,
+      salesAmt: acc.salesAmt + Number(r.sales_amt),
     }),
-    { impCnt: 0, clkCnt: 0, ccnt: 0 }
+    { impCnt: 0, clkCnt: 0, ccnt: 0, salesAmt: 0 }
   );
+  const accountTotals = {
+    impCnt: accountSums.impCnt,
+    clkCnt: accountSums.clkCnt,
+    ccnt: accountSums.ccnt,
+    // 일별 평균 CPC를 다시 평균 내면 클릭이 적은 날의 왜곡이 커지므로, 기간 전체
+    // 지출액/클릭수로 다시 계산한다(진짜 가중평균).
+    avgCpc: accountSums.clkCnt > 0 ? Math.round((accountSums.salesAmt / accountSums.clkCnt) * 100) / 100 : 0,
+  };
   const adAccountStats: DashboardData["adAccountStats"] = {
     latestDate: latestBizmoneyRes.data?.date ?? latestAccountStatsDate,
     bizmoney: latestBizmoneyRes.data?.bizmoney != null ? Number(latestBizmoneyRes.data.bizmoney) : null,
