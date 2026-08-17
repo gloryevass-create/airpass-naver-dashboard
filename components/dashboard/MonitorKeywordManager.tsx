@@ -7,6 +7,7 @@ import {
   type AddKeywordState,
 } from "@/app/dashboard/actions/monitor-keywords";
 import type { MonitorKeyword, MonitorTrack } from "@/lib/queries/monitorKeywords";
+import { NavIcon } from "@/components/icons/NavIcon";
 
 const initialState: AddKeywordState = undefined;
 
@@ -38,7 +39,8 @@ export function MonitorKeywordManager({
 
   return (
     <details className="rounded-xl border border-hairline p-4">
-      <summary className="cursor-pointer text-sm font-semibold text-ink-mute">
+      <summary className="flex cursor-pointer items-center gap-1.5 text-sm font-semibold text-ink-mute">
+        <NavIcon name="tag" className="h-4 w-4" />
         검색 키워드 관리 ({keywords.length}개)
       </summary>
 

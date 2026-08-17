@@ -4,6 +4,7 @@ import { SovChart } from "@/components/dashboard/SovChart";
 import { CadenceTable } from "@/components/dashboard/CadenceTable";
 import { ContentMatchedKeywordTable } from "@/components/dashboard/ContentMatchedKeywordTable";
 import { ReportsList } from "@/components/dashboard/ReportsList";
+import { NavIcon } from "@/components/icons/NavIcon";
 
 export default async function BlogPage() {
   const { supabase } = await requireAuthedClient();
@@ -22,13 +23,17 @@ export default async function BlogPage() {
 
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="rounded-xl border border-hairline p-4">
-          <h2 className="mb-3 text-sm font-semibold text-ink-mute">
+          <h2 className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-ink-mute">
+            <NavIcon name="pie" className="h-4 w-4" />
             블로그 노출 점유율 (SOV)
           </h2>
           <SovChart data={dashboard.sov} />
         </div>
         <div className="rounded-xl border border-hairline p-4">
-          <h2 className="mb-3 text-sm font-semibold text-ink-mute">블로그 포스팅 주기</h2>
+          <h2 className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-ink-mute">
+            <NavIcon name="calendar" className="h-4 w-4" />
+            블로그 포스팅 주기
+          </h2>
           <CadenceTable data={dashboard.cadence} />
           <p className="mt-2 text-[11px] text-ink-mute">
             * 에어패스 자체 블로그를 포함합니다. 총 게시물 수는 모니터링을 시작한 이후 누적
@@ -38,7 +43,8 @@ export default async function BlogPage() {
       </section>
 
       <section>
-        <h2 className="mb-3 text-sm font-semibold text-ink-mute">
+        <h2 className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-ink-mute">
+          <NavIcon name="tag" className="h-4 w-4" />
           콘텐츠 매칭 키워드 (경쟁사 게시물과 겹치는 주요 키워드 TOP 20)
         </h2>
         <ContentMatchedKeywordTable data={dashboard.contentMatchedKeywords} />
@@ -51,7 +57,10 @@ export default async function BlogPage() {
       </section>
 
       <section>
-        <h2 className="mb-3 text-sm font-semibold text-ink-mute">최근 리포트</h2>
+        <h2 className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-ink-mute">
+          <NavIcon name="document" className="h-4 w-4" />
+          최근 리포트
+        </h2>
         <ReportsList data={blogReports} />
       </section>
     </main>

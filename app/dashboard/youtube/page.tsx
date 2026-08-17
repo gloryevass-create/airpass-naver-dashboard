@@ -45,7 +45,10 @@ export default async function YoutubePage({ searchParams }: { searchParams: Sear
       <YoutubeChannelStats data={channelStats} />
 
       <section>
-        <h2 className="mb-3 text-sm font-semibold text-ink-mute">영상별 성과</h2>
+        <h2 className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-ink-mute">
+          <NavIcon name="list" className="h-4 w-4" />
+          영상별 성과
+        </h2>
         <YoutubeVideoTable videos={videos} />
       </section>
     </main>

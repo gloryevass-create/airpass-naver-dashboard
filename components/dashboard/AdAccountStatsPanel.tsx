@@ -12,6 +12,7 @@ import {
   YAxis,
 } from "recharts";
 import type { DashboardData } from "@/lib/queries/dashboard";
+import { NavIcon } from "@/components/icons/NavIcon";
 
 function formatWon(value: number | null) {
   if (value == null) return "-";
@@ -75,7 +76,10 @@ export function AdAccountStatsPanel({ data }: { data: DashboardData["adAccountSt
   return (
     <div className="rounded-xl border border-hairline p-4">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-sm font-semibold text-ink-mute">광고 성과지표</h2>
+        <h2 className="flex items-center gap-1.5 text-sm font-semibold text-ink-mute">
+          <NavIcon name="chart" className="h-4 w-4" />
+          광고 성과지표
+        </h2>
         <div className="rounded-lg bg-canvas-cream px-3 py-1.5 text-xs text-ink-mute">
           비즈머니 잔액{" "}
           <span className="font-bold text-primary">{formatWon(data.bizmoney)}</span>

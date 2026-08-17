@@ -5,6 +5,7 @@ import { getMemoDetail } from "@/lib/queries/memos";
 import { MemoCommentForm } from "@/components/MemoCommentForm";
 import { DeleteMemoButton } from "@/components/DeleteMemoButton";
 import { deleteMemo } from "@/app/dashboard/memos/actions";
+import { NavIcon } from "@/components/icons/NavIcon";
 
 const CATEGORY_LABEL: Record<string, string> = {
   keyword: "키워드",
@@ -88,7 +89,10 @@ export default async function MemoDetailPage({ params }: { params: Params }) {
 
       {attachmentsWithUrl.length > 0 && (
         <div>
-          <h2 className="mb-2 text-sm font-semibold text-ink-mute">첨부파일</h2>
+          <h2 className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-ink-mute">
+            <NavIcon name="paperclip" className="h-4 w-4" />
+            첨부파일
+          </h2>
           <ul className="flex flex-col gap-1">
             {attachmentsWithUrl.map((a) => (
               <li key={a.id} className="text-sm">
@@ -107,7 +111,8 @@ export default async function MemoDetailPage({ params }: { params: Params }) {
       )}
 
       <div>
-        <h2 className="mb-3 text-sm font-semibold text-ink-mute">
+        <h2 className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-ink-mute">
+          <NavIcon name="chat" className="h-4 w-4" />
           댓글 {memo.comments.length > 0 && `(${memo.comments.length})`}
         </h2>
         <ul className="mb-4 flex flex-col gap-3">

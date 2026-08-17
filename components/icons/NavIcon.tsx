@@ -2,7 +2,22 @@ import type { SVGProps } from "react";
 
 // 서버/클라이언트 컴포넌트 어디서든 그대로 쓸 수 있도록 훅 없이 순수 렌더 함수로 둔다
 // (사이드바 메뉴 아이콘과 각 페이지 제목 아이콘이 이 파일을 함께 쓴다).
-export type IconName = "search" | "document" | "clipboard" | "newspaper" | "megaphone" | "play";
+export type IconName =
+  | "search"
+  | "document"
+  | "clipboard"
+  | "newspaper"
+  | "megaphone"
+  | "play"
+  | "chart"
+  | "list"
+  | "alert"
+  | "pie"
+  | "calendar"
+  | "tag"
+  | "paperclip"
+  | "chat"
+  | "sparkle";
 
 export function NavIcon({ name, ...props }: { name: IconName } & SVGProps<SVGSVGElement>) {
   const shared = {
@@ -59,6 +74,69 @@ export function NavIcon({ name, ...props }: { name: IconName } & SVGProps<SVGSVG
         <svg {...shared} {...props}>
           <circle cx="12" cy="12" r="9" />
           <path d="M10 8.5l6 3.5-6 3.5v-7z" fill="currentColor" stroke="none" />
+        </svg>
+      );
+    case "chart":
+      return (
+        <svg {...shared} {...props}>
+          <path d="M3 20h18" />
+          <path d="M4 16l5-5 4 4 7-8" />
+          <path d="M15 7h5v5" />
+        </svg>
+      );
+    case "list":
+      return (
+        <svg {...shared} {...props}>
+          <path d="M8 6h13M8 12h13M8 18h13" />
+          <path d="M3.5 6h.01M3.5 12h.01M3.5 18h.01" />
+        </svg>
+      );
+    case "alert":
+      return (
+        <svg {...shared} {...props}>
+          <path d="M10.4 3.9L2.9 17.5a1.3 1.3 0 0 0 1.1 2h16a1.3 1.3 0 0 0 1.1-2L13.6 3.9a1.3 1.3 0 0 0-2.2 0z" />
+          <path d="M12 10v3.5" />
+          <path d="M12 17h.01" />
+        </svg>
+      );
+    case "pie":
+      return (
+        <svg {...shared} {...props}>
+          <path d="M21 12A9 9 0 1 1 12 3v9h9z" />
+        </svg>
+      );
+    case "calendar":
+      return (
+        <svg {...shared} {...props}>
+          <rect x="3" y="5" width="18" height="16" rx="2" />
+          <path d="M3 9.5h18" />
+          <path d="M8 3v4M16 3v4" />
+        </svg>
+      );
+    case "tag":
+      return (
+        <svg {...shared} {...props}>
+          <path d="M20.4 12.6L12 21a1.3 1.3 0 0 1-1.9 0l-6.9-6.9a1.3 1.3 0 0 1 0-1.9L11.6 3.6a1.3 1.3 0 0 1 .9-.4H19a1.3 1.3 0 0 1 1.3 1.3v6.5a1.3 1.3 0 0 1-.4.9z" />
+          <circle cx="15.5" cy="7.5" r="1.1" fill="currentColor" stroke="none" />
+        </svg>
+      );
+    case "paperclip":
+      return (
+        <svg {...shared} {...props}>
+          <path d="M14.5 6.5L7.9 13a2.5 2.5 0 0 0 3.5 3.5l7-7a4.2 4.2 0 0 0-6-6l-7 7a6 6 0 0 0 8.5 8.5" />
+        </svg>
+      );
+    case "chat":
+      return (
+        <svg {...shared} {...props}>
+          <path d="M20.5 11.5a8 8 0 0 1-8 8 8.4 8.4 0 0 1-3.6-.8L4 20l1.3-4.5a8 8 0 0 1-.8-3.5 8 8 0 0 1 8-8h.5a8 8 0 0 1 7.5 7.5z" />
+        </svg>
+      );
+    case "sparkle":
+      return (
+        <svg {...shared} {...props}>
+          <path d="M12 3l1.6 4.9L18.5 9l-4.9 1.6L12 15.5l-1.6-4.9L5.5 9l4.9-1.6L12 3z" />
+          <path d="M19 15.5l.6 1.9 1.9.6-1.9.6-.6 1.9-.6-1.9-1.9-.6 1.9-.6.6-1.9z" />
         </svg>
       );
   }

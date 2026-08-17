@@ -1,4 +1,5 @@
 import type { HotKeyword } from "@/lib/newsKeywordFrequency";
+import { NavIcon } from "@/components/icons/NavIcon";
 
 function sizeClass(rank: number): string {
   if (rank < 3) return "text-base font-bold";
@@ -9,7 +10,10 @@ function sizeClass(rank: number): string {
 export function NewsHotKeywords({ keywords }: { keywords: HotKeyword[] }) {
   return (
     <div className="rounded-xl border border-hairline p-4">
-      <h2 className="mb-1 text-sm font-semibold text-ink-mute">AI 분석 핫 키워드</h2>
+      <h2 className="mb-1 flex items-center gap-1.5 text-sm font-semibold text-ink-mute">
+        <NavIcon name="sparkle" className="h-4 w-4" />
+        AI 분석 핫 키워드
+      </h2>
       <p className="mb-3 text-xs text-ink-mute">
         조회 기간에 수집된 뉴스 제목에서 자주 등장한 단어를 빈도순으로 뽑았습니다.
       </p>

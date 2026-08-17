@@ -7,6 +7,7 @@ import { HotKeywordTreemap } from "@/components/dashboard/HotKeywordTreemap";
 import { KeywordTable } from "@/components/dashboard/KeywordTable";
 import { AlertsList } from "@/components/dashboard/AlertsList";
 import { ReportsList } from "@/components/dashboard/ReportsList";
+import { NavIcon } from "@/components/icons/NavIcon";
 
 type SearchParams = Promise<{ statsFrom?: string; statsTo?: string }>;
 
@@ -35,7 +36,8 @@ export default async function KeywordsPage({ searchParams }: { searchParams: Sea
 
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="rounded-xl border border-hairline p-4">
-          <h2 className="mb-3 text-sm font-semibold text-ink-mute">
+          <h2 className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-ink-mute">
+            <NavIcon name="chart" className="h-4 w-4" />
             키워드 평균 노출순위 추이 (최근 14일)
           </h2>
           <RankTrendChart data={dashboard.rankTrend} />
@@ -46,17 +48,26 @@ export default async function KeywordsPage({ searchParams }: { searchParams: Sea
       </section>
 
       <section>
-        <h2 className="mb-3 text-sm font-semibold text-ink-mute">키워드별 상세</h2>
+        <h2 className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-ink-mute">
+          <NavIcon name="list" className="h-4 w-4" />
+          키워드별 상세
+        </h2>
         <KeywordTable data={dashboard.keywordTable} />
       </section>
 
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div>
-          <h2 className="mb-3 text-sm font-semibold text-ink-mute">이상 징후 알림</h2>
+          <h2 className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-ink-mute">
+            <NavIcon name="alert" className="h-4 w-4" />
+            이상 징후 알림
+          </h2>
           <AlertsList data={dashboard.alerts} />
         </div>
         <div>
-          <h2 className="mb-3 text-sm font-semibold text-ink-mute">최근 리포트</h2>
+          <h2 className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-ink-mute">
+            <NavIcon name="document" className="h-4 w-4" />
+            최근 리포트
+          </h2>
           <ReportsList data={keywordReports} />
         </div>
       </section>
