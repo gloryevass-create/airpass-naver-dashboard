@@ -26,7 +26,7 @@ export default async function BudgetPage({ searchParams }: { searchParams: Searc
       </div>
       <MonitorKeywordManager track="budget" keywords={keywords} path="/dashboard/budget" />
       <MonitorDateRangeFilter basePath="/dashboard/budget" range={range} resultCount={bids.length} />
-      <BudgetBidList bids={bids} />
+      <BudgetBidList bids={bids} registeredKeywords={keywords.map((k) => k.keyword)} />
     </main>
   );
 }

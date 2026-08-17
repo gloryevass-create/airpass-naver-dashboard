@@ -22,19 +22,28 @@ function sourceDomain(link: string) {
   }
 }
 
-export function NewsList({ articles }: { articles: NewsArticle[] }) {
+export function NewsList({
+  articles,
+  registeredKeywords,
+}: {
+  articles: NewsArticle[];
+  registeredKeywords: string[];
+}) {
+  // 등록된 키워드는 이번 조회 기간에 매칭된 기사가 0건이어도 항상 탭에 보여야 한다 —
+  // 그렇지 않으면 "키워드를 등록했는데 화면에 아무 흔적이 없다"는 혼란이 생긴다. 데이터에만
+  // 있고 목록에서 삭제된 키워드도(과거 기록이니) 계속 보여준다.
   const keywords = useMemo(() => {
-    const set = new Set(articles.map((a) => a.keyword));
-    return ["전체", ...Array.from(set)];
-  }, [articles]);
+    const set = new Set([...registeredKeywords, ...articles.map((a) => a.keyword)]);
+    return ["전체", ...Array.from(set).sort()];
+  }, [registeredKeywords, articles]);
   const [filter, setFilter] = useState("전체");
 
   const filtered = filter === "전체" ? articles : articles.filter((a) => a.keyword === filter);
 
-  if (articles.length === 0) {
+  if (keywords.length <= 1) {
     return (
       <div className="rounded-xl border border-hairline p-6 text-center text-sm text-ink-mute">
-        아직 수집된 뉴스가 없습니다.
+        등록된 검색 키워드가 없습니다. 위에서 키워드를 추가해 주세요.
       </div>
     );
   }
@@ -83,7 +92,11 @@ export function NewsList({ articles }: { articles: NewsArticle[] }) {
           </li>
         ))}
         {filtered.length === 0 && (
-          <li className="py-6 text-center text-sm text-ink-mute">해당 키워드의 뉴스가 없습니다.</li>
+          <li className="py-6 text-center text-sm text-ink-mute">
+            {filter === "전체"
+              ? "선택한 기간에 수집된 뉴스가 없습니다."
+              : `"${filter}" 키워드로 수집된 뉴스가 없습니다(다음 자동 수집 때 다시 시도합니다).`}
+          </li>
         )}
       </ul>
     </div>

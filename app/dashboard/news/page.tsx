@@ -26,7 +26,7 @@ export default async function NewsPage({ searchParams }: { searchParams: SearchP
       </div>
       <MonitorKeywordManager track="news" keywords={keywords} path="/dashboard/news" />
       <MonitorDateRangeFilter basePath="/dashboard/news" range={range} resultCount={articles.length} />
-      <NewsList articles={articles} />
+      <NewsList articles={articles} registeredKeywords={keywords.map((k) => k.keyword)} />
     </main>
   );
 }

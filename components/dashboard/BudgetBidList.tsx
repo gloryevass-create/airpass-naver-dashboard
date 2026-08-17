@@ -19,19 +19,28 @@ function formatWon(amount: number | null) {
   return `${Math.round(amount).toLocaleString("ko-KR")}원`;
 }
 
-export function BudgetBidList({ bids }: { bids: BudgetBid[] }) {
+export function BudgetBidList({
+  bids,
+  registeredKeywords,
+}: {
+  bids: BudgetBid[];
+  registeredKeywords: string[];
+}) {
+  // 등록된 키워드는 이번 조회 기간에 매칭된 공고가 0건이어도 항상 탭에 보여야 한다 —
+  // 그렇지 않으면 "키워드를 등록했는데 화면에 아무 흔적이 없다"는 혼란이 생긴다. 데이터에만
+  // 있고 목록에서 삭제된 키워드도(과거 기록이니) 계속 보여준다.
   const keywords = useMemo(() => {
-    const set = new Set(bids.map((b) => b.keyword));
-    return ["전체", ...Array.from(set)];
-  }, [bids]);
+    const set = new Set([...registeredKeywords, ...bids.map((b) => b.keyword)]);
+    return ["전체", ...Array.from(set).sort()];
+  }, [registeredKeywords, bids]);
   const [filter, setFilter] = useState("전체");
 
   const filtered = filter === "전체" ? bids : bids.filter((b) => b.keyword === filter);
 
-  if (bids.length === 0) {
+  if (keywords.length <= 1) {
     return (
       <div className="rounded-xl border border-hairline p-6 text-center text-sm text-ink-mute">
-        아직 수집된 입찰공고가 없습니다.
+        등록된 검색 키워드가 없습니다. 위에서 키워드를 추가해 주세요.
       </div>
     );
   }
@@ -101,7 +110,9 @@ export function BudgetBidList({ bids }: { bids: BudgetBid[] }) {
             {filtered.length === 0 && (
               <tr>
                 <td colSpan={6} className="px-4 py-6 text-center text-ink-mute">
-                  해당 키워드의 입찰공고가 없습니다.
+                  {filter === "전체"
+                    ? "선택한 기간에 수집된 입찰공고가 없습니다."
+                    : `"${filter}" 키워드로 수집된 입찰공고가 없습니다(다음 자동 수집 때 다시 시도합니다).`}
                 </td>
               </tr>
             )}
