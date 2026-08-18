@@ -852,6 +852,45 @@ export type Database = {
         };
         Relationships: [];
       };
+      disability_sports_facilities: {
+        Row: {
+          id: string;
+          facility_name: string;
+          province_name: string | null;
+          district_name: string | null;
+          operating_body: string | null;
+          phone_number: string | null;
+          homepage_url: string | null;
+          has_voucher_program: boolean | null;
+          has_bandabi_facility: boolean | null;
+          synced_at: string;
+        };
+        Insert: {
+          id?: string;
+          facility_name: string;
+          province_name?: string | null;
+          district_name?: string | null;
+          operating_body?: string | null;
+          phone_number?: string | null;
+          homepage_url?: string | null;
+          has_voucher_program?: boolean | null;
+          has_bandabi_facility?: boolean | null;
+          synced_at?: string;
+        };
+        Update: {
+          id?: string;
+          facility_name?: string;
+          province_name?: string | null;
+          district_name?: string | null;
+          operating_body?: string | null;
+          phone_number?: string | null;
+          homepage_url?: string | null;
+          has_voucher_program?: boolean | null;
+          has_bandabi_facility?: boolean | null;
+          synced_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;

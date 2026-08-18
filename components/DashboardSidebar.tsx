@@ -38,6 +38,7 @@ const ITEMS: MenuEntry[] = [
     children: [
       { href: "/dashboard/db/youth-facilities", label: "청소년관련기관", icon: "tag" },
       { href: "/dashboard/db/disability-organizations", label: "장애인관련기관", icon: "tag" },
+      { href: "/dashboard/db/disability-sports", label: "장애인체육시설", icon: "tag" },
     ],
   },
 ];
