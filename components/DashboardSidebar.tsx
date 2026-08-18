@@ -23,7 +23,7 @@ const ITEMS: MenuEntry[] = [
   {
     label: "데이터베이스",
     icon: "list",
-    children: [{ href: "/dashboard/db/youth-facilities", label: "청소년관련기관DB", icon: "tag" }],
+    children: [{ href: "/dashboard/db/youth-facilities", label: "청소년관련기관", icon: "tag" }],
   },
 ];
 

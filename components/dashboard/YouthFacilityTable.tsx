@@ -81,19 +81,52 @@ function downloadCsv(facilities: YouthFacility[]) {
   URL.revokeObjectURL(url);
 }
 
-function StatBlock({ title, counts }: { title: string; counts: [string, number][] }) {
+function StatBlock({
+  title,
+  counts,
+  active,
+  onSelect,
+}: {
+  title: string;
+  counts: [string, number][];
+  active: string | null;
+  onSelect: (label: string) => void;
+}) {
   return (
     <div className="rounded-xl border border-hairline p-3">
-      <h3 className="mb-2 text-xs font-semibold text-ink-mute">{title}</h3>
-      <div className="flex flex-wrap gap-1.5">
-        {counts.map(([label, n]) => (
-          <span
-            key={label}
-            className="rounded-full bg-canvas-cream px-2.5 py-1 text-xs text-ink"
+      <h3 className="mb-2 text-xs font-semibold text-ink-mute">
+        {title}
+        {active && (
+          <button
+            type="button"
+            onClick={() => onSelect(active)}
+            className="ml-2 text-link-blue hover:underline"
           >
-            {label} <span className="font-semibold text-primary">{n.toLocaleString("ko-KR")}</span>
-          </span>
-        ))}
+            필터 해제
+          </button>
+        )}
+      </h3>
+      <div className="flex flex-wrap gap-1.5">
+        {counts.map(([label, n]) => {
+          const isActive = active === label;
+          return (
+            <button
+              key={label}
+              type="button"
+              onClick={() => onSelect(label)}
+              className={`rounded-full px-2.5 py-1 text-xs transition-colors ${
+                isActive
+                  ? "bg-primary text-white"
+                  : "bg-canvas-cream text-ink hover:bg-canvas-lavender"
+              }`}
+            >
+              {label}{" "}
+              <span className={isActive ? "font-semibold" : "font-semibold text-primary"}>
+                {n.toLocaleString("ko-KR")}
+              </span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
@@ -101,15 +134,11 @@ function StatBlock({ title, counts }: { title: string; counts: [string, number][
 
 export function YouthFacilityTable({ facilities }: { facilities: YouthFacility[] }) {
   const [province, setProvince] = useState("전체");
+  const [facilityType, setFacilityType] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("provinceName");
   const [sortAsc, setSortAsc] = useState(true);
   const [count, setCount] = useState<CountOption>(300);
-
-  const provinces = useMemo(
-    () => ["전체", ...Array.from(new Set(facilities.map((f) => f.provinceName).filter(Boolean))).sort()] as string[],
-    [facilities]
-  );
 
   const provinceCounts = useMemo(() => {
     const map = new Map<string, number>();
@@ -119,6 +148,11 @@ export function YouthFacilityTable({ facilities }: { facilities: YouthFacility[]
     }
     return Array.from(map.entries()).sort((a, b) => b[1] - a[1]);
   }, [facilities]);
+
+  const provinces = useMemo(
+    () => ["전체", ...provinceCounts.map(([label]) => label).sort()],
+    [provinceCounts]
+  );
 
   const typeCounts = useMemo(() => {
     const map = new Map<string, number>();
@@ -131,9 +165,18 @@ export function YouthFacilityTable({ facilities }: { facilities: YouthFacility[]
 
   const filtered = useMemo(() => {
     return facilities
-      .filter((f) => province === "전체" || f.provinceName === province)
+      .filter((f) => province === "전체" || (f.provinceName ?? "미상") === province)
+      .filter((f) => !facilityType || (f.facilityType ?? "미상") === facilityType)
       .filter((f) => !search || f.facilityName.includes(search) || f.districtName?.includes(search));
-  }, [facilities, province, search]);
+  }, [facilities, province, facilityType, search]);
+
+  function selectProvince(label: string) {
+    setProvince((prev) => (prev === label ? "전체" : label));
+  }
+
+  function selectFacilityType(label: string) {
+    setFacilityType((prev) => (prev === label ? null : label));
+  }
 
   const sorted = useMemo(() => {
     return filtered.slice().sort((a, b) => {
@@ -160,8 +203,18 @@ export function YouthFacilityTable({ facilities }: { facilities: YouthFacility[]
   return (
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-        <StatBlock title={`지역별 현황 (시도 ${provinceCounts.length}곳)`} counts={provinceCounts} />
-        <StatBlock title={`시설유형별 현황 (${typeCounts.length}종)`} counts={typeCounts} />
+        <StatBlock
+          title={`지역별 현황 (시도 ${provinceCounts.length}곳) — 클릭하면 아래 목록이 필터링됩니다`}
+          counts={provinceCounts}
+          active={province === "전체" ? null : province}
+          onSelect={selectProvince}
+        />
+        <StatBlock
+          title={`시설유형별 현황 (${typeCounts.length}종) — 클릭하면 아래 목록이 필터링됩니다`}
+          counts={typeCounts}
+          active={facilityType}
+          onSelect={selectFacilityType}
+        />
       </div>
 
       <div className="flex flex-wrap items-center gap-3 text-sm">
