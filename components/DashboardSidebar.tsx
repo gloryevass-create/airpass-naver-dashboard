@@ -5,13 +5,13 @@ import { usePathname } from "next/navigation";
 import { NavIcon, type IconName } from "@/components/icons/NavIcon";
 
 const ITEMS: { href: string; label: string; icon: IconName }[] = [
+  { href: "/dashboard/events", label: "팀 일정", icon: "calendar" },
   { href: "/dashboard/keywords", label: "네이버키워드", icon: "search" },
   { href: "/dashboard/blog", label: "네이버블로그", icon: "document" },
   { href: "/dashboard/memos", label: "광고전략메모", icon: "clipboard" },
   { href: "/dashboard/news", label: "뉴스모니터링", icon: "newspaper" },
   { href: "/dashboard/budget", label: "공고모니터링", icon: "megaphone" },
   { href: "/dashboard/youtube", label: "유튜브채널분석", icon: "play" },
-  { href: "/dashboard/events", label: "팀 일정", icon: "calendar" },
 ];
 
 function NavSpinner() {

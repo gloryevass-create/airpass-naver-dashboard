@@ -26,7 +26,7 @@ export function DashboardHeader({
     <header className="flex items-center justify-between border-b border-hairline bg-background px-6 py-4">
       <div>
         <h1 className="text-lg font-bold tracking-tight text-primary">
-          AIRPASS MAKETING AGNENT
+          Strategic Planning Team AGENT
         </h1>
         <p className="text-xs text-ink-mute">
           {latestDate ? `최근 수집일: ${latestDate}` : "아직 수집된 데이터가 없습니다"}
