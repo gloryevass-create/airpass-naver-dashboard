@@ -168,6 +168,7 @@ export type Database = {
           name: string;
           domain: string | null;
           blog_id: string | null;
+          is_active: boolean;
           created_at: string;
         };
         Insert: {
@@ -175,6 +176,7 @@ export type Database = {
           name: string;
           domain?: string | null;
           blog_id?: string | null;
+          is_active?: boolean;
           created_at?: string;
         };
         Update: {
@@ -182,6 +184,7 @@ export type Database = {
           name?: string;
           domain?: string | null;
           blog_id?: string | null;
+          is_active?: boolean;
           created_at?: string;
         };
         Relationships: [];

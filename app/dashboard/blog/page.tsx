@@ -1,19 +1,25 @@
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { getDashboardData } from "@/lib/queries/dashboard";
+import { getActiveCompetitors } from "@/lib/queries/competitors";
 import { SovChart } from "@/components/dashboard/SovChart";
 import { CadenceTable } from "@/components/dashboard/CadenceTable";
 import { ContentMatchedKeywordTable } from "@/components/dashboard/ContentMatchedKeywordTable";
 import { ReportsList } from "@/components/dashboard/ReportsList";
+import { CompetitorBlogManager } from "@/components/dashboard/CompetitorBlogManager";
 import { NavIcon } from "@/components/icons/NavIcon";
 
 export default async function BlogPage() {
   const { supabase } = await requireAuthedClient();
-  const dashboard = await getDashboardData(supabase);
+  const [dashboard, competitors] = await Promise.all([
+    getDashboardData(supabase),
+    getActiveCompetitors(supabase),
+  ]);
 
   const blogReports = dashboard.reports.filter((r) => r.track !== "ad");
 
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-col gap-8 p-6">
+      <CompetitorBlogManager competitors={competitors} path="/dashboard/blog" />
       {!dashboard.latestDate && (
         <div className="rounded-xl border border-hairline bg-canvas-cream p-6 text-sm text-ink-mute">
           아직 모니터링 에이전트가 수집한 데이터가 없습니다. 파이프라인이 최소 1회 실행되면

@@ -279,7 +279,7 @@ export async function getDashboardData(
     arr.push(Number(row.share_pct));
     sovByCompetitor.set(row.competitor_id, arr);
   }
-  const blogTrackedCompetitors = (competitorsRes.data ?? []).filter((c) => c.blog_id);
+  const blogTrackedCompetitors = (competitorsRes.data ?? []).filter((c) => c.blog_id && c.is_active);
   const sov = blogTrackedCompetitors
     .map((c) => {
       const arr = sovByCompetitor.get(c.id);
