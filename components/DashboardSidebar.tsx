@@ -40,6 +40,7 @@ const ITEMS: MenuEntry[] = [
       { href: "/dashboard/db/disability-organizations", label: "장애인관련기관", icon: "tag" },
       { href: "/dashboard/db/disability-sports", label: "장애인체육시설", icon: "tag" },
       { href: "/dashboard/db/disability-welfare", label: "장애인편의시설", icon: "tag" },
+      { href: "/dashboard/db/special-schools", label: "특수학교현황", icon: "tag" },
     ],
   },
 ];
