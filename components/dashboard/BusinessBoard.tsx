@@ -34,17 +34,23 @@ function ProjectCard({ project }: { project: BusinessProject }) {
       href={project.notionUrl}
       target="_blank"
       rel="noreferrer"
-      className="flex flex-col gap-1.5 rounded-lg border border-hairline bg-background p-3 text-sm hover:border-primary"
+      className="flex flex-col gap-1 rounded-lg border border-hairline bg-background p-2 text-xs hover:border-primary"
     >
-      <span className="font-medium text-ink">{project.title}</span>
+      <span className="truncate font-medium text-ink" title={project.title}>
+        {project.title}
+      </span>
       {project.status && (
-        <span className="flex items-center gap-1.5 text-xs text-ink-mute">
-          <span className={`h-1.5 w-1.5 rounded-full ${dotColor}`} />
+        <span className="flex items-center gap-1.5 text-ink-mute">
+          <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${dotColor}`} />
           {project.status}
         </span>
       )}
-      {date && <span className="text-xs text-ink-mute">{date}</span>}
-      {project.orgName && <span className="text-xs text-ink-mute">{project.orgName}</span>}
+      {date && <span className="truncate text-ink-mute">{date}</span>}
+      {project.orgName && (
+        <span className="truncate text-ink-mute" title={project.orgName}>
+          {project.orgName}
+        </span>
+      )}
     </a>
   );
 }
@@ -84,19 +90,19 @@ export function BusinessBoard({ projects }: { projects: BusinessProject[] }) {
         완료·보류·실패 포함
       </label>
 
-      <div className="flex gap-4 overflow-x-auto pb-2">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
         {Array.from(byStage.entries()).map(([stage, items]) => (
-          <div key={stage} className="flex w-72 shrink-0 flex-col gap-2">
-            <div className="flex items-center gap-2 rounded-md bg-canvas-cream px-3 py-2 text-sm font-semibold text-ink">
-              {stage}
-              <span className="text-xs font-normal text-ink-mute">{items.length}</span>
+          <div key={stage} className="flex min-w-0 flex-col gap-2">
+            <div className="flex items-center gap-1.5 rounded-md bg-canvas-cream px-2 py-1.5 text-xs font-semibold text-ink">
+              <span className="truncate">{stage}</span>
+              <span className="shrink-0 font-normal text-ink-mute">{items.length}</span>
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="flex max-h-[70vh] flex-col gap-1.5 overflow-y-auto">
               {items.map((p) => (
                 <ProjectCard key={p.id} project={p} />
               ))}
               {items.length === 0 && (
-                <div className="rounded-lg border border-dashed border-hairline p-3 text-center text-xs text-ink-mute">
+                <div className="rounded-lg border border-dashed border-hairline p-2 text-center text-xs text-ink-mute">
                   없음
                 </div>
               )}
