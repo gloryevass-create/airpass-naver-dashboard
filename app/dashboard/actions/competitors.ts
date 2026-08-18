@@ -17,6 +17,25 @@ export async function addCompetitor(
   const blogId = String(formData.get("blogId") ?? "").trim();
   if (!name) return { error: "블로그(경쟁사) 이름을 입력하세요." };
 
+  // 삭제는 소프트 삭제(is_active=false)라 이름은 계속 남아있다 — 예전에 삭제했던 이름을
+  // 다시 등록하려는 경우 새로 만들지 않고 그 행을 재활성화한다(중복 이름 에러 대신).
+  const { data: existing } = await supabase
+    .from("competitors")
+    .select("id, is_active")
+    .eq("name", name)
+    .maybeSingle();
+
+  if (existing) {
+    if (existing.is_active) return { error: "이미 등록된 이름입니다." };
+    const { error } = await supabase
+      .from("competitors")
+      .update({ is_active: true, domain: domain || null, blog_id: blogId || null })
+      .eq("id", existing.id);
+    if (error) return { error: `재등록 실패: ${error.message}` };
+    revalidatePath(path);
+    return { success: `"${name}" 재등록 완료 — 다음 자동 수집부터 반영됩니다.` };
+  }
+
   const { error } = await supabase.from("competitors").insert({
     name,
     domain: domain || null,

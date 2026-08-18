@@ -7,9 +7,16 @@ import { NavIcon } from "@/components/icons/NavIcon";
 
 const initialState: AddCompetitorState = undefined;
 
-function DeleteButton({ id, path }: { id: string; path: string }) {
+function DeleteButton({ id, name, path }: { id: string; name: string; path: string }) {
   return (
-    <form action={deleteCompetitor.bind(null, id, path)}>
+    <form
+      action={deleteCompetitor.bind(null, id, path)}
+      onSubmit={(e) => {
+        if (!confirm(`"${name}"을(를) 삭제하시겠습니까? 다음 자동 수집부터 제외됩니다(지금까지 수집된 데이터는 유지됩니다).`)) {
+          e.preventDefault();
+        }
+      }}
+    >
       <button
         type="submit"
         aria-label="블로그 삭제"
@@ -41,7 +48,7 @@ export function CompetitorBlogManager({ competitors, path }: { competitors: Comp
             >
               {c.name}
               {c.blogId && <span className="ml-1 text-ink-mute">({c.blogId})</span>}
-              <DeleteButton id={c.id} path={path} />
+              <DeleteButton id={c.id} name={c.name} path={path} />
             </span>
           ))}
           {competitors.length === 0 && (
@@ -54,19 +61,19 @@ export function CompetitorBlogManager({ competitors, path }: { competitors: Comp
             name="name"
             type="text"
             required
-            placeholder="이름 (예: 위즈업)"
+            placeholder="이름 (예: 에어패스)"
             className="w-32 rounded border border-hairline px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
           />
           <input
             name="domain"
             type="text"
-            placeholder="도메인 (선택, 예: whizzup.co.kr)"
+            placeholder="도메인 (선택, 예: airpass.co.kr)"
             className="w-48 rounded border border-hairline px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
           />
           <input
             name="blogId"
             type="text"
-            placeholder="네이버 블로그 ID (선택, 예: whizzup)"
+            placeholder="네이버 블로그 ID (선택, 예: airpass-blog)"
             className="w-48 rounded border border-hairline px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
           />
           <button
