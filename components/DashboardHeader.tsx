@@ -44,7 +44,7 @@ export function DashboardHeader({
 
   return (
     <header className="flex items-center justify-between border-b border-hairline bg-background px-6 py-4">
-      <div className="flex items-center gap-2.5">
+      <Link href="/dashboard/events" className="flex items-center gap-2.5">
         <AppLogo className="h-8 w-8" />
         <div>
           <h1 className="text-lg font-bold tracking-tight text-primary">
@@ -54,16 +54,17 @@ export function DashboardHeader({
             {latestDate ? `최근 수집일: ${latestDate}` : "아직 수집된 데이터가 없습니다"}
           </p>
         </div>
-      </div>
+      </Link>
       <div className="flex items-center gap-4 text-sm">
         <div ref={menuRef} className="relative">
           <button
             type="button"
             onClick={() => setMenuOpen((v) => !v)}
-            className={`rounded-md border px-3 py-1.5 text-ink-mute transition-colors ${
+            className={`flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-ink-mute transition-colors ${
               menuOpen ? "border-primary text-ink" : "border-transparent hover:border-hairline"
             }`}
           >
+            <NavIcon name="user" className="h-3.5 w-3.5" />
             {formatMember(name, title, email)}
           </button>
           {menuOpen && (
