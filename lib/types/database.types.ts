@@ -801,6 +801,57 @@ export type Database = {
         };
         Relationships: [];
       };
+      disability_organizations: {
+        Row: {
+          id: string;
+          group_name: string;
+          province_name: string | null;
+          district_name: string | null;
+          road_address: string | null;
+          lot_address: string | null;
+          foundation_date: string | null;
+          member_count: number | null;
+          phone_number: string | null;
+          representative_name: string | null;
+          reference_date: string | null;
+          provider_org_code: string | null;
+          provider_org_name: string | null;
+          synced_at: string;
+        };
+        Insert: {
+          id?: string;
+          group_name: string;
+          province_name?: string | null;
+          district_name?: string | null;
+          road_address?: string | null;
+          lot_address?: string | null;
+          foundation_date?: string | null;
+          member_count?: number | null;
+          phone_number?: string | null;
+          representative_name?: string | null;
+          reference_date?: string | null;
+          provider_org_code?: string | null;
+          provider_org_name?: string | null;
+          synced_at?: string;
+        };
+        Update: {
+          id?: string;
+          group_name?: string;
+          province_name?: string | null;
+          district_name?: string | null;
+          road_address?: string | null;
+          lot_address?: string | null;
+          foundation_date?: string | null;
+          member_count?: number | null;
+          phone_number?: string | null;
+          representative_name?: string | null;
+          reference_date?: string | null;
+          provider_org_code?: string | null;
+          provider_org_name?: string | null;
+          synced_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
