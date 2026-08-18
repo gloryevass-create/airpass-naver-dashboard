@@ -3,19 +3,33 @@
 import { useMemo, useState } from "react";
 import type { YouthFacility } from "@/lib/queries/youthFacilities";
 
-type SortKey = "facilityName" | "provinceName" | "districtName" | "facilityType" | "capacityCount";
+type SortKey = "facilityName" | "provinceName" | "districtName" | "facilityType" | "phoneNumber";
 
-const COLUMNS: { key: keyof YouthFacility; label: string; sortKey?: SortKey }[] = [
+// 화면에 보여줄 컬럼 — 요청 순서 그대로, 한 화면에 다 들어오도록 최소한만.
+const DISPLAY_COLUMNS: { key: keyof YouthFacility; label: string; sortKey?: SortKey }[] = [
   { key: "facilityName", label: "시설명", sortKey: "facilityName" },
   { key: "facilityType", label: "시설유형", sortKey: "facilityType" },
   { key: "provinceName", label: "시도", sortKey: "provinceName" },
   { key: "districtName", label: "시군구", sortKey: "districtName" },
+  { key: "phoneNumber", label: "전화번호", sortKey: "phoneNumber" },
+  { key: "email", label: "이메일" },
+  { key: "faxNumber", label: "팩스" },
+  { key: "homepageUrl", label: "홈페이지" },
+  { key: "roadAddress", label: "도로명주소" },
+];
+
+// 엑셀 다운로드는 수집된 전체 필드를 담는다(화면 표시 컬럼과는 별개).
+const EXPORT_COLUMNS: { key: keyof YouthFacility; label: string }[] = [
+  { key: "facilityName", label: "시설명" },
+  { key: "facilityType", label: "시설유형" },
+  { key: "provinceName", label: "시도" },
+  { key: "districtName", label: "시군구" },
+  { key: "phoneNumber", label: "전화번호" },
+  { key: "email", label: "이메일" },
+  { key: "faxNumber", label: "팩스" },
+  { key: "homepageUrl", label: "홈페이지" },
   { key: "roadAddress", label: "도로명주소" },
   { key: "lotAddress", label: "지번주소" },
-  { key: "phoneNumber", label: "전화번호" },
-  { key: "faxNumber", label: "팩스" },
-  { key: "email", label: "이메일" },
-  { key: "homepageUrl", label: "홈페이지" },
   { key: "representativeName", label: "대표자" },
   { key: "operatingBody", label: "운영주체" },
   { key: "operationMode", label: "운영방식" },
@@ -25,7 +39,7 @@ const COLUMNS: { key: keyof YouthFacility; label: string; sortKey?: SortKey }[] 
   { key: "operatingHours", label: "운영시간" },
   { key: "holidayInfo", label: "휴일" },
   { key: "hasParking", label: "주차가능" },
-  { key: "capacityCount", label: "수용인원", sortKey: "capacityCount" },
+  { key: "capacityCount", label: "수용인원" },
   { key: "overnightCapacityCount", label: "숙박정원" },
   { key: "stayCapacityCount", label: "체류정원" },
   { key: "companionCapacityCount", label: "동반정원" },
@@ -46,17 +60,74 @@ function cell(value: YouthFacility[keyof YouthFacility]): string {
   return String(value);
 }
 
+function csvEscape(value: string): string {
+  if (/[",\n]/.test(value)) return `"${value.replace(/"/g, '""')}"`;
+  return value;
+}
+
+function downloadCsv(facilities: YouthFacility[]) {
+  const header = EXPORT_COLUMNS.map((c) => c.label).join(",");
+  const rows = facilities.map((f) =>
+    EXPORT_COLUMNS.map((c) => csvEscape(cell(f[c.key]))).join(",")
+  );
+  const csv = [header, ...rows].join("\n");
+  // Excel에서 한글이 깨지지 않도록 UTF-8 BOM을 붙인다.
+  const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `청소년관련기관DB_${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function StatBlock({ title, counts }: { title: string; counts: [string, number][] }) {
+  return (
+    <div className="rounded-xl border border-hairline p-3">
+      <h3 className="mb-2 text-xs font-semibold text-ink-mute">{title}</h3>
+      <div className="flex flex-wrap gap-1.5">
+        {counts.map(([label, n]) => (
+          <span
+            key={label}
+            className="rounded-full bg-canvas-cream px-2.5 py-1 text-xs text-ink"
+          >
+            {label} <span className="font-semibold text-primary">{n.toLocaleString("ko-KR")}</span>
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function YouthFacilityTable({ facilities }: { facilities: YouthFacility[] }) {
   const [province, setProvince] = useState("전체");
   const [search, setSearch] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("provinceName");
   const [sortAsc, setSortAsc] = useState(true);
-  const [count, setCount] = useState<CountOption>(100);
+  const [count, setCount] = useState<CountOption>(300);
 
   const provinces = useMemo(
     () => ["전체", ...Array.from(new Set(facilities.map((f) => f.provinceName).filter(Boolean))).sort()] as string[],
     [facilities]
   );
+
+  const provinceCounts = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const f of facilities) {
+      const key = f.provinceName ?? "미상";
+      map.set(key, (map.get(key) ?? 0) + 1);
+    }
+    return Array.from(map.entries()).sort((a, b) => b[1] - a[1]);
+  }, [facilities]);
+
+  const typeCounts = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const f of facilities) {
+      const key = f.facilityType ?? "미상";
+      map.set(key, (map.get(key) ?? 0) + 1);
+    }
+    return Array.from(map.entries()).sort((a, b) => b[1] - a[1]);
+  }, [facilities]);
 
   const filtered = useMemo(() => {
     return facilities
@@ -87,8 +158,13 @@ export function YouthFacilityTable({ facilities }: { facilities: YouthFacility[]
   }
 
   return (
-    <div>
-      <div className="mb-3 flex flex-wrap items-center gap-3 text-sm">
+    <div className="flex flex-col gap-4">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <StatBlock title={`지역별 현황 (시도 ${provinceCounts.length}곳)`} counts={provinceCounts} />
+        <StatBlock title={`시설유형별 현황 (${typeCounts.length}종)`} counts={typeCounts} />
+      </div>
+
+      <div className="flex flex-wrap items-center gap-3 text-sm">
         <select
           value={province}
           onChange={(e) => setProvince(e.target.value)}
@@ -110,7 +186,7 @@ export function YouthFacilityTable({ facilities }: { facilities: YouthFacility[]
         <span className="text-xs text-ink-mute">
           전체 {sorted.length.toLocaleString("ko-KR")}곳 중 {visible.length.toLocaleString("ko-KR")}곳 표시
         </span>
-        <label className="ml-auto flex items-center gap-2 text-xs text-ink-mute">
+        <label className="flex items-center gap-2 text-xs text-ink-mute">
           표시 개수
           <select
             value={count}
@@ -127,15 +203,22 @@ export function YouthFacilityTable({ facilities }: { facilities: YouthFacility[]
             ))}
           </select>
         </label>
+        <button
+          type="button"
+          onClick={() => downloadCsv(facilities)}
+          className="ml-auto flex items-center gap-1.5 rounded-full bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press"
+        >
+          전체 DB 엑셀 다운로드 ({facilities.length.toLocaleString("ko-KR")}건, 전체 필드)
+        </button>
       </div>
 
-      <div className="max-h-[70vh] overflow-auto rounded-xl border border-hairline">
-        <table className="w-full text-sm">
+      <div className="overflow-auto rounded-xl border border-hairline">
+        <table className="w-full text-xs">
           <thead className="sticky top-0 bg-canvas-cream text-left text-ink-mute">
             <tr>
-              <th className="whitespace-nowrap px-3 py-2 font-medium">#</th>
-              {COLUMNS.map((col) => (
-                <th key={col.key} className="whitespace-nowrap px-3 py-2 font-medium">
+              <th className="whitespace-nowrap px-2 py-1.5 font-medium">번호</th>
+              {DISPLAY_COLUMNS.map((col) => (
+                <th key={col.key} className="whitespace-nowrap px-2 py-1.5 font-medium">
                   {col.sortKey ? (
                     <button
                       type="button"
@@ -155,9 +238,9 @@ export function YouthFacilityTable({ facilities }: { facilities: YouthFacility[]
           <tbody>
             {visible.map((f, i) => (
               <tr key={f.id} className="border-t border-hairline">
-                <td className="whitespace-nowrap px-3 py-2 text-ink-mute">{i + 1}</td>
-                {COLUMNS.map((col) => (
-                  <td key={col.key} className="whitespace-nowrap px-3 py-2">
+                <td className="whitespace-nowrap px-2 py-1 text-ink-mute">{i + 1}</td>
+                {DISPLAY_COLUMNS.map((col) => (
+                  <td key={col.key} className="whitespace-nowrap px-2 py-1">
                     {col.key === "homepageUrl" && f.homepageUrl ? (
                       <a
                         href={f.homepageUrl.trim()}
@@ -176,7 +259,7 @@ export function YouthFacilityTable({ facilities }: { facilities: YouthFacility[]
             ))}
             {visible.length === 0 && (
               <tr>
-                <td colSpan={COLUMNS.length + 1} className="px-4 py-6 text-center text-ink-mute">
+                <td colSpan={DISPLAY_COLUMNS.length + 1} className="px-4 py-6 text-center text-ink-mute">
                   조건에 맞는 기관이 없습니다.
                 </td>
               </tr>
