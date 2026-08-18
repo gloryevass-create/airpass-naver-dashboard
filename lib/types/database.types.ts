@@ -891,6 +891,48 @@ export type Database = {
         };
         Relationships: [];
       };
+      disability_welfare_centers: {
+        Row: {
+          id: string;
+          facility_name: string;
+          facility_type: string | null;
+          province_name: string | null;
+          road_address: string | null;
+          latitude: number | null;
+          longitude: number | null;
+          operating_status: string | null;
+          establishment_date: string | null;
+          welfare_facility_id: string | null;
+          synced_at: string;
+        };
+        Insert: {
+          id?: string;
+          facility_name: string;
+          facility_type?: string | null;
+          province_name?: string | null;
+          road_address?: string | null;
+          latitude?: number | null;
+          longitude?: number | null;
+          operating_status?: string | null;
+          establishment_date?: string | null;
+          welfare_facility_id?: string | null;
+          synced_at?: string;
+        };
+        Update: {
+          id?: string;
+          facility_name?: string;
+          facility_type?: string | null;
+          province_name?: string | null;
+          road_address?: string | null;
+          latitude?: number | null;
+          longitude?: number | null;
+          operating_status?: string | null;
+          establishment_date?: string | null;
+          welfare_facility_id?: string | null;
+          synced_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
