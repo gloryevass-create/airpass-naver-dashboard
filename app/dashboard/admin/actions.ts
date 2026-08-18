@@ -43,6 +43,6 @@ export async function inviteUser(
     return { error: `초대 실패: ${error.message}` };
   }
 
-  revalidatePath("/admin");
+  revalidatePath("/dashboard/admin");
   return { success: `${email}로 초대 메일을 보냈습니다.` };
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { inviteUser, type InviteState } from "@/app/admin/actions";
+import { inviteUser, type InviteState } from "@/app/dashboard/admin/actions";
 
 const initialState: InviteState = undefined;
 

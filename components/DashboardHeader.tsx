@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { NavIcon } from "@/components/icons/NavIcon";
@@ -20,6 +22,18 @@ export function DashboardHeader({
   latestDate: string | null;
 }) {
   const router = useRouter();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   async function handleSignOut() {
     const supabase = createClient();
@@ -42,10 +56,32 @@ export function DashboardHeader({
         </div>
       </div>
       <div className="flex items-center gap-4 text-sm">
-        <span className="text-ink-mute">{formatMember(name, title, email)}</span>
+        <div ref={menuRef} className="relative">
+          <button
+            type="button"
+            onClick={() => setMenuOpen((v) => !v)}
+            className={`rounded-md border px-3 py-1.5 text-ink-mute transition-colors ${
+              menuOpen ? "border-primary text-ink" : "border-transparent hover:border-hairline"
+            }`}
+          >
+            {formatMember(name, title, email)}
+          </button>
+          {menuOpen && (
+            <div className="absolute right-0 top-full z-10 mt-1 min-w-[10rem] rounded-md border border-hairline bg-background py-1 shadow-lg">
+              <Link
+                href="/dashboard/account/password"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-2 px-3 py-2 text-sm text-ink hover:bg-canvas-cream"
+              >
+                <NavIcon name="key" className="h-3.5 w-3.5" />
+                비밀번호 변경
+              </Link>
+            </div>
+          )}
+        </div>
         {isAdmin && (
           <a
-            href="/admin"
+            href="/dashboard/admin"
             className="flex items-center gap-1 text-link-blue hover:text-link-hover hover:underline"
           >
             <NavIcon name="shield" className="h-3.5 w-3.5" />

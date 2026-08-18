@@ -22,7 +22,8 @@ export type IconName =
   | "shield"
   | "logout"
   | "eye"
-  | "eyeOff";
+  | "eyeOff"
+  | "key";
 
 export function NavIcon({ name, ...props }: { name: IconName } & SVGProps<SVGSVGElement>) {
   const shared = {
@@ -181,6 +182,14 @@ export function NavIcon({ name, ...props }: { name: IconName } & SVGProps<SVGSVG
           <path d="M3 3l18 18" />
           <path d="M10.6 5.6A10.6 10.6 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a15.6 15.6 0 0 1-3.4 4.2M6.6 6.9C4.1 8.6 2.5 12 2.5 12S6 18.5 12 18.5a9.6 9.6 0 0 0 3.9-.8" />
           <path d="M9.5 12a2.5 2.5 0 0 0 3.6 2.2" />
+        </svg>
+      );
+    case "key":
+      return (
+        <svg {...shared} {...props}>
+          <circle cx="7.5" cy="15.5" r="4.5" />
+          <path d="M10.8 12.2L20 3" />
+          <path d="M16 7l3 3M13 10l2.5 2.5" />
         </svg>
       );
   }
