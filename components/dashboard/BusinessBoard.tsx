@@ -87,7 +87,7 @@ export function BusinessBoard({ projects }: { projects: BusinessProject[] }) {
           onChange={(e) => setShowAll(e.target.checked)}
           className="h-3.5 w-3.5"
         />
-        완료·보류·실패 포함
+        완료·보류 포함
       </label>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
@@ -97,7 +97,7 @@ export function BusinessBoard({ projects }: { projects: BusinessProject[] }) {
               <span className="truncate">{stage}</span>
               <span className="shrink-0 font-normal text-ink-mute">{items.length}</span>
             </div>
-            <div className="flex max-h-[70vh] flex-col gap-1.5 overflow-y-auto">
+            <div className="flex flex-col gap-1.5">
               {items.map((p) => (
                 <ProjectCard key={p.id} project={p} />
               ))}
