@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/types/database.types";
+import { formatMember } from "@/lib/formatMember";
 
 type Client = SupabaseClient<Database>;
 
@@ -15,11 +16,23 @@ export type MemoListItem = {
   attachmentCount: number;
 };
 
+/** author_id -> "이름(직함)" 표시용 맵. 메모/댓글은 author_email을 그대로 저장하지만
+ * (레거시 데이터 호환), 화면 표시는 profiles.name/title이 있으면 우선한다. */
+async function fetchAuthorDisplayById(supabase: Client): Promise<Map<string, string>> {
+  const { data: profiles } = await supabase.from("profiles").select("id, email, name, title");
+  const map = new Map<string, string>();
+  for (const p of profiles ?? []) {
+    map.set(p.id, formatMember(p.name, p.title, p.email));
+  }
+  return map;
+}
+
 export async function getMemos(supabase: Client): Promise<MemoListItem[]> {
-  const [{ data: memos }, { data: comments }, { data: attachments }] = await Promise.all([
+  const [{ data: memos }, { data: comments }, { data: attachments }, authorDisplayById] = await Promise.all([
     supabase.from("ad_strategy_memos").select("*").order("created_at", { ascending: false }),
     supabase.from("ad_strategy_memo_comments").select("memo_id"),
     supabase.from("ad_strategy_memo_attachments").select("memo_id"),
+    fetchAuthorDisplayById(supabase),
   ]);
 
   const commentCountByMemo = new Map<string, number>();
@@ -33,7 +46,7 @@ export async function getMemos(supabase: Client): Promise<MemoListItem[]> {
 
   return (memos ?? []).map((m) => ({
     id: m.id,
-    authorEmail: m.author_email,
+    authorEmail: authorDisplayById.get(m.author_id) ?? m.author_email,
     category: m.category,
     title: m.title,
     createdAt: m.created_at,
@@ -55,7 +68,7 @@ export type MemoDetail = {
 };
 
 export async function getMemoDetail(supabase: Client, id: string): Promise<MemoDetail | null> {
-  const [{ data: memo }, { data: attachments }, { data: comments }] = await Promise.all([
+  const [{ data: memo }, { data: attachments }, { data: comments }, authorDisplayById] = await Promise.all([
     supabase.from("ad_strategy_memos").select("*").eq("id", id).maybeSingle(),
     supabase.from("ad_strategy_memo_attachments").select("*").eq("memo_id", id),
     supabase
@@ -63,6 +76,7 @@ export async function getMemoDetail(supabase: Client, id: string): Promise<MemoD
       .select("*")
       .eq("memo_id", id)
       .order("created_at", { ascending: true }),
+    fetchAuthorDisplayById(supabase),
   ]);
 
   if (!memo) return null;
@@ -70,7 +84,7 @@ export async function getMemoDetail(supabase: Client, id: string): Promise<MemoD
   return {
     id: memo.id,
     authorId: memo.author_id,
-    authorEmail: memo.author_email,
+    authorEmail: authorDisplayById.get(memo.author_id) ?? memo.author_email,
     category: memo.category,
     title: memo.title,
     content: memo.content,
@@ -83,7 +97,7 @@ export async function getMemoDetail(supabase: Client, id: string): Promise<MemoD
     })),
     comments: (comments ?? []).map((c) => ({
       id: c.id,
-      authorEmail: c.author_email,
+      authorEmail: authorDisplayById.get(c.author_id) ?? c.author_email,
       content: c.content,
       createdAt: c.created_at,
     })),

@@ -10,6 +10,33 @@ export function InviteUserForm() {
 
   return (
     <form action={formAction} className="flex max-w-md flex-col gap-3">
+      <div className="flex gap-2">
+        <div className="flex flex-1 flex-col gap-1">
+          <label htmlFor="name" className="text-sm font-medium text-ink">
+            이름
+          </label>
+          <input
+            id="name"
+            name="name"
+            type="text"
+            required
+            placeholder="홍길동"
+            className="rounded border border-hairline px-3 py-2 text-sm text-ink outline-none focus:border-primary"
+          />
+        </div>
+        <div className="flex flex-1 flex-col gap-1">
+          <label htmlFor="title" className="text-sm font-medium text-ink">
+            직함
+          </label>
+          <input
+            id="title"
+            name="title"
+            type="text"
+            placeholder="팀장"
+            className="rounded border border-hairline px-3 py-2 text-sm text-ink outline-none focus:border-primary"
+          />
+        </div>
+      </div>
       <div className="flex flex-col gap-1">
         <label htmlFor="email" className="text-sm font-medium text-ink">
           초대할 팀원 이메일

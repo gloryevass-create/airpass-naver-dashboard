@@ -1,5 +1,6 @@
 import { requireAdminClient } from "@/lib/supabase/authed";
 import { InviteUserForm } from "@/components/InviteUserForm";
+import { formatMember } from "@/lib/formatMember";
 
 export default async function AdminPage() {
   const { supabase } = await requireAdminClient();
@@ -28,7 +29,7 @@ export default async function AdminPage() {
           <table className="w-full text-sm">
             <thead className="bg-canvas-cream text-left text-ink-mute">
               <tr>
-                <th className="px-4 py-2 font-medium">이메일</th>
+                <th className="px-4 py-2 font-medium">이름(직함)</th>
                 <th className="px-4 py-2 font-medium">역할</th>
                 <th className="px-4 py-2 font-medium">가입일</th>
               </tr>
@@ -36,7 +37,7 @@ export default async function AdminPage() {
             <tbody>
               {(profiles ?? []).map((p) => (
                 <tr key={p.id} className="border-t border-hairline">
-                  <td className="px-4 py-2">{p.email}</td>
+                  <td className="px-4 py-2">{formatMember(p.name, p.title, p.email)}</td>
                   <td className="px-4 py-2">{p.role}</td>
                   <td className="px-4 py-2 text-ink-mute">
                     {new Date(p.created_at).toLocaleDateString("ko-KR")}

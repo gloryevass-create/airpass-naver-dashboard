@@ -25,18 +25,24 @@ export type Database = {
         Row: {
           id: string;
           email: string;
+          name: string | null;
+          title: string | null;
           role: "admin" | "member";
           created_at: string;
         };
         Insert: {
           id: string;
           email: string;
+          name?: string | null;
+          title?: string | null;
           role?: "admin" | "member";
           created_at?: string;
         };
         Update: {
           id?: string;
           email?: string;
+          name?: string | null;
+          title?: string | null;
           role?: "admin" | "member";
           created_at?: string;
         };

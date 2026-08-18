@@ -22,8 +22,13 @@ export async function inviteUser(
   await requireAdminClient();
 
   const email = String(formData.get("email") ?? "").trim();
+  const name = String(formData.get("name") ?? "").trim();
+  const title = String(formData.get("title") ?? "").trim();
   if (!email || !email.includes("@")) {
     return { error: "올바른 이메일 주소를 입력하세요." };
+  }
+  if (!name) {
+    return { error: "이름을 입력하세요." };
   }
 
   const origin = await getOrigin();
@@ -31,6 +36,7 @@ export async function inviteUser(
 
   const { error } = await admin.auth.admin.inviteUserByEmail(email, {
     redirectTo: `${origin}/auth/callback`,
+    data: { name, title: title || null },
   });
 
   if (error) {

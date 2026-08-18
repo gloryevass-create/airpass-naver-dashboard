@@ -7,7 +7,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const { supabase, user } = await requireAuthedClient();
 
   const [{ data: profile }, latestDate] = await Promise.all([
-    supabase.from("profiles").select("role").eq("id", user.id).single(),
+    supabase.from("profiles").select("role, name, title").eq("id", user.id).single(),
     getLatestDataDate(supabase),
   ]);
 
@@ -15,6 +15,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
     <div className="flex flex-1 flex-col">
       <DashboardHeader
         email={user.email ?? ""}
+        name={profile?.name ?? null}
+        title={profile?.title ?? null}
         isAdmin={profile?.role === "admin"}
         latestDate={latestDate}
       />

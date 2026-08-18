@@ -4,13 +4,18 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { NavIcon } from "@/components/icons/NavIcon";
 import { AppLogo } from "@/components/icons/AppLogo";
+import { formatMember } from "@/lib/formatMember";
 
 export function DashboardHeader({
   email,
+  name,
+  title,
   isAdmin,
   latestDate,
 }: {
   email: string;
+  name: string | null;
+  title: string | null;
   isAdmin: boolean;
   latestDate: string | null;
 }) {
@@ -37,7 +42,7 @@ export function DashboardHeader({
         </div>
       </div>
       <div className="flex items-center gap-4 text-sm">
-        <span className="text-ink-mute">{email}</span>
+        <span className="text-ink-mute">{formatMember(name, title, email)}</span>
         {isAdmin && (
           <a
             href="/admin"
