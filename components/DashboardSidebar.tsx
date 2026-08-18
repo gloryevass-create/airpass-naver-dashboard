@@ -11,6 +11,7 @@ const ITEMS: { href: string; label: string; icon: IconName }[] = [
   { href: "/dashboard/news", label: "뉴스모니터링", icon: "newspaper" },
   { href: "/dashboard/budget", label: "공고모니터링", icon: "megaphone" },
   { href: "/dashboard/youtube", label: "유튜브채널분석", icon: "play" },
+  { href: "/dashboard/events", label: "팀 일정", icon: "calendar" },
 ];
 
 function NavSpinner() {
