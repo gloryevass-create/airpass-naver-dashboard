@@ -67,12 +67,12 @@ function NavLink({ item, active, indent }: { item: LeafItem; active: boolean; in
   return (
     <Link
       href={item.href}
-      className={`flex items-center justify-between rounded-md px-3 text-sm font-medium transition-colors ${
+      className={`flex items-center justify-between rounded-md px-3 text-sm transition-colors ${
         indent ? "ml-3 py-1.5" : "py-2"
       } ${
         active
-          ? "bg-canvas-lavender text-primary"
-          : "text-[#5b6b82] hover:bg-canvas-cream hover:text-ink"
+          ? "font-semibold text-primary"
+          : "font-medium text-ink hover:text-primary"
       }`}
     >
       <span className="flex items-center gap-2.5">
@@ -98,7 +98,7 @@ export function DashboardSidebar({ latestDate }: { latestDate: string | null }) 
   }
 
   return (
-    <nav className="flex h-full w-56 shrink-0 flex-col border-r border-hairline bg-[#e9e9ec] p-4">
+    <nav className="flex h-full w-56 shrink-0 flex-col border-r border-hairline bg-[#fafafa] p-4">
       <div className="flex flex-1 flex-col gap-1">
         {ITEMS.map((entry) => {
           if (isGroup(entry)) {
@@ -110,7 +110,7 @@ export function DashboardSidebar({ latestDate }: { latestDate: string | null }) 
                   type="button"
                   onClick={() => toggleGroup(entry.label)}
                   aria-expanded={expanded}
-                  className="flex items-center gap-2.5 px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-[#5b6b82]/80 hover:text-[#5b6b82]"
+                  className="flex items-center gap-2.5 px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-ink-mute hover:text-ink"
                 >
                   <NavIcon name={entry.icon} className="h-3.5 w-3.5 shrink-0" />
                   <span className="flex-1 text-left">{entry.label}</span>

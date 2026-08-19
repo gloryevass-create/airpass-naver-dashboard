@@ -5,7 +5,7 @@ export function CadenceTable({ data }: { data: DashboardData["cadence"] }) {
   return (
     <div className="overflow-x-auto rounded-xl border border-hairline">
       <table className="w-full whitespace-nowrap text-sm">
-        <thead className="bg-canvas-cream text-left text-ink-mute">
+        <thead className="bg-[#f7f7f8] text-left text-ink-mute">
           <tr>
             <th className="px-4 py-2 font-medium">블로그</th>
             <th className="px-4 py-2 font-medium">발행 간격</th>

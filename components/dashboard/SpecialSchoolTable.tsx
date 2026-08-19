@@ -223,7 +223,7 @@ export function SpecialSchoolTable({ schools }: { schools: SpecialSchool[] }) {
 
       <div className="overflow-auto rounded-xl border border-hairline">
         <table className="w-full text-xs">
-          <thead className="sticky top-0 bg-canvas-cream text-left text-ink-mute">
+          <thead className="sticky top-0 bg-[#f7f7f8] text-left text-ink-mute">
             <tr>
               <th className="whitespace-nowrap px-2 py-1.5 font-medium">번호</th>
               {DISPLAY_COLUMNS.map((col) => (

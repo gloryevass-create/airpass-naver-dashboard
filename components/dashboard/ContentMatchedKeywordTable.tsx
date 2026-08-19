@@ -15,7 +15,7 @@ export function ContentMatchedKeywordTable({
   return (
     <div className="overflow-x-auto rounded-xl border border-hairline">
       <table className="w-full whitespace-nowrap text-sm">
-        <thead className="bg-canvas-cream text-left text-ink-mute">
+        <thead className="bg-[#f7f7f8] text-left text-ink-mute">
           <tr>
             <th className="px-4 py-2 font-medium">네이버 키워드</th>
             <th className="px-4 py-2 font-medium">월간조회수</th>
