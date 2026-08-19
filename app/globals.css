@@ -1,26 +1,28 @@
 @import "tailwindcss";
 
-/* Color tokens — DESIGN.md (Apple-inspired, reinterpreted for a data-dense business
-   dashboard: parchment/white canvas, near-black ink, a single quiet Action Blue accent,
-   hairline borders, almost no shadow, tight pill-radius controls — but body text kept
-   small/readable and tables kept dense, unlike Apple's own 56px marketing headline
-   scale). 라이트 테마를 유일한(단일) 테마로 고정한다 — OS 설정과 무관하게 항상 이
-   팔레트를 쓴다(prefers-color-scheme 분기 없음). */
+/* Color tokens — DESIGN.md (Meta-inspired, reinterpreted for a data-dense business
+   dashboard: soft-cloud/white canvas, near-black ink, a single cobalt-blue accent
+   (#0064E0 — chosen over Meta's own two-tier black/cobalt CTA split, since this app has
+   no separate "checkout" flow to reserve cobalt for), hairline borders, minimal shadow,
+   a tighter/crisper radius scale than the prior Apple pass — but body text kept
+   small/readable and tables kept dense, unlike Meta's own 64px hero headline scale).
+   라이트 테마를 유일한(단일) 테마로 고정한다 — OS 설정과 무관하게 항상 이 팔레트를
+   쓴다(prefers-color-scheme 분기 없음). */
 :root {
-  --background: #f5f5f7;
-  --foreground: #1d1d1f;
+  --background: #f1f4f7;
+  --foreground: #0a1317;
 
-  --color-primary: #0066cc;
-  --color-primary-press: #0071e3;
-  --color-link-blue: #0066cc;
-  --color-link-hover: #0071e3;
+  --color-primary: #0064e0;
+  --color-primary-press: #0457cb;
+  --color-link-blue: #0064e0;
+  --color-link-hover: #0457cb;
   --color-canvas-cream: #ffffff;
-  --color-canvas-lavender: #e8f2ff;
-  --color-ink: #1d1d1f;
-  --color-ink-mute: #7a7a7a;
-  --color-hairline: #e0e0e0;
-  --color-semantic-error: #d70015;
-  --color-semantic-success: #248a3d;
+  --color-canvas-lavender: #e5f0ff;
+  --color-ink: #0a1317;
+  --color-ink-mute: #5d6c7b;
+  --color-hairline: #ced0d4;
+  --color-semantic-error: #e41e3f;
+  --color-semantic-success: #1f7a37;
 }
 
 @theme inline {
@@ -43,11 +45,11 @@
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
     monospace;
 
-  /* Apple's tighter, crisper radius scale (sm 8px / md 11px / lg 18px in their spec) —
-     noticeably less rounded than Discord's, mapped onto our md/lg/xl theme tokens. */
-  --radius-md: 0.5rem;
-  --radius-lg: 0.6875rem;
-  --radius-xl: 1.125rem;
+  /* Meta's tighter, crisper radius scale (md 6px / lg 8px / xl 16px in their spec) —
+     noticeably tighter than the prior Apple pass, mapped onto our md/lg/xl theme tokens. */
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 1rem;
 }
 
 body {

@@ -1,88 +1,94 @@
 ---
 version: alpha
-name: Apple-inspired-business-reinterpretation
-description: A business-dashboard reinterpretation of Apple's design language — the quiet parchment/white canvas, near-black ink text, single Action Blue accent, hairline borders, and near-absent shadow all carry over, but the loud marketing-site scale (56px negative-tracking headlines, 80px section padding, full-bleed edge-to-edge tiles) is toned down for a data-dense internal tool used daily by a small marketing team. Body text stays small and tables stay dense; a handful of real Apple system colors (systemGreen, systemOrange, systemRed, systemPurple, systemTeal, systemPink, systemIndigo) carry category distinction in multi-series charts where Apple's own single-accent rule doesn't apply.
+name: Meta-inspired-business-reinterpretation
+description: A business-dashboard reinterpretation of Meta's hardware-commerce design language — the soft-cloud/white canvas, near-black ink, hairline borders, and minimal shadow all carry over, along with the cobalt-blue accent, but Meta's own two-tier CTA split (black for marketing, cobalt only inside "buy now" flows) doesn't map onto a dashboard with no separate checkout moment, so cobalt (#0064E0) is used as the single accent everywhere instead. Meta's loud marketing-site scale (64px hero headlines, 32px+ photographic card radii, full-bleed product photography) is toned down for a data-dense internal tool used daily by a small marketing team.
 
 colors:
-  primary: "#0066cc"
-  primary-press: "#0071e3"
+  primary: "#0064e0"
+  primary-press: "#0457cb"
   on-primary: "#ffffff"
-  link-blue: "#0066cc"
-  link-hover: "#0071e3"
-  canvas: "#f5f5f7"
+  link-blue: "#0064e0"
+  link-hover: "#0457cb"
+  canvas: "#f1f4f7"
   surface-raised: "#ffffff"
-  surface-accent: "#e8f2ff"
-  ink: "#1d1d1f"
-  ink-mute: "#7a7a7a"
-  hairline: "#e0e0e0"
-  semantic-error: "#d70015"
-  semantic-success: "#248a3d"
-  chart-red: "#d9342b"
-  chart-amber: "#c2760a"
+  surface-accent: "#e5f0ff"
+  ink: "#0a1317"
+  ink-mute: "#5d6c7b"
+  hairline: "#ced0d4"
+  semantic-error: "#e41e3f"
+  semantic-success: "#1f7a37"
+  chart-amber: "#b8790a"
   chart-teal: "#0a8f86"
 
 typography:
   body:
     fontFamily: system-ui stack (see app/globals.css --font-sans)
-    note: No display/heading scale changes from Apple's spec — page h1 stays
-      text-xl/font-bold, not the 56px hero-display with -0.28px tracking. A literal
-      56px/40px display ladder would also break table/list-heavy dashboard layouts.
+    note: No display/heading scale changes from Meta's spec — page h1 stays
+      text-xl/font-bold, not the 64px hero-display with ss01/ss02 stylistic sets. A
+      literal 64px/48px display ladder would also break table/list-heavy dashboard
+      layouts, and Optimistic VF is proprietary anyway.
 
 rounded:
-  md: 8px    # was 10px (Discord) — Tailwind --radius-md, matches Apple's rounded.sm
-  lg: 11px   # was 14px (Discord) — Tailwind --radius-lg, matches Apple's rounded.md
-  xl: 18px   # was 24px (Discord) — Tailwind --radius-xl, matches Apple's rounded.lg
-  pill: 9999px  # unchanged, used heavily for pills/badges/avatars already — this IS
-                #   the one Apple radius grammar (rounded.pill) already native to this app
+  md: 6px    # was 8px (Apple) — Tailwind --radius-md, matches Meta's rounded.md
+  lg: 8px    # was 11px (Apple) — Tailwind --radius-lg, matches Meta's rounded.lg (form inputs)
+  xl: 16px   # was 18px (Apple) — Tailwind --radius-xl, matches Meta's rounded.xl (standard feature cards)
+  pill: 9999px  # unchanged — already this app's native `rounded-full`, and functionally
+                #   identical to Meta's own {rounded.full} (100px) pill-button signature
 
 ---
 
 ## Overview
 
-Origin: `npx getdesign@latest add apple` produced `apple/DESIGN.md`, a full analysis of
-Apple's *marketing/product-showcase* language (photography-first, full-bleed tiles
-alternating white/parchment/near-black, 56px SF Pro Display headlines with negative
-letter-spacing, exactly one drop-shadow reserved for product renders, single Action Blue
-accent for every interactive element). Applied literally, that spec is built to sell a
-physical product with edge-to-edge photography — not a dashboard whose primary content is
-dense tables of procurement notices, ad spend, and DB records. This file documents what
-was **actually** applied to `airpass-naver-dashboard`.
+Origin: `npx getdesign@latest add meta` produced `meta/DESIGN.md`, a full analysis of
+Meta's hardware-commerce marketing language (Quest VR, Ray-Ban Meta glasses) — a
+photography-first merchandiser built on a stark white canvas, Optimistic VF display type
+running from 64px hero headlines down to 12px captions, and a recognizable two-tier CTA
+system: black pill buttons on marketing pages, switching to a saturated cobalt blue
+(`#0064E0`) exclusively inside "buy now" / checkout flows, paired with an outlined ghost
+secondary button. Applied literally, that spec is built to sell hardware with full-bleed
+product photography — not a dashboard whose primary content is dense tables of
+procurement notices, ad spend, and DB records, and which has no literal checkout moment
+to reserve the two-tier color split for.
 
-This replaces the prior Discord-inspired dark theme (see `discord/DESIGN.md` and git
-history for that iteration) — the user asked to try Apple next and confirmed switching to
-Apple's own dominant mode: **light**, not carrying the dark canvas forward. This remains a
-**single fixed theme** — no light/dark toggle, no `prefers-color-scheme` branching. Every
-`--color-*` token in `app/globals.css` is set once in `:root` and used everywhere via
-Tailwind's semantic classes (`bg-primary`, `text-ink`, `border-hairline`, etc.), so the
-whole app reskins from one file — this is the second time that's been proven true (Slack →
-Discord → Apple, three full reskins, zero component-level color rewrites needed for the
-base palette swap itself).
+This replaces the prior Apple-inspired light theme (see `apple/DESIGN.md` and git history
+for that iteration) — both are light-canvas systems, so no light/dark switch was needed
+this time; the change is the accent color (Action Blue `#0066cc` → cobalt `#0064E0`) and a
+tighter radius scale. This remains a **single fixed theme** — no light/dark toggle, no
+`prefers-color-scheme` branching. Every `--color-*` token in `app/globals.css` is set once
+in `:root` and used everywhere via Tailwind's semantic classes (`bg-primary`, `text-ink`,
+`border-hairline`, etc.), so the whole app reskins from one file — this is the third time
+that's been proven true (Slack → Discord → Apple → Meta, four full reskins, zero
+component-level color rewrites needed for the base palette swap itself).
 
-## What carried over from Apple, and what didn't
+## What carried over from Meta, and what didn't
 
 **Carried over:**
-- Parchment page canvas (`#f5f5f7`) with white (`#ffffff`) raised surfaces for cards/table
-  headers/dropdowns — Apple's own light-mode layering (parchment base, white content).
-- Action Blue (`#0066cc`) as the **only** brand/primary action color — buttons, links,
-  active states, focus — matching Apple's "single accent, non-negotiable" rule.
-- Near-black ink (`#1d1d1f`) instead of pure black for all text — keeps the page feeling
-  photographic/soft rather than printed, per Apple's own stated reasoning.
-- Hairline borders (`#e0e0e0`) and near-zero shadow — cards separate by a 1px border, not
-  elevation.
-- Tighter, crisper radius scale (8/11/18px vs Discord's 10/14/24px) — Apple's own
-  `rounded.sm/md/lg` progression, mapped onto this app's `--radius-md/lg/xl` theme tokens.
-- The pill radius (`rounded-full`, already used 53× across this app before this reskin)
-  is literally Apple's signature CTA shape — no change needed, it was already there.
+- Soft-cloud page canvas (`#f1f4f7`) with white (`#ffffff`) raised surfaces for
+  cards/table headers/dropdowns — Meta's own light-mode layering (`surface-soft` base,
+  `canvas` white content), same structural pattern as the prior Apple pass.
+- Cobalt blue (`#0064E0`) as the single accent color for buttons, links, active states —
+  chosen deliberately over Meta's own black-marketing/cobalt-commerce split, confirmed
+  with the user, since this app has no separate checkout flow to reserve cobalt for.
+- Near-black ink (`#0a1317`, Meta's `ink-deep`) for primary text, `steel` (`#5d6c7b`) for
+  muted/secondary text and chart axis labels.
+- Hairline borders (`#ced0d4`) and minimal shadow — Meta's own system "runs predominantly
+  flat," matching this app's existing near-shadowless card style.
+- A tighter, crisper radius scale (6/8/16px vs the prior Apple pass's 8/11/18px) — Meta's
+  own `rounded.md/lg/xl` progression, mapped onto this app's `--radius-md/lg/xl` tokens.
+- The pill radius (`rounded-full`) — Meta's signature `{rounded.full}` (100px) button
+  shape is functionally identical to what this app already used everywhere pre-reskin.
 
 **Deliberately not carried over:**
-- 56px hero-display / 40px display-lg headlines with negative letter-spacing — page
-  headers stay `text-xl font-bold`, no tracking changes.
-- 80px section padding and full-bleed edge-to-edge tiles — this app's existing card/table
-  padding (`p-3`–`p-6`) is unchanged.
-- Alternating light/dark tile sections as the page rhythm — a single dashboard page here
-  isn't a scroll-and-convert marketing stack; every surface stays on the same light canvas.
-- "No gradients" and "exactly one shadow, reserved for product photography" — moot; this
-  app has no product photography and wasn't using gradients or heavy shadows before either.
+- 64px hero-display / 48px display-lg headlines with `ss01, ss02` stylistic sets — page
+  headers stay `text-xl font-bold`, no OpenType feature changes (Optimistic VF is
+  proprietary and irrelevant to a system-font dashboard anyway).
+- Meta's two-tier CTA color split (black marketing / cobalt commerce) — every button and
+  link in this app uses cobalt uniformly; there's no "marketing surface" vs "buy now flow"
+  distinction to preserve.
+- Full-bleed photographic feature cards, promo banners, dual-CTA hero patterns — this app
+  has no product photography and no marketing hero sections.
+- Oculus purple as a page-chrome color — reserved for the multi-series chart palette only
+  (treemap, SOV bar chart), same treatment as the other borrowed brand/semantic hues.
 
 ## Colors
 
@@ -91,50 +97,53 @@ Tailwind's `@theme inline`). Summary:
 
 | Token (Tailwind class suffix) | Value | Use |
 |---|---|---|
-| `primary` | `#0066cc` | Buttons, links-as-actions, active nav, brand mark |
-| `primary-press` | `#0071e3` | Hover/press/focus state of primary buttons (Apple's own "Focus Blue" sibling) |
-| `link-blue` | `#0066cc` | Inline text links — same hex as primary, per Apple's single-accent rule |
-| `link-hover` | `#0071e3` | Link hover state |
+| `primary` | `#0064e0` | Buttons, links-as-actions, active nav, brand mark |
+| `primary-press` | `#0457cb` | Hover/press state of primary buttons (Meta's own `primary-deep`) |
+| `link-blue` | `#0064e0` | Inline text links — same hex as primary, single-accent rule |
+| `link-hover` | `#0457cb` | Link hover state |
 | `canvas-cream` | `#ffffff` | Raised white surface — cards, table headers, dropdowns, tooltips (legacy "cream" name kept from the pre-Discord Slack palette to avoid a repo-wide rename) |
-| `canvas-lavender` | `#e8f2ff` | Selected/active chip background (light Action-Blue tint), also used at `/20` opacity for subtle highlight rows |
-| `ink` | `#1d1d1f` | Primary text on the light canvas |
-| `ink-mute` | `#7a7a7a` | Secondary/muted text, chart axis labels and gridlines (Apple's `ink-muted-48`) |
-| `hairline` | `#e0e0e0` | Borders, dividers, chart gridlines (Apple's own hairline token, used verbatim) |
-| `semantic-error` | `#d70015` | Destructive actions, form errors — darkened from Apple's iOS systemRed (`#ff3b30`) for AA text contrast on white |
-| `semantic-success` | `#248a3d` | Success states, confirmations — darkened from Apple's systemGreen (`#34c759`) for the same reason |
+| `canvas-lavender` | `#e5f0ff` | Selected/active chip background (light cobalt tint, close to Meta's own `primary-soft` 15%-alpha callout tint), also used at `/20` opacity for subtle highlight rows |
+| `ink` | `#0a1317` | Primary text on the light canvas (Meta's `ink-deep`) |
+| `ink-mute` | `#5d6c7b` | Secondary/muted text, chart axis labels and gridlines (Meta's `steel`) |
+| `hairline` | `#ced0d4` | Borders, dividers, chart gridlines (Meta's own hairline token, used verbatim) |
+| `semantic-error` | `#e41e3f` | Destructive actions, form errors (Meta's `critical`) |
+| `semantic-success` | `#1f7a37` | Success states, confirmations — darkened from Meta's `success` (`#31a24c`) for AA text contrast on white |
 
 Ad-hoc chart accent hexes (not full design tokens, used only where 2–4 chart series need
-visually separable hues and the "single accent" rule doesn't apply): `#d9342b` (red),
-`#c2760a` (amber), `#0a8f86` (teal) — darkened from the brighter dark-theme values used in
-the previous Discord pass, since light-background text needs more saturation/contrast than
-dark-background text does for the same hue family. The treemap and SOV bar-chart palettes
-use real Apple system colors instead (`#0066cc`, `#34c759`, `#ff9500`, `#ff3b30`,
-`#af52de`, `#30b0c7`, `#ff2d55`, `#5856d6`) since those are graphical fills, not text, and
-don't carry the same contrast requirement.
+visually separable hues and the single-accent rule doesn't apply): `#e41e3f` (red, reuses
+`semantic-error`), `#b8790a` (amber, darkened from Meta's `attention` `#f2a918` for text
+contrast), `#0a8f86` (teal — not a real Meta token, kept as a generic UI convenience
+color since Meta's palette has no teal). The treemap and SOV bar-chart palettes use real
+Meta brand/semantic colors instead (`#0064e0`, `#1f7a37`, `#f2a918`, `#e41e3f`, `#a121ce`
+Oculus purple, `#1876f2` fb-blue, `#385898` meta-link, `#5d6c7b` steel) since those are
+graphical fills, not text, and don't carry the same contrast requirement.
 
 ## Do's and Don'ts
 
 ### Do
 - Reference `bg-primary` / `text-ink` / `border-hairline` / etc. — never hardcode a hex or
-  `bg-white` for anything meant to sit on the app canvas (this is what let three full
+  `bg-white` for anything meant to sit on the app canvas (this is what let four full
   reskins happen by editing one CSS file each time).
 - Keep table/list body text at the existing small sizes (`text-xs`/`text-sm`) — this is a
-  data tool, not a product-showcase page; Apple's 17px-minimum-body instinct does not
+  data tool, not a hardware-showcase page; Meta's 16px-minimum-body instinct does not
   apply to a dashboard this dense.
 - Use `var(--color-hairline)` / `var(--color-ink-mute)` / `var(--color-canvas-cream)` /
   `var(--radius-md)` for Recharts `stroke`/`contentStyle` props, since those can't take
   Tailwind classes directly.
-- Reserve `primary` (Action Blue) as the only accent in page chrome — buttons, links,
-  active nav/tab states. Multi-series charts are the one place other hues appear.
+- Reserve `primary` (cobalt) as the only accent in page chrome — buttons, links, active
+  nav/tab states. Multi-series charts are the one place other brand/semantic hues appear.
 
 ### Don't
+- Don't reintroduce Meta's black-vs-cobalt CTA split — every button in this app is cobalt,
+  full stop; there's no "marketing surface" here to carve out a second CTA color for.
 - Don't add drop shadows to cards or buttons — depth here comes from the hairline border
-  and the parchment/white surface split, matching Apple's own near-zero-shadow philosophy.
-- Don't set any heading past the existing `text-xl` page-header scale or add negative
-  letter-spacing — it will not read as "Apple tight," it will read as a rendering bug at
-  this text size.
+  and the soft-cloud/white surface split, matching Meta's own "runs predominantly flat"
+  philosophy.
+- Don't set any heading past the existing `text-xl` page-header scale or add Optimistic
+  VF's `ss01, ss02` styling — there's no such font loaded, and 64px would break every
+  page-header layout in this app.
 - Don't add `prefers-color-scheme` branching or a dark-mode fallback — this is a single
   committed light theme; a stray dark-mode media query will silently produce
   unreadable dark-on-dark or light-text-on-light-bg patches.
-- Don't reuse the darkened chart-accent hexes (`#d9342b` etc.) as page-chrome colors —
+- Don't reuse the darkened chart-accent hexes (`#b8790a` etc.) as page-chrome colors —
   they exist only for chart-label contrast on white, not as a second brand accent.
