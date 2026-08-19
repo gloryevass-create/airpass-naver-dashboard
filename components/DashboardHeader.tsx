@@ -47,9 +47,11 @@ export function DashboardHeader({
       <div className="flex items-center justify-between">
         <Link href="/dashboard/events" className="flex w-56 shrink-0 items-center gap-2.5">
           <AppLogo className="h-8 w-8 shrink-0" />
-          <h1 className="truncate text-sm font-bold leading-tight tracking-tight text-white">
-            Strategic Planning Team Business AGENT
-          </h1>
+          <div className="min-w-0">
+            <h1 className="text-sm font-bold leading-tight tracking-tight text-white">
+              Strategic Planning Team Business AGENT
+            </h1>
+          </div>
         </Link>
         <div className="flex items-center gap-4 text-sm">
           <div ref={menuRef} className="relative">
