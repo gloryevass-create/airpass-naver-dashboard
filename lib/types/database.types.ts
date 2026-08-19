@@ -564,6 +564,63 @@ export type Database = {
         };
         Relationships: [];
       };
+      prespec_notices: {
+        Row: {
+          id: string;
+          keyword: string;
+          business_type: "cnstwk" | "servc" | "thng";
+          pre_spec_reg_no: string;
+          title: string;
+          ref_no: string | null;
+          notice_inst: string | null;
+          demand_inst: string | null;
+          budget_amount: number | null;
+          registered_at: string | null;
+          opinion_close_at: string | null;
+          official_name: string | null;
+          official_tel: string | null;
+          spec_doc_urls: string[];
+          bid_notice_nos: string[];
+          collected_at: string;
+        };
+        Insert: {
+          id?: string;
+          keyword: string;
+          business_type: "cnstwk" | "servc" | "thng";
+          pre_spec_reg_no: string;
+          title: string;
+          ref_no?: string | null;
+          notice_inst?: string | null;
+          demand_inst?: string | null;
+          budget_amount?: number | null;
+          registered_at?: string | null;
+          opinion_close_at?: string | null;
+          official_name?: string | null;
+          official_tel?: string | null;
+          spec_doc_urls?: string[];
+          bid_notice_nos?: string[];
+          collected_at?: string;
+        };
+        Update: {
+          id?: string;
+          keyword?: string;
+          business_type?: "cnstwk" | "servc" | "thng";
+          pre_spec_reg_no?: string;
+          title?: string;
+          ref_no?: string | null;
+          notice_inst?: string | null;
+          demand_inst?: string | null;
+          budget_amount?: number | null;
+          registered_at?: string | null;
+          opinion_close_at?: string | null;
+          official_name?: string | null;
+          official_tel?: string | null;
+          spec_doc_urls?: string[];
+          bid_notice_nos?: string[];
+          collected_at?: string;
+        };
+        Relationships: [];
+      };
       monitor_keywords: {
         Row: {
           id: string;

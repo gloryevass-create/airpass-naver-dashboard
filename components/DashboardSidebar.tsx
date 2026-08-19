@@ -30,6 +30,7 @@ const ITEMS: MenuEntry[] = [
     icon: "alert",
     children: [
       { href: "/dashboard/budget", label: "공고모니터링", icon: "megaphone" },
+      { href: "/dashboard/prespec", label: "사전규격", icon: "search" },
       { href: "/dashboard/news", label: "뉴스모니터링", icon: "newspaper" },
     ],
   },
