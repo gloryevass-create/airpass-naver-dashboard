@@ -147,7 +147,7 @@ export function PublicInstitutionTable({ institutions }: { institutions: PublicI
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="grid grid-cols-1 items-start gap-3 md:grid-cols-2">
+      <div className="flex flex-col gap-3">
         <StatBlock
           title={`기관유형별 현황 (${typeCounts.length}종) — 클릭하면 아래 목록이 필터링됩니다`}
           counts={typeCounts}
