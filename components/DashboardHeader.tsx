@@ -44,13 +44,13 @@ export function DashboardHeader({
 
   return (
     <header className="flex items-center justify-between border-b border-hairline bg-background px-6 py-4">
-      <Link href="/dashboard/events" className="flex items-center gap-2.5">
-        <AppLogo className="h-8 w-8" />
-        <div>
-          <h1 className="text-lg font-bold tracking-tight text-primary">
+      <Link href="/dashboard/events" className="flex w-56 shrink-0 items-center gap-2.5">
+        <AppLogo className="h-8 w-8 shrink-0" />
+        <div className="min-w-0">
+          <h1 className="truncate text-sm font-bold tracking-tight text-primary">
             Strategic Planning Team AGENT
           </h1>
-          <p className="text-xs text-ink-mute">
+          <p className="truncate text-xs text-ink-mute">
             {latestDate ? `최근 수집일: ${latestDate}` : "아직 수집된 데이터가 없습니다"}
           </p>
         </div>
