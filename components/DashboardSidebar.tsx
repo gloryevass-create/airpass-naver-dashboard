@@ -14,8 +14,14 @@ function isGroup(entry: MenuEntry): entry is GroupItem {
 }
 
 const ITEMS: MenuEntry[] = [
-  { href: "/dashboard/events", label: "팀 일정", icon: "calendar" },
-  { href: "/dashboard/business", label: "비즈니스", icon: "briefcase" },
+  {
+    label: "WORKSPACE",
+    icon: "sparkle",
+    children: [
+      { href: "/dashboard/events", label: "팀 일정", icon: "calendar" },
+      { href: "/dashboard/business", label: "비즈니스", icon: "briefcase" },
+    ],
+  },
   {
     label: "마케팅분석",
     icon: "chart",

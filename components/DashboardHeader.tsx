@@ -48,7 +48,7 @@ export function DashboardHeader({
         <AppLogo className="h-8 w-8 shrink-0" />
         <div className="min-w-0">
           <h1 className="text-sm font-bold leading-tight tracking-tight text-primary">
-            Strategic Planning Team AGENT
+            Strategic Planning Team Business AGENT
           </h1>
           <p className="truncate text-xs text-ink-mute">
             {latestDate ? `최근 수집일: ${latestDate}` : "아직 수집된 데이터가 없습니다"}

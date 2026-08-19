@@ -16,7 +16,7 @@ export default async function LoginPage({
         <div className="mb-3 flex items-center justify-center gap-2.5">
           <AppLogo className="h-9 w-9" />
           <h1 className="text-xl font-bold tracking-tight text-primary">
-            Strategic Planning Team AGENT
+            Strategic Planning Team Business AGENT
           </h1>
         </div>
         <p className="mt-1 text-sm text-ink-mute">팀 계정으로 로그인하세요.</p>
