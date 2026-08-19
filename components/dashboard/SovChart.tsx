@@ -3,7 +3,7 @@
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import type { DashboardData } from "@/lib/queries/dashboard";
 
-const COLORS = ["#4a154b", "#1264a3", "#611f69", "#3860be", "#8a5a8f", "#696969", "#c9a0cf", "#a3a3a3"];
+const COLORS = ["#5865f2", "#00b0f4", "#7c3aed", "#3dd0ff", "#9b6bc9", "#9aa0c9", "#ec48bd", "#c2d9f7"];
 
 export function SovChart({ data }: { data: DashboardData["sov"] }) {
   if (data.length === 0) {
@@ -15,23 +15,32 @@ export function SovChart({ data }: { data: DashboardData["sov"] }) {
       <div className="h-72 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e6e6e6" />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--color-hairline)" />
             <XAxis
               dataKey="competitorName"
               fontSize={12}
-              stroke="#696969"
+              stroke="var(--color-ink-mute)"
               interval={0}
               angle={-20}
               textAnchor="end"
               height={50}
             />
-            <YAxis fontSize={12} stroke="#696969" width={40} unit="%" />
-            <Tooltip formatter={(value) => [`${value}%`, "평균 노출 점유율"]} />
+            <YAxis fontSize={12} stroke="var(--color-ink-mute)" width={40} unit="%" />
+            <Tooltip
+              formatter={(value) => [`${value}%`, "평균 노출 점유율"]}
+              contentStyle={{
+                backgroundColor: "var(--color-canvas-cream)",
+                border: "1px solid var(--color-hairline)",
+                borderRadius: "0.625rem",
+                color: "var(--color-ink)",
+              }}
+              labelStyle={{ color: "var(--color-ink-mute)" }}
+            />
             <Bar dataKey="sharePct" radius={[4, 4, 0, 0]}>
               {data.map((entry, index) => (
                 <Cell
                   key={entry.competitorId}
-                  fill={entry.sharePct > 0 ? COLORS[index % COLORS.length] : "#e6e6e6"}
+                  fill={entry.sharePct > 0 ? COLORS[index % COLORS.length] : "var(--color-hairline)"}
                 />
               ))}
             </Bar>

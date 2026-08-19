@@ -1,8 +1,8 @@
 import type { DashboardData } from "@/lib/queries/dashboard";
 
 const SEVERITY_STYLE: Record<string, string> = {
-  critical: "bg-[#fbeae4] text-semantic-error border-[#f0c9ba]",
-  warning: "bg-amber-50 text-amber-700 border-amber-200",
+  critical: "bg-semantic-error/15 text-semantic-error border-semantic-error/30",
+  warning: "bg-amber-400/15 text-amber-300 border-amber-400/30",
   info: "bg-canvas-cream text-ink-mute border-hairline",
 };
 
@@ -25,7 +25,7 @@ export function AlertsList({ data }: { data: DashboardData["alerts"] }) {
           className={`rounded-md border px-3 py-2 text-sm ${SEVERITY_STYLE[alert.severity]}`}
         >
           <div className="flex items-center gap-2">
-            <span className="rounded-full bg-white/60 px-2 py-0.5 text-xs font-medium">
+            <span className="rounded-full bg-black/20 px-2 py-0.5 text-xs font-medium">
               {SEVERITY_LABEL[alert.severity]}
             </span>
             <span className="text-xs text-ink-mute">{alert.category}</span>

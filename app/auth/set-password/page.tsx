@@ -21,7 +21,7 @@ export default async function SetPasswordPage() {
     <main className="flex flex-1 flex-col items-center justify-center gap-8 p-6">
       <div className="text-center">
         <h1 className="text-xl font-semibold">비밀번호 설정</h1>
-        <p className="mt-1 text-sm text-neutral-500">
+        <p className="mt-1 text-sm text-ink-mute">
           계속 사용할 새 비밀번호를 입력하세요.
         </p>
       </div>

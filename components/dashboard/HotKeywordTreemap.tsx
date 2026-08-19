@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ResponsiveContainer, Tooltip, Treemap } from "recharts";
 import type { DashboardData } from "@/lib/queries/dashboard";
 
-const COLORS = ["#4a154b", "#611f69", "#7c3aed", "#9b6bc9", "#b794d4", "#1264a3", "#3860be", "#5b8def", "#8bb4f0", "#c2d9f7"];
+const COLORS = ["#5865f2", "#4752c4", "#7c3aed", "#9b6bc9", "#b794d4", "#ec48bd", "#00b0f4", "#3dd0ff", "#8bb4f0", "#c2d9f7"];
 
 type Mode = "search" | "spend" | "cpc";
 
@@ -115,7 +115,7 @@ function CustomTooltip({
   if (!active || !payload?.length) return null;
   const node = payload[0].payload;
   return (
-    <div className="rounded-md border border-hairline bg-white p-3 text-xs shadow-md">
+    <div className="rounded-md border border-hairline bg-canvas-cream p-3 text-xs shadow-md">
       <p className="mb-1 font-semibold">
         {node.rank ?? "-"}위 · {node.name ?? ""}
       </p>

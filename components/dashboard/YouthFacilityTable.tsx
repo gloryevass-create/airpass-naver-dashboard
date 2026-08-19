@@ -221,7 +221,7 @@ export function YouthFacilityTable({ facilities }: { facilities: YouthFacility[]
         <select
           value={province}
           onChange={(e) => setProvince(e.target.value)}
-          className="rounded-md border border-hairline bg-white px-2 py-1.5 text-ink"
+          className="rounded-md border border-hairline bg-canvas-cream px-2 py-1.5 text-ink"
         >
           {provinces.map((p) => (
             <option key={p} value={p}>
@@ -247,7 +247,7 @@ export function YouthFacilityTable({ facilities }: { facilities: YouthFacility[]
               const v = e.target.value;
               setCount(v === "전체" ? "전체" : (Number(v) as CountOption));
             }}
-            className="rounded-md border border-hairline bg-white px-2 py-1 text-ink"
+            className="rounded-md border border-hairline bg-canvas-cream px-2 py-1 text-ink"
           >
             {COUNT_OPTIONS.map((opt) => (
               <option key={opt} value={opt}>

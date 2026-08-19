@@ -79,7 +79,7 @@ export function BudgetBidList({
               type="button"
               onClick={() => scrap.switchView("all")}
               className={`rounded-full px-3 py-1 transition-colors ${
-                scrap.view === "all" ? "bg-white text-ink shadow-sm" : "text-ink-mute hover:text-ink"
+                scrap.view === "all" ? "bg-primary text-white shadow-sm" : "text-ink-mute hover:text-ink"
               }`}
             >
               전체
@@ -88,7 +88,7 @@ export function BudgetBidList({
               type="button"
               onClick={() => scrap.switchView("scrap")}
               className={`rounded-full px-3 py-1 transition-colors ${
-                scrap.view === "scrap" ? "bg-white text-ink shadow-sm" : "text-ink-mute hover:text-ink"
+                scrap.view === "scrap" ? "bg-primary text-white shadow-sm" : "text-ink-mute hover:text-ink"
               }`}
             >
               스크랩 ({scrapedIds.size})

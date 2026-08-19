@@ -76,7 +76,7 @@ export function KeywordTable({ data }: { data: Row[] }) {
               const v = e.target.value;
               setCount(v === "전체" ? "전체" : (Number(v) as CountOption));
             }}
-            className="rounded-md border border-hairline bg-white px-2 py-1 text-ink"
+            className="rounded-md border border-hairline bg-canvas-cream px-2 py-1 text-ink"
           >
             {COUNT_OPTIONS.map((opt) => (
               <option key={opt} value={opt}>

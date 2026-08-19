@@ -84,7 +84,7 @@ export function TeamEventCalendar({ events, month }: { events: TeamEvent[]; mont
                 <div
                   key={day}
                   className={`min-h-24 border-r border-hairline p-1 last:border-r-0 ${
-                    inMonth ? "" : "bg-neutral-50"
+                    inMonth ? "" : "bg-black/10"
                   }`}
                 >
                   <div

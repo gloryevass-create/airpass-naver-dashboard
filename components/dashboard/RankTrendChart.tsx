@@ -21,22 +21,29 @@ export function RankTrendChart({ data }: { data: DashboardData["rankTrend"] }) {
     <div className="h-64 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={chartData} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e6e6e6" />
-          <XAxis dataKey="date" fontSize={12} stroke="#696969" />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-hairline)" />
+          <XAxis dataKey="date" fontSize={12} stroke="var(--color-ink-mute)" />
           <YAxis
             reversed
             fontSize={12}
-            stroke="#696969"
+            stroke="var(--color-ink-mute)"
             allowDecimals={false}
             width={32}
           />
           <Tooltip
             formatter={(value) => [value != null ? `${value}위` : "데이터 없음", "평균 노출순위"]}
+            contentStyle={{
+              backgroundColor: "var(--color-canvas-cream)",
+              border: "1px solid var(--color-hairline)",
+              borderRadius: "0.625rem",
+              color: "var(--color-ink)",
+            }}
+            labelStyle={{ color: "var(--color-ink-mute)" }}
           />
           <Line
             type="monotone"
             dataKey="avgRank"
-            stroke="#4a154b"
+            stroke="var(--color-primary)"
             strokeWidth={2}
             dot={{ r: 3 }}
             connectNulls

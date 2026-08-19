@@ -14,19 +14,19 @@ export function YoutubeChannelStats({ data }: { data: ChannelStatsResult }) {
     <div className="rounded-xl border border-hairline p-4">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="rounded-lg border border-hairline p-3">
-          <p className="text-xs font-bold uppercase tracking-wide text-[#c0392b]">구독자 수</p>
+          <p className="text-xs font-bold uppercase tracking-wide text-[#ff6b6b]">구독자 수</p>
           <p className="mt-1 text-2xl font-bold tracking-tight text-primary">
             {(data.latest?.subscriberCount ?? 0).toLocaleString("ko-KR")}명
           </p>
         </div>
         <div className="rounded-lg border border-hairline p-3">
-          <p className="text-xs font-bold uppercase tracking-wide text-[#d68910]">전체 조회수</p>
+          <p className="text-xs font-bold uppercase tracking-wide text-[#ffb84d]">전체 조회수</p>
           <p className="mt-1 text-2xl font-bold tracking-tight text-primary">
             {(data.latest?.viewCount ?? 0).toLocaleString("ko-KR")}
           </p>
         </div>
         <div className="rounded-lg border border-hairline p-3">
-          <p className="text-xs font-bold uppercase tracking-wide text-[#1264a3]">영상 수</p>
+          <p className="text-xs font-bold uppercase tracking-wide text-link-blue">영상 수</p>
           <p className="mt-1 text-2xl font-bold tracking-tight text-primary">
             {(data.latest?.videoCount ?? 0).toLocaleString("ko-KR")}개
           </p>
@@ -42,14 +42,22 @@ export function YoutubeChannelStats({ data }: { data: ChannelStatsResult }) {
         <div className="mt-4 h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e6e6e6" />
-              <XAxis dataKey="date" fontSize={12} stroke="#696969" />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-hairline)" />
+              <XAxis dataKey="date" fontSize={12} stroke="var(--color-ink-mute)" />
               {/* 구독자 수(수십~수백)와 조회수(수만)의 규모 차이가 커서 축을 따로 둔다. */}
               <YAxis yAxisId="sub" hide domain={["auto", "auto"]} />
               <YAxis yAxisId="view" hide domain={["auto", "auto"]} />
-              <Tooltip />
-              <Line yAxisId="sub" type="monotone" dataKey="구독자수" stroke="#c0392b" strokeWidth={2} dot={{ r: 3 }} />
-              <Line yAxisId="view" type="monotone" dataKey="조회수" stroke="#d68910" strokeWidth={2} dot={{ r: 3 }} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "var(--color-canvas-cream)",
+                  border: "1px solid var(--color-hairline)",
+                  borderRadius: "0.625rem",
+                  color: "var(--color-ink)",
+                }}
+                labelStyle={{ color: "var(--color-ink-mute)" }}
+              />
+              <Line yAxisId="sub" type="monotone" dataKey="구독자수" stroke="#ff6b6b" strokeWidth={2} dot={{ r: 3 }} />
+              <Line yAxisId="view" type="monotone" dataKey="조회수" stroke="#ffb84d" strokeWidth={2} dot={{ r: 3 }} />
             </LineChart>
           </ResponsiveContainer>
         </div>

@@ -1,21 +1,25 @@
 @import "tailwindcss";
 
-/* Color tokens — DESIGN.md (Slack-inspired: aubergine primary, blue links, cream/lavender surfaces) */
+/* Color tokens — DESIGN.md (Discord-inspired, reinterpreted for a data-dense business
+   dashboard: deep indigo canvas, Blurple primary, electric-green success, generous
+   rounding — but body text kept small/readable and tables kept dense, unlike Discord's
+   own loud marketing-site type scale). 다크 테마를 유일한(단일) 테마로 고정한다 — OS
+   설정과 무관하게 항상 이 팔레트를 쓴다(prefers-color-scheme 분기 없음). */
 :root {
-  --background: #ffffff;
-  --foreground: #1d1d1d;
+  --background: #10132f;
+  --foreground: #f1f2ff;
 
-  --color-primary: #4a154b;
-  --color-primary-press: #611f69;
-  --color-link-blue: #1264a3;
-  --color-link-hover: #3860be;
-  --color-canvas-cream: #f4ede4;
-  --color-canvas-lavender: #f9f0ff;
-  --color-ink: #1d1d1d;
-  --color-ink-mute: #696969;
-  --color-hairline: #e6e6e6;
-  --color-semantic-error: #cc4117;
-  --color-semantic-success: #007a5a;
+  --color-primary: #5865f2;
+  --color-primary-press: #4752c4;
+  --color-link-blue: #00b0f4;
+  --color-link-hover: #3dd0ff;
+  --color-canvas-cream: #1c2150;
+  --color-canvas-lavender: #262b66;
+  --color-ink: #f1f2ff;
+  --color-ink-mute: #9aa0c9;
+  --color-hairline: #2e3372;
+  --color-semantic-error: #ed4245;
+  --color-semantic-success: #35ed7e;
 }
 
 @theme inline {
@@ -37,13 +41,12 @@
     "Apple SD Gothic Neo", Roboto, Helvetica, Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
     monospace;
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Discord's soft, generous geometry — bumped up from Tailwind's defaults, but far
+     short of Discord's own 40px+ marketing-panel radii so dense tables stay usable. */
+  --radius-md: 0.625rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1.5rem;
 }
 
 body {

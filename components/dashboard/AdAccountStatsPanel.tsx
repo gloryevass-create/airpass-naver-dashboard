@@ -149,25 +149,25 @@ export function AdAccountStatsPanel({ data }: { data: DashboardData["adAccountSt
             className={`grid grid-cols-2 gap-4 transition-opacity sm:grid-cols-4 ${isPending ? "opacity-40" : ""}`}
           >
             <div className="rounded-lg border border-hairline p-3">
-              <p className="text-xs font-bold uppercase tracking-wide text-[#c0392b]">총 노출수</p>
+              <p className="text-xs font-bold uppercase tracking-wide text-[#ff6b6b]">총 노출수</p>
               <p className="mt-1 text-2xl font-bold tracking-tight text-primary">
                 {data.totals.impCnt.toLocaleString("ko-KR")}
               </p>
             </div>
             <div className="rounded-lg border border-hairline p-3">
-              <p className="text-xs font-bold uppercase tracking-wide text-[#d68910]">총 클릭수</p>
+              <p className="text-xs font-bold uppercase tracking-wide text-[#ffb84d]">총 클릭수</p>
               <p className="mt-1 text-2xl font-bold tracking-tight text-primary">
                 {data.totals.clkCnt.toLocaleString("ko-KR")}
               </p>
             </div>
             <div className="rounded-lg border border-hairline p-3">
-              <p className="text-xs font-bold uppercase tracking-wide text-[#16a085]">평균 CPC</p>
+              <p className="text-xs font-bold uppercase tracking-wide text-[#2dd4bf]">평균 CPC</p>
               <p className="mt-1 text-2xl font-bold tracking-tight text-primary">
                 {data.totals.avgCpc.toLocaleString("ko-KR")}원
               </p>
             </div>
             <div className="rounded-lg border border-hairline p-3">
-              <p className="text-xs font-bold uppercase tracking-wide text-[#1264a3]">평균 CPM</p>
+              <p className="text-xs font-bold uppercase tracking-wide text-link-blue">평균 CPM</p>
               <p className="mt-1 text-2xl font-bold tracking-tight text-primary">
                 {data.totals.avgCpm.toLocaleString("ko-KR")}원
               </p>
@@ -177,8 +177,8 @@ export function AdAccountStatsPanel({ data }: { data: DashboardData["adAccountSt
           <div className={`mt-4 h-64 w-full transition-opacity ${isPending ? "opacity-40" : ""}`}>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e6e6e6" />
-                <XAxis dataKey="date" fontSize={12} stroke="#696969" />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--color-hairline)" />
+                <XAxis dataKey="date" fontSize={12} stroke="var(--color-ink-mute)" />
                 {/* 지표마다 값의 규모 차이가 커서(노출수는 수천, 클릭수는 수십) 하나의
                     세로축을 공유하면 작은 값의 선이 바닥에 붙어 모양이 안 보인다 — 지표별로
                     숨긴 축을 따로 둬서 각자 자기 범위에 맞게 꽉 차게 그려지도록 한다(단위
@@ -187,11 +187,19 @@ export function AdAccountStatsPanel({ data }: { data: DashboardData["adAccountSt
                 <YAxis yAxisId="clk" hide domain={["auto", "auto"]} />
                 <YAxis yAxisId="cpc" hide domain={["auto", "auto"]} />
                 <YAxis yAxisId="cpm" hide domain={["auto", "auto"]} />
-                <Tooltip />
-                <Line yAxisId="imp" type="monotone" dataKey="노출수" stroke="#c0392b" strokeWidth={2} dot={{ r: 3 }} />
-                <Line yAxisId="clk" type="monotone" dataKey="클릭수" stroke="#d68910" strokeWidth={2} dot={{ r: 3 }} />
-                <Line yAxisId="cpc" type="monotone" dataKey="평균CPC" stroke="#16a085" strokeWidth={2} dot={{ r: 3 }} />
-                <Line yAxisId="cpm" type="monotone" dataKey="CPM" stroke="#1264a3" strokeWidth={2} dot={{ r: 3 }} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "var(--color-canvas-cream)",
+                    border: "1px solid var(--color-hairline)",
+                    borderRadius: "0.625rem",
+                    color: "var(--color-ink)",
+                  }}
+                  labelStyle={{ color: "var(--color-ink-mute)" }}
+                />
+                <Line yAxisId="imp" type="monotone" dataKey="노출수" stroke="#ff6b6b" strokeWidth={2} dot={{ r: 3 }} />
+                <Line yAxisId="clk" type="monotone" dataKey="클릭수" stroke="#ffb84d" strokeWidth={2} dot={{ r: 3 }} />
+                <Line yAxisId="cpc" type="monotone" dataKey="평균CPC" stroke="#2dd4bf" strokeWidth={2} dot={{ r: 3 }} />
+                <Line yAxisId="cpm" type="monotone" dataKey="CPM" stroke="var(--color-link-blue)" strokeWidth={2} dot={{ r: 3 }} />
               </LineChart>
             </ResponsiveContainer>
           </div>
