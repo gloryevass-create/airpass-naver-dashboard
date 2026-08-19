@@ -61,8 +61,8 @@ function NavLink({ item, active, indent }: { item: LeafItem; active: boolean; in
   return (
     <Link
       href={item.href}
-      className={`flex items-center justify-between rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-        indent ? "ml-3" : ""
+      className={`flex items-center justify-between rounded-md px-3 text-sm font-medium transition-colors ${
+        indent ? "ml-3 py-1.5" : "py-2"
       } ${
         active
           ? "bg-canvas-lavender text-primary"
@@ -112,15 +112,18 @@ export function DashboardSidebar() {
                   className={`h-3 w-3 shrink-0 transition-transform ${expanded ? "rotate-90" : ""}`}
                 />
               </button>
-              {expanded &&
-                entry.children.map((child) => (
-                  <NavLink
-                    key={child.href}
-                    item={child}
-                    active={Boolean(pathname?.startsWith(child.href))}
-                    indent
-                  />
-                ))}
+              {expanded && (
+                <div className="flex flex-col gap-0.5">
+                  {entry.children.map((child) => (
+                    <NavLink
+                      key={child.href}
+                      item={child}
+                      active={Boolean(pathname?.startsWith(child.href))}
+                      indent
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           );
         }
