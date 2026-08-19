@@ -43,14 +43,14 @@ export function DashboardHeader({
   }
 
   return (
-    <header className="flex items-center justify-between border-b border-hairline bg-background px-6 py-4">
+    <header className="flex items-center justify-between border-b border-white/10 bg-[#1a1d29] px-6 py-4">
       <Link href="/dashboard/events" className="flex w-56 shrink-0 items-center gap-2.5">
         <AppLogo className="h-8 w-8 shrink-0" />
         <div className="min-w-0">
-          <h1 className="text-sm font-bold leading-tight tracking-tight text-primary">
+          <h1 className="text-sm font-bold leading-tight tracking-tight text-white">
             Strategic Planning Team Business AGENT
           </h1>
-          <p className="truncate text-xs text-ink-mute">
+          <p className="truncate text-xs text-white/50">
             {latestDate ? `최근 수집일: ${latestDate}` : "아직 수집된 데이터가 없습니다"}
           </p>
         </div>
@@ -60,8 +60,8 @@ export function DashboardHeader({
           <button
             type="button"
             onClick={() => setMenuOpen((v) => !v)}
-            className={`flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-ink-mute transition-colors ${
-              menuOpen ? "border-primary text-ink" : "border-transparent hover:border-hairline"
+            className={`flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-white/70 transition-colors ${
+              menuOpen ? "border-white/40 text-white" : "border-transparent hover:border-white/20 hover:text-white"
             }`}
           >
             <NavIcon name="user" className="h-3.5 w-3.5" />
@@ -83,7 +83,7 @@ export function DashboardHeader({
         {isAdmin && (
           <a
             href="/dashboard/admin"
-            className="flex items-center gap-1 text-link-blue hover:text-link-hover hover:underline"
+            className="flex items-center gap-1 text-white/70 hover:text-white hover:underline"
           >
             <NavIcon name="shield" className="h-3.5 w-3.5" />
             관리자
@@ -91,7 +91,7 @@ export function DashboardHeader({
         )}
         <button
           onClick={handleSignOut}
-          className="flex items-center gap-1 text-link-blue hover:text-link-hover hover:underline"
+          className="flex items-center gap-1 text-white/70 hover:text-white hover:underline"
         >
           <NavIcon name="logout" className="h-3.5 w-3.5" />
           로그아웃
