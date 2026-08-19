@@ -2,7 +2,7 @@ import type { DashboardData } from "@/lib/queries/dashboard";
 
 const SEVERITY_STYLE: Record<string, string> = {
   critical: "bg-semantic-error/15 text-semantic-error border-semantic-error/30",
-  warning: "bg-amber-400/15 text-amber-300 border-amber-400/30",
+  warning: "bg-amber-50 text-amber-700 border-amber-200",
   info: "bg-canvas-cream text-ink-mute border-hairline",
 };
 

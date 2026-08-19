@@ -35,7 +35,7 @@ export function RankTrendChart({ data }: { data: DashboardData["rankTrend"] }) {
             contentStyle={{
               backgroundColor: "var(--color-canvas-cream)",
               border: "1px solid var(--color-hairline)",
-              borderRadius: "0.625rem",
+              borderRadius: "var(--radius-md)",
               color: "var(--color-ink)",
             }}
             labelStyle={{ color: "var(--color-ink-mute)" }}

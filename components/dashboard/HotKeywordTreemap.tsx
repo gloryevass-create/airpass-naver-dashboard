@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ResponsiveContainer, Tooltip, Treemap } from "recharts";
 import type { DashboardData } from "@/lib/queries/dashboard";
 
-const COLORS = ["#5865f2", "#4752c4", "#7c3aed", "#9b6bc9", "#b794d4", "#ec48bd", "#00b0f4", "#3dd0ff", "#8bb4f0", "#c2d9f7"];
+const COLORS = ["#0066cc", "#34c759", "#ff9500", "#ff3b30", "#af52de", "#30b0c7", "#ff2d55", "#5856d6", "#8bb4f0", "#7a7a7a"];
 
 type Mode = "search" | "spend" | "cpc";
 

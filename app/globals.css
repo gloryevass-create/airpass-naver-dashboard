@@ -1,25 +1,26 @@
 @import "tailwindcss";
 
-/* Color tokens — DESIGN.md (Discord-inspired, reinterpreted for a data-dense business
-   dashboard: deep indigo canvas, Blurple primary, electric-green success, generous
-   rounding — but body text kept small/readable and tables kept dense, unlike Discord's
-   own loud marketing-site type scale). 다크 테마를 유일한(단일) 테마로 고정한다 — OS
-   설정과 무관하게 항상 이 팔레트를 쓴다(prefers-color-scheme 분기 없음). */
+/* Color tokens — DESIGN.md (Apple-inspired, reinterpreted for a data-dense business
+   dashboard: parchment/white canvas, near-black ink, a single quiet Action Blue accent,
+   hairline borders, almost no shadow, tight pill-radius controls — but body text kept
+   small/readable and tables kept dense, unlike Apple's own 56px marketing headline
+   scale). 라이트 테마를 유일한(단일) 테마로 고정한다 — OS 설정과 무관하게 항상 이
+   팔레트를 쓴다(prefers-color-scheme 분기 없음). */
 :root {
-  --background: #10132f;
-  --foreground: #f1f2ff;
+  --background: #f5f5f7;
+  --foreground: #1d1d1f;
 
-  --color-primary: #5865f2;
-  --color-primary-press: #4752c4;
-  --color-link-blue: #00b0f4;
-  --color-link-hover: #3dd0ff;
-  --color-canvas-cream: #1c2150;
-  --color-canvas-lavender: #262b66;
-  --color-ink: #f1f2ff;
-  --color-ink-mute: #9aa0c9;
-  --color-hairline: #2e3372;
-  --color-semantic-error: #ed4245;
-  --color-semantic-success: #35ed7e;
+  --color-primary: #0066cc;
+  --color-primary-press: #0071e3;
+  --color-link-blue: #0066cc;
+  --color-link-hover: #0071e3;
+  --color-canvas-cream: #ffffff;
+  --color-canvas-lavender: #e8f2ff;
+  --color-ink: #1d1d1f;
+  --color-ink-mute: #7a7a7a;
+  --color-hairline: #e0e0e0;
+  --color-semantic-error: #d70015;
+  --color-semantic-success: #248a3d;
 }
 
 @theme inline {
@@ -42,11 +43,11 @@
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
     monospace;
 
-  /* Discord's soft, generous geometry — bumped up from Tailwind's defaults, but far
-     short of Discord's own 40px+ marketing-panel radii so dense tables stay usable. */
-  --radius-md: 0.625rem;
-  --radius-lg: 0.875rem;
-  --radius-xl: 1.5rem;
+  /* Apple's tighter, crisper radius scale (sm 8px / md 11px / lg 18px in their spec) —
+     noticeably less rounded than Discord's, mapped onto our md/lg/xl theme tokens. */
+  --radius-md: 0.5rem;
+  --radius-lg: 0.6875rem;
+  --radius-xl: 1.125rem;
 }
 
 body {
