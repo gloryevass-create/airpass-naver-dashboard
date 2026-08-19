@@ -19,6 +19,16 @@ export default async function BlogPage() {
 
   return (
     <main className="mx-auto flex w-[90%] flex-col gap-8 p-6">
+      <div>
+        <h1 className="flex items-center gap-2 text-xl font-bold tracking-tight text-primary">
+          <NavIcon name="document" className="h-5 w-5" />
+          네이버 블로그 분석
+        </h1>
+        <p className="mt-1 text-sm text-ink-mute">
+          경쟁사 블로그 포스팅 현황과 콘텐츠 노출 점유율(SOV)을 모니터링합니다.
+        </p>
+      </div>
+
       <CompetitorBlogManager competitors={competitors} path="/dashboard/blog" />
       {!dashboard.latestDate && (
         <div className="rounded-xl border border-hairline bg-canvas-cream p-6 text-sm text-ink-mute">

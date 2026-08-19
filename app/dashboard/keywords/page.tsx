@@ -23,6 +23,16 @@ export default async function KeywordsPage({ searchParams }: { searchParams: Sea
 
   return (
     <main className="mx-auto flex w-[90%] flex-col gap-8 p-6">
+      <div>
+        <h1 className="flex items-center gap-2 text-xl font-bold tracking-tight text-primary">
+          <NavIcon name="search" className="h-5 w-5" />
+          네이버 키워드 분석
+        </h1>
+        <p className="mt-1 text-sm text-ink-mute">
+          네이버 검색광고 키워드 실적과 경쟁사 대비 노출순위를 모니터링합니다.
+        </p>
+      </div>
+
       {!dashboard.latestDate && (
         <div className="rounded-xl border border-hairline bg-canvas-cream p-6 text-sm text-ink-mute">
           아직 모니터링 에이전트가 수집한 데이터가 없습니다. 파이프라인이 최소 1회 실행되면

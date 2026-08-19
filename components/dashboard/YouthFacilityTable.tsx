@@ -236,10 +236,10 @@ export function YouthFacilityTable({ facilities }: { facilities: YouthFacility[]
           placeholder="시설명·시군구 검색"
           className="rounded-md border border-hairline px-3 py-1.5 text-ink outline-none focus:border-primary"
         />
-        <span className="text-xs text-ink-mute">
+        <span className="text-xs font-bold text-ink-mute">
           전체 {sorted.length.toLocaleString("ko-KR")}곳 중 {visible.length.toLocaleString("ko-KR")}곳 표시
         </span>
-        <label className="flex items-center gap-2 text-xs text-ink-mute">
+        <label className="flex items-center gap-2 text-xs font-bold text-ink-mute">
           표시 개수
           <select
             value={count}
@@ -293,7 +293,7 @@ export function YouthFacilityTable({ facilities }: { facilities: YouthFacility[]
               <tr key={f.id} className="border-t border-hairline odd:bg-white even:bg-[#f7f7f8]">
                 <td className="whitespace-nowrap px-2 py-1 text-ink-mute">{i + 1}</td>
                 {DISPLAY_COLUMNS.map((col) => (
-                  <td key={col.key} className="whitespace-nowrap px-2 py-1">
+                  <td key={col.key} className="whitespace-nowrap px-2 py-1 text-ink-mute">
                     {col.key === "homepageUrl" && f.homepageUrl ? (
                       <a
                         href={f.homepageUrl.trim()}
