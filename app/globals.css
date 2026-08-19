@@ -9,7 +9,7 @@
    라이트 테마를 유일한(단일) 테마로 고정한다 — OS 설정과 무관하게 항상 이 팔레트를
    쓴다(prefers-color-scheme 분기 없음). */
 :root {
-  --background: #f1f4f7;
+  --background: #ffffff;
   --foreground: #0a1317;
 
   --color-primary: #0064e0;
