@@ -43,6 +43,7 @@ const ITEMS: MenuEntry[] = [
       { href: "/dashboard/db/disability-sports", label: "장애인체육시설", icon: "tag" },
       { href: "/dashboard/db/disability-welfare", label: "장애인편의시설", icon: "tag" },
       { href: "/dashboard/db/special-schools", label: "특수학교현황", icon: "tag" },
+      { href: "/dashboard/db/public-institutions", label: "공공기관정보", icon: "tag" },
     ],
   },
 ];

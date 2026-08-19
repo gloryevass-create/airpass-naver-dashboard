@@ -1161,6 +1161,39 @@ export type Database = {
         };
         Relationships: [];
       };
+      public_institutions: {
+        Row: {
+          id: string;
+          site_name: string;
+          institution_type: string | null;
+          institution_category: string | null;
+          detail_category: string | null;
+          site_type: string | null;
+          url: string | null;
+          synced_at: string;
+        };
+        Insert: {
+          id?: string;
+          site_name: string;
+          institution_type?: string | null;
+          institution_category?: string | null;
+          detail_category?: string | null;
+          site_type?: string | null;
+          url?: string | null;
+          synced_at?: string;
+        };
+        Update: {
+          id?: string;
+          site_name?: string;
+          institution_type?: string | null;
+          institution_category?: string | null;
+          detail_category?: string | null;
+          site_type?: string | null;
+          url?: string | null;
+          synced_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
