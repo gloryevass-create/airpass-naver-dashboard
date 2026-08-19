@@ -72,7 +72,7 @@ function NavLink({ item, active, indent }: { item: LeafItem; active: boolean; in
       } ${
         active
           ? "bg-canvas-lavender text-primary"
-          : "text-ink-mute hover:bg-canvas-cream hover:text-ink"
+          : "text-[#5b6b82] hover:bg-canvas-cream hover:text-ink"
       }`}
     >
       <span className="flex items-center gap-2.5">
@@ -109,7 +109,7 @@ export function DashboardSidebar() {
                 type="button"
                 onClick={() => toggleGroup(entry.label)}
                 aria-expanded={expanded}
-                className="flex items-center gap-2.5 px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-ink-mute/70 hover:text-ink-mute"
+                className="flex items-center gap-2.5 px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-[#5b6b82]/80 hover:text-[#5b6b82]"
               >
                 <NavIcon name={entry.icon} className="h-3.5 w-3.5 shrink-0" />
                 <span className="flex-1 text-left">{entry.label}</span>
