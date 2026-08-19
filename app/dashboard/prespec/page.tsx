@@ -17,7 +17,7 @@ export default async function PrespecPage({ searchParams }: { searchParams: Sear
   ]);
 
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 p-6">
+    <main className="mx-auto flex w-[80%] flex-col gap-6 p-6">
       <div>
         <h1 className="flex items-center gap-2 text-xl font-bold tracking-tight text-primary">
           <NavIcon name="search" className="h-5 w-5" />

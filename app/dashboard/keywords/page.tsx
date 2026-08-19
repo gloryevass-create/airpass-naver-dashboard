@@ -22,7 +22,7 @@ export default async function KeywordsPage({ searchParams }: { searchParams: Sea
   const keywordReports = dashboard.reports.filter((r) => r.track !== "blog");
 
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-col gap-8 p-6">
+    <main className="mx-auto flex w-[80%] flex-col gap-8 p-6">
       {!dashboard.latestDate && (
         <div className="rounded-xl border border-hairline bg-canvas-cream p-6 text-sm text-ink-mute">
           아직 모니터링 에이전트가 수집한 데이터가 없습니다. 파이프라인이 최소 1회 실행되면

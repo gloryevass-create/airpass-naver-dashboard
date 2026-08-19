@@ -18,7 +18,7 @@ export default async function BlogPage() {
   const blogReports = dashboard.reports.filter((r) => r.track !== "ad");
 
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-col gap-8 p-6">
+    <main className="mx-auto flex w-[80%] flex-col gap-8 p-6">
       <CompetitorBlogManager competitors={competitors} path="/dashboard/blog" />
       {!dashboard.latestDate && (
         <div className="rounded-xl border border-hairline bg-canvas-cream p-6 text-sm text-ink-mute">
