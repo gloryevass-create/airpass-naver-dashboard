@@ -3,7 +3,7 @@
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import type { DashboardData } from "@/lib/queries/dashboard";
 
-const COLORS = ["#0064e0", "#1f7a37", "#f2a918", "#e41e3f", "#a121ce", "#1876f2", "#385898", "#8595a4"];
+const COLORS = ["#0066cc", "#34c759", "#ff9500", "#af52de", "#30b0c7", "#ff2d55", "#5856d6", "#7a7a7a"];
 
 export function SovChart({ data }: { data: DashboardData["sov"] }) {
   if (data.length === 0) {

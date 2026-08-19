@@ -149,13 +149,13 @@ export function AdAccountStatsPanel({ data }: { data: DashboardData["adAccountSt
             className={`grid grid-cols-2 gap-4 transition-opacity sm:grid-cols-4 ${isPending ? "opacity-40" : ""}`}
           >
             <div className="rounded-lg border border-hairline p-3">
-              <p className="text-xs font-bold uppercase tracking-wide text-[#e41e3f]">총 노출수</p>
+              <p className="text-xs font-bold uppercase tracking-wide text-[#d9342b]">총 노출수</p>
               <p className="mt-1 text-2xl font-bold tracking-tight text-primary">
                 {data.totals.impCnt.toLocaleString("ko-KR")}
               </p>
             </div>
             <div className="rounded-lg border border-hairline p-3">
-              <p className="text-xs font-bold uppercase tracking-wide text-[#b8790a]">총 클릭수</p>
+              <p className="text-xs font-bold uppercase tracking-wide text-[#c2760a]">총 클릭수</p>
               <p className="mt-1 text-2xl font-bold tracking-tight text-primary">
                 {data.totals.clkCnt.toLocaleString("ko-KR")}
               </p>
@@ -196,8 +196,8 @@ export function AdAccountStatsPanel({ data }: { data: DashboardData["adAccountSt
                   }}
                   labelStyle={{ color: "var(--color-ink-mute)" }}
                 />
-                <Line yAxisId="imp" type="monotone" dataKey="노출수" stroke="#e41e3f" strokeWidth={2} dot={{ r: 3 }} />
-                <Line yAxisId="clk" type="monotone" dataKey="클릭수" stroke="#b8790a" strokeWidth={2} dot={{ r: 3 }} />
+                <Line yAxisId="imp" type="monotone" dataKey="노출수" stroke="#d9342b" strokeWidth={2} dot={{ r: 3 }} />
+                <Line yAxisId="clk" type="monotone" dataKey="클릭수" stroke="#c2760a" strokeWidth={2} dot={{ r: 3 }} />
                 <Line yAxisId="cpc" type="monotone" dataKey="평균CPC" stroke="#0a8f86" strokeWidth={2} dot={{ r: 3 }} />
                 <Line yAxisId="cpm" type="monotone" dataKey="CPM" stroke="var(--color-link-blue)" strokeWidth={2} dot={{ r: 3 }} />
               </LineChart>

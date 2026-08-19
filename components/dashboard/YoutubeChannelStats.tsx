@@ -14,13 +14,13 @@ export function YoutubeChannelStats({ data }: { data: ChannelStatsResult }) {
     <div className="rounded-xl border border-hairline p-4">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="rounded-lg border border-hairline p-3">
-          <p className="text-xs font-bold uppercase tracking-wide text-[#e41e3f]">구독자 수</p>
+          <p className="text-xs font-bold uppercase tracking-wide text-[#d9342b]">구독자 수</p>
           <p className="mt-1 text-2xl font-bold tracking-tight text-primary">
             {(data.latest?.subscriberCount ?? 0).toLocaleString("ko-KR")}명
           </p>
         </div>
         <div className="rounded-lg border border-hairline p-3">
-          <p className="text-xs font-bold uppercase tracking-wide text-[#b8790a]">전체 조회수</p>
+          <p className="text-xs font-bold uppercase tracking-wide text-[#c2760a]">전체 조회수</p>
           <p className="mt-1 text-2xl font-bold tracking-tight text-primary">
             {(data.latest?.viewCount ?? 0).toLocaleString("ko-KR")}
           </p>
@@ -56,8 +56,8 @@ export function YoutubeChannelStats({ data }: { data: ChannelStatsResult }) {
                 }}
                 labelStyle={{ color: "var(--color-ink-mute)" }}
               />
-              <Line yAxisId="sub" type="monotone" dataKey="구독자수" stroke="#e41e3f" strokeWidth={2} dot={{ r: 3 }} />
-              <Line yAxisId="view" type="monotone" dataKey="조회수" stroke="#b8790a" strokeWidth={2} dot={{ r: 3 }} />
+              <Line yAxisId="sub" type="monotone" dataKey="구독자수" stroke="#d9342b" strokeWidth={2} dot={{ r: 3 }} />
+              <Line yAxisId="view" type="monotone" dataKey="조회수" stroke="#c2760a" strokeWidth={2} dot={{ r: 3 }} />
             </LineChart>
           </ResponsiveContainer>
         </div>
