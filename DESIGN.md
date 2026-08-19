@@ -1,7 +1,7 @@
 ---
 version: alpha
 name: Apple-inspired-business-reinterpretation
-description: A business-dashboard reinterpretation of Apple's design language — near-black ink text, single Action Blue accent, hairline borders, and near-absent shadow all carry over, but the canvas is pure white (per explicit user request, rather than Apple's own parchment #f5f5f7) and the loud marketing-site scale (56px negative-tracking headlines, 80px section padding, full-bleed edge-to-edge tiles) is toned down for a data-dense internal tool used daily by a small marketing team. Body text stays small and tables stay dense.
+description: A business-dashboard reinterpretation of Apple's design language — Apple's own parchment page canvas, near-black ink text, single Action Blue accent, hairline borders, and near-absent shadow all carry over, but the loud marketing-site scale (56px negative-tracking headlines, 80px section padding, full-bleed edge-to-edge tiles) is toned down for a data-dense internal tool used daily by a small marketing team. Body text stays small and tables stay dense.
 
 colors:
   primary: "#0066cc"
@@ -9,7 +9,7 @@ colors:
   on-primary: "#ffffff"
   link-blue: "#0066cc"
   link-hover: "#0071e3"
-  canvas: "#ffffff"
+  canvas: "#f5f5f7"
   surface-raised: "#ffffff"
   surface-accent: "#e8f2ff"
   ink: "#1d1d1f"
@@ -40,12 +40,12 @@ rounded:
 ## Overview
 
 This app has cycled through several `getdesign`-sourced palettes (Slack → Discord → Apple
-→ Meta → **Apple again**). This file documents the current, reapplied state: Apple's core
-identity (near-black ink, single Action Blue accent, hairline borders, near-zero shadow,
-Apple's own tighter/crisper radius scale) layered onto a **pure white** page canvas — the
-white-canvas choice is a standing, explicit user preference that now overrides Apple's own
-parchment (`#f5f5f7`) default from the first Apple pass, and should be preserved across
-any future palette swap unless the user says otherwise.
+→ Meta → **Apple again**). This file documents the current, reapplied state: Apple's full
+light-mode identity (parchment page canvas, near-black ink, single Action Blue accent,
+hairline borders, near-zero shadow, Apple's own tighter/crisper radius scale). The page
+background briefly went pure white on user request, then was explicitly reverted back to
+Apple's own parchment (`#f5f5f7`) — treat parchment as the current standing choice unless
+told otherwise again.
 
 This remains a **single fixed theme** — no light/dark toggle, no `prefers-color-scheme`
 branching. Every `--color-*` token in `app/globals.css` is set once in `:root` and used
@@ -66,12 +66,10 @@ zero component-level color rewrites needed for the base palette swap itself.
   mapped onto this app's `--radius-md/lg/xl` theme tokens.
 - The pill radius (`rounded-full`, already used across this app before any reskin) is
   literally Apple's signature CTA shape — no change needed, it was already there.
+- Apple's parchment page canvas (`#f5f5f7`) with white (`#ffffff`) raised surfaces on top —
+  restored after a brief pure-white detour; this two-tier layering is Apple's own default.
 
 **Deliberately not carried over:**
-- Apple's own parchment page canvas (`#f5f5f7`) — this app uses pure white (`#ffffff`)
-  instead, per explicit user request. White raised surfaces (cards, table headers,
-  dropdowns) sit on the same white base, separated only by hairline borders — a flatter
-  look than Apple's own parchment/white two-tier layering, and intentional.
 - 56px hero-display / 40px display-lg headlines with negative letter-spacing — page
   headers stay `text-xl font-bold`, no tracking changes.
 - 80px section padding and full-bleed edge-to-edge tiles — this app's existing card/table
@@ -92,7 +90,7 @@ Tailwind's `@theme inline`). Summary:
 | `primary-press` | `#0071e3` | Hover/press/focus state of primary buttons (Apple's own "Focus Blue" sibling) |
 | `link-blue` | `#0066cc` | Inline text links — same hex as primary, per Apple's single-accent rule |
 | `link-hover` | `#0071e3` | Link hover state |
-| `canvas-cream` | `#ffffff` | Raised white surface — cards, table headers, dropdowns, tooltips (legacy "cream" name kept from the pre-Discord Slack palette to avoid a repo-wide rename); now the same hex as the page background itself (`--background`), per the white-canvas decision above |
+| `canvas-cream` | `#ffffff` | Raised white surface — cards, table headers, dropdowns, tooltips (legacy "cream" name kept from the pre-Discord Slack palette to avoid a repo-wide rename); sits visibly above the parchment page background (`--background: #f5f5f7`) |
 | `canvas-lavender` | `#e8f2ff` | Selected/active chip background (light Action-Blue tint), also used at `/20` opacity for subtle highlight rows |
 | `ink` | `#1d1d1f` | Primary text on the light canvas |
 | `ink-mute` | `#7a7a7a` | Secondary/muted text, chart axis labels and gridlines (Apple's `ink-muted-48`) |
@@ -121,8 +119,8 @@ contrast requirement.
   Tailwind classes directly.
 - Reserve `primary` (Action Blue) as the only accent in page chrome — buttons, links,
   active nav/tab states. Multi-series charts are the one place other hues appear.
-- Keep the page background pure white (`#ffffff`) — this overrides Apple's own parchment
-  default and should persist across any future palette swap unless the user says otherwise.
+- Keep the page background on Apple's parchment (`#f5f5f7`) with white raised surfaces on
+  top — this was tried as pure white, then explicitly reverted back to parchment.
 
 ### Don't
 - Don't add drop shadows to cards or buttons — depth here comes from the hairline border,
@@ -135,5 +133,5 @@ contrast requirement.
   unreadable dark-on-dark or light-text-on-light-bg patches.
 - Don't reuse the darkened chart-accent hexes (`#d9342b` etc.) as page-chrome colors —
   they exist only for chart-label contrast on white, not as a second brand accent.
-- Don't silently reintroduce a parchment/gray page background on the next palette swap —
-  the white canvas is a standing user preference, not an Apple-specific detail.
+- Don't silently flatten the page background back to pure white on the next palette
+  swap — parchment is the current confirmed choice; ask if genuinely unsure.

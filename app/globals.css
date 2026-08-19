@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
 /* Color tokens — DESIGN.md (Apple-inspired, reinterpreted for a data-dense business
-   dashboard: white canvas — kept pure white per explicit user request rather than
-   Apple's own parchment #f5f5f7 — near-black ink, a single quiet Action Blue accent,
-   hairline borders, almost no shadow, tight pill-radius controls — but body text kept
-   small/readable and tables kept dense, unlike Apple's own 56px marketing headline
-   scale). 라이트 테마를 유일한(단일) 테마로 고정한다 — OS 설정과 무관하게 항상 이
-   팔레트를 쓴다(prefers-color-scheme 분기 없음). */
+   dashboard: Apple's own parchment page canvas (#f5f5f7) with white raised surfaces
+   (cards/table headers/dropdowns) on top, near-black ink, a single quiet Action Blue
+   accent, hairline borders, almost no shadow, tight pill-radius controls — but body
+   text kept small/readable and tables kept dense, unlike Apple's own 56px marketing
+   headline scale). 라이트 테마를 유일한(단일) 테마로 고정한다 — OS 설정과 무관하게
+   항상 이 팔레트를 쓴다(prefers-color-scheme 분기 없음). */
 :root {
-  --background: #ffffff;
+  --background: #f5f5f7;
   --foreground: #1d1d1f;
 
   --color-primary: #0066cc;
