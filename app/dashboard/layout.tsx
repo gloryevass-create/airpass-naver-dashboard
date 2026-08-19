@@ -18,10 +18,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
         name={profile?.name ?? null}
         title={profile?.title ?? null}
         isAdmin={profile?.role === "admin"}
-        latestDate={latestDate}
       />
       <div className="flex flex-1">
-        <DashboardSidebar />
+        <DashboardSidebar latestDate={latestDate} />
         <div className="flex-1">{children}</div>
       </div>
     </div>

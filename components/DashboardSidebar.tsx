@@ -84,7 +84,7 @@ function NavLink({ item, active, indent }: { item: LeafItem; active: boolean; in
   );
 }
 
-export function DashboardSidebar() {
+export function DashboardSidebar({ latestDate }: { latestDate: string | null }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
 
@@ -98,43 +98,48 @@ export function DashboardSidebar() {
   }
 
   return (
-    <nav className="flex w-56 shrink-0 flex-col gap-1 border-r border-hairline bg-[#e9e9ec] p-4">
-      {ITEMS.map((entry) => {
-        if (isGroup(entry)) {
-          const hasActiveChild = entry.children.some((child) => pathname?.startsWith(child.href));
-          const expanded = hasActiveChild || !collapsed.has(entry.label);
-          return (
-            <div key={entry.label} className="flex flex-col gap-1">
-              <button
-                type="button"
-                onClick={() => toggleGroup(entry.label)}
-                aria-expanded={expanded}
-                className="flex items-center gap-2.5 px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-[#5b6b82]/80 hover:text-[#5b6b82]"
-              >
-                <NavIcon name={entry.icon} className="h-3.5 w-3.5 shrink-0" />
-                <span className="flex-1 text-left">{entry.label}</span>
-                <NavIcon
-                  name="chevron"
-                  className={`h-3 w-3 shrink-0 transition-transform ${expanded ? "rotate-90" : ""}`}
-                />
-              </button>
-              {expanded && (
-                <div className="flex flex-col gap-0.5">
-                  {entry.children.map((child) => (
-                    <NavLink
-                      key={child.href}
-                      item={child}
-                      active={Boolean(pathname?.startsWith(child.href))}
-                      indent
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          );
-        }
-        return <NavLink key={entry.href} item={entry} active={Boolean(pathname?.startsWith(entry.href))} />;
-      })}
+    <nav className="flex h-full w-56 shrink-0 flex-col border-r border-hairline bg-[#e9e9ec] p-4">
+      <div className="flex flex-1 flex-col gap-1">
+        {ITEMS.map((entry) => {
+          if (isGroup(entry)) {
+            const hasActiveChild = entry.children.some((child) => pathname?.startsWith(child.href));
+            const expanded = hasActiveChild || !collapsed.has(entry.label);
+            return (
+              <div key={entry.label} className="flex flex-col gap-1">
+                <button
+                  type="button"
+                  onClick={() => toggleGroup(entry.label)}
+                  aria-expanded={expanded}
+                  className="flex items-center gap-2.5 px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-[#5b6b82]/80 hover:text-[#5b6b82]"
+                >
+                  <NavIcon name={entry.icon} className="h-3.5 w-3.5 shrink-0" />
+                  <span className="flex-1 text-left">{entry.label}</span>
+                  <NavIcon
+                    name="chevron"
+                    className={`h-3 w-3 shrink-0 transition-transform ${expanded ? "rotate-90" : ""}`}
+                  />
+                </button>
+                {expanded && (
+                  <div className="flex flex-col gap-0.5">
+                    {entry.children.map((child) => (
+                      <NavLink
+                        key={child.href}
+                        item={child}
+                        active={Boolean(pathname?.startsWith(child.href))}
+                        indent
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          }
+          return <NavLink key={entry.href} item={entry} active={Boolean(pathname?.startsWith(entry.href))} />;
+        })}
+      </div>
+      <p className="border-t border-hairline px-3 pt-3 text-xs text-ink-mute">
+        {latestDate ? `최근 수집일: ${latestDate}` : "아직 수집된 데이터가 없습니다"}
+      </p>
     </nav>
   );
 }
