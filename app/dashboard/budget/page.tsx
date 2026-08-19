@@ -21,7 +21,7 @@ export default async function BudgetPage({ searchParams }: { searchParams: Searc
       <div>
         <h1 className="flex items-center gap-2 text-xl font-bold tracking-tight text-primary">
           <NavIcon name="megaphone" className="h-5 w-5" />
-          공고 모니터링
+          조달입찰공고
         </h1>
         <p className="mt-1 text-sm text-ink-mute">
           그린스마트미래학교·공간재구조화·VR스포츠실 등 교육청 사업명이 등장하는 나라장터

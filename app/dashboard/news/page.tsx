@@ -24,7 +24,7 @@ export default async function NewsPage({ searchParams }: { searchParams: SearchP
       <div>
         <h1 className="flex items-center gap-2 text-xl font-bold tracking-tight text-primary">
           <NavIcon name="newspaper" className="h-5 w-5" />
-          뉴스 모니터링
+          교육관련뉴스
         </h1>
         <p className="mt-1 text-sm text-ink-mute">
           에듀테크·AI·교육감·교육청·교육부 등 영업 전략에 영향을 줄 수 있는 정책·사업 관련

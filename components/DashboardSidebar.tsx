@@ -29,9 +29,9 @@ const ITEMS: MenuEntry[] = [
     label: "모니터링",
     icon: "alert",
     children: [
-      { href: "/dashboard/budget", label: "공고모니터링", icon: "megaphone" },
-      { href: "/dashboard/prespec", label: "사전규격", icon: "search" },
-      { href: "/dashboard/news", label: "뉴스모니터링", icon: "newspaper" },
+      { href: "/dashboard/budget", label: "조달입찰공고", icon: "megaphone" },
+      { href: "/dashboard/prespec", label: "조달사전규격", icon: "search" },
+      { href: "/dashboard/news", label: "교육관련뉴스", icon: "newspaper" },
     ],
   },
   {
