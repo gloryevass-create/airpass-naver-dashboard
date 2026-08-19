@@ -27,7 +27,8 @@ export type IconName =
   | "user"
   | "briefcase"
   | "link"
-  | "share";
+  | "share"
+  | "chevron";
 
 export function NavIcon({ name, ...props }: { name: IconName } & SVGProps<SVGSVGElement>) {
   const shared = {
@@ -226,6 +227,12 @@ export function NavIcon({ name, ...props }: { name: IconName } & SVGProps<SVGSVG
           <circle cx="6" cy="12" r="2.3" />
           <circle cx="18" cy="18.5" r="2.3" />
           <path d="M8 10.8l8-4.2M8 13.2l8 4.2" />
+        </svg>
+      );
+    case "chevron":
+      return (
+        <svg {...shared} {...props}>
+          <path d="M9 6l6 6-6 6" />
         </svg>
       );
   }

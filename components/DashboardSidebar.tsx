@@ -2,6 +2,7 @@
 
 import Link, { useLinkStatus } from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import { NavIcon, type IconName } from "@/components/icons/NavIcon";
 
 type LeafItem = { href: string; label: string; icon: IconName };
@@ -79,25 +80,47 @@ function NavLink({ item, active, indent }: { item: LeafItem; active: boolean; in
 
 export function DashboardSidebar() {
   const pathname = usePathname();
+  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+
+  function toggleGroup(label: string) {
+    setCollapsed((prev) => {
+      const next = new Set(prev);
+      if (next.has(label)) next.delete(label);
+      else next.add(label);
+      return next;
+    });
+  }
 
   return (
     <nav className="flex w-56 shrink-0 flex-col gap-1 border-r border-hairline p-4">
       {ITEMS.map((entry) => {
         if (isGroup(entry)) {
+          const hasActiveChild = entry.children.some((child) => pathname?.startsWith(child.href));
+          const expanded = hasActiveChild || !collapsed.has(entry.label);
           return (
             <div key={entry.label} className="flex flex-col gap-1">
-              <div className="flex items-center gap-2.5 px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-ink-mute/70">
+              <button
+                type="button"
+                onClick={() => toggleGroup(entry.label)}
+                aria-expanded={expanded}
+                className="flex items-center gap-2.5 px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-ink-mute/70 hover:text-ink-mute"
+              >
                 <NavIcon name={entry.icon} className="h-3.5 w-3.5 shrink-0" />
-                {entry.label}
-              </div>
-              {entry.children.map((child) => (
-                <NavLink
-                  key={child.href}
-                  item={child}
-                  active={Boolean(pathname?.startsWith(child.href))}
-                  indent
+                <span className="flex-1 text-left">{entry.label}</span>
+                <NavIcon
+                  name="chevron"
+                  className={`h-3 w-3 shrink-0 transition-transform ${expanded ? "rotate-90" : ""}`}
                 />
-              ))}
+              </button>
+              {expanded &&
+                entry.children.map((child) => (
+                  <NavLink
+                    key={child.href}
+                    item={child}
+                    active={Boolean(pathname?.startsWith(child.href))}
+                    indent
+                  />
+                ))}
             </div>
           );
         }
