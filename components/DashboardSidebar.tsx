@@ -92,7 +92,7 @@ export function DashboardSidebar() {
   }
 
   return (
-    <nav className="flex w-56 shrink-0 flex-col gap-1 border-r border-hairline p-4">
+    <nav className="flex w-56 shrink-0 flex-col gap-1 border-r border-hairline bg-[#e9e9ec] p-4">
       {ITEMS.map((entry) => {
         if (isGroup(entry)) {
           const hasActiveChild = entry.children.some((child) => pathname?.startsWith(child.href));
