@@ -621,6 +621,30 @@ export type Database = {
         };
         Relationships: [];
       };
+      notice_scraps: {
+        Row: {
+          id: string;
+          user_id: string;
+          notice_type: "budget" | "prespec";
+          notice_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          notice_type: "budget" | "prespec";
+          notice_id: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          notice_type?: "budget" | "prespec";
+          notice_id?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       monitor_keywords: {
         Row: {
           id: string;

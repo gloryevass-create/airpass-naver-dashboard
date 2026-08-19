@@ -1,19 +1,22 @@
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { getPrespecNotices } from "@/lib/queries/prespec";
 import { getMonitorKeywords } from "@/lib/queries/monitorKeywords";
+import { getScrapedNoticeIds } from "@/lib/queries/scraps";
 import { PrespecNoticeList } from "@/components/dashboard/PrespecNoticeList";
 import { MonitorDateRangeFilter } from "@/components/dashboard/MonitorDateRangeFilter";
 import { NavIcon } from "@/components/icons/NavIcon";
 import Link from "next/link";
 
 type SearchParams = Promise<{ from?: string; to?: string }>;
+const PATH = "/dashboard/prespec";
 
 export default async function PrespecPage({ searchParams }: { searchParams: SearchParams }) {
   const { from, to } = await searchParams;
-  const { supabase } = await requireAuthedClient();
-  const [{ notices, range }, keywords] = await Promise.all([
+  const { supabase, user } = await requireAuthedClient();
+  const [{ notices, range }, keywords, scrapedIds] = await Promise.all([
     getPrespecNotices(supabase, { since: from, until: to }),
     getMonitorKeywords(supabase, "budget"),
+    getScrapedNoticeIds(supabase, user.id, "prespec"),
   ]);
 
   return (
@@ -32,8 +35,13 @@ export default async function PrespecPage({ searchParams }: { searchParams: Sear
           과 동일한 목록을 씁니다.
         </p>
       </div>
-      <MonitorDateRangeFilter basePath="/dashboard/prespec" range={range} resultCount={notices.length} />
-      <PrespecNoticeList notices={notices} registeredKeywords={keywords.map((k) => k.keyword)} />
+      <MonitorDateRangeFilter basePath={PATH} range={range} resultCount={notices.length} />
+      <PrespecNoticeList
+        notices={notices}
+        registeredKeywords={keywords.map((k) => k.keyword)}
+        scrapedIds={scrapedIds}
+        path={PATH}
+      />
     </main>
   );
 }
