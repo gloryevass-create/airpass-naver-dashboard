@@ -117,7 +117,7 @@ export function BudgetBidList({
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-hairline">
+      <div className="overflow-x-auto rounded-sm border border-hairline">
         <table className="w-full whitespace-nowrap text-sm">
           <thead className="bg-[#f7f7f8] text-left text-ink-mute">
             <tr>
@@ -141,7 +141,7 @@ export function BudgetBidList({
             {filtered.map((b) => (
               <tr
                 key={b.id}
-                className={`border-t border-hairline ${scrapedIds.has(b.id) ? "bg-canvas-lavender/20" : ""}`}
+                className={`border-t border-hairline ${scrapedIds.has(b.id) ? "bg-canvas-lavender/20" : "odd:bg-white even:bg-[#f7f7f8]"}`}
               >
                 <td className="px-4 py-2">
                   <input

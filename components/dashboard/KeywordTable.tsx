@@ -86,7 +86,7 @@ export function KeywordTable({ data }: { data: Row[] }) {
           </select>
         </label>
       </div>
-      <div className="overflow-x-auto rounded-xl border border-hairline">
+      <div className="overflow-x-auto rounded-sm border border-hairline">
         <table className="w-full text-sm">
           <thead className="bg-[#f7f7f8] text-left text-ink-mute">
             <tr>
@@ -107,7 +107,7 @@ export function KeywordTable({ data }: { data: Row[] }) {
           </thead>
           <tbody>
             {visible.map((row, i) => (
-              <tr key={row.keywordId} className="border-t border-hairline">
+              <tr key={row.keywordId} className="border-t border-hairline odd:bg-white even:bg-[#f7f7f8]">
                 <td className="px-4 py-2 text-ink-mute">{i + 1}</td>
                 <td className="px-4 py-2">
                   <a

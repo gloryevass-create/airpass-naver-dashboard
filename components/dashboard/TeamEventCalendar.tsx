@@ -65,7 +65,7 @@ export function TeamEventCalendar({ events, month }: { events: TeamEvent[]; mont
   const weeks = buildMonthGrid(month);
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-hairline">
+    <div className="overflow-x-auto rounded-sm border border-hairline">
       <div className="min-w-[720px]">
         <div className="grid grid-cols-7 border-b border-hairline bg-canvas-cream text-xs font-semibold text-ink-mute">
           {WEEKDAYS.map((w) => (

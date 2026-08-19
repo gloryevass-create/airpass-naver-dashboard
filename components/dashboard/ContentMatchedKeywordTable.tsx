@@ -13,7 +13,7 @@ export function ContentMatchedKeywordTable({
   data: DashboardData["contentMatchedKeywords"];
 }) {
   return (
-    <div className="overflow-x-auto rounded-xl border border-hairline">
+    <div className="overflow-x-auto rounded-sm border border-hairline">
       <table className="w-full whitespace-nowrap text-sm">
         <thead className="bg-[#f7f7f8] text-left text-ink-mute">
           <tr>
@@ -25,7 +25,7 @@ export function ContentMatchedKeywordTable({
         </thead>
         <tbody>
           {data.map((row) => (
-            <tr key={row.keywordId} className="border-t border-hairline">
+            <tr key={row.keywordId} className="border-t border-hairline odd:bg-white even:bg-[#f7f7f8]">
               <td className="px-4 py-2">
                 <a
                   href={naverSearchUrl(row.keyword)}

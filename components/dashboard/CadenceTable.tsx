@@ -3,7 +3,7 @@ import { naverBlogUrl } from "@/lib/naverLinks";
 
 export function CadenceTable({ data }: { data: DashboardData["cadence"] }) {
   return (
-    <div className="overflow-x-auto rounded-xl border border-hairline">
+    <div className="overflow-x-auto rounded-sm border border-hairline">
       <table className="w-full whitespace-nowrap text-sm">
         <thead className="bg-[#f7f7f8] text-left text-ink-mute">
           <tr>
@@ -20,7 +20,7 @@ export function CadenceTable({ data }: { data: DashboardData["cadence"] }) {
             return (
               <tr
                 key={row.competitorId}
-                className={`border-t border-hairline ${
+                className={`border-t border-hairline odd:bg-white even:bg-[#f7f7f8] ${
                   isAirpass ? "relative ring-1 ring-inset ring-primary" : ""
                 }`}
               >

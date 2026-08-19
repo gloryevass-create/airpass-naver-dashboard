@@ -215,7 +215,7 @@ export function DisabilityWelfareTable({ centers }: { centers: DisabilityWelfare
         </button>
       </div>
 
-      <div className="overflow-auto rounded-xl border border-hairline">
+      <div className="overflow-auto rounded-sm border border-hairline">
         <table className="w-full text-xs">
           <thead className="sticky top-0 bg-[#f7f7f8] text-left text-ink-mute">
             <tr>
@@ -240,7 +240,7 @@ export function DisabilityWelfareTable({ centers }: { centers: DisabilityWelfare
           </thead>
           <tbody>
             {visible.map((c, i) => (
-              <tr key={c.id} className="border-t border-hairline">
+              <tr key={c.id} className="border-t border-hairline odd:bg-white even:bg-[#f7f7f8]">
                 <td className="whitespace-nowrap px-2 py-1 text-ink-mute">{i + 1}</td>
                 {DISPLAY_COLUMNS.map((col) => (
                   <td key={col.key} className="whitespace-nowrap px-2 py-1">

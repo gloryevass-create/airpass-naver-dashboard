@@ -222,7 +222,7 @@ export function DisabilityOrgTable({ organizations }: { organizations: Disabilit
         </button>
       </div>
 
-      <div className="overflow-auto rounded-xl border border-hairline">
+      <div className="overflow-auto rounded-sm border border-hairline">
         <table className="w-full text-xs">
           <thead className="sticky top-0 bg-[#f7f7f8] text-left text-ink-mute">
             <tr>
@@ -247,7 +247,7 @@ export function DisabilityOrgTable({ organizations }: { organizations: Disabilit
           </thead>
           <tbody>
             {visible.map((o, i) => (
-              <tr key={o.id} className="border-t border-hairline">
+              <tr key={o.id} className="border-t border-hairline odd:bg-white even:bg-[#f7f7f8]">
                 <td className="whitespace-nowrap px-2 py-1 text-ink-mute">{i + 1}</td>
                 {DISPLAY_COLUMNS.map((col) => (
                   <td key={col.key} className="whitespace-nowrap px-2 py-1">
