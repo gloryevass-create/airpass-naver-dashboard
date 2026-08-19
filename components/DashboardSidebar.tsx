@@ -79,7 +79,7 @@ export function DashboardSidebar() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex w-48 shrink-0 flex-col gap-1 border-r border-hairline p-4">
+    <nav className="flex w-56 shrink-0 flex-col gap-1 border-r border-hairline p-4">
       {ITEMS.map((entry) => {
         if (isGroup(entry)) {
           return (
