@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { NewsArticle } from "@/lib/queries/news";
+import { NavIcon } from "@/components/icons/NavIcon";
 
 function formatDate(iso: string | null) {
   if (!iso) return "-";
@@ -20,6 +21,66 @@ function sourceDomain(link: string) {
   } catch {
     return "";
   }
+}
+
+function NewsActions({ article }: { article: NewsArticle }) {
+  const [message, setMessage] = useState<string | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function flash(text: string) {
+    setMessage(text);
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => setMessage(null), 2000);
+  }
+
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(article.link);
+      flash("링크 복사됨");
+    } catch {
+      flash("복사 실패");
+    }
+  }
+
+  async function handleShare() {
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: article.title, url: article.link });
+      } catch {
+        // 사용자가 공유 시트를 취소한 경우도 여기로 온다 — 별도 에러 처리 불필요.
+      }
+      return;
+    }
+    // Web Share API 미지원 브라우저(대부분의 데스크톱 Chrome 등)에서는 링크 복사로 대체한다.
+    try {
+      await navigator.clipboard.writeText(article.link);
+      flash("공유 미지원 브라우저 — 링크를 복사했습니다");
+    } catch {
+      flash("공유 실패");
+    }
+  }
+
+  return (
+    <div className="mt-2 flex items-center gap-3">
+      <button
+        type="button"
+        onClick={handleCopy}
+        className="flex items-center gap-1 text-xs text-ink-mute hover:text-primary"
+      >
+        <NavIcon name="link" className="h-3.5 w-3.5" />
+        링크 복사
+      </button>
+      <button
+        type="button"
+        onClick={handleShare}
+        className="flex items-center gap-1 text-xs text-ink-mute hover:text-primary"
+      >
+        <NavIcon name="share" className="h-3.5 w-3.5" />
+        공유
+      </button>
+      {message && <span className="text-xs text-semantic-success">{message}</span>}
+    </div>
+  );
 }
 
 export function NewsList({
@@ -89,6 +150,7 @@ export function NewsList({
             {a.description && (
               <p className="mt-1 text-xs text-ink-mute">{a.description}</p>
             )}
+            <NewsActions article={a} />
           </li>
         ))}
         {filtered.length === 0 && (

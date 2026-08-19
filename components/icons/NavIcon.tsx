@@ -25,7 +25,9 @@ export type IconName =
   | "eyeOff"
   | "key"
   | "user"
-  | "briefcase";
+  | "briefcase"
+  | "link"
+  | "share";
 
 export function NavIcon({ name, ...props }: { name: IconName } & SVGProps<SVGSVGElement>) {
   const shared = {
@@ -207,6 +209,23 @@ export function NavIcon({ name, ...props }: { name: IconName } & SVGProps<SVGSVG
           <rect x="3" y="7.5" width="18" height="12" rx="2" />
           <path d="M8 7.5V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1.5" />
           <path d="M3 12h18" />
+        </svg>
+      );
+    case "link":
+      return (
+        <svg {...shared} {...props}>
+          <path d="M9.5 14.5l5-5" />
+          <path d="M13 6.5l1-1a3.5 3.5 0 0 1 5 5l-1 1" />
+          <path d="M11 17.5l-1 1a3.5 3.5 0 0 1-5-5l1-1" />
+        </svg>
+      );
+    case "share":
+      return (
+        <svg {...shared} {...props}>
+          <circle cx="18" cy="5.5" r="2.3" />
+          <circle cx="6" cy="12" r="2.3" />
+          <circle cx="18" cy="18.5" r="2.3" />
+          <path d="M8 10.8l8-4.2M8 13.2l8 4.2" />
         </svg>
       );
   }
