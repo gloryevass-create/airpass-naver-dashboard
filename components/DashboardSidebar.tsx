@@ -85,8 +85,8 @@ export function DashboardSidebar() {
         if (isGroup(entry)) {
           return (
             <div key={entry.label} className="flex flex-col gap-1">
-              <div className="flex items-center gap-2.5 px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-ink-mute/70">
-                <NavIcon name={entry.icon} className="h-3.5 w-3.5 shrink-0" />
+              <div className="flex items-center gap-2.5 px-3 pt-3 pb-1 text-sm font-semibold text-ink-mute/70">
+                <NavIcon name={entry.icon} className="h-4 w-4 shrink-0" />
                 {entry.label}
               </div>
               {entry.children.map((child) => (
