@@ -14,7 +14,7 @@ export default async function MemosPage() {
   const memos = await getMemos(supabase);
 
   return (
-    <main className="mx-auto flex w-[80%] flex-col gap-6 p-6">
+    <main className="mx-auto flex w-[90%] flex-col gap-6 p-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="flex items-center gap-2 text-xl font-bold tracking-tight text-primary">

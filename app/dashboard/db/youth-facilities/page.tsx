@@ -9,7 +9,7 @@ export default async function YouthFacilitiesPage() {
   const latestSync = facilities[0]?.syncedAt ?? null;
 
   return (
-    <main className="mx-auto flex w-[80%] flex-col gap-6 p-6">
+    <main className="mx-auto flex w-[90%] flex-col gap-6 p-6">
       <div>
         <h1 className="flex items-center gap-2 text-xl font-bold tracking-tight text-primary">
           <NavIcon name="tag" className="h-5 w-5" />
