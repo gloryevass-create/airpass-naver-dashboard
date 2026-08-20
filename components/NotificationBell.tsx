@@ -32,15 +32,6 @@ function relativeTime(iso: string): string {
   return `${day}일 전`;
 }
 
-type RealtimeNotificationRow = {
-  id: string;
-  type: NotificationType;
-  title: string;
-  message: string | null;
-  link: string | null;
-  created_at: string;
-};
-
 export function NotificationBell({
   initialNotifications,
 }: {
@@ -79,31 +70,18 @@ export function NotificationBell({
   // 팀 공유 알림 피드라 새 알림이 생기면(파이프라인 diff, 메모 작성, 스크랩 등) 화면을
   // 새로고침하지 않아도 실시간으로 뜬다(Supabase Realtime, 0026 마이그레이션에서
   // publication에 추가함) — 되면 폴링보다 빠르게 뜨는 보너스, 안 되도 위 폴링이 보완한다.
+  // "새 알림이 왔다"는 신호로만 쓰고 항상 서버에서 통째로 다시 받아와 교체한다 —
+  // payload 내용으로 직접 배열에 추가하면 폴링과 겹쳐 중복 표시되는 문제가 있었다
+  // (실측 확인, 2026-08-20).
   useEffect(() => {
     const supabase = createClient();
     const channel = supabase
       .channel("notifications-feed")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "notifications" },
-        (payload) => {
-          const row = payload.new as RealtimeNotificationRow;
-          setNotifications((prev) =>
-            [
-              {
-                id: row.id,
-                type: row.type,
-                title: row.title,
-                message: row.message,
-                link: row.link,
-                createdAt: row.created_at,
-                isRead: false,
-              },
-              ...prev,
-            ].slice(0, 30)
-          );
-        }
-      )
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "notifications" }, () => {
+        fetchMyNotifications()
+          .then(setNotifications)
+          .catch(() => {});
+      })
       .subscribe();
 
     return () => {
