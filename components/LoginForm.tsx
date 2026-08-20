@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { NavIcon } from "@/components/icons/NavIcon";
+import { recordLogin } from "@/app/login/actions";
 
 export function LoginForm({ redirectTo }: { redirectTo: string }) {
   const router = useRouter();
@@ -29,6 +30,9 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
       setPending(false);
       return;
     }
+
+    // 로그인 기록 실패가 로그인 자체를 막으면 안 되므로 별도로 감싼다.
+    await recordLogin().catch(() => {});
 
     router.push(redirectTo);
     router.refresh();

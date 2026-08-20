@@ -29,6 +29,8 @@ export type Database = {
           title: string | null;
           role: "admin" | "member";
           created_at: string;
+          last_login_at: string | null;
+          last_login_ip: string | null;
         };
         Insert: {
           id: string;
@@ -37,6 +39,8 @@ export type Database = {
           title?: string | null;
           role?: "admin" | "member";
           created_at?: string;
+          last_login_at?: string | null;
+          last_login_ip?: string | null;
         };
         Update: {
           id?: string;
@@ -45,6 +49,8 @@ export type Database = {
           title?: string | null;
           role?: "admin" | "member";
           created_at?: string;
+          last_login_at?: string | null;
+          last_login_ip?: string | null;
         };
         Relationships: [];
       };

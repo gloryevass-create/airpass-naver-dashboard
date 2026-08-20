@@ -32,6 +32,8 @@ export default async function AdminPage() {
                 <th className="px-4 py-2 font-medium">이름(직함)</th>
                 <th className="px-4 py-2 font-medium">역할</th>
                 <th className="px-4 py-2 font-medium">가입일</th>
+                <th className="px-4 py-2 font-medium">최근 로그인</th>
+                <th className="px-4 py-2 font-medium">접속 IP</th>
               </tr>
             </thead>
             <tbody>
@@ -42,11 +44,15 @@ export default async function AdminPage() {
                   <td className="px-4 py-2 text-ink-mute">
                     {new Date(p.created_at).toLocaleDateString("ko-KR")}
                   </td>
+                  <td className="px-4 py-2 text-ink-mute">
+                    {p.last_login_at ? new Date(p.last_login_at).toLocaleString("ko-KR") : "-"}
+                  </td>
+                  <td className="px-4 py-2 text-ink-mute">{p.last_login_ip ?? "-"}</td>
                 </tr>
               ))}
               {(!profiles || profiles.length === 0) && (
                 <tr>
-                  <td colSpan={3} className="px-4 py-6 text-center text-ink-mute">
+                  <td colSpan={5} className="px-4 py-6 text-center text-ink-mute">
                     아직 가입자가 없습니다.
                   </td>
                 </tr>
