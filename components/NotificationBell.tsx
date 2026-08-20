@@ -4,7 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { NavIcon } from "@/components/icons/NavIcon";
-import { markNotificationRead, markAllNotificationsRead } from "@/app/dashboard/actions/notifications";
+import {
+  markNotificationRead,
+  markAllNotificationsRead,
+  fetchMyNotifications,
+} from "@/app/dashboard/actions/notifications";
 import type { Notification, NotificationType } from "@/lib/queries/notifications";
 
 const TYPE_LABEL: Record<NotificationType, string> = {
@@ -58,9 +62,23 @@ export function NotificationBell({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Realtime 웹소켓이 끊기거나 이벤트를 못 받는 경우에도 최신 상태가 보장되도록
+  // 30초마다 서버에서 다시 가져온다(실측 확인, 2026-08-20: 구독은 SUBSCRIBED인데도
+  // INSERT 이벤트가 안 오는 문제가 있었음 — realtime은 되면 더 빠를 뿐인 보너스로
+  // 남겨두고, 이 폴링이 실질적인 전달을 보장한다). 서버가 이 사용자의 읽음 상태까지
+  // 반영해서 돌려주므로 그대로 교체해도 안전하다.
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchMyNotifications()
+        .then(setNotifications)
+        .catch(() => {});
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
   // 팀 공유 알림 피드라 새 알림이 생기면(파이프라인 diff, 메모 작성, 스크랩 등) 화면을
   // 새로고침하지 않아도 실시간으로 뜬다(Supabase Realtime, 0026 마이그레이션에서
-  // publication에 추가함).
+  // publication에 추가함) — 되면 폴링보다 빠르게 뜨는 보너스, 안 되도 위 폴링이 보완한다.
   useEffect(() => {
     const supabase = createClient();
     const channel = supabase
@@ -111,11 +129,24 @@ export function NotificationBell({
     markAllNotificationsRead(ids).catch(() => {});
   }
 
+  function handleToggleOpen() {
+    setOpen((v) => {
+      const next = !v;
+      if (next) {
+        // 열 때마다 최신 상태로 한 번 더 갱신 — 폴링 주기(30초) 사이에 열어도 최신을 본다.
+        fetchMyNotifications()
+          .then(setNotifications)
+          .catch(() => {});
+      }
+      return next;
+    });
+  }
+
   return (
     <div ref={menuRef} className="relative">
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={handleToggleOpen}
         aria-label="알림"
         className={`relative flex h-8 w-8 items-center justify-center rounded-md border transition-colors ${
           open ? "border-white/40 text-white" : "border-transparent text-white/70 hover:border-white/20 hover:text-white"
