@@ -22,7 +22,7 @@ export default async function NewsPage({ searchParams }: { searchParams: SearchP
   const hotKeywords = extractHotKeywords(articles.map((a) => a.title));
 
   return (
-    <main className="mx-auto flex w-[90%] flex-col gap-6 p-6">
+    <main className="flex w-full flex-col gap-6 p-6">
       <div>
         <h1 className="flex items-center gap-2 text-xl font-bold tracking-tight text-primary">
           <NavIcon name="newspaper" className="h-5 w-5" />

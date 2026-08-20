@@ -22,7 +22,7 @@ export default async function KeywordsPage({ searchParams }: { searchParams: Sea
   const keywordReports = dashboard.reports.filter((r) => r.track !== "blog");
 
   return (
-    <main className="mx-auto flex w-[90%] flex-col gap-8 p-6">
+    <main className="flex w-full flex-col gap-8 p-6">
       <div>
         <h1 className="flex items-center gap-2 text-xl font-bold tracking-tight text-primary">
           <NavIcon name="search" className="h-5 w-5" />
