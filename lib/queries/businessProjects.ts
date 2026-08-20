@@ -1,7 +1,5 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@/lib/types/database.types";
-
-type Client = SupabaseClient<Database>;
+import { unstable_cache } from "next/cache";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export type BusinessProject = {
   id: string;
@@ -27,13 +25,27 @@ export type BusinessProject = {
   syncedAt: string;
 };
 
-export async function getBusinessProjects(supabase: Client): Promise<BusinessProject[]> {
-  const { data } = await supabase
-    .from("business_projects")
-    .select("*")
-    .order("notion_created_at", { ascending: false });
+// business_projects는 Notion을 파이프라인이 하루 한 번 미러링만 하고 대시보드에서는
+// 쓰지 않는 읽기 전용 데이터라 admin 클라이언트 + unstable_cache(1시간 재검증)로
+// 감싼다. 인증 게이트는 호출부의 requireAuthedClient()가 담당하므로 supabase
+// 클라이언트 인자를 받지 않는다.
+const getCachedRows = unstable_cache(
+  async () => {
+    const admin = createAdminClient();
+    const { data } = await admin
+      .from("business_projects")
+      .select("*")
+      .order("notion_created_at", { ascending: false });
+    return data ?? [];
+  },
+  ["business-projects"],
+  { revalidate: 3600 }
+);
 
-  return (data ?? []).map((p) => ({
+export async function getBusinessProjects(): Promise<BusinessProject[]> {
+  const data = await getCachedRows();
+
+  return data.map((p) => ({
     id: p.id,
     title: p.title,
     stage: p.stage,

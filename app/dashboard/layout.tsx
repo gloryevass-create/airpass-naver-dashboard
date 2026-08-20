@@ -8,7 +8,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   const [{ data: profile }, latestDate] = await Promise.all([
     supabase.from("profiles").select("role, name, title").eq("id", user.id).single(),
-    getLatestDataDate(supabase),
+    getLatestDataDate(),
   ]);
 
   return (

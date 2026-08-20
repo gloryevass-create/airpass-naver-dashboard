@@ -4,8 +4,8 @@ import { BusinessBoard } from "@/components/dashboard/BusinessBoard";
 import { NavIcon } from "@/components/icons/NavIcon";
 
 export default async function BusinessPage() {
-  const { supabase } = await requireAuthedClient();
-  const projects = await getBusinessProjects(supabase);
+  await requireAuthedClient();
+  const projects = await getBusinessProjects();
   const latestSync = projects[0]?.syncedAt ?? null;
 
   return (

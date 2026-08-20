@@ -14,8 +14,8 @@ function currentMonth() {
 export default async function EventsPage({ searchParams }: { searchParams: SearchParams }) {
   const { month: monthParam } = await searchParams;
   const month = monthParam ?? currentMonth();
-  const { supabase } = await requireAuthedClient();
-  const events = await getTeamEvents(supabase, month);
+  await requireAuthedClient();
+  const events = await getTeamEvents(month);
 
   return (
     <main className="mx-auto flex w-[90%] flex-col gap-6 p-6">

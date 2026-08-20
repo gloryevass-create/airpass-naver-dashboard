@@ -1,5 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { unstable_cache } from "next/cache";
 import type { Database } from "@/lib/types/database.types";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 type Client = SupabaseClient<Database>;
 
@@ -12,15 +14,28 @@ function daysBefore(dateStr: string, days: number) {
   return d.toISOString().slice(0, 10);
 }
 
-/** 대시보드 전체가 이 날짜를 기준으로 동작한다 — 특정 날짜 하드코딩 금지. */
-export async function getLatestDataDate(supabase: Client): Promise<string | null> {
-  const { data } = await supabase
-    .from("keyword_daily_metrics")
-    .select("date")
-    .order("date", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  return data?.date ?? null;
+/** 대시보드 전체가 이 날짜를 기준으로 동작한다 — 특정 날짜 하드코딩 금지.
+ * 모든 대시보드 페이지(app/dashboard/layout.tsx)가 매 요청마다 이 함수를 부르므로,
+ * 하루 한 번만 갱신되는 파이프라인 데이터에 매번 Supabase를 왕복하지 않도록
+ * admin 클라이언트 + unstable_cache(1시간 재검증)로 감싼다. 인증 게이트는 호출부의
+ * requireAuthedClient()가 담당하므로 이 함수는 supabase 클라이언트 인자를 받지 않는다. */
+const getCachedLatestDataDate = unstable_cache(
+  async () => {
+    const admin = createAdminClient();
+    const { data } = await admin
+      .from("keyword_daily_metrics")
+      .select("date")
+      .order("date", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    return data?.date ?? null;
+  },
+  ["latest-data-date"],
+  { revalidate: 3600 }
+);
+
+export async function getLatestDataDate(): Promise<string | null> {
+  return getCachedLatestDataDate();
 }
 
 /** ad_account_daily_stats도 같은 원칙 — 서버 시계(UTC)로 "오늘"을 계산하면 파이프라인의
@@ -119,11 +134,16 @@ const EMPTY: DashboardData = {
 
 export type AccountStatsRangeOption = { accountStatsSince?: string; accountStatsUntil?: string };
 
+// 이 함수는 캐싱하지 않는다 — keywords/blog 페이지가 공유하는데, blog 페이지는
+// competitors 테이블(대시보드에서 경쟁사 추가/삭제로 직접 씀)을 읽어 SOV·포스팅주기를
+// 계산한다. 캐싱하면 방금 추가/삭제한 경쟁사가 SOV 차트에 최대 1시간 동안 반영 안
+// 되는 문제가 생긴다. latestDate 앵커 조회만 getLatestDataDate()로 위임해 그 부분만
+// 캐시 혜택을 받는다.
 export async function getDashboardData(
   supabase: Client,
   options?: AccountStatsRangeOption
 ): Promise<DashboardData> {
-  const latestDate = await getLatestDataDate(supabase);
+  const latestDate = await getLatestDataDate();
   if (!latestDate) return EMPTY;
 
   const trendStart = daysBefore(latestDate, TREND_DAYS - 1);

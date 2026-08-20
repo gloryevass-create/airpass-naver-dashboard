@@ -9,10 +9,10 @@ type SearchParams = Promise<{ from?: string; to?: string }>;
 
 export default async function YoutubePage({ searchParams }: { searchParams: SearchParams }) {
   const { from, to } = await searchParams;
-  const { supabase } = await requireAuthedClient();
+  await requireAuthedClient();
   const [channelStats, videos] = await Promise.all([
-    getChannelStats(supabase, { since: from, until: to }),
-    getYoutubeVideos(supabase),
+    getChannelStats({ since: from, until: to }),
+    getYoutubeVideos(),
   ]);
 
   return (

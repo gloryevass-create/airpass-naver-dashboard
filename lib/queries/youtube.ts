@@ -1,7 +1,5 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@/lib/types/database.types";
-
-type Client = SupabaseClient<Database>;
+import { unstable_cache } from "next/cache";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 const DEFAULT_RANGE_DAYS = 30;
 const VIDEO_DISPLAY_LIMIT = 300;
@@ -12,8 +10,8 @@ function daysBefore(dateStr: string, days: number) {
   return d.toISOString().slice(0, 10);
 }
 
-async function getLatestChannelStatsDate(supabase: Client): Promise<string | null> {
-  const { data } = await supabase
+async function getLatestChannelStatsDate(admin: ReturnType<typeof createAdminClient>): Promise<string | null> {
+  const { data } = await admin
     .from("youtube_channel_stats")
     .select("date")
     .order("date", { ascending: false })
@@ -35,22 +33,25 @@ export type ChannelStatsResult = {
   range: { since: string; until: string };
 };
 
-export async function getChannelStats(
-  supabase: Client,
-  options?: { since?: string; until?: string }
-): Promise<ChannelStatsResult> {
-  const latestDate = (await getLatestChannelStatsDate(supabase)) ?? new Date().toISOString().slice(0, 10);
-  const since = options?.since ?? daysBefore(latestDate, DEFAULT_RANGE_DAYS - 1);
-  const until = options?.until ?? latestDate;
+// 유튜브 채널 통계·영상은 대시보드가 쓰지 않는 파이프라인 전용 참고 데이터라
+// admin 클라이언트 + unstable_cache(1시간 재검증)로 감싼다. 인증 게이트는
+// 호출부의 requireAuthedClient()가 담당하므로 supabase 클라이언트 인자를 받지
+// 않는다. 기간(since/until)은 사용자가 URL로 임의 지정할 수 있으므로 캐시 키에
+// 포함해 기간별로 별도 캐시된다.
+async function fetchChannelStats(since?: string, until?: string): Promise<ChannelStatsResult> {
+  const admin = createAdminClient();
+  const latestDate = (await getLatestChannelStatsDate(admin)) ?? new Date().toISOString().slice(0, 10);
+  const resolvedSince = since ?? daysBefore(latestDate, DEFAULT_RANGE_DAYS - 1);
+  const resolvedUntil = until ?? latestDate;
 
   const [{ data: trendData }, { data: latestData }] = await Promise.all([
-    supabase
+    admin
       .from("youtube_channel_stats")
       .select("*")
-      .gte("date", since)
-      .lte("date", until)
+      .gte("date", resolvedSince)
+      .lte("date", resolvedUntil)
       .order("date", { ascending: true }),
-    supabase.from("youtube_channel_stats").select("*").eq("date", latestDate).maybeSingle(),
+    admin.from("youtube_channel_stats").select("*").eq("date", latestDate).maybeSingle(),
   ]);
 
   const trend = (trendData ?? []).map((r) => ({
@@ -70,8 +71,17 @@ export async function getChannelStats(
         }
       : null,
     trend,
-    range: { since, until },
+    range: { since: resolvedSince, until: resolvedUntil },
   };
+}
+
+export async function getChannelStats(options?: { since?: string; until?: string }): Promise<ChannelStatsResult> {
+  const since = options?.since;
+  const until = options?.until;
+  const cached = unstable_cache(fetchChannelStats, ["youtube-channel-stats", since ?? "_", until ?? "_"], {
+    revalidate: 3600,
+  });
+  return cached(since, until);
 }
 
 export type YoutubeVideo = {
@@ -86,14 +96,24 @@ export type YoutubeVideo = {
   thumbnailUrl: string | null;
 };
 
-export async function getYoutubeVideos(supabase: Client): Promise<YoutubeVideo[]> {
-  const { data } = await supabase
-    .from("youtube_videos")
-    .select("*")
-    .order("view_count", { ascending: false })
-    .limit(VIDEO_DISPLAY_LIMIT);
+const getCachedVideos = unstable_cache(
+  async () => {
+    const admin = createAdminClient();
+    const { data } = await admin
+      .from("youtube_videos")
+      .select("*")
+      .order("view_count", { ascending: false })
+      .limit(VIDEO_DISPLAY_LIMIT);
+    return data ?? [];
+  },
+  ["youtube-videos"],
+  { revalidate: 3600 }
+);
 
-  return (data ?? []).map((v) => ({
+export async function getYoutubeVideos(): Promise<YoutubeVideo[]> {
+  const data = await getCachedVideos();
+
+  return data.map((v) => ({
     id: v.id,
     videoId: v.video_id,
     title: v.title,
