@@ -13,13 +13,11 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
-  const [debugInfo, setDebugInfo] = useState<string | null>(null);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setPending(true);
     setError(null);
-    setDebugInfo(null);
 
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithPassword({
@@ -33,16 +31,9 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
       return;
     }
 
-    // (임시 디버그) 로그인 기록 결과를 화면에 표시 — 원인 파악 후 제거 예정.
-    const result = await recordLogin().catch((e) => ({
-      ok: false,
-      detail: `클라이언트에서 예외: ${e instanceof Error ? e.message : String(e)}`,
-    }));
-    setDebugInfo(`[로그인 기록] ok=${result.ok} — ${result.detail}`);
-    setPending(false);
-  }
+    // 로그인 기록 실패가 로그인 자체를 막으면 안 되므로 별도로 감싼다.
+    await recordLogin().catch(() => {});
 
-  function goToDashboard() {
     router.push(redirectTo);
     router.refresh();
   }
@@ -90,18 +81,6 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
         </div>
       </div>
       {error && <p className="text-sm text-semantic-error">{error}</p>}
-      {debugInfo && (
-        <div className="flex flex-col gap-2 rounded border border-hairline bg-canvas-cream p-3 text-xs text-ink">
-          <p className="break-all font-mono">{debugInfo}</p>
-          <button
-            type="button"
-            onClick={goToDashboard}
-            className="self-start rounded-full bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press"
-          >
-            대시보드로 이동
-          </button>
-        </div>
-      )}
       <button
         type="submit"
         disabled={pending}

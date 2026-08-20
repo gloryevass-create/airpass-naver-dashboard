@@ -53,7 +53,14 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
-  if (user && pathname === "/login") {
+  // Server Action(예: 로그인 직후 recordLogin() 호출)은 현재 페이지 URL로 POST 요청을
+  // 보낸다 — 로그인 폼이 /login에 있으므로 이 요청도 pathname === "/login"이 되어
+  // 아래 리다이렉트 규칙에 잘못 걸린다(실측 확인, 2026-08-20: 로그인 직후 세션이 이미
+  // 있는 상태에서 recordLogin()의 액션 요청이 대시보드로 리다이렉트되면서 "unexpected
+  // response" 에러가 났음). Server Action 요청은 Next-Action 헤더로 식별해 제외한다.
+  const isServerAction = request.headers.has("next-action");
+
+  if (user && pathname === "/login" && !isServerAction) {
     return NextResponse.redirect(new URL("/dashboard/events", request.url));
   }
 
