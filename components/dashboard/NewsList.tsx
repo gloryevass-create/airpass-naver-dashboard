@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, useTransition } from "react";
 import type { NewsArticle } from "@/lib/queries/news";
 import { NavIcon } from "@/components/icons/NavIcon";
+import { scrapNotices, unscrapNotices } from "@/app/dashboard/actions/scraps";
 
 function formatDate(iso: string | null) {
   if (!iso) return "-";
@@ -23,7 +24,15 @@ function sourceDomain(link: string) {
   }
 }
 
-function NewsActions({ article }: { article: NewsArticle }) {
+function NewsActions({
+  article,
+  isScraped,
+  onToggleScrap,
+}: {
+  article: NewsArticle;
+  isScraped: boolean;
+  onToggleScrap: () => void;
+}) {
   const [message, setMessage] = useState<string | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -64,6 +73,16 @@ function NewsActions({ article }: { article: NewsArticle }) {
     <div className="mt-2 flex items-center gap-3">
       <button
         type="button"
+        onClick={onToggleScrap}
+        className={`flex items-center gap-1 text-xs ${
+          isScraped ? "text-primary" : "text-ink-mute hover:text-primary"
+        }`}
+      >
+        <NavIcon name="tag" className="h-3.5 w-3.5" />
+        {isScraped ? "스크랩됨" : "스크랩"}
+      </button>
+      <button
+        type="button"
         onClick={handleCopy}
         className="flex items-center gap-1 text-xs text-ink-mute hover:text-primary"
       >
@@ -86,9 +105,11 @@ function NewsActions({ article }: { article: NewsArticle }) {
 export function NewsList({
   articles,
   registeredKeywords,
+  scrapedIds: initialScrapedIds,
 }: {
   articles: NewsArticle[];
   registeredKeywords: string[];
+  scrapedIds: Set<string>;
 }) {
   // 등록된 키워드는 이번 조회 기간에 매칭된 기사가 0건이어도 항상 탭에 보여야 한다 —
   // 그렇지 않으면 "키워드를 등록했는데 화면에 아무 흔적이 없다"는 혼란이 생긴다. 데이터에만
@@ -98,8 +119,26 @@ export function NewsList({
     return ["전체", ...Array.from(set).sort()];
   }, [registeredKeywords, articles]);
   const [filter, setFilter] = useState("전체");
+  const [view, setView] = useState<"all" | "scrap">("all");
+  const [scrapedIds, setScrapedIds] = useState(initialScrapedIds);
+  const [, startTransition] = useTransition();
 
-  const filtered = filter === "전체" ? articles : articles.filter((a) => a.keyword === filter);
+  function toggleScrap(id: string) {
+    const isScraped = scrapedIds.has(id);
+    setScrapedIds((prev) => {
+      const next = new Set(prev);
+      if (isScraped) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+    startTransition(async () => {
+      if (isScraped) await unscrapNotices("news", [id], "/dashboard/news");
+      else await scrapNotices("news", [id], "/dashboard/news");
+    });
+  }
+
+  const byKeyword = filter === "전체" ? articles : articles.filter((a) => a.keyword === filter);
+  const filtered = view === "scrap" ? byKeyword.filter((a) => scrapedIds.has(a.id)) : byKeyword;
 
   if (keywords.length <= 1) {
     return (
@@ -111,26 +150,53 @@ export function NewsList({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap gap-2">
-        {keywords.map((k) => (
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap gap-2">
+          {keywords.map((k) => (
+            <button
+              key={k}
+              type="button"
+              onClick={() => setFilter(k)}
+              className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                filter === k
+                  ? "bg-primary text-white"
+                  : "bg-canvas-cream text-ink-mute hover:text-ink"
+              }`}
+            >
+              {k}
+            </button>
+          ))}
+        </div>
+        <div className="flex gap-2">
           <button
-            key={k}
             type="button"
-            onClick={() => setFilter(k)}
+            onClick={() => setView("all")}
             className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-              filter === k
-                ? "bg-primary text-white"
-                : "bg-canvas-cream text-ink-mute hover:text-ink"
+              view === "all" ? "bg-primary text-white" : "bg-canvas-cream text-ink-mute hover:text-ink"
             }`}
           >
-            {k}
+            전체
           </button>
-        ))}
+          <button
+            type="button"
+            onClick={() => setView("scrap")}
+            className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+              view === "scrap" ? "bg-primary text-white" : "bg-canvas-cream text-ink-mute hover:text-ink"
+            }`}
+          >
+            스크랩 ({scrapedIds.size})
+          </button>
+        </div>
       </div>
 
       <ul className="flex flex-col gap-3">
         {filtered.map((a) => (
-          <li key={a.id} className="rounded-xl border border-hairline p-4">
+          <li
+            key={a.id}
+            className={`rounded-xl border p-4 ${
+              scrapedIds.has(a.id) ? "border-primary/40 bg-canvas-lavender/20" : "border-hairline"
+            }`}
+          >
             <div className="mb-1 flex flex-wrap items-center gap-2 text-xs text-ink-mute">
               <span className="rounded-full bg-canvas-lavender px-2 py-0.5 font-medium text-primary">
                 {a.keyword}
@@ -145,19 +211,22 @@ export function NewsList({
               rel="noopener noreferrer"
               className="text-sm font-semibold text-ink hover:text-primary hover:underline"
             >
+              {scrapedIds.has(a.id) && <span className="mr-1 text-primary">★</span>}
               {a.title}
             </a>
             {a.description && (
               <p className="mt-1 text-xs text-ink-mute">{a.description}</p>
             )}
-            <NewsActions article={a} />
+            <NewsActions article={a} isScraped={scrapedIds.has(a.id)} onToggleScrap={() => toggleScrap(a.id)} />
           </li>
         ))}
         {filtered.length === 0 && (
           <li className="py-6 text-center text-sm text-ink-mute">
-            {filter === "전체"
-              ? "선택한 기간에 수집된 뉴스가 없습니다."
-              : `"${filter}" 키워드로 수집된 뉴스가 없습니다(다음 자동 수집 때 다시 시도합니다).`}
+            {view === "scrap"
+              ? "스크랩한 뉴스가 없습니다."
+              : filter === "전체"
+                ? "선택한 기간에 수집된 뉴스가 없습니다."
+                : `"${filter}" 키워드로 수집된 뉴스가 없습니다(다음 자동 수집 때 다시 시도합니다).`}
           </li>
         )}
       </ul>

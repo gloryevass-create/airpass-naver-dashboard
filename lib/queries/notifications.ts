@@ -10,7 +10,8 @@ export type NotificationType =
   | "budget_low"
   | "memo"
   | "budget_scrap"
-  | "prespec_scrap";
+  | "prespec_scrap"
+  | "news_scrap";
 
 export type Notification = {
   id: string;

@@ -5,17 +5,25 @@ import { requireAuthedClient } from "@/lib/supabase/authed";
 import type { NoticeType } from "@/lib/queries/scraps";
 import { formatMember } from "@/lib/formatMember";
 
-const NOTICE_TABLE: Record<NoticeType, "budget_bids" | "prespec_notices"> = {
+const NOTICE_TABLE: Record<NoticeType, "budget_bids" | "prespec_notices" | "news_articles"> = {
   budget: "budget_bids",
   prespec: "prespec_notices",
+  news: "news_articles",
 };
-const NOTIFICATION_TYPE: Record<NoticeType, "budget_scrap" | "prespec_scrap"> = {
+const NOTIFICATION_TYPE: Record<NoticeType, "budget_scrap" | "prespec_scrap" | "news_scrap"> = {
   budget: "budget_scrap",
   prespec: "prespec_scrap",
+  news: "news_scrap",
 };
 const NOTICE_LABEL: Record<NoticeType, string> = {
   budget: "조달입찰공고",
   prespec: "조달사전규격",
+  news: "교육관련뉴스",
+};
+const NOTICE_LINK: Record<NoticeType, string> = {
+  budget: "/dashboard/budget",
+  prespec: "/dashboard/prespec",
+  news: "/dashboard/news",
 };
 
 /** 스크랩 발생을 팀 전체에게 알린다 — 여러 건을 한 번에 스크랩해도 알림 1건으로
@@ -43,7 +51,7 @@ async function notifyTeamOfScrap(
     type: NOTIFICATION_TYPE[noticeType],
     title,
     message,
-    link: noticeType === "budget" ? "/dashboard/budget" : "/dashboard/prespec",
+    link: NOTICE_LINK[noticeType],
   });
 }
 

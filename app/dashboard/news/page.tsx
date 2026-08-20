@@ -1,6 +1,7 @@
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { getNewsArticles } from "@/lib/queries/news";
 import { getMonitorKeywords } from "@/lib/queries/monitorKeywords";
+import { getScrapedNoticeIds } from "@/lib/queries/scraps";
 import { extractHotKeywords } from "@/lib/newsKeywordFrequency";
 import { NewsList } from "@/components/dashboard/NewsList";
 import { NewsHotKeywords } from "@/components/dashboard/NewsHotKeywords";
@@ -12,10 +13,11 @@ type SearchParams = Promise<{ from?: string; to?: string }>;
 
 export default async function NewsPage({ searchParams }: { searchParams: SearchParams }) {
   const { from, to } = await searchParams;
-  const { supabase } = await requireAuthedClient();
-  const [{ articles, range }, keywords] = await Promise.all([
+  const { supabase, user } = await requireAuthedClient();
+  const [{ articles, range }, keywords, scrapedIds] = await Promise.all([
     getNewsArticles(supabase, { since: from, until: to }),
     getMonitorKeywords(supabase, "news"),
+    getScrapedNoticeIds(supabase, user.id, "news"),
   ]);
   const hotKeywords = extractHotKeywords(articles.map((a) => a.title));
 
@@ -34,7 +36,7 @@ export default async function NewsPage({ searchParams }: { searchParams: SearchP
       <MonitorKeywordManager track="news" keywords={keywords} path="/dashboard/news" />
       <MonitorDateRangeFilter basePath="/dashboard/news" range={range} resultCount={articles.length} />
       <NewsHotKeywords keywords={hotKeywords} />
-      <NewsList articles={articles} registeredKeywords={keywords.map((k) => k.keyword)} />
+      <NewsList articles={articles} registeredKeywords={keywords.map((k) => k.keyword)} scrapedIds={scrapedIds} />
     </main>
   );
 }

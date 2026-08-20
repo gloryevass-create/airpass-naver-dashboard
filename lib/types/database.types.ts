@@ -631,21 +631,21 @@ export type Database = {
         Row: {
           id: string;
           user_id: string;
-          notice_type: "budget" | "prespec";
+          notice_type: "budget" | "prespec" | "news";
           notice_id: string;
           created_at: string;
         };
         Insert: {
           id?: string;
           user_id: string;
-          notice_type: "budget" | "prespec";
+          notice_type: "budget" | "prespec" | "news";
           notice_id: string;
           created_at?: string;
         };
         Update: {
           id?: string;
           user_id?: string;
-          notice_type?: "budget" | "prespec";
+          notice_type?: "budget" | "prespec" | "news";
           notice_id?: string;
           created_at?: string;
         };
@@ -1254,7 +1254,7 @@ export type Database = {
       notifications: {
         Row: {
           id: string;
-          type: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap";
+          type: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap" | "news_scrap";
           title: string;
           message: string | null;
           link: string | null;
@@ -1262,7 +1262,7 @@ export type Database = {
         };
         Insert: {
           id?: string;
-          type: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap";
+          type: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap" | "news_scrap";
           title: string;
           message?: string | null;
           link?: string | null;
@@ -1270,7 +1270,7 @@ export type Database = {
         };
         Update: {
           id?: string;
-          type?: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap";
+          type?: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap" | "news_scrap";
           title?: string;
           message?: string | null;
           link?: string | null;

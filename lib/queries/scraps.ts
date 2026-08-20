@@ -3,7 +3,7 @@ import type { Database } from "@/lib/types/database.types";
 
 type Client = SupabaseClient<Database>;
 
-export type NoticeType = "budget" | "prespec";
+export type NoticeType = "budget" | "prespec" | "news";
 
 /** 로그인한 사용자가 스크랩해 둔 notice_id 집합. */
 export async function getScrapedNoticeIds(
