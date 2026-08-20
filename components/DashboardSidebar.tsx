@@ -2,8 +2,9 @@
 
 import Link, { useLinkStatus } from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavIcon, type IconName } from "@/components/icons/NavIcon";
+import { useMobileNav } from "@/components/MobileNavContext";
 
 type LeafItem = { href: string; label: string; icon: IconName };
 type GroupItem = { label: string; icon: IconName; children: LeafItem[] };
@@ -65,9 +66,11 @@ function NavSpinner() {
 }
 
 function NavLink({ item, active, indent }: { item: LeafItem; active: boolean; indent?: boolean }) {
+  const { close } = useMobileNav();
   return (
     <Link
       href={item.href}
+      onClick={close}
       className={`flex items-center justify-between rounded-md px-3 text-sm transition-colors ${
         indent ? "ml-3 py-1.5" : "py-2"
       } ${
@@ -88,6 +91,14 @@ function NavLink({ item, active, indent }: { item: LeafItem; active: boolean; in
 export function DashboardSidebar({ latestDate }: { latestDate: string | null }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  const { open, close } = useMobileNav();
+
+  // 모바일에서 링크를 눌러 페이지가 바뀌면 드로어를 자동으로 닫는다(NavLink의
+  // onClick으로도 닫히지만, 그룹 헤더 클릭 없이 바로 이동하는 다른 경로 대비 안전망).
+  useEffect(() => {
+    close();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
   function toggleGroup(label: string) {
     setCollapsed((prev) => {
@@ -99,7 +110,19 @@ export function DashboardSidebar({ latestDate }: { latestDate: string | null }) 
   }
 
   return (
-    <nav className="flex h-full w-56 shrink-0 flex-col border-r border-hairline bg-[#fafafa] p-4">
+    <>
+      {open && (
+        <div
+          className="fixed inset-0 z-30 bg-black/30 md:hidden"
+          onClick={close}
+          aria-hidden="true"
+        />
+      )}
+      <nav
+        className={`fixed inset-y-0 left-0 z-40 flex h-full w-64 shrink-0 flex-col border-r border-hairline bg-[#fafafa] p-4 transition-transform duration-200 md:static md:z-auto md:w-56 md:translate-x-0 ${
+          open ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
       <div className="flex flex-1 flex-col gap-1">
         {ITEMS.map((entry) => {
           if (isGroup(entry)) {
@@ -141,6 +164,7 @@ export function DashboardSidebar({ latestDate }: { latestDate: string | null }) 
       <p className="border-t border-hairline px-3 pt-3 text-xs text-ink-mute">
         {latestDate ? `최근 수집일: ${latestDate}` : "아직 수집된 데이터가 없습니다"}
       </p>
-    </nav>
+      </nav>
+    </>
   );
 }

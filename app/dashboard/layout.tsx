@@ -3,6 +3,7 @@ import { getLatestDataDate } from "@/lib/queries/dashboard";
 import { getNotifications } from "@/lib/queries/notifications";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { DashboardSidebar } from "@/components/DashboardSidebar";
+import { MobileNavProvider } from "@/components/MobileNavContext";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { supabase, user } = await requireAuthedClient();
@@ -14,19 +15,21 @@ export default async function DashboardLayout({ children }: { children: React.Re
   ]);
 
   return (
-    <div className="flex flex-1 flex-col">
-      <DashboardHeader
-        email={user.email ?? ""}
-        name={profile?.name ?? null}
-        title={profile?.title ?? null}
-        isAdmin={profile?.role === "admin"}
-        userId={user.id}
-        notifications={notifications}
-      />
-      <div className="flex flex-1">
-        <DashboardSidebar latestDate={latestDate} />
-        <div className="flex-1">{children}</div>
+    <MobileNavProvider>
+      <div className="flex flex-1 flex-col">
+        <DashboardHeader
+          email={user.email ?? ""}
+          name={profile?.name ?? null}
+          title={profile?.title ?? null}
+          isAdmin={profile?.role === "admin"}
+          userId={user.id}
+          notifications={notifications}
+        />
+        <div className="flex flex-1 overflow-x-hidden">
+          <DashboardSidebar latestDate={latestDate} />
+          <div className="min-w-0 flex-1">{children}</div>
+        </div>
       </div>
-    </div>
+    </MobileNavProvider>
   );
 }
