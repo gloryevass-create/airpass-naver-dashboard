@@ -4,8 +4,8 @@ import { DisabilityWelfareTable } from "@/components/dashboard/DisabilityWelfare
 import { NavIcon } from "@/components/icons/NavIcon";
 
 export default async function DisabilityWelfarePage() {
-  const { supabase } = await requireAuthedClient();
-  const centers = await getDisabilityWelfareCenters(supabase);
+  await requireAuthedClient();
+  const centers = await getDisabilityWelfareCenters();
   const latestSync = centers[0]?.syncedAt ?? null;
 
   return (

@@ -4,8 +4,8 @@ import { YouthFacilityTable } from "@/components/dashboard/YouthFacilityTable";
 import { NavIcon } from "@/components/icons/NavIcon";
 
 export default async function YouthFacilitiesPage() {
-  const { supabase } = await requireAuthedClient();
-  const facilities = await getYouthFacilities(supabase);
+  await requireAuthedClient();
+  const facilities = await getYouthFacilities();
   const latestSync = facilities[0]?.syncedAt ?? null;
 
   return (

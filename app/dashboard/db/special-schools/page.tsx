@@ -4,8 +4,8 @@ import { SpecialSchoolTable } from "@/components/dashboard/SpecialSchoolTable";
 import { NavIcon } from "@/components/icons/NavIcon";
 
 export default async function SpecialSchoolsPage() {
-  const { supabase } = await requireAuthedClient();
-  const schools = await getSpecialSchools(supabase);
+  await requireAuthedClient();
+  const schools = await getSpecialSchools();
   const latestSync = schools[0]?.syncedAt ?? null;
 
   return (

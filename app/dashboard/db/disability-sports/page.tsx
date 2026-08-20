@@ -4,8 +4,8 @@ import { DisabilitySportsTable } from "@/components/dashboard/DisabilitySportsTa
 import { NavIcon } from "@/components/icons/NavIcon";
 
 export default async function DisabilitySportsPage() {
-  const { supabase } = await requireAuthedClient();
-  const facilities = await getDisabilitySportsFacilities(supabase);
+  await requireAuthedClient();
+  const facilities = await getDisabilitySportsFacilities();
   const latestSync = facilities[0]?.syncedAt ?? null;
 
   return (

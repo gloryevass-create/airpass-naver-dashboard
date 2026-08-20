@@ -4,8 +4,8 @@ import { PublicInstitutionTable } from "@/components/dashboard/PublicInstitution
 import { NavIcon } from "@/components/icons/NavIcon";
 
 export default async function PublicInstitutionsPage() {
-  const { supabase } = await requireAuthedClient();
-  const institutions = await getPublicInstitutions(supabase);
+  await requireAuthedClient();
+  const institutions = await getPublicInstitutions();
   const latestSync = institutions[0]?.syncedAt ?? null;
 
   return (
