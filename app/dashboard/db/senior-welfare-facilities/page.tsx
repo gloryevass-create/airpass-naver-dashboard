@@ -4,8 +4,8 @@ import { SeniorWelfareFacilityTable } from "@/components/dashboard/SeniorWelfare
 import { NavIcon } from "@/components/icons/NavIcon";
 
 export default async function SeniorWelfareFacilitiesPage() {
-  const { supabase } = await requireAuthedClient();
-  const facilities = await getSeniorWelfareFacilities(supabase);
+  await requireAuthedClient();
+  const facilities = await getSeniorWelfareFacilities();
   const latestSync = facilities[0]?.syncedAt ?? null;
 
   return (
