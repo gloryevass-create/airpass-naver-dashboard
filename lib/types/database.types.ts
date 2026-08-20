@@ -1194,6 +1194,57 @@ export type Database = {
         };
         Relationships: [];
       };
+      senior_welfare_facilities: {
+        Row: {
+          id: string;
+          facility_name: string;
+          facility_type: string | null;
+          province_name: string | null;
+          road_address: string | null;
+          lot_address: string | null;
+          latitude: number | null;
+          longitude: number | null;
+          business_status: string | null;
+          phone_number: string | null;
+          managing_org_name: string | null;
+          providing_inst_name: string | null;
+          reference_date: string | null;
+          synced_at: string;
+        };
+        Insert: {
+          id?: string;
+          facility_name: string;
+          facility_type?: string | null;
+          province_name?: string | null;
+          road_address?: string | null;
+          lot_address?: string | null;
+          latitude?: number | null;
+          longitude?: number | null;
+          business_status?: string | null;
+          phone_number?: string | null;
+          managing_org_name?: string | null;
+          providing_inst_name?: string | null;
+          reference_date?: string | null;
+          synced_at?: string;
+        };
+        Update: {
+          id?: string;
+          facility_name?: string;
+          facility_type?: string | null;
+          province_name?: string | null;
+          road_address?: string | null;
+          lot_address?: string | null;
+          latitude?: number | null;
+          longitude?: number | null;
+          business_status?: string | null;
+          phone_number?: string | null;
+          managing_org_name?: string | null;
+          providing_inst_name?: string | null;
+          reference_date?: string | null;
+          synced_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
