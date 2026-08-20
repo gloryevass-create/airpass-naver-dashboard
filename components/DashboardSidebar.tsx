@@ -161,9 +161,22 @@ export function DashboardSidebar({ latestDate }: { latestDate: string | null }) 
           return <NavLink key={entry.href} item={entry} active={Boolean(pathname?.startsWith(entry.href))} />;
         })}
       </div>
-      <p className="border-t border-hairline px-3 pt-3 text-xs text-ink-mute">
-        {latestDate ? `최근 수집일: ${latestDate}` : "아직 수집된 데이터가 없습니다"}
-      </p>
+      <div className="border-t border-hairline px-3 pt-3">
+        <p className="text-xs text-ink-mute">
+          {latestDate ? `최근 수집일: ${latestDate}` : "아직 수집된 데이터가 없습니다"}
+        </p>
+        <Link
+          href="/dashboard/changelog"
+          onClick={close}
+          className={`mt-1 block text-xs transition-colors ${
+            pathname?.startsWith("/dashboard/changelog")
+              ? "font-semibold text-primary"
+              : "text-ink-mute hover:text-primary"
+          }`}
+        >
+          업데이트 히스토리
+        </Link>
+      </div>
       </nav>
     </>
   );
