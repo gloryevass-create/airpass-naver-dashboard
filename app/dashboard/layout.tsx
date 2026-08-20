@@ -1,14 +1,16 @@
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { getLatestDataDate } from "@/lib/queries/dashboard";
+import { getNotifications } from "@/lib/queries/notifications";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { DashboardSidebar } from "@/components/DashboardSidebar";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { supabase, user } = await requireAuthedClient();
 
-  const [{ data: profile }, latestDate] = await Promise.all([
+  const [{ data: profile }, latestDate, notifications] = await Promise.all([
     supabase.from("profiles").select("role, name, title").eq("id", user.id).single(),
     getLatestDataDate(),
+    getNotifications(supabase, user.id),
   ]);
 
   return (
@@ -18,6 +20,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
         name={profile?.name ?? null}
         title={profile?.title ?? null}
         isAdmin={profile?.role === "admin"}
+        userId={user.id}
+        notifications={notifications}
       />
       <div className="flex flex-1">
         <DashboardSidebar latestDate={latestDate} />

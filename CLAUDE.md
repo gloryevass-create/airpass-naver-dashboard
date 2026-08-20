@@ -44,6 +44,13 @@
 - PostgREST 임베디드 조인(`select("competitors(name)")`) 대신, `competitors`/`keywords`를 별도
   조회해 `Map`으로 JS 레벨 조인한다(`lib/queries/dashboard.ts`) — FK 관계 메타데이터 없이도 타입이
   안전하게 유지된다.
+- `notifications`(팀 공유 알림 피드) + `notification_reads`(사용자별 읽음 상태). 팀일정/비즈니스/
+  유튜브업로드/광고비 부족은 `airpass-naver-monitor`가 매일 동기화 시 diff를 감지해
+  service_role로 직접 삽입한다(`scripts/lib/supabase-sync.ts`의 `diffNewTeamEvents` 등).
+  광고전략메모 작성(`app/dashboard/memos/actions.ts`)과 조달입찰공고/사전규격 스크랩
+  (`app/dashboard/actions/scraps.ts`)은 이 대시보드 자체가 authenticated 세션으로 직접
+  삽입한다. 클라이언트는 `components/NotificationBell.tsx`에서 Supabase Realtime으로
+  새 알림을 실시간 수신한다(0026 마이그레이션에서 `supabase_realtime` publication에 추가).
 
 ## 폴더 구조
 

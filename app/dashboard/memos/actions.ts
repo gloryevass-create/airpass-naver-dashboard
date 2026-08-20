@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import type { MemoCategory } from "@/lib/queries/memos";
+import { formatMember } from "@/lib/formatMember";
 
 const CATEGORIES: MemoCategory[] = ["keyword", "blog", "etc"];
 
@@ -52,6 +53,15 @@ export async function createMemo(_prevState: CreateMemoState, formData: FormData
       file_size: file.size,
     });
   }
+
+  const { data: profile } = await supabase.from("profiles").select("name, email").eq("id", user.id).single();
+  const actor = formatMember(profile?.name ?? null, null, profile?.email ?? user.email ?? "");
+  await supabase.from("notifications").insert({
+    type: "memo",
+    title,
+    message: `${actor}님이 광고전략메모를 작성했습니다.`,
+    link: `/dashboard/memos/${memo.id}`,
+  });
 
   revalidatePath("/dashboard/memos");
   redirect(`/dashboard/memos/${memo.id}`);

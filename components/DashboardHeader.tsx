@@ -6,18 +6,24 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { NavIcon } from "@/components/icons/NavIcon";
 import { AppLogo } from "@/components/icons/AppLogo";
+import { NotificationBell } from "@/components/NotificationBell";
 import { formatMember } from "@/lib/formatMember";
+import type { Notification } from "@/lib/queries/notifications";
 
 export function DashboardHeader({
   email,
   name,
   title,
   isAdmin,
+  userId,
+  notifications,
 }: {
   email: string;
   name: string | null;
   title: string | null;
   isAdmin: boolean;
+  userId: string;
+  notifications: Notification[];
 }) {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -51,6 +57,7 @@ export function DashboardHeader({
         </div>
       </Link>
       <div className="flex items-center gap-4 text-sm">
+        <NotificationBell initialNotifications={notifications} userId={userId} />
         <div ref={menuRef} className="relative">
           <button
             type="button"

@@ -1251,6 +1251,51 @@ export type Database = {
         };
         Relationships: [];
       };
+      notifications: {
+        Row: {
+          id: string;
+          type: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap";
+          title: string;
+          message: string | null;
+          link: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          type: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap";
+          title: string;
+          message?: string | null;
+          link?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          type?: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap";
+          title?: string;
+          message?: string | null;
+          link?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      notification_reads: {
+        Row: {
+          notification_id: string;
+          user_id: string;
+          read_at: string;
+        };
+        Insert: {
+          notification_id: string;
+          user_id: string;
+          read_at?: string;
+        };
+        Update: {
+          notification_id?: string;
+          user_id?: string;
+          read_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
