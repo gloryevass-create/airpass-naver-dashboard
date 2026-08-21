@@ -30,6 +30,7 @@ export default async function AdminPage() {
             <thead className="bg-canvas-cream text-left text-ink-mute">
               <tr>
                 <th className="px-4 py-2 font-medium">이름(직함)</th>
+                <th className="px-4 py-2 font-medium">이메일</th>
                 <th className="px-4 py-2 font-medium">역할</th>
                 <th className="px-4 py-2 font-medium">가입일</th>
                 <th className="px-4 py-2 font-medium">최근 로그인</th>
@@ -40,6 +41,7 @@ export default async function AdminPage() {
               {(profiles ?? []).map((p) => (
                 <tr key={p.id} className="border-t border-hairline">
                   <td className="px-4 py-2">{formatMember(p.name, p.title, p.email)}</td>
+                  <td className="px-4 py-2 text-ink-mute">{p.email}</td>
                   <td className="px-4 py-2">{p.role}</td>
                   <td className="px-4 py-2 text-ink-mute">
                     {new Date(p.created_at).toLocaleDateString("ko-KR")}
@@ -52,7 +54,7 @@ export default async function AdminPage() {
               ))}
               {(!profiles || profiles.length === 0) && (
                 <tr>
-                  <td colSpan={5} className="px-4 py-6 text-center text-ink-mute">
+                  <td colSpan={6} className="px-4 py-6 text-center text-ink-mute">
                     아직 가입자가 없습니다.
                   </td>
                 </tr>
