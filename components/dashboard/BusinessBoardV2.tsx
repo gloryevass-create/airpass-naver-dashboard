@@ -35,18 +35,18 @@ const STATUS_BADGE: Record<string, string> = {
   실패: "bg-[#f0f0f2] text-ink-mute",
 };
 
-// 단계별 컬러 셋트 — 카드의 단계 배지와 칸반 컬럼 상단 헤더가 같은 색으로 짝을 이루게 한다.
-const STAGE_COLORS: Record<string, { badge: string; header: string }> = {
-  "Ⅰ영업진행": { badge: "border-[#0066cc]/30 bg-[#e8f2ff] text-[#0066cc]", header: "bg-[#e8f2ff] text-[#0066cc]" },
-  "Ⅱ사업제안": { badge: "border-[#7c3aed]/30 bg-[#f3ecff] text-[#7c3aed]", header: "bg-[#f3ecff] text-[#7c3aed]" },
-  "Ⅲ제안서작성": { badge: "border-[#0d9488]/30 bg-[#e0f7f5] text-[#0d9488]", header: "bg-[#e0f7f5] text-[#0d9488]" },
-  "Ⅳ사업수행": { badge: "border-[#c2740c]/30 bg-[#fff4e0] text-[#c2740c]", header: "bg-[#fff4e0] text-[#c2740c]" },
-  "Ⅴ사업완료": { badge: "border-[#248a3d]/30 bg-[#e6f7ec] text-[#248a3d]", header: "bg-[#e6f7ec] text-[#248a3d]" },
+// 칸반 컬럼 상단 헤더 색 — 단계별로 다르게 구분한다. 카드 안의 단계 선택 드롭다운은
+// 색이 너무 많으면 산만해 보인다는 피드백으로 흰색 중립 스타일로 통일했다(사용자 확인).
+const STAGE_HEADER_COLOR: Record<string, string> = {
+  "Ⅰ영업진행": "bg-[#e8f2ff] text-[#0066cc]",
+  "Ⅱ사업제안": "bg-[#f3ecff] text-[#7c3aed]",
+  "Ⅲ제안서작성": "bg-[#e0f7f5] text-[#0d9488]",
+  "Ⅳ사업수행": "bg-[#fff4e0] text-[#c2740c]",
+  "Ⅴ사업완료": "bg-[#e6f7ec] text-[#248a3d]",
 };
-const STAGE_FALLBACK = { badge: "border-hairline bg-[#f0f0f2] text-ink-mute", header: "bg-background text-ink" };
 
-function stageColors(stage: string | null): { badge: string; header: string } {
-  return STAGE_COLORS[stage ?? ""] ?? STAGE_FALLBACK;
+function stageHeaderColor(stage: string): string {
+  return STAGE_HEADER_COLOR[stage] ?? "bg-background text-ink";
 }
 
 function formatDate(value: string | null): string | null {
@@ -499,7 +499,7 @@ function ProjectCard({
         value={project.stage ?? ""}
         onChange={(e) => handleStageChange(e.target.value)}
         onClick={(e) => e.stopPropagation()}
-        className={`cursor-pointer rounded-sm border px-1.5 py-1 text-[11px] font-medium outline-none focus:border-primary ${stageColors(project.stage).badge}`}
+        className="rounded-sm border border-hairline bg-canvas-cream px-1.5 py-1 text-[11px] font-medium text-ink-mute outline-none focus:border-primary"
       >
         <option value="">미분류</option>
         {STAGES.map((s) => (
@@ -553,9 +553,7 @@ function BusinessListView({
                 <span className="text-left text-link-blue hover:underline">{p.title}</span>
               </td>
               <td className="whitespace-nowrap px-4 py-2">
-                <span
-                  className={`inline-flex w-fit whitespace-nowrap rounded-md border px-1.5 py-0.5 text-xs font-medium ${stageColors(p.stage).badge}`}
-                >
+                <span className="inline-flex w-fit whitespace-nowrap rounded-md border border-hairline bg-canvas-cream px-1.5 py-0.5 text-xs font-medium text-ink-mute">
                   {p.stage ?? "미분류"}
                 </span>
               </td>
@@ -736,7 +734,7 @@ export function BusinessBoardV2({ projects }: { projects: BusinessProjectV2[] })
             {Array.from(byStage.entries()).map(([stage, items]) => (
               <div key={stage} className="flex min-w-0 flex-col gap-2">
                 <div
-                  className={`flex items-center gap-1.5 rounded-sm px-2 py-1.5 text-sm font-semibold ${stageColors(stage).header}`}
+                  className={`flex items-center gap-1.5 rounded-sm px-2 py-1.5 text-sm font-semibold ${stageHeaderColor(stage)}`}
                 >
                   <span className="truncate">{stage}</span>
                   <span className="shrink-0 font-normal opacity-70">{items.length}</span>
