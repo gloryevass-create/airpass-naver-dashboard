@@ -25,13 +25,13 @@ export default async function MemosPage() {
         </div>
         <Link
           href="/dashboard/memos/new"
-          className="rounded-full bg-primary px-5 py-2 text-sm font-bold text-white hover:bg-primary-press"
+          className="rounded-lg bg-primary px-5 py-2 text-sm font-bold text-white hover:bg-primary-press"
         >
           새 메모 작성
         </Link>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-hairline">
+      <div className="overflow-hidden rounded-sm border border-hairline">
         <table className="w-full text-sm">
           <thead className="bg-canvas-cream text-left text-ink-mute">
             <tr>

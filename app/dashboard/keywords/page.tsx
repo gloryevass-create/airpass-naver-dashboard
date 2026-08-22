@@ -34,7 +34,7 @@ export default async function KeywordsPage({ searchParams }: { searchParams: Sea
       </div>
 
       {!dashboard.latestDate && (
-        <div className="rounded-xl border border-hairline bg-canvas-cream p-6 text-sm text-ink-mute">
+        <div className="rounded-sm border border-hairline bg-canvas-cream p-6 text-sm text-ink-mute">
           아직 모니터링 에이전트가 수집한 데이터가 없습니다. 파이프라인이 최소 1회 실행되면
           여기에 결과가 표시됩니다.
         </div>
@@ -45,14 +45,14 @@ export default async function KeywordsPage({ searchParams }: { searchParams: Sea
       <KpiCards kpi={dashboard.kpi} />
 
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div className="rounded-xl border border-hairline p-4">
+        <div className="rounded-sm border border-hairline p-4">
           <h2 className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-ink-mute">
             <NavIcon name="chart" className="h-4 w-4" />
             키워드 평균 노출순위 추이 (최근 14일)
           </h2>
           <RankTrendChart data={dashboard.rankTrend} />
         </div>
-        <div className="rounded-xl border border-hairline p-4">
+        <div className="rounded-sm border border-hairline p-4">
           <HotKeywordTreemap keywordTable={dashboard.keywordTable} />
         </div>
       </section>

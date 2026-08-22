@@ -115,7 +115,7 @@ function CustomTooltip({
   if (!active || !payload?.length) return null;
   const node = payload[0].payload;
   return (
-    <div className="rounded-md border border-hairline bg-canvas-cream p-3 text-xs shadow-md">
+    <div className="rounded-sm border border-hairline bg-canvas-cream p-3 text-xs shadow-md">
       <p className="mb-1 font-semibold">
         {node.rank ?? "-"}위 · {node.name ?? ""}
       </p>

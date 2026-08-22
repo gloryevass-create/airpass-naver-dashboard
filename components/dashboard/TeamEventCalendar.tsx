@@ -130,7 +130,7 @@ export function TeamEventCalendar({ events, month }: { events: TeamEvent[]; mont
           onClick={() => setSelected(null)}
         >
           <div
-            className="w-full max-w-md rounded-xl border border-hairline bg-background p-5"
+            className="w-full max-w-md rounded-sm border border-hairline bg-background p-5"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-2 flex flex-wrap gap-1">
@@ -188,7 +188,7 @@ export function TeamEventCalendar({ events, month }: { events: TeamEvent[]; mont
               <button
                 type="button"
                 onClick={() => setSelected(null)}
-                className="rounded-full border border-hairline px-4 py-1.5 text-sm font-medium text-ink hover:bg-canvas-cream"
+                className="rounded-lg border border-hairline px-4 py-1.5 text-sm font-medium text-ink hover:bg-canvas-cream"
               >
                 닫기
               </button>

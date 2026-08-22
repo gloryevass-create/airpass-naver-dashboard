@@ -57,14 +57,14 @@ export function MonitorDateRangeFilter({
   }
 
   return (
-    <div className="rounded-xl border border-hairline p-4">
+    <div className="rounded-sm border border-hairline p-4">
       <div className="flex flex-wrap items-center gap-2 text-sm">
         <button
           type="button"
           onClick={() => shift(-1)}
           disabled={isPending}
           aria-label="이전 기간"
-          className="flex h-7 w-7 items-center justify-center rounded-md border border-hairline hover:bg-canvas-cream disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex h-7 w-7 items-center justify-center rounded-sm border border-hairline hover:bg-canvas-cream disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isPending && pendingAction === "prev" ? <Spinner dark /> : "◀"}
         </button>
@@ -74,7 +74,7 @@ export function MonitorDateRangeFilter({
           max={until}
           disabled={isPending}
           onChange={(e) => setSince(e.target.value)}
-          className="rounded-md border border-hairline px-2 py-1 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-sm border border-hairline px-2 py-1 disabled:cursor-not-allowed disabled:opacity-50"
         />
         <span className="text-ink-mute">→</span>
         <input
@@ -83,14 +83,14 @@ export function MonitorDateRangeFilter({
           min={since}
           disabled={isPending}
           onChange={(e) => setUntil(e.target.value)}
-          className="rounded-md border border-hairline px-2 py-1 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-sm border border-hairline px-2 py-1 disabled:cursor-not-allowed disabled:opacity-50"
         />
         <button
           type="button"
           onClick={() => shift(1)}
           disabled={isPending}
           aria-label="다음 기간"
-          className="flex h-7 w-7 items-center justify-center rounded-md border border-hairline hover:bg-canvas-cream disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex h-7 w-7 items-center justify-center rounded-sm border border-hairline hover:bg-canvas-cream disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isPending && pendingAction === "next" ? <Spinner dark /> : "▶"}
         </button>
@@ -98,7 +98,7 @@ export function MonitorDateRangeFilter({
           type="button"
           onClick={() => applyRange(since, until, "apply")}
           disabled={isPending}
-          className="flex items-center gap-2 rounded-md bg-primary px-3 py-1 font-medium text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+          className="flex items-center gap-2 rounded-sm bg-primary px-3 py-1 font-medium text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isPending && pendingAction === "apply" && <Spinner />}
           {isPending && pendingAction === "apply" ? "조회 중..." : "조회"}

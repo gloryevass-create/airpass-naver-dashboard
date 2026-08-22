@@ -59,7 +59,7 @@ function StatBlock({
   onSelect: (label: string) => void;
 }) {
   return (
-    <div className="rounded-xl border border-hairline p-3">
+    <div className="rounded-sm border border-hairline p-3">
       <h3 className="mb-2 text-xs font-semibold text-ink-mute">
         {title}
         {active && (
@@ -76,7 +76,7 @@ function StatBlock({
               key={label}
               type="button"
               onClick={() => onSelect(label)}
-              className={`rounded-full px-2.5 py-1 text-xs transition-colors ${
+              className={`rounded-lg px-2.5 py-1 text-xs transition-colors ${
                 isActive ? "bg-primary text-white" : "bg-canvas-cream text-ink hover:bg-canvas-lavender"
               }`}
             >
@@ -171,7 +171,7 @@ export function DisabilityWelfareTable({ centers }: { centers: DisabilityWelfare
         <select
           value={province}
           onChange={(e) => setProvince(e.target.value)}
-          className="rounded-md border border-hairline bg-canvas-cream px-2 py-1.5 text-ink"
+          className="rounded-sm border border-hairline bg-canvas-cream px-2 py-1.5 text-ink"
         >
           {provinces.map((p) => (
             <option key={p} value={p}>
@@ -184,7 +184,7 @@ export function DisabilityWelfareTable({ centers }: { centers: DisabilityWelfare
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="시설명 검색"
-          className="rounded-md border border-hairline px-3 py-1.5 text-ink outline-none focus:border-primary"
+          className="rounded-sm border border-hairline px-3 py-1.5 text-ink outline-none focus:border-primary"
         />
         <span className="text-xs font-bold text-ink-mute">
           전체 {sorted.length.toLocaleString("ko-KR")}곳 중 {visible.length.toLocaleString("ko-KR")}곳 표시
@@ -197,7 +197,7 @@ export function DisabilityWelfareTable({ centers }: { centers: DisabilityWelfare
               const v = e.target.value;
               setCount(v === "전체" ? "전체" : (Number(v) as CountOption));
             }}
-            className="rounded-md border border-hairline bg-canvas-cream px-2 py-1 text-ink"
+            className="rounded-sm border border-hairline bg-canvas-cream px-2 py-1 text-ink"
           >
             {COUNT_OPTIONS.map((opt) => (
               <option key={opt} value={opt}>
@@ -209,7 +209,7 @@ export function DisabilityWelfareTable({ centers }: { centers: DisabilityWelfare
         <button
           type="button"
           onClick={() => downloadCsv(centers)}
-          className="ml-auto flex items-center gap-1.5 rounded-full bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press"
+          className="ml-auto flex items-center gap-1.5 rounded-lg bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press"
         >
           전체 DB 엑셀 다운로드 ({centers.length.toLocaleString("ko-KR")}건, 전체 필드)
         </button>

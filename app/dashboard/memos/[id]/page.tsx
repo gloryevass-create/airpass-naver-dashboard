@@ -74,7 +74,7 @@ export default async function MemoDetailPage({ params }: { params: Params }) {
           <div className="flex shrink-0 gap-2">
             <Link
               href={`/dashboard/memos/${memo.id}/edit`}
-              className="rounded-full border border-hairline px-4 py-1.5 text-sm font-medium text-ink hover:bg-canvas-cream"
+              className="rounded-lg border border-hairline px-4 py-1.5 text-sm font-medium text-ink hover:bg-canvas-cream"
             >
               수정
             </Link>
@@ -83,7 +83,7 @@ export default async function MemoDetailPage({ params }: { params: Params }) {
         )}
       </div>
 
-      <div className="whitespace-pre-wrap rounded-xl border border-hairline p-4 text-sm text-ink">
+      <div className="whitespace-pre-wrap rounded-sm border border-hairline p-4 text-sm text-ink">
         {memo.content}
       </div>
 

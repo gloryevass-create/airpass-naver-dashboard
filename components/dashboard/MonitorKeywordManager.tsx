@@ -38,7 +38,7 @@ export function MonitorKeywordManager({
   const [state, formAction, pending] = useActionState(action, initialState);
 
   return (
-    <details className="rounded-xl border border-hairline p-4">
+    <details className="rounded-sm border border-hairline p-4">
       <summary className="flex cursor-pointer items-center gap-1.5 text-sm font-semibold text-ink-mute">
         <NavIcon name="tag" className="h-4 w-4" />
         검색 키워드 관리 ({keywords.length}개)
@@ -71,7 +71,7 @@ export function MonitorKeywordManager({
           <button
             type="submit"
             disabled={pending}
-            className="rounded-full bg-primary px-4 py-1.5 text-sm font-bold text-white hover:bg-primary-press disabled:opacity-50"
+            className="rounded-lg bg-primary px-4 py-1.5 text-sm font-bold text-white hover:bg-primary-press disabled:opacity-50"
           >
             {pending ? "추가 및 수집 중..." : "추가"}
           </button>

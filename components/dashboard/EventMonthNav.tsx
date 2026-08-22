@@ -36,7 +36,7 @@ export function EventMonthNav({ basePath, month }: { basePath: string; month: st
         onClick={() => go(shiftMonth(month, -1), "prev")}
         disabled={isPending}
         aria-label="이전 달"
-        className="flex h-7 w-7 items-center justify-center rounded-md border border-hairline hover:bg-canvas-cream disabled:cursor-not-allowed disabled:opacity-50"
+        className="flex h-7 w-7 items-center justify-center rounded-sm border border-hairline hover:bg-canvas-cream disabled:cursor-not-allowed disabled:opacity-50"
       >
         {isPending && pendingAction === "prev" ? <Spinner /> : "◀"}
       </button>
@@ -48,7 +48,7 @@ export function EventMonthNav({ basePath, month }: { basePath: string; month: st
         onClick={() => go(shiftMonth(month, 1), "next")}
         disabled={isPending}
         aria-label="다음 달"
-        className="flex h-7 w-7 items-center justify-center rounded-md border border-hairline hover:bg-canvas-cream disabled:cursor-not-allowed disabled:opacity-50"
+        className="flex h-7 w-7 items-center justify-center rounded-sm border border-hairline hover:bg-canvas-cream disabled:cursor-not-allowed disabled:opacity-50"
       >
         {isPending && pendingAction === "next" ? <Spinner /> : "▶"}
       </button>
@@ -59,7 +59,7 @@ export function EventMonthNav({ basePath, month }: { basePath: string; month: st
           go(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`, "today");
         }}
         disabled={isPending}
-        className="flex items-center gap-2 rounded-md border border-hairline px-3 py-1 font-medium text-ink hover:bg-canvas-cream disabled:cursor-not-allowed disabled:opacity-60"
+        className="flex items-center gap-2 rounded-sm border border-hairline px-3 py-1 font-medium text-ink hover:bg-canvas-cream disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isPending && pendingAction === "today" && <Spinner />}
         오늘

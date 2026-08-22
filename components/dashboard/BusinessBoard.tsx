@@ -93,7 +93,7 @@ export function BusinessBoard({ projects }: { projects: BusinessProject[] }) {
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
         {Array.from(byStage.entries()).map(([stage, items]) => (
           <div key={stage} className="flex min-w-0 flex-col gap-2">
-            <div className="flex items-center gap-1.5 rounded-md bg-canvas-cream px-2 py-1.5 text-xs font-semibold text-ink">
+            <div className="flex items-center gap-1.5 rounded-sm bg-canvas-cream px-2 py-1.5 text-xs font-semibold text-ink">
               <span className="truncate">{stage}</span>
               <span className="shrink-0 font-normal text-ink-mute">{items.length}</span>
             </div>

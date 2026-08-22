@@ -23,7 +23,7 @@ export default async function ChangePasswordPage() {
         <p className="mt-1 text-sm text-ink-mute">보안을 위해 주기적으로 비밀번호를 변경해 주세요.</p>
       </div>
 
-      <div className="rounded-xl border border-hairline p-6">
+      <div className="rounded-sm border border-hairline p-6">
         <ChangePasswordForm email={user.email ?? ""} />
       </div>
     </main>

@@ -49,7 +49,7 @@ export function BudgetBidList({
 
   if (keywords.length <= 1) {
     return (
-      <div className="rounded-xl border border-hairline p-6 text-center text-sm text-ink-mute">
+      <div className="rounded-sm border border-hairline p-6 text-center text-sm text-ink-mute">
         등록된 검색 키워드가 없습니다. 위에서 키워드를 추가해 주세요.
       </div>
     );
@@ -64,7 +64,7 @@ export function BudgetBidList({
               key={k}
               type="button"
               onClick={() => setFilter(k)}
-              className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+              className={`rounded-lg px-3 py-1 text-xs font-medium transition-colors ${
                 filter === k ? "bg-primary text-white" : "bg-canvas-cream text-ink-mute hover:text-ink"
               }`}
             >
@@ -74,11 +74,11 @@ export function BudgetBidList({
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="flex rounded-full bg-canvas-cream p-0.5 text-xs font-medium">
+          <div className="flex rounded-lg bg-canvas-cream p-0.5 text-xs font-medium">
             <button
               type="button"
               onClick={() => scrap.switchView("all")}
-              className={`rounded-full px-3 py-1 transition-colors ${
+              className={`rounded-lg px-3 py-1 transition-colors ${
                 scrap.view === "all" ? "bg-primary text-white shadow-sm" : "text-ink-mute hover:text-ink"
               }`}
             >
@@ -87,7 +87,7 @@ export function BudgetBidList({
             <button
               type="button"
               onClick={() => scrap.switchView("scrap")}
-              className={`rounded-full px-3 py-1 transition-colors ${
+              className={`rounded-lg px-3 py-1 transition-colors ${
                 scrap.view === "scrap" ? "bg-primary text-white shadow-sm" : "text-ink-mute hover:text-ink"
               }`}
             >
@@ -100,7 +100,7 @@ export function BudgetBidList({
                 type="button"
                 onClick={scrap.scrapSelected}
                 disabled={scrap.pending}
-                className="rounded-full bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press disabled:opacity-50"
+                className="rounded-lg bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press disabled:opacity-50"
               >
                 선택한 {scrap.selected.size}건 스크랩
               </button>
@@ -109,7 +109,7 @@ export function BudgetBidList({
                 type="button"
                 onClick={scrap.unscrapSelected}
                 disabled={scrap.pending}
-                className="rounded-full bg-canvas-cream px-4 py-1.5 text-xs font-bold text-ink hover:bg-hairline disabled:opacity-50"
+                className="rounded-lg bg-canvas-cream px-4 py-1.5 text-xs font-bold text-ink hover:bg-hairline disabled:opacity-50"
               >
                 선택한 {scrap.selected.size}건 스크랩 해제
               </button>

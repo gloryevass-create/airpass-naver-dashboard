@@ -142,7 +142,7 @@ export function NewsList({
 
   if (keywords.length <= 1) {
     return (
-      <div className="rounded-xl border border-hairline p-6 text-center text-sm text-ink-mute">
+      <div className="rounded-sm border border-hairline p-6 text-center text-sm text-ink-mute">
         등록된 검색 키워드가 없습니다. 위에서 키워드를 추가해 주세요.
       </div>
     );
@@ -157,7 +157,7 @@ export function NewsList({
               key={k}
               type="button"
               onClick={() => setFilter(k)}
-              className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+              className={`rounded-lg px-3 py-1 text-xs font-medium transition-colors ${
                 filter === k
                   ? "bg-primary text-white"
                   : "bg-canvas-cream text-ink-mute hover:text-ink"
@@ -171,7 +171,7 @@ export function NewsList({
           <button
             type="button"
             onClick={() => setView("all")}
-            className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+            className={`rounded-lg px-3 py-1 text-xs font-medium transition-colors ${
               view === "all" ? "bg-primary text-white" : "bg-canvas-cream text-ink-mute hover:text-ink"
             }`}
           >
@@ -180,7 +180,7 @@ export function NewsList({
           <button
             type="button"
             onClick={() => setView("scrap")}
-            className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+            className={`rounded-lg px-3 py-1 text-xs font-medium transition-colors ${
               view === "scrap" ? "bg-primary text-white" : "bg-canvas-cream text-ink-mute hover:text-ink"
             }`}
           >
@@ -193,7 +193,7 @@ export function NewsList({
         {filtered.map((a) => (
           <li
             key={a.id}
-            className={`rounded-xl border p-4 ${
+            className={`rounded-sm border p-4 ${
               scrapedIds.has(a.id) ? "border-primary/40 bg-canvas-lavender/20" : "border-hairline"
             }`}
           >

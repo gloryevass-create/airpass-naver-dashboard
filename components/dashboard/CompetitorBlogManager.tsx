@@ -33,7 +33,7 @@ export function CompetitorBlogManager({ competitors, path }: { competitors: Comp
   const [state, formAction, pending] = useActionState(action, initialState);
 
   return (
-    <details className="rounded-xl border border-hairline p-4">
+    <details className="rounded-sm border border-hairline p-4">
       <summary className="flex cursor-pointer items-center gap-1.5 text-sm font-semibold text-ink-mute">
         <NavIcon name="tag" className="h-4 w-4" />
         모니터링 블로그 관리 ({competitors.length}개)
@@ -79,7 +79,7 @@ export function CompetitorBlogManager({ competitors, path }: { competitors: Comp
           <button
             type="submit"
             disabled={pending}
-            className="rounded-full bg-primary px-4 py-1.5 text-sm font-bold text-white hover:bg-primary-press disabled:opacity-50"
+            className="rounded-lg bg-primary px-4 py-1.5 text-sm font-bold text-white hover:bg-primary-press disabled:opacity-50"
           >
             {pending ? "추가 중..." : "추가"}
           </button>

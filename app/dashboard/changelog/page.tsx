@@ -30,7 +30,7 @@ export default async function ChangelogPage() {
 
       <ol className="flex flex-col gap-4">
         {CHANGELOG.map((entry) => (
-          <li key={entry.date} className="rounded-xl border border-hairline p-4">
+          <li key={entry.date} className="rounded-sm border border-hairline p-4">
             <h2 className="mb-2 text-sm font-semibold text-ink">{formatDateHeading(entry.date)}</h2>
             <ul className="flex flex-col gap-1.5">
               {entry.items.map((item, i) => (
@@ -43,7 +43,7 @@ export default async function ChangelogPage() {
           </li>
         ))}
         {CHANGELOG.length === 0 && (
-          <li className="rounded-xl border border-hairline p-6 text-center text-sm text-ink-mute">
+          <li className="rounded-sm border border-hairline p-6 text-center text-sm text-ink-mute">
             아직 기록된 히스토리가 없습니다.
           </li>
         )}

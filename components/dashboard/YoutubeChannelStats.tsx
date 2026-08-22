@@ -11,7 +11,7 @@ export function YoutubeChannelStats({ data }: { data: ChannelStatsResult }) {
   }));
 
   return (
-    <div className="rounded-xl border border-hairline p-4">
+    <div className="rounded-sm border border-hairline p-4">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="rounded-lg border border-hairline p-3">
           <p className="text-xs font-bold uppercase tracking-wide text-[#d9342b]">구독자 수</p>

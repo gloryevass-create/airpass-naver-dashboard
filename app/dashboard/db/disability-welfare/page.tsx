@@ -28,7 +28,7 @@ export default async function DisabilityWelfarePage() {
       </div>
 
       {centers.length === 0 ? (
-        <div className="rounded-xl border border-hairline bg-canvas-cream p-6 text-sm text-ink-mute">
+        <div className="rounded-sm border border-hairline bg-canvas-cream p-6 text-sm text-ink-mute">
           아직 동기화된 데이터가 없습니다. 파이프라인이 최소 1회 실행되면 여기에 결과가
           표시됩니다.
         </div>

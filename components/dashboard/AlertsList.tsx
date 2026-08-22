@@ -22,7 +22,7 @@ export function AlertsList({ data }: { data: DashboardData["alerts"] }) {
       {data.map((alert) => (
         <li
           key={alert.id}
-          className={`rounded-md border px-3 py-2 text-sm ${SEVERITY_STYLE[alert.severity]}`}
+          className={`rounded-sm border px-3 py-2 text-sm ${SEVERITY_STYLE[alert.severity]}`}
         >
           <div className="flex items-center gap-2">
             <span className="rounded-full bg-black/20 px-2 py-0.5 text-xs font-medium">
