@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useMemo, useRef, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import type { ProductCatalogItem } from "@/lib/queries/productCatalog";
 import {
   createProduct,
@@ -8,6 +9,8 @@ import {
   deleteProduct,
   bulkImportProducts,
   bulkAssignVendor,
+  toggleProductFavorite,
+  moveProductInUserOrder,
   type BulkImportRow,
 } from "@/app/dashboard/actions/productCatalog";
 import {
@@ -259,7 +262,9 @@ export function ProductCatalogTable({
   products: ProductCatalogItem[];
   vendors: { id: string; companyName: string }[];
 }) {
+  const router = useRouter();
   const [search, setSearch] = useState("");
+  const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [editing, setEditing] = useState<ProductCatalogItem | null | "new">(null);
   const [importRows, setImportRows] = useState<ProductCatalogImportRow[] | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -267,16 +272,36 @@ export function ProductCatalogTable({
   const [, startTransition] = useTransition();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const favoriteCount = useMemo(() => products.filter((p) => p.isFavorite).length, [products]);
+
   const filtered = useMemo(() => {
-    if (!search.trim()) return products;
-    const q = search.trim().toLowerCase();
-    return products.filter(
-      (p) =>
-        p.name.toLowerCase().includes(q) ||
-        (p.specification ?? "").toLowerCase().includes(q) ||
-        (p.note ?? "").toLowerCase().includes(q)
-    );
-  }, [products, search]);
+    let list = products;
+    if (favoritesOnly) list = list.filter((p) => p.isFavorite);
+    if (search.trim()) {
+      const q = search.trim().toLowerCase();
+      list = list.filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          (p.specification ?? "").toLowerCase().includes(q) ||
+          (p.note ?? "").toLowerCase().includes(q)
+      );
+    }
+    return list;
+  }, [products, search, favoritesOnly]);
+
+  function handleToggleFavorite(id: string) {
+    startTransition(async () => {
+      await toggleProductFavorite(id);
+      router.refresh();
+    });
+  }
+
+  function handleMove(id: string, direction: "up" | "down") {
+    startTransition(async () => {
+      await moveProductInUserOrder(id, direction);
+      router.refresh();
+    });
+  }
 
   function handleDelete(id: string) {
     if (!window.confirm("이 제품을 삭제할까요?")) return;
@@ -391,6 +416,27 @@ export function ProductCatalogTable({
           </div>
         </div>
 
+        <div className="flex flex-wrap items-center gap-2 border-t border-hairline px-4 py-2 text-xs">
+          <button
+            type="button"
+            onClick={() => setFavoritesOnly(false)}
+            className={`rounded-lg px-3 py-1 font-bold transition-colors ${
+              !favoritesOnly ? "bg-primary text-white" : "bg-background text-ink-mute hover:text-ink"
+            }`}
+          >
+            전체
+          </button>
+          <button
+            type="button"
+            onClick={() => setFavoritesOnly((v) => !v)}
+            className={`rounded-lg px-3 py-1 font-bold transition-colors ${
+              favoritesOnly ? "bg-primary text-white" : "bg-background text-ink-mute hover:text-ink"
+            }`}
+          >
+            ★ 즐겨찾기 {favoriteCount.toLocaleString("ko-KR")}
+          </button>
+        </div>
+
         <div
           className={`flex flex-wrap items-center gap-3 border-t p-3 text-xs transition-colors ${
             selected.size > 0 ? "border-primary/30 bg-canvas-lavender/30" : "border-hairline"
@@ -437,8 +483,7 @@ export function ProductCatalogTable({
           <table className="w-full text-xs">
           <thead className="sticky top-0 z-10 bg-[#f7f7f8] text-left text-ink-mute">
             <tr>
-              <th className="whitespace-nowrap px-2 py-1.5 font-medium"></th>
-              <th className="whitespace-nowrap px-2 py-1.5 font-medium">제품명</th>
+              <th className="whitespace-nowrap px-2 py-1.5 font-medium">선택·품명</th>
               <th className="whitespace-nowrap px-2 py-1.5 font-medium">규격</th>
               <th className="whitespace-nowrap px-2 py-1.5 font-medium">단가</th>
               <th className="whitespace-nowrap px-2 py-1.5 font-medium">공급방식</th>
@@ -455,12 +500,42 @@ export function ProductCatalogTable({
                 key={p.id}
                 className="border-t border-hairline odd:bg-white even:bg-[#f7f7f8] hover:bg-canvas-lavender/20"
               >
-                <td className="px-2 py-1">
-                  <input type="checkbox" checked={selected.has(p.id)} onChange={() => toggleSelect(p.id)} />
-                </td>
                 <td className="whitespace-nowrap px-2 py-1.5 font-medium text-ink">
-                  {p.needsReview && <span className="mr-1 text-semantic-error">!</span>}
-                  {p.name}
+                  <div className="flex items-center gap-1.5">
+                    <input
+                      type="checkbox"
+                      checked={selected.has(p.id)}
+                      onChange={() => toggleSelect(p.id)}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleToggleFavorite(p.id)}
+                      title="즐겨찾기"
+                      className={p.isFavorite ? "text-[#f5a623]" : "text-hairline hover:text-ink-mute"}
+                    >
+                      {p.isFavorite ? "★" : "☆"}
+                    </button>
+                    <div className="flex flex-col leading-none">
+                      <button
+                        type="button"
+                        onClick={() => handleMove(p.id, "up")}
+                        title="위로"
+                        className="text-ink-mute hover:text-ink"
+                      >
+                        ▲
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleMove(p.id, "down")}
+                        title="아래로"
+                        className="text-ink-mute hover:text-ink"
+                      >
+                        ▼
+                      </button>
+                    </div>
+                    {p.needsReview && <span className="text-semantic-error">!</span>}
+                    <span>{p.name}</span>
+                  </div>
                 </td>
                 <td className="px-2 py-1.5 text-ink-mute">{p.specification ?? "-"}</td>
                 <td className="whitespace-nowrap px-2 py-1.5 font-medium text-ink">{formatWon(p.unitPrice)}</td>
@@ -511,7 +586,7 @@ export function ProductCatalogTable({
             ))}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={10} className="px-4 py-6 text-center text-ink-mute">
+                <td colSpan={9} className="px-4 py-6 text-center text-ink-mute">
                   조건에 맞는 제품이 없습니다.
                 </td>
               </tr>

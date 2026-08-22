@@ -1491,6 +1491,45 @@ export type Database = {
         };
         Relationships: [];
       };
+      product_catalog_favorites: {
+        Row: {
+          id: string;
+          user_id: string;
+          product_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          product_id: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          product_id?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      product_catalog_user_order: {
+        Row: {
+          user_id: string;
+          product_ids: string[];
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          product_ids?: string[];
+          updated_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          product_ids?: string[];
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       partner_vendors: {
         Row: {
           id: string;

@@ -175,3 +175,55 @@ export async function bulkAssignVendor(productIds: string[], vendorId: string | 
 
   revalidatePath(PATH);
 }
+
+/** 즐겨찾기는 팀 공유가 아니라 로그인한 본인 것만 켜고 끈다. */
+export async function toggleProductFavorite(productId: string): Promise<void> {
+  const { supabase, user } = await requireAuthedClient();
+
+  const { data: existing } = await supabase
+    .from("product_catalog_favorites")
+    .select("id")
+    .eq("user_id", user.id)
+    .eq("product_id", productId)
+    .maybeSingle();
+
+  if (existing) {
+    await supabase.from("product_catalog_favorites").delete().eq("id", existing.id);
+  } else {
+    await supabase.from("product_catalog_favorites").insert({ user_id: user.id, product_id: productId });
+  }
+
+  revalidatePath(PATH);
+}
+
+/** 화살표로 한 칸 위/아래로 옮긴다 — 본인이 아직 순서를 저장한 적 없으면(product_catalog_user_order
+ * 행이 없으면) 현재 이름순 전체 목록을 기준으로 처음 저장한다. */
+export async function moveProductInUserOrder(productId: string, direction: "up" | "down"): Promise<void> {
+  const { supabase, user } = await requireAuthedClient();
+
+  const [{ data: allProducts }, { data: userOrderRow }] = await Promise.all([
+    supabase.from("product_catalog").select("id").order("name", { ascending: true }),
+    supabase.from("product_catalog_user_order").select("product_ids").eq("user_id", user.id).maybeSingle(),
+  ]);
+
+  const allIds = (allProducts ?? []).map((p) => p.id);
+  const savedOrder = userOrderRow?.product_ids ?? [];
+
+  // 저장된 순서 + 아직 순서에 없는(신규) 제품을 이름순으로 이어붙여 "현재 화면에 보이는 순서"를 재현한다.
+  const savedSet = new Set(savedOrder);
+  const effectiveOrder = [...savedOrder.filter((id) => allIds.includes(id)), ...allIds.filter((id) => !savedSet.has(id))];
+
+  const index = effectiveOrder.indexOf(productId);
+  if (index === -1) return;
+  const targetIndex = direction === "up" ? index - 1 : index + 1;
+  if (targetIndex < 0 || targetIndex >= effectiveOrder.length) return;
+
+  const newOrder = [...effectiveOrder];
+  [newOrder[index], newOrder[targetIndex]] = [newOrder[targetIndex], newOrder[index]];
+
+  await supabase
+    .from("product_catalog_user_order")
+    .upsert({ user_id: user.id, product_ids: newOrder, updated_at: new Date().toISOString() });
+
+  revalidatePath(PATH);
+}

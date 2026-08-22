@@ -23,17 +23,27 @@ export type ProductCatalogItem = {
   supplierVendorId: string | null;
   supplierVendorName: string | null;
   createdAt: string;
+  isFavorite: boolean;
 };
 
 export async function getProductCatalog(supabase: Client): Promise<ProductCatalogItem[]> {
-  const [{ data }, { data: vendors }] = await Promise.all([
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const [{ data }, { data: vendors }, { data: favorites }, { data: userOrder }] = await Promise.all([
     supabase.from("product_catalog").select("*").order("name", { ascending: true }),
     supabase.from("partner_vendors").select("id, company_name"),
+    user ? supabase.from("product_catalog_favorites").select("product_id").eq("user_id", user.id) : Promise.resolve({ data: [] as { product_id: string }[] }),
+    user
+      ? supabase.from("product_catalog_user_order").select("product_ids").eq("user_id", user.id).maybeSingle()
+      : Promise.resolve({ data: null }),
   ]);
 
   const vendorNameById = new Map((vendors ?? []).map((v) => [v.id, v.company_name]));
+  const favoriteIds = new Set((favorites ?? []).map((f) => f.product_id));
 
-  return (data ?? []).map((p) => ({
+  const items = (data ?? []).map((p) => ({
     id: p.id,
     name: p.name,
     specification: p.specification,
@@ -51,5 +61,25 @@ export async function getProductCatalog(supabase: Client): Promise<ProductCatalo
     supplierVendorId: p.supplier_vendor_id,
     supplierVendorName: p.supplier_vendor_id ? (vendorNameById.get(p.supplier_vendor_id) ?? null) : null,
     createdAt: p.created_at,
+    isFavorite: favoriteIds.has(p.id),
   }));
+
+  // 사용자가 화살표로 순서를 저장해뒀으면 그 순서를 우선 적용하고(모르는 id는 무시),
+  // 아직 순서를 저장한 적 없는 제품(신규 추가분 등)은 이름순으로 뒤에 이어붙인다.
+  const savedOrder = userOrder?.product_ids ?? [];
+  if (savedOrder.length > 0) {
+    const itemById = new Map(items.map((it) => [it.id, it]));
+    const ordered: ProductCatalogItem[] = [];
+    for (const id of savedOrder) {
+      const item = itemById.get(id);
+      if (item) {
+        ordered.push(item);
+        itemById.delete(id);
+      }
+    }
+    ordered.push(...itemById.values());
+    return ordered;
+  }
+
+  return items;
 }
