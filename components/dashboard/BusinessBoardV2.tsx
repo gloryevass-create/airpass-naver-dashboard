@@ -14,7 +14,7 @@ import {
   updateBusinessProjectV2HistoryEntry,
 } from "@/app/dashboard/actions/businessProjectsV2";
 
-const STAGES = ["①영업진행", "②사업제안", "③제안서작성", "④사업수행", "⑤사업완료"];
+const STAGES = ["Ⅰ영업진행", "Ⅱ사업제안", "Ⅲ제안서작성", "Ⅳ사업수행", "Ⅴ사업완료"];
 const STATUSES = ["시작 전", "진행 중", "완료", "보류", "실패"];
 const TERMINAL_STATUSES = new Set(["완료", "실패", "보류"]);
 
@@ -37,11 +37,11 @@ const STATUS_BADGE: Record<string, string> = {
 
 // 단계별 컬러 셋트 — 카드의 단계 배지와 칸반 컬럼 상단 헤더가 같은 색으로 짝을 이루게 한다.
 const STAGE_COLORS: Record<string, { badge: string; header: string }> = {
-  "①영업진행": { badge: "border-[#0066cc]/30 bg-[#e8f2ff] text-[#0066cc]", header: "bg-[#e8f2ff] text-[#0066cc]" },
-  "②사업제안": { badge: "border-[#7c3aed]/30 bg-[#f3ecff] text-[#7c3aed]", header: "bg-[#f3ecff] text-[#7c3aed]" },
-  "③제안서작성": { badge: "border-[#0d9488]/30 bg-[#e0f7f5] text-[#0d9488]", header: "bg-[#e0f7f5] text-[#0d9488]" },
-  "④사업수행": { badge: "border-[#c2740c]/30 bg-[#fff4e0] text-[#c2740c]", header: "bg-[#fff4e0] text-[#c2740c]" },
-  "⑤사업완료": { badge: "border-[#248a3d]/30 bg-[#e6f7ec] text-[#248a3d]", header: "bg-[#e6f7ec] text-[#248a3d]" },
+  "Ⅰ영업진행": { badge: "border-[#0066cc]/30 bg-[#e8f2ff] text-[#0066cc]", header: "bg-[#e8f2ff] text-[#0066cc]" },
+  "Ⅱ사업제안": { badge: "border-[#7c3aed]/30 bg-[#f3ecff] text-[#7c3aed]", header: "bg-[#f3ecff] text-[#7c3aed]" },
+  "Ⅲ제안서작성": { badge: "border-[#0d9488]/30 bg-[#e0f7f5] text-[#0d9488]", header: "bg-[#e0f7f5] text-[#0d9488]" },
+  "Ⅳ사업수행": { badge: "border-[#c2740c]/30 bg-[#fff4e0] text-[#c2740c]", header: "bg-[#fff4e0] text-[#c2740c]" },
+  "Ⅴ사업완료": { badge: "border-[#248a3d]/30 bg-[#e6f7ec] text-[#248a3d]", header: "bg-[#e6f7ec] text-[#248a3d]" },
 };
 const STAGE_FALLBACK = { badge: "border-hairline bg-[#f0f0f2] text-ink-mute", header: "bg-background text-ink" };
 
@@ -736,7 +736,7 @@ export function BusinessBoardV2({ projects }: { projects: BusinessProjectV2[] })
             {Array.from(byStage.entries()).map(([stage, items]) => (
               <div key={stage} className="flex min-w-0 flex-col gap-2">
                 <div
-                  className={`flex items-center gap-1.5 rounded-sm px-2 py-1.5 text-xs font-semibold ${stageColors(stage).header}`}
+                  className={`flex items-center gap-1.5 rounded-sm px-2 py-1.5 text-sm font-semibold ${stageColors(stage).header}`}
                 >
                   <span className="truncate">{stage}</span>
                   <span className="shrink-0 font-normal opacity-70">{items.length}</span>
