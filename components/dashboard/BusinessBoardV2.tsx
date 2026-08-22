@@ -303,7 +303,11 @@ function BusinessListView({
         </thead>
         <tbody>
           {projects.map((p) => (
-            <tr key={p.id} className="border-t border-hairline hover:bg-[#f7f7f8]">
+            <tr
+              key={p.id}
+              onClick={() => onEdit(p)}
+              className="cursor-pointer border-t border-hairline hover:bg-[#f7f7f8]"
+            >
               <td className="px-4 py-2 text-ink-mute">
                 <span className="flex items-center gap-1.5">
                   <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${STATUS_DOT[p.status] || "bg-ink-mute"}`} />
@@ -311,13 +315,7 @@ function BusinessListView({
                 </span>
               </td>
               <td className="px-4 py-2">
-                <button
-                  type="button"
-                  onClick={() => onEdit(p)}
-                  className="text-left text-link-blue hover:underline"
-                >
-                  {p.title}
-                </button>
+                <span className="text-left text-link-blue hover:underline">{p.title}</span>
               </td>
               <td className="px-4 py-2 text-ink-mute">{p.stage ?? "미분류"}</td>
               <td className="px-4 py-2 text-ink-mute">{p.orgName ?? "-"}</td>
