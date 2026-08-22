@@ -11,7 +11,8 @@ export default async function ProductCatalogPage() {
   return (
     <main className="flex w-full flex-col gap-6 p-6">
       <div>
-        <h1 className="flex items-center gap-2 text-xl font-bold tracking-tight text-primary">
+        <span className="text-xs font-semibold uppercase tracking-wide text-ink-mute">Product Catalog</span>
+        <h1 className="mt-0.5 flex items-center gap-2 text-xl font-bold tracking-tight text-primary">
           <NavIcon name="tag" className="h-5 w-5" />
           제품 카탈로그
         </h1>

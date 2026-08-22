@@ -330,8 +330,9 @@ export function ProductCatalogTable({
           placeholder="제품명·규격·비고 검색"
           className="rounded-md border border-hairline px-3 py-1.5 text-ink outline-none focus:border-primary"
         />
-        <span className="text-xs font-bold text-ink-mute">
-          전체 {products.length.toLocaleString("ko-KR")}건 중 {filtered.length.toLocaleString("ko-KR")}건 표시
+        <span className="text-xs text-ink-mute">
+          전체 <strong className="text-ink">{products.length.toLocaleString("ko-KR")}</strong>건 중{" "}
+          <strong className="text-ink">{filtered.length.toLocaleString("ko-KR")}</strong>건 표시 중입니다.
         </span>
         <div className="ml-auto flex flex-wrap gap-2">
           <button
@@ -389,38 +390,46 @@ export function ProductCatalogTable({
       {editing === "new" && <ProductForm product={null} onDone={() => setEditing(null)} />}
       {editing && editing !== "new" && <ProductForm product={editing} onDone={() => setEditing(null)} />}
 
-      <div className="flex flex-wrap items-center gap-2 rounded-xl border border-hairline p-3 text-xs">
+      <div
+        className={`flex flex-wrap items-center gap-3 rounded-xl border p-3 text-xs transition-colors ${
+          selected.size > 0 ? "border-primary/30 bg-canvas-lavender/30" : "border-hairline"
+        }`}
+      >
         <label className="flex items-center gap-1.5 text-ink-mute">
           <input
             type="checkbox"
             checked={filtered.length > 0 && selected.size === filtered.length}
             onChange={toggleSelectAll}
           />
-          전체 선택
+          현재 목록 전체 선택
         </label>
-        <strong className="text-ink">{selected.size.toLocaleString("ko-KR")}개 선택</strong>
-        <select
-          value={bulkVendorId}
-          onChange={(e) => setBulkVendorId(e.target.value)}
-          disabled={selected.size === 0}
-          className="rounded-md border border-hairline bg-background px-2 py-1 text-ink"
-        >
-          <option value="__choose__">협력사 선택</option>
-          <option value="__none__">협력사 연결 해제</option>
-          {vendors.map((v) => (
-            <option key={v.id} value={v.id}>
-              {v.companyName}
-            </option>
-          ))}
-        </select>
-        <button
-          type="button"
-          onClick={handleBulkAssign}
-          disabled={selected.size === 0 || bulkVendorId === "__choose__"}
-          className="rounded-full bg-primary px-3 py-1 font-bold text-white hover:bg-primary-press disabled:opacity-50"
-        >
-          선택 제품 일괄 적용
-        </button>
+        <span className="rounded-full bg-canvas-cream px-2.5 py-1 font-semibold text-ink">
+          {selected.size.toLocaleString("ko-KR")}개 선택됨
+        </span>
+        <div className="ml-auto flex items-center gap-2">
+          <select
+            value={bulkVendorId}
+            onChange={(e) => setBulkVendorId(e.target.value)}
+            disabled={selected.size === 0}
+            className="rounded-md border border-hairline bg-background px-2 py-1.5 text-ink disabled:opacity-50"
+          >
+            <option value="__choose__">공급 협력사 선택</option>
+            <option value="__none__">협력사 연결 해제</option>
+            {vendors.map((v) => (
+              <option key={v.id} value={v.id}>
+                {v.companyName}
+              </option>
+            ))}
+          </select>
+          <button
+            type="button"
+            onClick={handleBulkAssign}
+            disabled={selected.size === 0 || bulkVendorId === "__choose__"}
+            className="rounded-full bg-primary px-4 py-1.5 font-bold text-white hover:bg-primary-press disabled:opacity-50"
+          >
+            선택 제품 일괄 적용
+          </button>
+        </div>
       </div>
 
       <div className="overflow-auto rounded-sm border border-hairline">
@@ -441,29 +450,44 @@ export function ProductCatalogTable({
           </thead>
           <tbody>
             {filtered.map((p) => (
-              <tr key={p.id} className="border-t border-hairline odd:bg-white even:bg-[#f7f7f8]">
+              <tr
+                key={p.id}
+                className="border-t border-hairline odd:bg-white even:bg-[#f7f7f8] hover:bg-canvas-lavender/20"
+              >
                 <td className="px-2 py-1">
                   <input type="checkbox" checked={selected.has(p.id)} onChange={() => toggleSelect(p.id)} />
                 </td>
-                <td className="whitespace-nowrap px-2 py-1 font-medium text-ink">
+                <td className="whitespace-nowrap px-2 py-1.5 font-medium text-ink">
                   {p.needsReview && <span className="mr-1 text-semantic-error">!</span>}
                   {p.name}
                 </td>
-                <td className="px-2 py-1 text-ink-mute">{p.specification ?? "-"}</td>
-                <td className="whitespace-nowrap px-2 py-1 text-ink-mute">{formatWon(p.unitPrice)}</td>
-                <td className="whitespace-nowrap px-2 py-1 text-ink-mute">
+                <td className="px-2 py-1.5 text-ink-mute">{p.specification ?? "-"}</td>
+                <td className="whitespace-nowrap px-2 py-1.5 font-medium text-ink">{formatWon(p.unitPrice)}</td>
+                <td className="whitespace-nowrap px-2 py-1.5 text-ink-mute">
                   {p.supplyType === "partner" ? "협력사" : "직공급"}
                 </td>
-                <td className="whitespace-nowrap px-2 py-1 text-ink-mute">
+                <td className="whitespace-nowrap px-2 py-1.5 text-ink-mute">
                   {p.supplyType === "partner" ? (p.supplierVendorName ?? "-") : "-"}
                 </td>
-                <td className="whitespace-nowrap px-2 py-1 text-ink-mute">
-                  {formatRate(p.supplyType === "partner" ? p.commissionRate : p.marginRate)}
+                <td className="whitespace-nowrap px-2 py-1.5">
+                  {(p.supplyType === "partner" ? p.commissionRate : p.marginRate) != null ? (
+                    <span className="rounded-full bg-canvas-lavender px-2 py-0.5 text-[11px] font-semibold text-primary">
+                      {formatRate(p.supplyType === "partner" ? p.commissionRate : p.marginRate)}
+                    </span>
+                  ) : (
+                    <span className="text-ink-mute">-</span>
+                  )}
                 </td>
-                <td className="whitespace-nowrap px-2 py-1 text-ink-mute">
-                  {p.procurement ? `${p.procurementChannel ?? ""} ${p.procurementNumber ?? ""}`.trim() : "-"}
+                <td className="whitespace-nowrap px-2 py-1.5">
+                  {p.procurement ? (
+                    <span className="rounded-full bg-canvas-cream px-2 py-0.5 text-[11px] font-medium text-ink-mute">
+                      {`${p.procurementChannel ?? ""} ${p.procurementNumber ?? ""}`.trim()}
+                    </span>
+                  ) : (
+                    <span className="text-ink-mute">-</span>
+                  )}
                 </td>
-                <td className="px-2 py-1 text-ink-mute">{p.note ?? "-"}</td>
+                <td className="px-2 py-1.5 text-ink-mute">{p.note ?? "-"}</td>
                 <td className="whitespace-nowrap px-2 py-1">
                   <div className="flex gap-2">
                     <button
