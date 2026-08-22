@@ -21,6 +21,7 @@ const ITEMS: MenuEntry[] = [
     children: [
       { href: "/dashboard/events", label: "팀 일정", icon: "calendar" },
       { href: "/dashboard/business", label: "비즈니스", icon: "briefcase" },
+      { href: "/dashboard/business2", label: "비즈니스2", icon: "chart" },
     ],
   },
   {
