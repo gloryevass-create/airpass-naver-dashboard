@@ -281,8 +281,66 @@ function ProjectCard({
   );
 }
 
+function BusinessListView({
+  projects,
+  onEdit,
+}: {
+  projects: BusinessProjectV2[];
+  onEdit: (project: BusinessProjectV2) => void;
+}) {
+  return (
+    <div className="overflow-hidden rounded-sm border border-hairline bg-canvas-cream">
+      <table className="w-full text-sm">
+        <thead className="bg-background text-left text-ink-mute">
+          <tr>
+            <th className="px-4 py-2 font-medium">상태</th>
+            <th className="px-4 py-2 font-medium">사업명</th>
+            <th className="px-4 py-2 font-medium">단계</th>
+            <th className="px-4 py-2 font-medium">발주기관</th>
+            <th className="px-4 py-2 font-medium">담당자</th>
+            <th className="px-4 py-2 font-medium">제출일</th>
+          </tr>
+        </thead>
+        <tbody>
+          {projects.map((p) => (
+            <tr key={p.id} className="border-t border-hairline hover:bg-[#f7f7f8]">
+              <td className="px-4 py-2 text-ink-mute">
+                <span className="flex items-center gap-1.5">
+                  <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${STATUS_DOT[p.status] || "bg-ink-mute"}`} />
+                  {p.status}
+                </span>
+              </td>
+              <td className="px-4 py-2">
+                <button
+                  type="button"
+                  onClick={() => onEdit(p)}
+                  className="text-left text-link-blue hover:underline"
+                >
+                  {p.title}
+                </button>
+              </td>
+              <td className="px-4 py-2 text-ink-mute">{p.stage ?? "미분류"}</td>
+              <td className="px-4 py-2 text-ink-mute">{p.orgName ?? "-"}</td>
+              <td className="px-4 py-2 text-ink-mute">{p.assignees.join(", ") || "-"}</td>
+              <td className="px-4 py-2 text-ink-mute">{formatDate(p.submissionDate) ?? "-"}</td>
+            </tr>
+          ))}
+          {projects.length === 0 && (
+            <tr>
+              <td colSpan={6} className="px-4 py-6 text-center text-ink-mute">
+                조건에 맞는 사업이 없습니다.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 export function BusinessBoardV2({ projects }: { projects: BusinessProjectV2[] }) {
   const [showAll, setShowAll] = useState(false);
+  const [view, setView] = useState<"board" | "list">("board");
   const [editing, setEditing] = useState<BusinessProjectV2 | null | "new">(null);
   const [, startTransition] = useTransition();
 
@@ -341,35 +399,61 @@ export function BusinessBoardV2({ projects }: { projects: BusinessProjectV2[] })
             />
             완료·보류 포함
           </label>
-          <button
-            type="button"
-            onClick={() => setEditing("new")}
-            className="rounded-lg bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press"
-          >
-            + 새 사업 추가
-          </button>
+          <div className="flex items-center gap-2">
+            <div className="flex rounded-lg bg-background p-0.5 text-xs font-medium">
+              <button
+                type="button"
+                onClick={() => setView("board")}
+                className={`rounded-lg px-3 py-1 transition-colors ${
+                  view === "board" ? "bg-primary text-white shadow-sm" : "text-ink-mute hover:text-ink"
+                }`}
+              >
+                목록
+              </button>
+              <button
+                type="button"
+                onClick={() => setView("list")}
+                className={`rounded-lg px-3 py-1 transition-colors ${
+                  view === "list" ? "bg-primary text-white shadow-sm" : "text-ink-mute hover:text-ink"
+                }`}
+              >
+                리스트
+              </button>
+            </div>
+            <button
+              type="button"
+              onClick={() => setEditing("new")}
+              className="rounded-lg bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press"
+            >
+              + 새 사업 추가
+            </button>
+          </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-          {Array.from(byStage.entries()).map(([stage, items]) => (
-            <div key={stage} className="flex min-w-0 flex-col gap-2">
-              <div className="flex items-center gap-1.5 rounded-sm bg-background px-2 py-1.5 text-xs font-semibold text-ink">
-                <span className="truncate">{stage}</span>
-                <span className="shrink-0 font-normal text-ink-mute">{items.length}</span>
+        {view === "board" ? (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+            {Array.from(byStage.entries()).map(([stage, items]) => (
+              <div key={stage} className="flex min-w-0 flex-col gap-2">
+                <div className="flex items-center gap-1.5 rounded-sm bg-background px-2 py-1.5 text-xs font-semibold text-ink">
+                  <span className="truncate">{stage}</span>
+                  <span className="shrink-0 font-normal text-ink-mute">{items.length}</span>
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  {items.map((p) => (
+                    <ProjectCard key={p.id} project={p} onEdit={() => setEditing(p)} />
+                  ))}
+                  {items.length === 0 && (
+                    <div className="rounded-lg border border-dashed border-hairline p-2 text-center text-xs text-ink-mute">
+                      없음
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="flex flex-col gap-1.5">
-                {items.map((p) => (
-                  <ProjectCard key={p.id} project={p} onEdit={() => setEditing(p)} />
-                ))}
-                {items.length === 0 && (
-                  <div className="rounded-lg border border-dashed border-hairline p-2 text-center text-xs text-ink-mute">
-                    없음
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <BusinessListView projects={visible} onEdit={setEditing} />
+        )}
       </div>
     </div>
   );
