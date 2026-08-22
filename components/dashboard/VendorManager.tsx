@@ -201,7 +201,7 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
         <input
           value={draft[key]}
           onChange={(e) => updateDraft(key, e.target.value)}
-          className="rounded-md border border-hairline px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
+          className="rounded-sm border border-hairline px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
         />
       </label>
     );
@@ -230,15 +230,15 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="업체명·사업자번호·담당자 검색"
-          className="rounded-md border border-hairline bg-background px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
+          className="rounded-sm border border-hairline bg-background px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
         />
-        <div className="flex max-h-[32rem] flex-col gap-1 overflow-y-auto">
+        <div className="-mx-4 flex max-h-[32rem] flex-col gap-1 overflow-y-auto">
           {filtered.map((v) => (
             <button
               key={v.id}
               type="button"
               onClick={() => choose(v)}
-              className={`flex flex-col gap-0.5 rounded-md border-l-2 px-3 py-2 text-left text-sm transition-colors ${
+              className={`flex w-full flex-col gap-0.5 border-l-2 px-4 py-2 text-left text-sm transition-colors ${
                 selected?.id === v.id
                   ? "border-l-primary bg-canvas-lavender/60"
                   : "border-l-transparent hover:bg-[#f7f7f8]"
@@ -253,7 +253,7 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
               </span>
             </button>
           ))}
-          {filtered.length === 0 && <p className="px-3 py-6 text-center text-sm text-ink-mute">등록된 업체가 없습니다.</p>}
+          {filtered.length === 0 && <p className="px-4 py-6 text-center text-sm text-ink-mute">등록된 업체가 없습니다.</p>}
         </div>
       </aside>
 
@@ -396,7 +396,7 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
             onChange={(e) => updateDraft("notes", e.target.value)}
             placeholder="계약·정산·연락 시 참고할 내용을 입력하세요."
             rows={3}
-            className="w-full rounded-md border border-hairline bg-background px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
+            className="w-full rounded-sm border border-hairline bg-background px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
           />
         </section>
       </div>
