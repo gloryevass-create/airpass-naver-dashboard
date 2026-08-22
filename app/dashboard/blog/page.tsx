@@ -1,5 +1,6 @@
+import { Suspense } from "react";
 import { requireAuthedClient } from "@/lib/supabase/authed";
-import { getDashboardData } from "@/lib/queries/dashboard";
+import { getDashboardData, type DashboardData } from "@/lib/queries/dashboard";
 import { getActiveCompetitors } from "@/lib/queries/competitors";
 import { getKeywordStrategyComment } from "@/lib/blogKeywordStrategyAi";
 import { SovChart } from "@/components/dashboard/SovChart";
@@ -10,16 +11,40 @@ import { ReportsList } from "@/components/dashboard/ReportsList";
 import { CompetitorBlogManager } from "@/components/dashboard/CompetitorBlogManager";
 import { NavIcon } from "@/components/icons/NavIcon";
 
+// AI 키워드 전략 코멘트는 실제로 Claude를 호출해서 1~2초 이상 걸린다 — 페이지 전체를
+// 기다리게 하지 않도록 별도 컴포넌트로 분리해 Suspense로 스트리밍한다.
+async function KeywordStrategySection({
+  sov,
+  contentMatchedKeywords,
+}: {
+  sov: DashboardData["sov"];
+  contentMatchedKeywords: DashboardData["contentMatchedKeywords"];
+}) {
+  const comment = await getKeywordStrategyComment(
+    sov.map((s) => ({ competitorName: s.competitorName, sharePct: s.sharePct })),
+    contentMatchedKeywords.map((k) => ({ keyword: k.keyword, matchCount: k.matchCount }))
+  );
+  return <AiKeywordStrategyComment comment={comment} />;
+}
+
+function KeywordStrategySkeleton() {
+  return (
+    <div className="rounded-sm border border-hairline bg-canvas-cream p-4">
+      <h2 className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-ink-mute">
+        <NavIcon name="sparkle" className="h-4 w-4" />
+        AI 키워드 전략 코멘트
+      </h2>
+      <p className="text-sm text-ink-mute">AI가 분석 중입니다...</p>
+    </div>
+  );
+}
+
 export default async function BlogPage() {
   const { supabase } = await requireAuthedClient();
   const [dashboard, competitors] = await Promise.all([
     getDashboardData(supabase),
     getActiveCompetitors(supabase),
   ]);
-  const keywordStrategyComment = await getKeywordStrategyComment(
-    dashboard.sov.map((s) => ({ competitorName: s.competitorName, sharePct: s.sharePct })),
-    dashboard.contentMatchedKeywords.map((k) => ({ keyword: k.keyword, matchCount: k.matchCount }))
-  );
 
   const blogReports = dashboard.reports.filter((r) => r.track !== "ad");
 
@@ -78,7 +103,9 @@ export default async function BlogPage() {
         </p>
       </section>
 
-      <AiKeywordStrategyComment comment={keywordStrategyComment} />
+      <Suspense fallback={<KeywordStrategySkeleton />}>
+        <KeywordStrategySection sov={dashboard.sov} contentMatchedKeywords={dashboard.contentMatchedKeywords} />
+      </Suspense>
 
       <section>
         <h2 className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-ink-mute">
