@@ -79,12 +79,12 @@ function NavLink({ item, active, indent }: { item: LeafItem; active: boolean; in
     <Link
       href={item.href}
       onClick={close}
-      className={`flex items-center justify-between rounded-md px-3 text-sm transition-colors ${
+      className={`flex items-center justify-between rounded-sm px-3 text-sm transition-colors ${
         indent ? "ml-3 py-1.5" : "py-2"
       } ${
         active
           ? "font-semibold text-primary"
-          : "font-medium text-ink hover:text-primary"
+          : "font-medium text-ink hover:bg-canvas-lavender/60 hover:text-primary"
       }`}
     >
       <span className="flex items-center gap-2.5">
@@ -142,7 +142,7 @@ export function DashboardSidebar({ latestDate }: { latestDate: string | null }) 
                   type="button"
                   onClick={() => toggleGroup(entry.label)}
                   aria-expanded={expanded}
-                  className="flex items-center gap-2.5 px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-ink-mute hover:text-ink"
+                  className="flex items-center gap-2.5 rounded-sm px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-ink-mute hover:bg-canvas-lavender/40 hover:text-ink"
                 >
                   <NavIcon name={entry.icon} className="h-3.5 w-3.5 shrink-0" />
                   <span className="flex-1 text-left">{entry.label}</span>
