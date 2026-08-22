@@ -629,7 +629,17 @@ export function BusinessBoardV2({ projects }: { projects: BusinessProjectV2[] })
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+        <button
+          type="button"
+          onClick={() => setStatusFilter(null)}
+          className={`flex flex-col gap-1 rounded-sm border bg-primary p-3 text-left text-white transition-shadow ${
+            statusFilter === null ? "border-current shadow-[0_0_0_2px_currentColor]" : "border-primary"
+          }`}
+        >
+          <span className="text-xs font-semibold">전체</span>
+          <span className="text-2xl font-bold tracking-tight">{projects.length.toLocaleString("ko-KR")}</span>
+        </button>
         {STATUSES.map((s) => {
           const badge = STATUS_BADGE[s] || "bg-[#f0f0f2] text-ink-mute";
           const active = statusFilter === s;
