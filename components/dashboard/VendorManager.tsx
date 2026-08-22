@@ -257,8 +257,8 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
         </div>
       </aside>
 
-      <div className="flex flex-1 flex-col gap-6 rounded-lg border border-hairline bg-canvas-cream p-4">
-        <div className="flex items-center justify-between">
+      <div className="flex flex-1 flex-col gap-4">
+        <div className="flex items-center justify-between rounded-sm border border-hairline bg-canvas-cream p-4">
           <div>
             <span className="text-xs font-semibold uppercase tracking-wide text-ink-mute">Partner Vendor</span>
             <h2 className="mt-0.5 text-lg font-bold text-ink">
@@ -271,7 +271,7 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
               <button
                 type="button"
                 onClick={() => handleDeleteVendor(selected.id)}
-                className="rounded-lg border border-hairline bg-background px-4 py-1.5 text-xs font-medium text-semantic-error hover:bg-[#f7f7f8]"
+                className="rounded-sm border border-hairline bg-background px-4 py-1.5 text-xs font-medium text-semantic-error hover:bg-[#f7f7f8]"
               >
                 삭제
               </button>
@@ -280,7 +280,7 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
               type="button"
               onClick={handleSave}
               disabled={saving}
-              className="rounded-lg bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press disabled:opacity-50"
+              className="rounded-sm bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press disabled:opacity-50"
             >
               {saving ? "저장 중..." : "업체 정보 저장"}
             </button>
@@ -291,7 +291,7 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
           <p className={`text-sm ${error ? "text-semantic-error" : "text-ink-mute"}`}>{error || message}</p>
         )}
 
-        <section className="border-t border-hairline pt-6">
+        <section className="rounded-sm border border-hairline bg-canvas-cream p-4">
           <div className="mb-4 flex items-center justify-between">
             <strong className="text-sm font-bold text-ink">업체 문서</strong>
             <span className="text-xs text-ink-mute">JPG·PNG·WebP·PDF, 파일당 12MB 이하</span>
@@ -300,7 +300,7 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
             {DOCUMENT_TYPES.map((type) => {
               const docs = selected?.documents.filter((d) => d.documentType === type) ?? [];
               return (
-                <div key={type} className="flex flex-col gap-2 rounded-lg border border-hairline bg-[#f7f7f8] p-3">
+                <div key={type} className="flex flex-col gap-2 rounded-sm border border-hairline bg-[#f7f7f8] p-3">
                   <div>
                     <b className="text-sm text-ink">{DOCUMENT_LABELS[type]}</b>
                     <p className="text-xs text-ink-mute">{DOCUMENT_HINTS[type]}</p>
@@ -328,7 +328,7 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
                       </button>
                     </div>
                   ))}
-                  <label className="flex cursor-pointer items-center justify-center rounded-md border border-dashed border-primary/40 bg-background px-3 py-2 text-xs font-medium text-ink-mute transition-colors hover:border-primary hover:text-primary">
+                  <label className="flex cursor-pointer items-center justify-center rounded-sm border border-dashed border-primary/40 bg-background px-3 py-2 text-xs font-medium text-ink-mute transition-colors hover:border-primary hover:text-primary">
                     <input
                       ref={(el) => {
                         fileInputRefs.current[type] = el;
@@ -347,7 +347,7 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
           </div>
         </section>
 
-        <section className="border-t border-hairline pt-6">
+        <section className="rounded-sm border border-hairline bg-canvas-cream p-4">
           <div className="mb-3">
             <strong className="text-sm text-ink">사업자 정보</strong>
             <span className="ml-2 text-xs text-ink-mute">사업자등록증에서 자동 입력</span>
@@ -364,7 +364,7 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
           </div>
         </section>
 
-        <section className="border-t border-hairline pt-6">
+        <section className="rounded-sm border border-hairline bg-canvas-cream p-4">
           <div className="mb-3">
             <strong className="text-sm text-ink">정산 계좌</strong>
             <span className="ml-2 text-xs text-ink-mute">통장 사본에서 자동 입력</span>
@@ -376,7 +376,7 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
           </div>
         </section>
 
-        <section className="border-t border-hairline pt-6">
+        <section className="rounded-sm border border-hairline bg-canvas-cream p-4">
           <div className="mb-3">
             <strong className="text-sm text-ink">담당자 정보</strong>
             <span className="ml-2 text-xs text-ink-mute">명함에서 자동 입력</span>
@@ -389,7 +389,7 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
           </div>
         </section>
 
-        <section className="border-t border-hairline pt-6">
+        <section className="rounded-sm border border-hairline bg-canvas-cream p-4">
           <strong className="mb-2 block text-sm text-ink">참고 사항</strong>
           <textarea
             value={draft.notes}
