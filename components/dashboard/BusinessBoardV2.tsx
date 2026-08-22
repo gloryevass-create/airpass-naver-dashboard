@@ -2,7 +2,7 @@
 
 import { useActionState, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import type { BusinessProjectV2 } from "@/lib/queries/businessProjectsV2";
+import type { BusinessProjectV2, BusinessProjectV2HistoryEntry } from "@/lib/queries/businessProjectsV2";
 import {
   createBusinessProjectV2,
   updateBusinessProjectV2,
@@ -11,6 +11,7 @@ import {
   createBusinessProjectV2Comment,
   deleteBusinessProjectV2Comment,
   createBusinessProjectV2HistoryEntry,
+  updateBusinessProjectV2HistoryEntry,
 } from "@/app/dashboard/actions/businessProjectsV2";
 
 const STAGES = ["①영업진행", "②사업제안", "③제안서작성", "④사업수행", "⑤사업완료"];
@@ -268,6 +269,89 @@ function formatDateTime(value: string): string {
   });
 }
 
+function HistoryEntryRow({ entry }: { entry: BusinessProjectV2HistoryEntry }) {
+  const [expanded, setExpanded] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const action = updateBusinessProjectV2HistoryEntry.bind(null, entry.id);
+  const [state, formAction, pending] = useActionState(action, undefined);
+  const firstLine = entry.content.split("\n")[0];
+  const hasMore = entry.content.includes("\n");
+  const wasEdited = entry.updatedAt !== entry.createdAt;
+
+  if (editing) {
+    return (
+      <form
+        action={async (formData) => {
+          await formAction(formData);
+          setEditing(false);
+        }}
+        className="flex flex-col gap-2 rounded-sm border border-hairline bg-background p-3 text-sm"
+      >
+        <textarea
+          name="content"
+          required
+          defaultValue={entry.content}
+          rows={4}
+          className="rounded-sm border border-hairline px-3 py-2 text-sm text-ink outline-none focus:border-primary"
+        />
+        {state?.error && <p className="text-sm text-semantic-error">{state.error}</p>}
+        <div className="flex gap-2">
+          <button
+            type="submit"
+            disabled={pending}
+            className="rounded-lg bg-primary px-4 py-1 text-xs font-bold text-white hover:bg-primary-press disabled:opacity-50"
+          >
+            {pending ? "저장 중..." : "저장"}
+          </button>
+          <button
+            type="button"
+            onClick={() => setEditing(false)}
+            className="rounded-lg border border-hairline px-4 py-1 text-xs font-medium text-ink hover:bg-[#f7f7f8]"
+          >
+            취소
+          </button>
+        </div>
+      </form>
+    );
+  }
+
+  return (
+    <div className="rounded-sm border border-hairline bg-background p-3 text-sm">
+      <button
+        type="button"
+        onClick={() => setExpanded((v) => !v)}
+        className="flex w-full items-center justify-between gap-3 text-left"
+      >
+        <span className={`min-w-0 flex-1 text-ink ${expanded ? "whitespace-pre-wrap" : "truncate"}`}>
+          {expanded ? entry.content : firstLine}
+          {!expanded && hasMore && <span className="text-ink-mute"> …</span>}
+        </span>
+        <span className="shrink-0 text-xs text-ink-mute">{formatDateTime(entry.createdAt)}</span>
+      </button>
+      {expanded && (
+        <div className="mt-2 flex items-center justify-between gap-2 text-xs text-ink-mute">
+          <span>
+            {entry.authorEmail}
+            {wasEdited && <span className="ml-1">(수정됨)</span>}
+          </span>
+          {entry.isOwn && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setEditing(true);
+              }}
+              className="text-link-blue hover:underline"
+            >
+              수정
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ProjectHistory({ project }: { project: BusinessProjectV2 }) {
   const action = createBusinessProjectV2HistoryEntry.bind(null, project.id);
   const [state, formAction, pending] = useActionState(action, undefined);
@@ -277,18 +361,13 @@ function ProjectHistory({ project }: { project: BusinessProjectV2 }) {
       <div>
         <strong className="text-sm font-bold text-ink">히스토리</strong>
         <p className="mt-0.5 text-xs text-ink-mute">
-          진행 상황·변경 사항을 시간순으로 남깁니다. 등록한 기록은 삭제할 수 없습니다.
+          진행 상황·변경 사항을 시간순으로 남깁니다. 등록한 기록은 삭제할 수 없지만, 본인이 남긴
+          기록은 수정할 수 있습니다.
         </p>
       </div>
       <div className="flex flex-col gap-2">
         {project.history.map((h) => (
-          <div key={h.id} className="rounded-sm border border-hairline bg-background p-3 text-sm">
-            <div className="flex items-center justify-between gap-2 text-xs text-ink-mute">
-              <span className="font-medium text-ink">{h.authorEmail}</span>
-              <span>{formatDateTime(h.createdAt)}</span>
-            </div>
-            <p className="mt-1 whitespace-pre-wrap text-ink">{h.content}</p>
-          </div>
+          <HistoryEntryRow key={h.id} entry={h} />
         ))}
         {project.history.length === 0 && (
           <p className="text-sm text-ink-mute">아직 등록된 히스토리가 없습니다.</p>

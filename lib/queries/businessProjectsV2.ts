@@ -17,6 +17,8 @@ export type BusinessProjectV2HistoryEntry = {
   authorEmail: string;
   content: string;
   createdAt: string;
+  updatedAt: string;
+  isOwn: boolean;
 };
 
 export type BusinessProjectV2 = {
@@ -98,6 +100,8 @@ export async function getBusinessProjectsV2(supabase: Client): Promise<BusinessP
       authorEmail: authorDisplayById.get(h.author_id) ?? h.author_email,
       content: h.content,
       createdAt: h.created_at,
+      updatedAt: h.updated_at,
+      isOwn: h.author_id === user?.id,
     });
     historyByProject.set(h.project_id, list);
   }

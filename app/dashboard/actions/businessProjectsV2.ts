@@ -140,7 +140,8 @@ export async function deleteBusinessProjectV2Comment(commentId: string): Promise
 
 export type BusinessProjectV2HistoryState = { error?: string } | undefined;
 
-/** 히스토리는 댓글과 달리 삭제 기능을 두지 않는다 — 변경 이력을 그대로 보존하는 것이 목적. */
+/** 히스토리는 댓글과 달리 삭제 기능을 두지 않는다 — 기록 자체가 사라지는 것을 막기 위함.
+ * 다만 작성자 본인은 오탈자·내용을 바로잡을 수 있도록 수정은 허용한다. */
 export async function createBusinessProjectV2HistoryEntry(
   projectId: string,
   _prevState: BusinessProjectV2HistoryState,
@@ -159,6 +160,27 @@ export async function createBusinessProjectV2HistoryEntry(
   });
 
   if (error) return { error: `히스토리 저장 실패: ${error.message}` };
+
+  revalidatePath(PATH);
+  return undefined;
+}
+
+export async function updateBusinessProjectV2HistoryEntry(
+  historyId: string,
+  _prevState: BusinessProjectV2HistoryState,
+  formData: FormData
+): Promise<BusinessProjectV2HistoryState> {
+  const { supabase } = await requireAuthedClient();
+
+  const content = String(formData.get("content") ?? "").trim();
+  if (!content) return { error: "히스토리 내용을 입력하세요." };
+
+  const { error } = await supabase
+    .from("business_projects_v2_history")
+    .update({ content, updated_at: new Date().toISOString() })
+    .eq("id", historyId);
+
+  if (error) return { error: `히스토리 수정 실패: ${error.message}` };
 
   revalidatePath(PATH);
   return undefined;

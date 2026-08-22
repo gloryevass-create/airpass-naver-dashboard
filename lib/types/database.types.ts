@@ -983,6 +983,7 @@ export type Database = {
           author_email: string;
           content: string;
           created_at: string;
+          updated_at: string;
         };
         Insert: {
           id?: string;
@@ -991,6 +992,7 @@ export type Database = {
           author_email: string;
           content: string;
           created_at?: string;
+          updated_at?: string;
         };
         Update: {
           id?: string;
@@ -999,6 +1001,7 @@ export type Database = {
           author_email?: string;
           content?: string;
           created_at?: string;
+          updated_at?: string;
         };
         Relationships: [];
       };
