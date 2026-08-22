@@ -56,3 +56,11 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
 }
+
+/* 브라우저 기본값은 button에 포인터 커서를 주지 않는다(a 태그만 기본 제공) —
+   앱 전체에서 클릭 가능한 button/select가 항상 손가락 커서로 보이게 통일한다. */
+button:not(:disabled),
+select:not(:disabled),
+[role="button"] {
+  cursor: pointer;
+}
