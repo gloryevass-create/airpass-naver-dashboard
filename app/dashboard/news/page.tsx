@@ -2,7 +2,7 @@ import { requireAuthedClient } from "@/lib/supabase/authed";
 import { getNewsArticles } from "@/lib/queries/news";
 import { getMonitorKeywords } from "@/lib/queries/monitorKeywords";
 import { getScrapedNoticeIds } from "@/lib/queries/scraps";
-import { extractHotKeywords } from "@/lib/newsKeywordFrequency";
+import { extractHotKeywordsWithAI } from "@/lib/newsHotKeywordsAi";
 import { NewsList } from "@/components/dashboard/NewsList";
 import { NewsHotKeywords } from "@/components/dashboard/NewsHotKeywords";
 import { MonitorDateRangeFilter } from "@/components/dashboard/MonitorDateRangeFilter";
@@ -19,7 +19,7 @@ export default async function NewsPage({ searchParams }: { searchParams: SearchP
     getMonitorKeywords(supabase, "news"),
     getScrapedNoticeIds(supabase, user.id, "news"),
   ]);
-  const hotKeywords = extractHotKeywords(articles.map((a) => a.title));
+  const hotKeywords = await extractHotKeywordsWithAI(articles.map((a) => a.title));
 
   return (
     <main className="flex w-full flex-col gap-6 p-6">

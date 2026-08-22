@@ -15,7 +15,7 @@ export function NewsHotKeywords({ keywords }: { keywords: HotKeyword[] }) {
         AI 분석 핫 키워드
       </h2>
       <p className="mb-3 text-xs text-ink-mute">
-        조회 기간에 수집된 뉴스 제목에서 자주 등장한 단어를 빈도순으로 뽑았습니다.
+        조회 기간에 수집된 뉴스 제목을 AI가 분석해 화제가 되는 키워드를 빈도순으로 뽑았습니다.
       </p>
       {keywords.length === 0 ? (
         <p className="py-4 text-center text-sm text-ink-mute">
