@@ -580,6 +580,7 @@ function BusinessListView({
 export function BusinessBoardV2({ projects }: { projects: BusinessProjectV2[] }) {
   const [showAll, setShowAll] = useState(false);
   const [view, setView] = useState<"board" | "list">("board");
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
   // 선택한 프로젝트 객체를 그대로 담아두면 댓글 등록 후 revalidate로 projects가
   // 새로고침돼도 이 스냅샷은 갱신되지 않는다 — id만 들고 있다가 매 렌더마다
   // projects에서 다시 찾아 항상 최신 데이터(새 댓글 포함)를 보여준다.
@@ -587,10 +588,12 @@ export function BusinessBoardV2({ projects }: { projects: BusinessProjectV2[] })
   const editingProject = editingId && editingId !== "new" ? (projects.find((p) => p.id === editingId) ?? null) : null;
   const [, startTransition] = useTransition();
 
-  const visible = useMemo(
-    () => (showAll ? projects : projects.filter((p) => !TERMINAL_STATUSES.has(p.status))),
-    [projects, showAll]
-  );
+  // 상태 요약 카드로 필터링 중이면 "완료·보류 포함" 체크와 무관하게 그 상태만 보여준다
+  // (완료 카드를 눌렀는데 완료 항목이 숨겨져 있으면 빈 목록처럼 보이는 문제를 막는다).
+  const visible = useMemo(() => {
+    if (statusFilter) return projects.filter((p) => p.status === statusFilter);
+    return showAll ? projects : projects.filter((p) => !TERMINAL_STATUSES.has(p.status));
+  }, [projects, showAll, statusFilter]);
 
   const byStage = useMemo(() => {
     const map = new Map<string, BusinessProjectV2[]>();
@@ -629,8 +632,16 @@ export function BusinessBoardV2({ projects }: { projects: BusinessProjectV2[] })
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         {STATUSES.map((s) => {
           const badge = STATUS_BADGE[s] || "bg-[#f0f0f2] text-ink-mute";
+          const active = statusFilter === s;
           return (
-            <div key={s} className={`flex flex-col gap-1 rounded-sm border border-hairline p-3 ${badge}`}>
+            <button
+              key={s}
+              type="button"
+              onClick={() => setStatusFilter((prev) => (prev === s ? null : s))}
+              className={`flex flex-col gap-1 rounded-sm border p-3 text-left transition-shadow ${badge} ${
+                active ? "border-current shadow-[0_0_0_2px_currentColor]" : "border-hairline"
+              }`}
+            >
               <span className="flex items-center gap-1.5 text-xs font-semibold">
                 <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${STATUS_DOT[s] || "bg-ink-mute"}`} />
                 {s}
@@ -638,10 +649,19 @@ export function BusinessBoardV2({ projects }: { projects: BusinessProjectV2[] })
               <span className="text-2xl font-bold tracking-tight">
                 {(statusCounts.get(s) ?? 0).toLocaleString("ko-KR")}
               </span>
-            </div>
+            </button>
           );
         })}
       </div>
+      {statusFilter && (
+        <button
+          type="button"
+          onClick={() => setStatusFilter(null)}
+          className="w-fit text-xs text-link-blue hover:underline"
+        >
+          &ldquo;{statusFilter}&rdquo; 필터 해제
+        </button>
+      )}
 
       {editingId === "new" && <ProjectForm project={null} onDone={() => setEditingId(null)} />}
       {editingProject && (
