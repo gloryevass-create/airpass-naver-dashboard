@@ -124,10 +124,11 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
 
   function handleDeleteVendor(id: string) {
     if (!window.confirm("이 협력사를 삭제할까요? 첨부된 문서도 함께 삭제됩니다.")) return;
-    startTransition(() => {
-      void deleteVendor(id);
-    });
     if (selectedId === id) setSelectedId(null);
+    startTransition(async () => {
+      await deleteVendor(id);
+      router.refresh();
+    });
   }
 
   function handleSave() {
@@ -187,10 +188,10 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
 
   function handleDeleteDocument(documentId: string, storagePath: string) {
     if (!window.confirm("이 첨부 문서를 삭제할까요?")) return;
-    startTransition(() => {
-      void deleteVendorDocument(documentId, storagePath);
+    startTransition(async () => {
+      await deleteVendorDocument(documentId, storagePath);
+      router.refresh();
     });
-    router.refresh();
   }
 
   function inputField(key: keyof VendorDraft, label: string, wide?: boolean) {
