@@ -83,7 +83,7 @@ export default async function MemoDetailPage({ params }: { params: Params }) {
         )}
       </div>
 
-      <div className="whitespace-pre-wrap rounded-sm border border-hairline p-4 text-sm text-ink">
+      <div className="whitespace-pre-wrap rounded-sm border border-hairline bg-canvas-cream p-4 text-sm text-ink">
         {memo.content}
       </div>
 

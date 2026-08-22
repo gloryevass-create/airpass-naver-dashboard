@@ -33,7 +33,7 @@ export function CompetitorBlogManager({ competitors, path }: { competitors: Comp
   const [state, formAction, pending] = useActionState(action, initialState);
 
   return (
-    <details className="rounded-sm border border-hairline p-4">
+    <details className="rounded-sm border border-hairline bg-canvas-cream p-4">
       <summary className="flex cursor-pointer items-center gap-1.5 text-sm font-semibold text-ink-mute">
         <NavIcon name="tag" className="h-4 w-4" />
         모니터링 블로그 관리 ({competitors.length}개)

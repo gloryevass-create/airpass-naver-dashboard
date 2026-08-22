@@ -25,7 +25,7 @@ export default async function AdminPage() {
 
       <section>
         <h2 className="mb-3 text-sm font-semibold text-ink">가입자 목록</h2>
-        <div className="overflow-hidden rounded-sm border border-hairline">
+        <div className="overflow-hidden rounded-sm border border-hairline bg-canvas-cream">
           <table className="w-full text-sm">
             <thead className="bg-canvas-cream text-left text-ink-mute">
               <tr>

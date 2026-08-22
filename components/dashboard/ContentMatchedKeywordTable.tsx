@@ -13,7 +13,7 @@ export function ContentMatchedKeywordTable({
   data: DashboardData["contentMatchedKeywords"];
 }) {
   return (
-    <div className="overflow-x-auto rounded-sm border border-hairline">
+    <div className="overflow-x-auto rounded-sm border border-hairline bg-canvas-cream">
       <table className="w-full whitespace-nowrap text-sm">
         <thead className="bg-[#f7f7f8] text-left text-ink-mute">
           <tr>

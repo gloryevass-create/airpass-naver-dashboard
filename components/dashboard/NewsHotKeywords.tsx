@@ -9,7 +9,7 @@ function sizeClass(rank: number): string {
 
 export function NewsHotKeywords({ keywords }: { keywords: HotKeyword[] }) {
   return (
-    <div className="rounded-sm border border-hairline p-4">
+    <div className="rounded-sm border border-hairline bg-canvas-cream p-4">
       <h2 className="mb-1 flex items-center gap-1.5 text-sm font-semibold text-ink-mute">
         <NavIcon name="sparkle" className="h-4 w-4" />
         AI 분석 핫 키워드

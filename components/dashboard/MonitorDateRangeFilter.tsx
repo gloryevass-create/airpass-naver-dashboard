@@ -57,7 +57,7 @@ export function MonitorDateRangeFilter({
   }
 
   return (
-    <div className="rounded-sm border border-hairline p-4">
+    <div className="rounded-sm border border-hairline bg-canvas-cream p-4">
       <div className="flex flex-wrap items-center gap-2 text-sm">
         <button
           type="button"

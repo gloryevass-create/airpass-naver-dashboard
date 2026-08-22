@@ -73,7 +73,7 @@ function StatBlock({
   onSelect: (label: string) => void;
 }) {
   return (
-    <div className="rounded-sm border border-hairline p-3">
+    <div className="rounded-sm border border-hairline bg-canvas-cream p-3">
       <h3 className="mb-2 text-xs font-semibold text-ink-mute">
         {title}
         {active && (
@@ -222,7 +222,7 @@ export function DisabilityOrgTable({ organizations }: { organizations: Disabilit
         </button>
       </div>
 
-      <div className="overflow-auto rounded-sm border border-hairline">
+      <div className="overflow-auto rounded-sm border border-hairline bg-canvas-cream">
         <table className="w-full text-xs">
           <thead className="sticky top-0 bg-[#f7f7f8] text-left text-ink-mute">
             <tr>

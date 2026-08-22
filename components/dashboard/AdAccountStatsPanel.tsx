@@ -74,7 +74,7 @@ export function AdAccountStatsPanel({ data }: { data: DashboardData["adAccountSt
   }));
 
   return (
-    <div className="rounded-sm border border-hairline p-4">
+    <div className="rounded-sm border border-hairline bg-canvas-cream p-4">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h2 className="flex items-center gap-1.5 text-sm font-semibold text-ink-mute">
           <NavIcon name="chart" className="h-4 w-4" />

@@ -38,14 +38,14 @@ export default async function BlogPage() {
       )}
 
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div className="rounded-sm border border-hairline p-4">
+        <div className="rounded-sm border border-hairline bg-canvas-cream p-4">
           <h2 className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-ink-mute">
             <NavIcon name="pie" className="h-4 w-4" />
             블로그 노출 점유율 (SOV)
           </h2>
           <SovChart data={dashboard.sov} />
         </div>
-        <div className="rounded-sm border border-hairline p-4">
+        <div className="rounded-sm border border-hairline bg-canvas-cream p-4">
           <h2 className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-ink-mute">
             <NavIcon name="calendar" className="h-4 w-4" />
             블로그 포스팅 주기

@@ -49,7 +49,7 @@ export function BudgetBidList({
 
   if (keywords.length <= 1) {
     return (
-      <div className="rounded-sm border border-hairline p-6 text-center text-sm text-ink-mute">
+      <div className="rounded-sm border border-hairline bg-canvas-cream p-6 text-center text-sm text-ink-mute">
         등록된 검색 키워드가 없습니다. 위에서 키워드를 추가해 주세요.
       </div>
     );
@@ -117,7 +117,7 @@ export function BudgetBidList({
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-sm border border-hairline">
+      <div className="overflow-x-auto rounded-sm border border-hairline bg-canvas-cream">
         <table className="w-full whitespace-nowrap text-sm">
           <thead className="bg-[#f7f7f8] text-left text-ink-mute">
             <tr>

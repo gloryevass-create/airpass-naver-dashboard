@@ -38,7 +38,7 @@ export function MonitorKeywordManager({
   const [state, formAction, pending] = useActionState(action, initialState);
 
   return (
-    <details className="rounded-sm border border-hairline p-4">
+    <details className="rounded-sm border border-hairline bg-canvas-cream p-4">
       <summary className="flex cursor-pointer items-center gap-1.5 text-sm font-semibold text-ink-mute">
         <NavIcon name="tag" className="h-4 w-4" />
         검색 키워드 관리 ({keywords.length}개)

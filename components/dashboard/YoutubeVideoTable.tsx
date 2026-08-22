@@ -64,14 +64,14 @@ export function YoutubeVideoTable({ videos }: { videos: YoutubeVideo[] }) {
 
   if (videos.length === 0) {
     return (
-      <div className="rounded-sm border border-hairline p-6 text-center text-sm text-ink-mute">
+      <div className="rounded-sm border border-hairline bg-canvas-cream p-6 text-center text-sm text-ink-mute">
         아직 수집된 영상이 없습니다.
       </div>
     );
   }
 
   return (
-    <div className="overflow-x-auto rounded-sm border border-hairline">
+    <div className="overflow-x-auto rounded-sm border border-hairline bg-canvas-cream">
       <table className="w-full whitespace-nowrap text-sm">
         <thead className="bg-[#f7f7f8] text-left text-ink-mute">
           <tr>
