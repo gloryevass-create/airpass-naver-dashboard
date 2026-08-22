@@ -1,9 +1,11 @@
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { getDashboardData } from "@/lib/queries/dashboard";
 import { getActiveCompetitors } from "@/lib/queries/competitors";
+import { getKeywordStrategyComment } from "@/lib/blogKeywordStrategyAi";
 import { SovChart } from "@/components/dashboard/SovChart";
 import { CadenceTable } from "@/components/dashboard/CadenceTable";
 import { ContentMatchedKeywordTable } from "@/components/dashboard/ContentMatchedKeywordTable";
+import { AiKeywordStrategyComment } from "@/components/dashboard/AiKeywordStrategyComment";
 import { ReportsList } from "@/components/dashboard/ReportsList";
 import { CompetitorBlogManager } from "@/components/dashboard/CompetitorBlogManager";
 import { NavIcon } from "@/components/icons/NavIcon";
@@ -14,6 +16,10 @@ export default async function BlogPage() {
     getDashboardData(supabase),
     getActiveCompetitors(supabase),
   ]);
+  const keywordStrategyComment = await getKeywordStrategyComment(
+    dashboard.sov.map((s) => ({ competitorName: s.competitorName, sharePct: s.sharePct })),
+    dashboard.contentMatchedKeywords.map((k) => ({ keyword: k.keyword, matchCount: k.matchCount }))
+  );
 
   const blogReports = dashboard.reports.filter((r) => r.track !== "ad");
 
@@ -71,6 +77,8 @@ export default async function BlogPage() {
           제3자에게 공개하지 않는 정보라 표시하지 않습니다.
         </p>
       </section>
+
+      <AiKeywordStrategyComment comment={keywordStrategyComment} />
 
       <section>
         <h2 className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-ink-mute">
