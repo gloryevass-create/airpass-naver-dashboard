@@ -607,6 +607,15 @@ export function BusinessBoardV2({ projects }: { projects: BusinessProjectV2[] })
     return map;
   }, [visible]);
 
+  // 상단 요약은 완료·보류 포함 토글과 무관하게 전체 기준으로 센다 — 필터로 숨겨진
+  // 항목도 전체 현황 파악에는 필요하기 때문.
+  const statusCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const s of STATUSES) counts.set(s, 0);
+    for (const p of projects) counts.set(p.status, (counts.get(p.status) ?? 0) + 1);
+    return counts;
+  }, [projects]);
+
   function handleDelete(id: string) {
     if (!window.confirm("이 사업 항목을 삭제할까요?")) return;
     startTransition(() => {
@@ -617,6 +626,23 @@ export function BusinessBoardV2({ projects }: { projects: BusinessProjectV2[] })
 
   return (
     <div className="flex flex-col gap-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+        {STATUSES.map((s) => {
+          const badge = STATUS_BADGE[s] || "bg-[#f0f0f2] text-ink-mute";
+          return (
+            <div key={s} className={`flex flex-col gap-1 rounded-sm border border-hairline p-3 ${badge}`}>
+              <span className="flex items-center gap-1.5 text-xs font-semibold">
+                <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${STATUS_DOT[s] || "bg-ink-mute"}`} />
+                {s}
+              </span>
+              <span className="text-2xl font-bold tracking-tight">
+                {(statusCounts.get(s) ?? 0).toLocaleString("ko-KR")}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+
       {editingId === "new" && <ProjectForm project={null} onDone={() => setEditingId(null)} />}
       {editingProject && (
         <div className="flex flex-col gap-4">
