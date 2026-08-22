@@ -67,19 +67,22 @@ export async function getProductCatalog(supabase: Client): Promise<ProductCatalo
   // 사용자가 화살표로 순서를 저장해뒀으면 그 순서를 우선 적용하고(모르는 id는 무시),
   // 아직 순서를 저장한 적 없는 제품(신규 추가분 등)은 이름순으로 뒤에 이어붙인다.
   const savedOrder = userOrder?.product_ids ?? [];
+  let ordered = items;
   if (savedOrder.length > 0) {
     const itemById = new Map(items.map((it) => [it.id, it]));
-    const ordered: ProductCatalogItem[] = [];
+    const result: ProductCatalogItem[] = [];
     for (const id of savedOrder) {
       const item = itemById.get(id);
       if (item) {
-        ordered.push(item);
+        result.push(item);
         itemById.delete(id);
       }
     }
-    ordered.push(...itemById.values());
-    return ordered;
+    result.push(...itemById.values());
+    ordered = result;
   }
 
-  return items;
+  // 참고 저장소와 동일하게, 즐겨찾기한 제품은 항상 맨 위로 그룹핑해서 보여준다
+  // (각 그룹 내부 순서는 위에서 정한 순서를 그대로 유지).
+  return [...ordered.filter((p) => p.isFavorite), ...ordered.filter((p) => !p.isFavorite)];
 }

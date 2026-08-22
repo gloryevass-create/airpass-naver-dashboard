@@ -276,13 +276,14 @@ export function ProductCatalogTable({
   // prop이 갱신되면 이 오버라이드는 자연스럽게 무시된다 — 항상 실제 값과 합쳐서 계산).
   const [favoriteOverrides, setFavoriteOverrides] = useState<Map<string, boolean>>(new Map());
 
-  const productsWithOverrides = useMemo(
-    () =>
-      products.map((p) =>
-        favoriteOverrides.has(p.id) ? { ...p, isFavorite: favoriteOverrides.get(p.id)! } : p
-      ),
-    [products, favoriteOverrides]
-  );
+  const productsWithOverrides = useMemo(() => {
+    const withOverrides = products.map((p) =>
+      favoriteOverrides.has(p.id) ? { ...p, isFavorite: favoriteOverrides.get(p.id)! } : p
+    );
+    // 즐겨찾기 누르면 그 즉시 맨 위로 옮겨 보이도록, 낙관적 업데이트 반영 직후에도
+    // 항상 즐겨찾기 그룹이 먼저 오게 다시 묶는다(서버 쿼리도 같은 규칙을 적용).
+    return [...withOverrides.filter((p) => p.isFavorite), ...withOverrides.filter((p) => !p.isFavorite)];
+  }, [products, favoriteOverrides]);
 
   const favoriteCount = useMemo(
     () => productsWithOverrides.filter((p) => p.isFavorite).length,
@@ -521,8 +522,12 @@ export function ProductCatalogTable({
               const reorderDisabledReason = !canReorder
                 ? "정렬 순서 변경은 검색어·즐겨찾기 필터 없이 전체 보기에서만 가능합니다."
                 : null;
-              const canMoveUp = canReorder && index > 0;
-              const canMoveDown = canReorder && index < filtered.length - 1;
+              // 즐겨찾기는 항상 맨 위 그룹으로 묶여 보이므로, 그 그룹 경계를 넘는 이동은 막는다
+              // (참고 사이트와 동일 — 일반 항목 자리로 즐겨찾기가 섞여 들어가지 않게).
+              const prev = filtered[index - 1];
+              const next = filtered[index + 1];
+              const canMoveUp = canReorder && index > 0 && prev.isFavorite === p.isFavorite;
+              const canMoveDown = canReorder && index < filtered.length - 1 && next.isFavorite === p.isFavorite;
               return (
               <tr
                 key={p.id}
@@ -538,29 +543,33 @@ export function ProductCatalogTable({
                     <button
                       type="button"
                       onClick={() => handleToggleFavorite(p.id)}
-                      title="즐겨찾기"
-                      className={p.isFavorite ? "text-[#f5a623]" : "text-ink-mute/50 hover:text-ink-mute"}
+                      title={p.isFavorite ? "즐겨찾기 해제" : "즐겨찾기 추가"}
+                      className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-[7px] border text-lg leading-none ${
+                        p.isFavorite
+                          ? "border-[#e8c56f] bg-[#fff9e8] text-[#e3a51b]"
+                          : "border-hairline bg-canvas-cream text-[#a7afbe] hover:border-[#e8c56f] hover:bg-[#fff9e8] hover:text-[#e3a51b]"
+                      }`}
                     >
                       {p.isFavorite ? "★" : "☆"}
                     </button>
-                    <div className="flex flex-col leading-none">
+                    <div className="flex shrink-0 gap-[3px]">
                       <button
                         type="button"
                         onClick={() => handleMove(p.id, "up")}
                         disabled={!canMoveUp}
                         title={reorderDisabledReason ?? "위로"}
-                        className="text-ink-mute hover:text-ink disabled:cursor-not-allowed disabled:opacity-30"
+                        className="flex h-[25px] w-6 items-center justify-center rounded-[5px] border border-hairline bg-canvas-cream text-xs font-extrabold text-[#526887] hover:border-[#9eaded] hover:bg-[#f5f7ff] hover:text-[#3652a4] disabled:cursor-not-allowed disabled:opacity-35"
                       >
-                        ▲
+                        ↑
                       </button>
                       <button
                         type="button"
                         onClick={() => handleMove(p.id, "down")}
                         disabled={!canMoveDown}
                         title={reorderDisabledReason ?? "아래로"}
-                        className="text-ink-mute hover:text-ink disabled:cursor-not-allowed disabled:opacity-30"
+                        className="flex h-[25px] w-6 items-center justify-center rounded-[5px] border border-hairline bg-canvas-cream text-xs font-extrabold text-[#526887] hover:border-[#9eaded] hover:bg-[#f5f7ff] hover:text-[#3652a4] disabled:cursor-not-allowed disabled:opacity-35"
                       >
-                        ▼
+                        ↓
                       </button>
                     </div>
                     {p.needsReview && <span className="text-semantic-error">!</span>}

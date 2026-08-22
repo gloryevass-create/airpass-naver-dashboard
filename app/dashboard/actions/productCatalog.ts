@@ -201,22 +201,30 @@ export async function toggleProductFavorite(productId: string): Promise<void> {
 export async function moveProductInUserOrder(productId: string, direction: "up" | "down"): Promise<void> {
   const { supabase, user } = await requireAuthedClient();
 
-  const [{ data: allProducts }, { data: userOrderRow }] = await Promise.all([
+  const [{ data: allProducts }, { data: userOrderRow }, { data: favoriteRows }] = await Promise.all([
     supabase.from("product_catalog").select("id").order("name", { ascending: true }),
     supabase.from("product_catalog_user_order").select("product_ids").eq("user_id", user.id).maybeSingle(),
+    supabase.from("product_catalog_favorites").select("product_id").eq("user_id", user.id),
   ]);
 
   const allIds = (allProducts ?? []).map((p) => p.id);
   const savedOrder = userOrderRow?.product_ids ?? [];
 
-  // 저장된 순서 + 아직 순서에 없는(신규) 제품을 이름순으로 이어붙여 "현재 화면에 보이는 순서"를 재현한다.
+  // 저장된 순서 + 아직 순서에 없는(신규) 제품을 이름순으로 이어붙인다.
   const savedSet = new Set(savedOrder);
-  const effectiveOrder = [...savedOrder.filter((id) => allIds.includes(id)), ...allIds.filter((id) => !savedSet.has(id))];
+  const baseOrder = [...savedOrder.filter((id) => allIds.includes(id)), ...allIds.filter((id) => !savedSet.has(id))];
+
+  // 화면에는 즐겨찾기가 항상 맨 위 그룹으로 보이므로(getProductCatalog과 동일 규칙),
+  // 화살표도 그 그룹 순서를 기준으로 옮겨야 화면과 실제 이동이 일치한다.
+  const favoriteIds = new Set((favoriteRows ?? []).map((f) => f.product_id));
+  const effectiveOrder = [...baseOrder.filter((id) => favoriteIds.has(id)), ...baseOrder.filter((id) => !favoriteIds.has(id))];
 
   const index = effectiveOrder.indexOf(productId);
   if (index === -1) return;
   const targetIndex = direction === "up" ? index - 1 : index + 1;
   if (targetIndex < 0 || targetIndex >= effectiveOrder.length) return;
+  // 즐겨찾기 그룹 경계는 넘지 않는다(즐겨찾기 항목이 일반 항목 자리로 섞여 들어가지 않게).
+  if (favoriteIds.has(effectiveOrder[index]) !== favoriteIds.has(effectiveOrder[targetIndex])) return;
 
   const newOrder = [...effectiveOrder];
   [newOrder[index], newOrder[targetIndex]] = [newOrder[targetIndex], newOrder[index]];
