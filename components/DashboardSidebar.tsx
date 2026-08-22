@@ -2,7 +2,7 @@
 
 import Link, { useLinkStatus } from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import { NavIcon, type IconName } from "@/components/icons/NavIcon";
 import { useMobileNav } from "@/components/MobileNavContext";
 
@@ -82,10 +82,22 @@ function NavSpinner() {
 
 function NavLink({ item, active, indent }: { item: LeafItem; active: boolean; indent?: boolean }) {
   const { close } = useMobileNav();
+
+  // 이미 열려있는 메뉴를 다시 클릭하면 Next.js Link는 같은 경로라 아무 반응이 없다
+  // (편집 폼 등 화면에 남아있는 로컬 상태가 그대로 유지됨) — 이미 활성 상태인 메뉴는
+  // 강제로 전체 새로고침해서 항상 그 메뉴의 초기 화면으로 돌아가게 한다.
+  function handleClick(e: MouseEvent<HTMLAnchorElement>) {
+    close();
+    if (active) {
+      e.preventDefault();
+      window.location.href = item.href;
+    }
+  }
+
   return (
     <Link
       href={item.href}
-      onClick={close}
+      onClick={handleClick}
       className={`flex items-center justify-between rounded-sm px-3 text-sm transition-colors ${
         indent ? "ml-3 py-1.5" : "py-2"
       } ${
