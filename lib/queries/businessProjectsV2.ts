@@ -12,6 +12,13 @@ export type BusinessProjectV2Comment = {
   isOwn: boolean;
 };
 
+export type BusinessProjectV2HistoryEntry = {
+  id: string;
+  authorEmail: string;
+  content: string;
+  createdAt: string;
+};
+
 export type BusinessProjectV2 = {
   id: string;
   title: string;
@@ -36,6 +43,7 @@ export type BusinessProjectV2 = {
   createdAt: string;
   updatedAt: string;
   comments: BusinessProjectV2Comment[];
+  history: BusinessProjectV2HistoryEntry[];
 };
 
 /** author_id -> "이름(직함)" 표시용 맵(광고전략메모와 동일한 패턴). */
@@ -56,10 +64,14 @@ export async function getBusinessProjectsV2(supabase: Client): Promise<BusinessP
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [{ data }, { data: comments }, authorDisplayById] = await Promise.all([
+  const [{ data }, { data: comments }, { data: history }, authorDisplayById] = await Promise.all([
     supabase.from("business_projects_v2").select("*").order("created_at", { ascending: false }),
     supabase
       .from("business_projects_v2_comments")
+      .select("*")
+      .order("created_at", { ascending: true }),
+    supabase
+      .from("business_projects_v2_history")
       .select("*")
       .order("created_at", { ascending: true }),
     fetchAuthorDisplayById(supabase),
@@ -76,6 +88,18 @@ export async function getBusinessProjectsV2(supabase: Client): Promise<BusinessP
       isOwn: c.author_id === user?.id,
     });
     commentsByProject.set(c.project_id, list);
+  }
+
+  const historyByProject = new Map<string, BusinessProjectV2HistoryEntry[]>();
+  for (const h of history ?? []) {
+    const list = historyByProject.get(h.project_id) ?? [];
+    list.push({
+      id: h.id,
+      authorEmail: authorDisplayById.get(h.author_id) ?? h.author_email,
+      content: h.content,
+      createdAt: h.created_at,
+    });
+    historyByProject.set(h.project_id, list);
   }
 
   return (data ?? []).map((p) => ({
@@ -102,5 +126,6 @@ export async function getBusinessProjectsV2(supabase: Client): Promise<BusinessP
     createdAt: p.created_at,
     updatedAt: p.updated_at,
     comments: commentsByProject.get(p.id) ?? [],
+    history: historyByProject.get(p.id) ?? [],
   }));
 }

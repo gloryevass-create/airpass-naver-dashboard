@@ -10,6 +10,7 @@ import {
   moveBusinessProjectV2Stage,
   createBusinessProjectV2Comment,
   deleteBusinessProjectV2Comment,
+  createBusinessProjectV2HistoryEntry,
 } from "@/app/dashboard/actions/businessProjectsV2";
 
 const STAGES = ["①영업진행", "②사업제안", "③제안서작성", "④사업수행", "⑤사업완료"];
@@ -244,6 +245,53 @@ function formatDateTime(value: string): string {
   });
 }
 
+function ProjectHistory({ project }: { project: BusinessProjectV2 }) {
+  const action = createBusinessProjectV2HistoryEntry.bind(null, project.id);
+  const [state, formAction, pending] = useActionState(action, undefined);
+
+  return (
+    <div className="flex flex-col gap-3 rounded-sm border border-hairline bg-canvas-cream p-4">
+      <div>
+        <strong className="text-sm font-bold text-ink">히스토리</strong>
+        <p className="mt-0.5 text-xs text-ink-mute">
+          진행 상황·변경 사항을 시간순으로 남깁니다. 등록한 기록은 삭제할 수 없습니다.
+        </p>
+      </div>
+      <div className="flex flex-col gap-2">
+        {project.history.map((h) => (
+          <div key={h.id} className="rounded-sm border border-hairline bg-background p-3 text-sm">
+            <div className="flex items-center justify-between gap-2 text-xs text-ink-mute">
+              <span className="font-medium text-ink">{h.authorEmail}</span>
+              <span>{formatDateTime(h.createdAt)}</span>
+            </div>
+            <p className="mt-1 whitespace-pre-wrap text-ink">{h.content}</p>
+          </div>
+        ))}
+        {project.history.length === 0 && (
+          <p className="text-sm text-ink-mute">아직 등록된 히스토리가 없습니다.</p>
+        )}
+      </div>
+      <form action={formAction} className="flex flex-col gap-2">
+        <textarea
+          name="content"
+          required
+          rows={3}
+          placeholder="예: 발주처와 통화, 견적 재작성 요청"
+          className="rounded-sm border border-hairline px-3 py-2 text-sm text-ink outline-none focus:border-primary"
+        />
+        {state?.error && <p className="text-sm text-semantic-error">{state.error}</p>}
+        <button
+          type="submit"
+          disabled={pending}
+          className="w-fit rounded-lg bg-primary px-5 py-1.5 text-sm font-bold text-white hover:bg-primary-press disabled:opacity-50"
+        >
+          {pending ? "등록 중..." : "히스토리 등록"}
+        </button>
+      </form>
+    </div>
+  );
+}
+
 function ProjectComments({ project }: { project: BusinessProjectV2 }) {
   const router = useRouter();
   const action = createBusinessProjectV2Comment.bind(null, project.id);
@@ -463,6 +511,7 @@ export function BusinessBoardV2({ projects }: { projects: BusinessProjectV2[] })
           >
             이 사업 삭제
           </button>
+          <ProjectHistory project={editingProject} />
           <ProjectComments project={editingProject} />
         </div>
       )}
