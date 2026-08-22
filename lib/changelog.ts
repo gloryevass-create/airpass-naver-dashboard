@@ -9,6 +9,13 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: "2026-08-22",
+    items: [
+      "영업지원 메뉴 신설 — 제품 카탈로그(에어패스 실제 제품 98건 시딩, 조달 식별번호 자동인식) 추가",
+      "영업지원 > 협력사 관리 추가 — 사업자등록증/통장사본/명함 업로드 시 Claude(Anthropic)가 업체 정보를 자동 추출해 입력",
+    ],
+  },
+  {
     date: "2026-08-21",
     items: [
       "교육관련뉴스에도 조달입찰공고/사전규격과 동일한 스크랩 기능 추가, 스크랩 시 팀 알림 연동",
