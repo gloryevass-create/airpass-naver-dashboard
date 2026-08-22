@@ -275,15 +275,31 @@ export function ProductCatalogTable({
   // 클릭 즉시 화면에 반영되도록 로컬에서 먼저 뒤집어 보여준다(서버 반영 후 실제 products
   // prop이 갱신되면 이 오버라이드는 자연스럽게 무시된다 — 항상 실제 값과 합쳐서 계산).
   const [favoriteOverrides, setFavoriteOverrides] = useState<Map<string, boolean>>(new Map());
+  // 화살표도 같은 이유로 로컬에서 먼저 순서를 바꿔 보여준다 — 서버 액션(인증 확인 +
+  // 조회 3번 + 저장 1번)을 매번 기다리면 클릭할 때마다 눈에 띄게 느리게 느껴진다.
+  const [orderOverride, setOrderOverride] = useState<string[] | null>(null);
 
   const productsWithOverrides = useMemo(() => {
-    const withOverrides = products.map((p) =>
+    let base = products.map((p) =>
       favoriteOverrides.has(p.id) ? { ...p, isFavorite: favoriteOverrides.get(p.id)! } : p
     );
+    if (orderOverride) {
+      const byId = new Map(base.map((p) => [p.id, p]));
+      const reordered: ProductCatalogItem[] = [];
+      for (const id of orderOverride) {
+        const item = byId.get(id);
+        if (item) {
+          reordered.push(item);
+          byId.delete(id);
+        }
+      }
+      reordered.push(...byId.values());
+      base = reordered;
+    }
     // 즐겨찾기 누르면 그 즉시 맨 위로 옮겨 보이도록, 낙관적 업데이트 반영 직후에도
     // 항상 즐겨찾기 그룹이 먼저 오게 다시 묶는다(서버 쿼리도 같은 규칙을 적용).
-    return [...withOverrides.filter((p) => p.isFavorite), ...withOverrides.filter((p) => !p.isFavorite)];
-  }, [products, favoriteOverrides]);
+    return [...base.filter((p) => p.isFavorite), ...base.filter((p) => !p.isFavorite)];
+  }, [products, favoriteOverrides, orderOverride]);
 
   const favoriteCount = useMemo(
     () => productsWithOverrides.filter((p) => p.isFavorite).length,
@@ -320,6 +336,17 @@ export function ProductCatalogTable({
   }
 
   function handleMove(id: string, direction: "up" | "down") {
+    const index = productsWithOverrides.findIndex((p) => p.id === id);
+    if (index === -1) return;
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= productsWithOverrides.length) return;
+    // 즐겨찾기 그룹 경계는 넘지 않는다(서버 액션과 동일한 규칙).
+    if (productsWithOverrides[index].isFavorite !== productsWithOverrides[targetIndex].isFavorite) return;
+
+    const newOrder = productsWithOverrides.map((p) => p.id);
+    [newOrder[index], newOrder[targetIndex]] = [newOrder[targetIndex], newOrder[index]];
+    setOrderOverride(newOrder);
+
     startTransition(async () => {
       await moveProductInUserOrder(id, direction);
       router.refresh();
