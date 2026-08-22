@@ -948,6 +948,33 @@ export type Database = {
         };
         Relationships: [];
       };
+      business_projects_v2_comments: {
+        Row: {
+          id: string;
+          project_id: string;
+          author_id: string;
+          author_email: string;
+          content: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          project_id: string;
+          author_id: string;
+          author_email: string;
+          content: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          project_id?: string;
+          author_id?: string;
+          author_email?: string;
+          content?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       youth_facilities: {
         Row: {
           id: string;

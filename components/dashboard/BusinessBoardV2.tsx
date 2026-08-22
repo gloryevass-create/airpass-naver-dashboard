@@ -1,12 +1,15 @@
 "use client";
 
 import { useActionState, useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import type { BusinessProjectV2 } from "@/lib/queries/businessProjectsV2";
 import {
   createBusinessProjectV2,
   updateBusinessProjectV2,
   deleteBusinessProjectV2,
   moveBusinessProjectV2Stage,
+  createBusinessProjectV2Comment,
+  deleteBusinessProjectV2Comment,
 } from "@/app/dashboard/actions/businessProjectsV2";
 
 const STAGES = ["①영업진행", "②사업제안", "③제안서작성", "④사업수행", "⑤사업완료"];
@@ -231,6 +234,79 @@ function ProjectForm({
   );
 }
 
+function formatDateTime(value: string): string {
+  return new Date(value).toLocaleString("ko-KR", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function ProjectComments({ project }: { project: BusinessProjectV2 }) {
+  const router = useRouter();
+  const action = createBusinessProjectV2Comment.bind(null, project.id);
+  const [state, formAction, pending] = useActionState(action, undefined);
+  const [, startTransition] = useTransition();
+
+  function handleDelete(commentId: string) {
+    if (!window.confirm("이 댓글을 삭제할까요?")) return;
+    startTransition(async () => {
+      await deleteBusinessProjectV2Comment(commentId);
+      router.refresh();
+    });
+  }
+
+  return (
+    <div className="flex flex-col gap-3 rounded-sm border border-hairline bg-canvas-cream p-4">
+      <strong className="text-sm font-bold text-ink">댓글 {project.comments.length}개</strong>
+      <div className="flex flex-col gap-2">
+        {project.comments.map((c) => (
+          <div key={c.id} className="rounded-sm border border-hairline bg-background p-3 text-sm">
+            <div className="flex items-center justify-between gap-2">
+              <span className="font-medium text-ink">{c.authorEmail}</span>
+              <div className="flex items-center gap-2 text-xs text-ink-mute">
+                <span>{formatDateTime(c.createdAt)}</span>
+                {c.isOwn && (
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(c.id)}
+                    className="text-semantic-error hover:underline"
+                  >
+                    삭제
+                  </button>
+                )}
+              </div>
+            </div>
+            <p className="mt-1 whitespace-pre-wrap text-ink">{c.content}</p>
+          </div>
+        ))}
+        {project.comments.length === 0 && (
+          <p className="text-sm text-ink-mute">아직 댓글이 없습니다. 의견을 남겨보세요.</p>
+        )}
+      </div>
+      <form action={formAction} className="flex flex-col gap-2">
+        <textarea
+          name="content"
+          required
+          rows={3}
+          placeholder="의견을 남겨주세요"
+          className="rounded-sm border border-hairline px-3 py-2 text-sm text-ink outline-none focus:border-primary"
+        />
+        {state?.error && <p className="text-sm text-semantic-error">{state.error}</p>}
+        <button
+          type="submit"
+          disabled={pending}
+          className="w-fit rounded-lg bg-primary px-5 py-1.5 text-sm font-bold text-white hover:bg-primary-press disabled:opacity-50"
+        >
+          {pending ? "등록 중..." : "댓글 등록"}
+        </button>
+      </form>
+    </div>
+  );
+}
+
 function ProjectCard({
   project,
   onEdit,
@@ -339,7 +415,11 @@ function BusinessListView({
 export function BusinessBoardV2({ projects }: { projects: BusinessProjectV2[] }) {
   const [showAll, setShowAll] = useState(false);
   const [view, setView] = useState<"board" | "list">("board");
-  const [editing, setEditing] = useState<BusinessProjectV2 | null | "new">(null);
+  // 선택한 프로젝트 객체를 그대로 담아두면 댓글 등록 후 revalidate로 projects가
+  // 새로고침돼도 이 스냅샷은 갱신되지 않는다 — id만 들고 있다가 매 렌더마다
+  // projects에서 다시 찾아 항상 최신 데이터(새 댓글 포함)를 보여준다.
+  const [editingId, setEditingId] = useState<string | null | "new">(null);
+  const editingProject = editingId && editingId !== "new" ? (projects.find((p) => p.id === editingId) ?? null) : null;
   const [, startTransition] = useTransition();
 
   const visible = useMemo(
@@ -367,22 +447,23 @@ export function BusinessBoardV2({ projects }: { projects: BusinessProjectV2[] })
     startTransition(() => {
       void deleteBusinessProjectV2(id);
     });
-    setEditing(null);
+    setEditingId(null);
   }
 
   return (
     <div className="flex flex-col gap-4">
-      {editing === "new" && <ProjectForm project={null} onDone={() => setEditing(null)} />}
-      {editing && editing !== "new" && (
-        <div className="flex flex-col gap-2">
-          <ProjectForm project={editing} onDone={() => setEditing(null)} />
+      {editingId === "new" && <ProjectForm project={null} onDone={() => setEditingId(null)} />}
+      {editingProject && (
+        <div className="flex flex-col gap-4">
+          <ProjectForm project={editingProject} onDone={() => setEditingId(null)} />
           <button
             type="button"
-            onClick={() => handleDelete(editing.id)}
+            onClick={() => handleDelete(editingProject.id)}
             className="w-fit rounded-lg border border-hairline px-4 py-1.5 text-xs font-medium text-semantic-error hover:bg-[#f7f7f8]"
           >
             이 사업 삭제
           </button>
+          <ProjectComments project={editingProject} />
         </div>
       )}
 
@@ -420,7 +501,7 @@ export function BusinessBoardV2({ projects }: { projects: BusinessProjectV2[] })
             </div>
             <button
               type="button"
-              onClick={() => setEditing("new")}
+              onClick={() => setEditingId("new")}
               className="rounded-lg bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press"
             >
               + 새 사업 추가
@@ -438,7 +519,7 @@ export function BusinessBoardV2({ projects }: { projects: BusinessProjectV2[] })
                 </div>
                 <div className="flex flex-col gap-1.5">
                   {items.map((p) => (
-                    <ProjectCard key={p.id} project={p} onEdit={() => setEditing(p)} />
+                    <ProjectCard key={p.id} project={p} onEdit={() => setEditingId(p.id)} />
                   ))}
                   {items.length === 0 && (
                     <div className="rounded-lg border border-dashed border-hairline p-2 text-center text-xs text-ink-mute">
@@ -450,7 +531,7 @@ export function BusinessBoardV2({ projects }: { projects: BusinessProjectV2[] })
             ))}
           </div>
         ) : (
-          <BusinessListView projects={visible} onEdit={setEditing} />
+          <BusinessListView projects={visible} onEdit={(p) => setEditingId(p.id)} />
         )}
       </div>
     </div>

@@ -106,3 +106,34 @@ export async function moveBusinessProjectV2Stage(id: string, stage: string | nul
     .eq("id", id);
   revalidatePath(PATH);
 }
+
+export type BusinessProjectV2CommentState = { error?: string } | undefined;
+
+export async function createBusinessProjectV2Comment(
+  projectId: string,
+  _prevState: BusinessProjectV2CommentState,
+  formData: FormData
+): Promise<BusinessProjectV2CommentState> {
+  const { supabase, user } = await requireAuthedClient();
+
+  const content = String(formData.get("content") ?? "").trim();
+  if (!content) return { error: "댓글 내용을 입력하세요." };
+
+  const { error } = await supabase.from("business_projects_v2_comments").insert({
+    project_id: projectId,
+    author_id: user.id,
+    author_email: user.email ?? "",
+    content,
+  });
+
+  if (error) return { error: `댓글 저장 실패: ${error.message}` };
+
+  revalidatePath(PATH);
+  return undefined;
+}
+
+export async function deleteBusinessProjectV2Comment(commentId: string): Promise<void> {
+  const { supabase } = await requireAuthedClient();
+  await supabase.from("business_projects_v2_comments").delete().eq("id", commentId);
+  revalidatePath(PATH);
+}
