@@ -120,3 +120,58 @@ export async function deleteProduct(id: string): Promise<void> {
   await supabase.from("product_catalog").delete().eq("id", id);
   revalidatePath(PATH);
 }
+
+export type BulkImportRow = {
+  name: string;
+  specification: string;
+  unitPrice: number | null;
+  note: string;
+  supplyType: "partner" | "direct" | null;
+  commissionRate: number | null;
+  marginRate: number | null;
+  reference: string;
+};
+
+/** 엑셀로 가져온(검증까지 끝난, errors가 없는) 행들을 한 번에 추가한다. */
+export async function bulkImportProducts(rows: BulkImportRow[]): Promise<{ added: number; error?: string }> {
+  if (rows.length === 0) return { added: 0 };
+  const { supabase } = await requireAuthedClient();
+
+  const inserts = rows.map((row) => {
+    const detected = detectProcurement(row.note);
+    const supplyType = row.supplyType ?? "partner";
+    return {
+      name: row.name,
+      specification: row.specification || null,
+      note: row.note || null,
+      unit_price: row.unitPrice,
+      supply_type: supplyType,
+      commission_rate: supplyType === "partner" ? row.commissionRate : null,
+      margin_rate: supplyType === "direct" ? row.marginRate : null,
+      reference: row.reference || null,
+      procurement: detected.procurement,
+      procurement_channel: detected.channel,
+      procurement_number: detected.number,
+      procurement_fee_rate: detected.feeRate,
+    };
+  });
+
+  const { error } = await supabase.from("product_catalog").insert(inserts);
+  if (error) return { added: 0, error: `가져오기 실패: ${error.message}` };
+
+  revalidatePath(PATH);
+  return { added: inserts.length };
+}
+
+/** 여러 제품을 선택해 협력사를 한 번에 지정(또는 해제)한다. */
+export async function bulkAssignVendor(productIds: string[], vendorId: string | null): Promise<void> {
+  if (productIds.length === 0) return;
+  const { supabase } = await requireAuthedClient();
+
+  await supabase
+    .from("product_catalog")
+    .update({ supplier_vendor_id: vendorId, updated_at: new Date().toISOString() })
+    .in("id", productIds);
+
+  revalidatePath(PATH);
+}

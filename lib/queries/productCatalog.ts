@@ -20,14 +20,18 @@ export type ProductCatalogItem = {
   procurementNumber: string | null;
   procurementFeeRate: number | null;
   needsReview: boolean;
+  supplierVendorId: string | null;
+  supplierVendorName: string | null;
   createdAt: string;
 };
 
 export async function getProductCatalog(supabase: Client): Promise<ProductCatalogItem[]> {
-  const { data } = await supabase
-    .from("product_catalog")
-    .select("*")
-    .order("name", { ascending: true });
+  const [{ data }, { data: vendors }] = await Promise.all([
+    supabase.from("product_catalog").select("*").order("name", { ascending: true }),
+    supabase.from("partner_vendors").select("id, company_name"),
+  ]);
+
+  const vendorNameById = new Map((vendors ?? []).map((v) => [v.id, v.company_name]));
 
   return (data ?? []).map((p) => ({
     id: p.id,
@@ -44,6 +48,8 @@ export async function getProductCatalog(supabase: Client): Promise<ProductCatalo
     procurementNumber: p.procurement_number,
     procurementFeeRate: p.procurement_fee_rate != null ? Number(p.procurement_fee_rate) : null,
     needsReview: p.needs_review,
+    supplierVendorId: p.supplier_vendor_id,
+    supplierVendorName: p.supplier_vendor_id ? (vendorNameById.get(p.supplier_vendor_id) ?? null) : null,
     createdAt: p.created_at,
   }));
 }

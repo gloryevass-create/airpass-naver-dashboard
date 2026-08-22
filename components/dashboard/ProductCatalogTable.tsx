@@ -1,8 +1,20 @@
 "use client";
 
-import { useActionState, useMemo, useState, useTransition } from "react";
+import { useActionState, useMemo, useRef, useState, useTransition } from "react";
 import type { ProductCatalogItem } from "@/lib/queries/productCatalog";
-import { createProduct, updateProduct, deleteProduct } from "@/app/dashboard/actions/productCatalog";
+import {
+  createProduct,
+  updateProduct,
+  deleteProduct,
+  bulkImportProducts,
+  bulkAssignVendor,
+  type BulkImportRow,
+} from "@/app/dashboard/actions/productCatalog";
+import {
+  createProductCatalogWorkbook,
+  parseProductCatalogWorkbook,
+  type ProductCatalogImportRow,
+} from "@/lib/productCatalogXlsx";
 
 function formatWon(value: number | null): string {
   if (value == null) return "-";
@@ -41,6 +53,17 @@ function downloadCsv(products: ProductCatalogItem[]) {
   const a = document.createElement("a");
   a.href = url;
   a.download = `제품카탈로그_${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function downloadWorkbook(items: ProductCatalogItem[], filename: string) {
+  const bytes = createProductCatalogWorkbook(items).slice();
+  const blob = new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -157,10 +180,92 @@ function ProductForm({
   );
 }
 
-export function ProductCatalogTable({ products }: { products: ProductCatalogItem[] }) {
+function ImportPreview({
+  rows,
+  onCancel,
+  onImported,
+}: {
+  rows: ProductCatalogImportRow[];
+  onCancel: () => void;
+  onImported: () => void;
+}) {
+  const [pending, startTransition] = useTransition();
+  const [message, setMessage] = useState<string | null>(null);
+  const valid = rows.filter((r) => r.errors.length === 0);
+  const invalid = rows.filter((r) => r.errors.length > 0);
+
+  function handleImport() {
+    const payload: BulkImportRow[] = valid.map((r) => ({
+      name: r.name,
+      specification: r.specification,
+      unitPrice: r.unitPrice,
+      note: r.note,
+      supplyType: r.supplyType,
+      commissionRate: r.commissionRate,
+      marginRate: r.marginRate,
+      reference: r.reference,
+    }));
+    startTransition(async () => {
+      const result = await bulkImportProducts(payload);
+      if (result.error) {
+        setMessage(result.error);
+        return;
+      }
+      onImported();
+    });
+  }
+
+  return (
+    <div className="flex flex-col gap-3 rounded-xl border border-hairline bg-canvas-cream p-4">
+      <p className="text-sm text-ink">
+        총 {rows.length}행 중 <strong className="text-primary">{valid.length}건 가져오기 가능</strong>
+        {invalid.length > 0 && <span className="text-semantic-error"> · {invalid.length}건 오류(제외됨)</span>}
+      </p>
+      {invalid.length > 0 && (
+        <div className="max-h-40 overflow-y-auto rounded-md border border-hairline bg-background p-2 text-xs text-semantic-error">
+          {invalid.map((r) => (
+            <p key={r.rowNumber}>
+              {r.rowNumber}행 ({r.name || "이름 없음"}): {r.errors.join(", ")}
+            </p>
+          ))}
+        </div>
+      )}
+      {message && <p className="text-sm text-semantic-error">{message}</p>}
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={handleImport}
+          disabled={pending || valid.length === 0}
+          className="rounded-full bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press disabled:opacity-50"
+        >
+          {pending ? "가져오는 중..." : `${valid.length}건 가져오기`}
+        </button>
+        <button
+          type="button"
+          onClick={onCancel}
+          className="rounded-full border border-hairline px-4 py-1.5 text-xs font-medium text-ink hover:bg-canvas-cream"
+        >
+          취소
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export function ProductCatalogTable({
+  products,
+  vendors,
+}: {
+  products: ProductCatalogItem[];
+  vendors: { id: string; companyName: string }[];
+}) {
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<ProductCatalogItem | null | "new">(null);
+  const [importRows, setImportRows] = useState<ProductCatalogImportRow[] | null>(null);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [bulkVendorId, setBulkVendorId] = useState<string>("__choose__");
   const [, startTransition] = useTransition();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const filtered = useMemo(() => {
     if (!search.trim()) return products;
@@ -180,6 +285,41 @@ export function ProductCatalogTable({ products }: { products: ProductCatalogItem
     });
   }
 
+  function toggleSelect(id: string) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleSelectAll() {
+    setSelected((prev) => (prev.size === filtered.length ? new Set() : new Set(filtered.map((p) => p.id))));
+  }
+
+  function handleBulkAssign() {
+    if (bulkVendorId === "__choose__" || selected.size === 0) return;
+    const vendorId = bulkVendorId === "__none__" ? null : bulkVendorId;
+    startTransition(() => {
+      void bulkAssignVendor(Array.from(selected), vendorId);
+    });
+    setSelected(new Set());
+    setBulkVendorId("__choose__");
+  }
+
+  async function handleFileSelected(files: FileList | null) {
+    const file = files?.[0];
+    if (!file) return;
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    try {
+      const rows = parseProductCatalogWorkbook(await file.arrayBuffer());
+      setImportRows(rows);
+    } catch (e) {
+      window.alert(e instanceof Error ? e.message : "엑셀 파일을 읽지 못했습니다.");
+    }
+  }
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-3 text-sm">
@@ -193,33 +333,106 @@ export function ProductCatalogTable({ products }: { products: ProductCatalogItem
         <span className="text-xs font-bold text-ink-mute">
           전체 {products.length.toLocaleString("ko-KR")}건 중 {filtered.length.toLocaleString("ko-KR")}건 표시
         </span>
-        <button
-          type="button"
-          onClick={() => downloadCsv(products)}
-          className="ml-auto flex items-center gap-1.5 rounded-full border border-hairline px-4 py-1.5 text-xs font-bold text-ink hover:bg-canvas-cream"
-        >
-          CSV 다운로드
-        </button>
-        <button
-          type="button"
-          onClick={() => setEditing("new")}
-          className="flex items-center gap-1.5 rounded-full bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press"
-        >
-          + 새 제품 추가
-        </button>
+        <div className="ml-auto flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => downloadCsv(products)}
+            className="flex items-center gap-1.5 rounded-full border border-hairline px-4 py-1.5 text-xs font-bold text-ink hover:bg-canvas-cream"
+          >
+            CSV 다운로드
+          </button>
+          <button
+            type="button"
+            onClick={() => downloadWorkbook([], "제품카탈로그_양식.xlsx")}
+            className="flex items-center gap-1.5 rounded-full border border-hairline px-4 py-1.5 text-xs font-bold text-ink hover:bg-canvas-cream"
+          >
+            엑셀 양식 다운로드
+          </button>
+          <button
+            type="button"
+            onClick={() => downloadWorkbook(products, `제품카탈로그_${new Date().toISOString().slice(0, 10)}.xlsx`)}
+            className="flex items-center gap-1.5 rounded-full border border-hairline px-4 py-1.5 text-xs font-bold text-ink hover:bg-canvas-cream"
+          >
+            엑셀 내보내기
+          </button>
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="flex items-center gap-1.5 rounded-full border border-hairline px-4 py-1.5 text-xs font-bold text-ink hover:bg-canvas-cream"
+          >
+            엑셀로 가져오기
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            onChange={(e) => void handleFileSelected(e.target.files)}
+            hidden
+          />
+          <button
+            type="button"
+            onClick={() => setEditing("new")}
+            className="flex items-center gap-1.5 rounded-full bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press"
+          >
+            + 새 제품 추가
+          </button>
+        </div>
       </div>
 
+      {importRows && (
+        <ImportPreview
+          rows={importRows}
+          onCancel={() => setImportRows(null)}
+          onImported={() => setImportRows(null)}
+        />
+      )}
       {editing === "new" && <ProductForm product={null} onDone={() => setEditing(null)} />}
       {editing && editing !== "new" && <ProductForm product={editing} onDone={() => setEditing(null)} />}
+
+      <div className="flex flex-wrap items-center gap-2 rounded-xl border border-hairline p-3 text-xs">
+        <label className="flex items-center gap-1.5 text-ink-mute">
+          <input
+            type="checkbox"
+            checked={filtered.length > 0 && selected.size === filtered.length}
+            onChange={toggleSelectAll}
+          />
+          전체 선택
+        </label>
+        <strong className="text-ink">{selected.size.toLocaleString("ko-KR")}개 선택</strong>
+        <select
+          value={bulkVendorId}
+          onChange={(e) => setBulkVendorId(e.target.value)}
+          disabled={selected.size === 0}
+          className="rounded-md border border-hairline bg-background px-2 py-1 text-ink"
+        >
+          <option value="__choose__">협력사 선택</option>
+          <option value="__none__">협력사 연결 해제</option>
+          {vendors.map((v) => (
+            <option key={v.id} value={v.id}>
+              {v.companyName}
+            </option>
+          ))}
+        </select>
+        <button
+          type="button"
+          onClick={handleBulkAssign}
+          disabled={selected.size === 0 || bulkVendorId === "__choose__"}
+          className="rounded-full bg-primary px-3 py-1 font-bold text-white hover:bg-primary-press disabled:opacity-50"
+        >
+          선택 제품 일괄 적용
+        </button>
+      </div>
 
       <div className="overflow-auto rounded-sm border border-hairline">
         <table className="w-full text-xs">
           <thead className="sticky top-0 bg-[#f7f7f8] text-left text-ink-mute">
             <tr>
+              <th className="whitespace-nowrap px-2 py-1.5 font-medium"></th>
               <th className="whitespace-nowrap px-2 py-1.5 font-medium">제품명</th>
               <th className="whitespace-nowrap px-2 py-1.5 font-medium">규격</th>
               <th className="whitespace-nowrap px-2 py-1.5 font-medium">단가</th>
               <th className="whitespace-nowrap px-2 py-1.5 font-medium">공급방식</th>
+              <th className="whitespace-nowrap px-2 py-1.5 font-medium">협력사</th>
               <th className="whitespace-nowrap px-2 py-1.5 font-medium">수수료/마진율</th>
               <th className="whitespace-nowrap px-2 py-1.5 font-medium">조달정보</th>
               <th className="whitespace-nowrap px-2 py-1.5 font-medium">비고</th>
@@ -229,6 +442,9 @@ export function ProductCatalogTable({ products }: { products: ProductCatalogItem
           <tbody>
             {filtered.map((p) => (
               <tr key={p.id} className="border-t border-hairline odd:bg-white even:bg-[#f7f7f8]">
+                <td className="px-2 py-1">
+                  <input type="checkbox" checked={selected.has(p.id)} onChange={() => toggleSelect(p.id)} />
+                </td>
                 <td className="whitespace-nowrap px-2 py-1 font-medium text-ink">
                   {p.needsReview && <span className="mr-1 text-semantic-error">!</span>}
                   {p.name}
@@ -237,6 +453,9 @@ export function ProductCatalogTable({ products }: { products: ProductCatalogItem
                 <td className="whitespace-nowrap px-2 py-1 text-ink-mute">{formatWon(p.unitPrice)}</td>
                 <td className="whitespace-nowrap px-2 py-1 text-ink-mute">
                   {p.supplyType === "partner" ? "협력사" : "직공급"}
+                </td>
+                <td className="whitespace-nowrap px-2 py-1 text-ink-mute">
+                  {p.supplyType === "partner" ? (p.supplierVendorName ?? "-") : "-"}
                 </td>
                 <td className="whitespace-nowrap px-2 py-1 text-ink-mute">
                   {formatRate(p.supplyType === "partner" ? p.commissionRate : p.marginRate)}
@@ -267,7 +486,7 @@ export function ProductCatalogTable({ products }: { products: ProductCatalogItem
             ))}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={8} className="px-4 py-6 text-center text-ink-mute">
+                <td colSpan={10} className="px-4 py-6 text-center text-ink-mute">
                   조건에 맞는 제품이 없습니다.
                 </td>
               </tr>

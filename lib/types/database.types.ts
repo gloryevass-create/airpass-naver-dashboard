@@ -1313,6 +1313,7 @@ export type Database = {
           procurement_number: string | null;
           procurement_fee_rate: number | null;
           needs_review: boolean;
+          supplier_vendor_id: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -1332,6 +1333,7 @@ export type Database = {
           procurement_number?: string | null;
           procurement_fee_rate?: number | null;
           needs_review?: boolean;
+          supplier_vendor_id?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -1351,6 +1353,7 @@ export type Database = {
           procurement_number?: string | null;
           procurement_fee_rate?: number | null;
           needs_review?: boolean;
+          supplier_vendor_id?: string | null;
           created_at?: string;
           updated_at?: string;
         };

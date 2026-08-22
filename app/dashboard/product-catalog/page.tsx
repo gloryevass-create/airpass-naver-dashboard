@@ -1,11 +1,12 @@
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { getProductCatalog } from "@/lib/queries/productCatalog";
+import { getVendors } from "@/lib/queries/vendors";
 import { ProductCatalogTable } from "@/components/dashboard/ProductCatalogTable";
 import { NavIcon } from "@/components/icons/NavIcon";
 
 export default async function ProductCatalogPage() {
   const { supabase } = await requireAuthedClient();
-  const products = await getProductCatalog(supabase);
+  const [products, vendors] = await Promise.all([getProductCatalog(supabase), getVendors(supabase)]);
 
   return (
     <main className="flex w-full flex-col gap-6 p-6">
@@ -20,7 +21,10 @@ export default async function ProductCatalogPage() {
         </p>
       </div>
 
-      <ProductCatalogTable products={products} />
+      <ProductCatalogTable
+        products={products}
+        vendors={vendors.map((v) => ({ id: v.id, companyName: v.companyName }))}
+      />
     </main>
   );
 }
