@@ -14,6 +14,13 @@ function isGroup(entry: MenuEntry): entry is GroupItem {
   return "children" in entry;
 }
 
+// pathname?.startsWith(href) 방식은 "/dashboard/business2"가 "/dashboard/business"의
+// prefix라서 둘 다 활성으로 잡히는 문제가 있다 — 정확히 같거나 그 아래 경로일 때만 매칭한다.
+function isActivePath(pathname: string | null, href: string): boolean {
+  if (!pathname) return false;
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
 const ITEMS: MenuEntry[] = [
   {
     label: "WORKSPACE",
@@ -135,7 +142,7 @@ export function DashboardSidebar({ latestDate }: { latestDate: string | null }) 
       <div className="flex flex-1 flex-col gap-1">
         {ITEMS.map((entry) => {
           if (isGroup(entry)) {
-            const hasActiveChild = entry.children.some((child) => pathname?.startsWith(child.href));
+            const hasActiveChild = entry.children.some((child) => isActivePath(pathname, child.href));
             const expanded = hasActiveChild || !collapsed.has(entry.label);
             return (
               <div key={entry.label} className="flex flex-col gap-1">
@@ -158,7 +165,7 @@ export function DashboardSidebar({ latestDate }: { latestDate: string | null }) 
                       <NavLink
                         key={child.href}
                         item={child}
-                        active={Boolean(pathname?.startsWith(child.href))}
+                        active={isActivePath(pathname, child.href)}
                         indent
                       />
                     ))}
@@ -167,7 +174,7 @@ export function DashboardSidebar({ latestDate }: { latestDate: string | null }) 
               </div>
             );
           }
-          return <NavLink key={entry.href} item={entry} active={Boolean(pathname?.startsWith(entry.href))} />;
+          return <NavLink key={entry.href} item={entry} active={isActivePath(pathname, entry.href)} />;
         })}
       </div>
       <div className="border-t border-hairline px-3 pt-3">
@@ -178,7 +185,7 @@ export function DashboardSidebar({ latestDate }: { latestDate: string | null }) 
           href="/dashboard/changelog"
           onClick={close}
           className={`mt-1 block text-xs transition-colors ${
-            pathname?.startsWith("/dashboard/changelog")
+            isActivePath(pathname, "/dashboard/changelog")
               ? "font-semibold text-primary"
               : "text-ink-mute hover:text-primary"
           }`}
