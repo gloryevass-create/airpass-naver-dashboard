@@ -24,6 +24,14 @@ const ITEMS: MenuEntry[] = [
     ],
   },
   {
+    label: "영업지원",
+    icon: "wallet",
+    children: [
+      { href: "/dashboard/product-catalog", label: "제품 카탈로그", icon: "tag" },
+      { href: "/dashboard/vendors", label: "협력사 관리", icon: "wallet" },
+    ],
+  },
+  {
     label: "마케팅분석",
     icon: "chart",
     children: [
