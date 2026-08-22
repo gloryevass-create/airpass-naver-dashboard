@@ -433,9 +433,9 @@ export function ProductCatalogTable({
           </div>
         </div>
 
-        <div className="overflow-auto border-t border-hairline">
+        <div className="max-h-[70vh] overflow-auto border-t border-hairline">
           <table className="w-full text-xs">
-          <thead className="sticky top-0 bg-[#f7f7f8] text-left text-ink-mute">
+          <thead className="sticky top-0 z-10 bg-[#f7f7f8] text-left text-ink-mute">
             <tr>
               <th className="whitespace-nowrap px-2 py-1.5 font-medium"></th>
               <th className="whitespace-nowrap px-2 py-1.5 font-medium">제품명</th>
