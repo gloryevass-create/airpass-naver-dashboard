@@ -289,6 +289,11 @@ export function ProductCatalogTable({
     return list;
   }, [products, search, favoritesOnly]);
 
+  // 화살표 순서 변경은 전체 116건 기준 순서를 바꾸는데, 검색·즐겨찾기 필터가 걸려 있으면
+  // 맞바뀔 상대가 화면에 안 보여서 "눌러도 아무 반응 없는 것처럼" 보인다 — 필터가 없을
+  // 때만 허용한다.
+  const canReorder = !search.trim() && !favoritesOnly;
+
   function handleToggleFavorite(id: string) {
     startTransition(async () => {
       await toggleProductFavorite(id);
@@ -495,7 +500,13 @@ export function ProductCatalogTable({
             </tr>
           </thead>
           <tbody>
-            {filtered.map((p) => (
+            {filtered.map((p, index) => {
+              const reorderDisabledReason = !canReorder
+                ? "정렬 순서 변경은 검색어·즐겨찾기 필터 없이 전체 보기에서만 가능합니다."
+                : null;
+              const canMoveUp = canReorder && index > 0;
+              const canMoveDown = canReorder && index < filtered.length - 1;
+              return (
               <tr
                 key={p.id}
                 className="border-t border-hairline odd:bg-white even:bg-[#f7f7f8] hover:bg-canvas-lavender/20"
@@ -511,7 +522,7 @@ export function ProductCatalogTable({
                       type="button"
                       onClick={() => handleToggleFavorite(p.id)}
                       title="즐겨찾기"
-                      className={p.isFavorite ? "text-[#f5a623]" : "text-hairline hover:text-ink-mute"}
+                      className={p.isFavorite ? "text-[#f5a623]" : "text-ink-mute/50 hover:text-ink-mute"}
                     >
                       {p.isFavorite ? "★" : "☆"}
                     </button>
@@ -519,16 +530,18 @@ export function ProductCatalogTable({
                       <button
                         type="button"
                         onClick={() => handleMove(p.id, "up")}
-                        title="위로"
-                        className="text-ink-mute hover:text-ink"
+                        disabled={!canMoveUp}
+                        title={reorderDisabledReason ?? "위로"}
+                        className="text-ink-mute hover:text-ink disabled:cursor-not-allowed disabled:opacity-30"
                       >
                         ▲
                       </button>
                       <button
                         type="button"
                         onClick={() => handleMove(p.id, "down")}
-                        title="아래로"
-                        className="text-ink-mute hover:text-ink"
+                        disabled={!canMoveDown}
+                        title={reorderDisabledReason ?? "아래로"}
+                        className="text-ink-mute hover:text-ink disabled:cursor-not-allowed disabled:opacity-30"
                       >
                         ▼
                       </button>
@@ -583,7 +596,8 @@ export function ProductCatalogTable({
                   </div>
                 </td>
               </tr>
-            ))}
+              );
+            })}
             {filtered.length === 0 && (
               <tr>
                 <td colSpan={9} className="px-4 py-6 text-center text-ink-mute">
