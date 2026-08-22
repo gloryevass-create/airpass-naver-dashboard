@@ -503,18 +503,18 @@ export function ProductCatalogTable({
         </div>
 
         <div className="max-h-[70vh] overflow-auto border-t border-hairline">
-          <table className="w-full text-xs">
-          <thead className="sticky top-0 z-10 bg-[#f7f7f8] text-left text-ink-mute">
+          <table className="w-full border-collapse text-xs">
+          <thead className="sticky top-0 z-10 bg-[#f7f8fb] text-center text-[#778299]">
             <tr>
-              <th className="whitespace-nowrap px-2 py-1.5 font-medium">선택·품명</th>
-              <th className="whitespace-nowrap px-2 py-1.5 font-medium">규격</th>
-              <th className="whitespace-nowrap px-2 py-1.5 font-medium">단가</th>
-              <th className="whitespace-nowrap px-2 py-1.5 font-medium">공급방식</th>
-              <th className="whitespace-nowrap px-2 py-1.5 font-medium">협력사</th>
-              <th className="whitespace-nowrap px-2 py-1.5 font-medium">수수료/마진율</th>
-              <th className="whitespace-nowrap px-2 py-1.5 font-medium">조달정보</th>
-              <th className="whitespace-nowrap px-2 py-1.5 font-medium">비고</th>
-              <th className="whitespace-nowrap px-2 py-1.5 font-medium"></th>
+              <th className="whitespace-nowrap border border-hairline px-3 py-2.5 font-bold">선택·품명</th>
+              <th className="whitespace-nowrap border border-hairline px-3 py-2.5 font-bold">규격</th>
+              <th className="whitespace-nowrap border border-hairline px-3 py-2.5 font-bold">단가</th>
+              <th className="whitespace-nowrap border border-hairline px-3 py-2.5 font-bold">공급방식</th>
+              <th className="whitespace-nowrap border border-hairline px-3 py-2.5 font-bold">협력사</th>
+              <th className="whitespace-nowrap border border-hairline px-3 py-2.5 font-bold">수수료/마진율</th>
+              <th className="whitespace-nowrap border border-hairline px-3 py-2.5 font-bold">조달정보</th>
+              <th className="whitespace-nowrap border border-hairline px-3 py-2.5 font-bold">비고</th>
+              <th className="whitespace-nowrap border border-hairline px-3 py-2.5 font-bold">관리</th>
             </tr>
           </thead>
           <tbody>
@@ -531,10 +531,10 @@ export function ProductCatalogTable({
               return (
               <tr
                 key={p.id}
-                className="border-t border-hairline odd:bg-white even:bg-[#f7f7f8] hover:bg-canvas-lavender/20"
+                className={`hover:bg-canvas-lavender/20 ${p.isFavorite ? "bg-[#fffdf5]" : "bg-canvas-cream"}`}
               >
-                <td className="whitespace-nowrap px-2 py-1.5 font-medium text-ink">
-                  <div className="flex items-center gap-1.5">
+                <td className="whitespace-nowrap border border-hairline px-3 py-2 font-medium text-ink">
+                  <div className="flex items-center gap-2">
                     <input
                       type="checkbox"
                       checked={selected.has(p.id)}
@@ -576,15 +576,17 @@ export function ProductCatalogTable({
                     <span>{p.name}</span>
                   </div>
                 </td>
-                <td className="px-2 py-1.5 text-ink-mute">{p.specification ?? "-"}</td>
-                <td className="whitespace-nowrap px-2 py-1.5 font-medium text-ink">{formatWon(p.unitPrice)}</td>
-                <td className="whitespace-nowrap px-2 py-1.5 text-ink-mute">
+                <td className="border border-hairline px-3 py-2 text-ink-mute">{p.specification ?? "-"}</td>
+                <td className="whitespace-nowrap border border-hairline px-3 py-2 text-center font-medium text-ink">
+                  {formatWon(p.unitPrice)}
+                </td>
+                <td className="whitespace-nowrap border border-hairline px-3 py-2 text-center text-ink-mute">
                   {p.supplyType === "partner" ? "협력사" : "직공급"}
                 </td>
-                <td className="whitespace-nowrap px-2 py-1.5 text-ink-mute">
+                <td className="whitespace-nowrap border border-hairline px-3 py-2 text-center text-ink-mute">
                   {p.supplyType === "partner" ? (p.supplierVendorName ?? "-") : "-"}
                 </td>
-                <td className="whitespace-nowrap px-2 py-1.5">
+                <td className="whitespace-nowrap border border-hairline px-3 py-2 text-center">
                   {(p.supplyType === "partner" ? p.commissionRate : p.marginRate) != null ? (
                     <span className="rounded-full bg-canvas-lavender px-2 py-0.5 text-[11px] font-semibold text-primary">
                       {formatRate(p.supplyType === "partner" ? p.commissionRate : p.marginRate)}
@@ -593,18 +595,18 @@ export function ProductCatalogTable({
                     <span className="text-ink-mute">-</span>
                   )}
                 </td>
-                <td className="whitespace-nowrap px-2 py-1.5">
+                <td className="whitespace-nowrap border border-hairline px-3 py-2 text-center">
                   {p.procurement ? (
-                    <span className="rounded-full bg-canvas-cream px-2 py-0.5 text-[11px] font-medium text-ink-mute">
+                    <span className="rounded-full bg-background px-2 py-0.5 text-[11px] font-medium text-ink-mute">
                       {`${p.procurementChannel ?? ""} ${p.procurementNumber ?? ""}`.trim()}
                     </span>
                   ) : (
                     <span className="text-ink-mute">-</span>
                   )}
                 </td>
-                <td className="px-2 py-1.5 text-ink-mute">{p.note ?? "-"}</td>
-                <td className="whitespace-nowrap px-2 py-1">
-                  <div className="flex gap-2">
+                <td className="border border-hairline px-3 py-2 text-ink-mute">{p.note ?? "-"}</td>
+                <td className="whitespace-nowrap border border-hairline px-3 py-2">
+                  <div className="flex justify-center gap-2">
                     <button
                       type="button"
                       onClick={() => setEditing(p)}
@@ -626,7 +628,7 @@ export function ProductCatalogTable({
             })}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={9} className="px-4 py-6 text-center text-ink-mute">
+                <td colSpan={9} className="border border-hairline px-4 py-6 text-center text-ink-mute">
                   조건에 맞는 제품이 없습니다.
                 </td>
               </tr>
