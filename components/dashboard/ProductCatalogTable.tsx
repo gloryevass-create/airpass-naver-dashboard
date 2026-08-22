@@ -85,7 +85,7 @@ function ProductForm({
         await formAction(formData);
         onDone();
       }}
-      className="flex flex-col gap-3 rounded-xl border border-hairline bg-canvas-cream p-4"
+      className="flex flex-col gap-3 rounded-sm border border-hairline bg-canvas-cream p-4"
     >
       {product && <input type="hidden" name="id" value={product.id} />}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -216,7 +216,7 @@ function ImportPreview({
   }
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-hairline bg-canvas-cream p-4">
+    <div className="flex flex-col gap-3 rounded-sm border border-hairline bg-canvas-cream p-4">
       <p className="text-sm text-ink">
         총 {rows.length}행 중 <strong className="text-primary">{valid.length}건 가져오기 가능</strong>
         {invalid.length > 0 && <span className="text-semantic-error"> · {invalid.length}건 오류(제외됨)</span>}
@@ -322,64 +322,6 @@ export function ProductCatalogTable({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center gap-3 text-sm">
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="제품명·규격·비고 검색"
-          className="rounded-md border border-hairline px-3 py-1.5 text-ink outline-none focus:border-primary"
-        />
-        <span className="text-xs text-ink-mute">
-          전체 <strong className="text-ink">{products.length.toLocaleString("ko-KR")}</strong>건 중{" "}
-          <strong className="text-ink">{filtered.length.toLocaleString("ko-KR")}</strong>건 표시 중입니다.
-        </span>
-        <div className="ml-auto flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={() => downloadCsv(products)}
-            className="flex items-center gap-1.5 rounded-lg border border-hairline px-4 py-1.5 text-xs font-bold text-ink hover:bg-canvas-cream"
-          >
-            CSV 다운로드
-          </button>
-          <button
-            type="button"
-            onClick={() => downloadWorkbook([], "제품카탈로그_양식.xlsx")}
-            className="flex items-center gap-1.5 rounded-lg border border-hairline px-4 py-1.5 text-xs font-bold text-ink hover:bg-canvas-cream"
-          >
-            엑셀 양식 다운로드
-          </button>
-          <button
-            type="button"
-            onClick={() => downloadWorkbook(products, `제품카탈로그_${new Date().toISOString().slice(0, 10)}.xlsx`)}
-            className="flex items-center gap-1.5 rounded-lg border border-hairline px-4 py-1.5 text-xs font-bold text-ink hover:bg-canvas-cream"
-          >
-            엑셀 내보내기
-          </button>
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="flex items-center gap-1.5 rounded-lg border border-hairline px-4 py-1.5 text-xs font-bold text-ink hover:bg-canvas-cream"
-          >
-            엑셀로 가져오기
-          </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            onChange={(e) => void handleFileSelected(e.target.files)}
-            hidden
-          />
-          <button
-            type="button"
-            onClick={() => setEditing("new")}
-            className="flex items-center gap-1.5 rounded-lg bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press"
-          >
-            + 새 제품 추가
-          </button>
-        </div>
-      </div>
-
       {importRows && (
         <ImportPreview
           rows={importRows}
@@ -390,50 +332,109 @@ export function ProductCatalogTable({
       {editing === "new" && <ProductForm product={null} onDone={() => setEditing(null)} />}
       {editing && editing !== "new" && <ProductForm product={editing} onDone={() => setEditing(null)} />}
 
-      <div
-        className={`flex flex-wrap items-center gap-3 rounded-xl border p-3 text-xs transition-colors ${
-          selected.size > 0 ? "border-primary/30 bg-canvas-lavender/30" : "border-hairline bg-canvas-cream"
-        }`}
-      >
-        <label className="flex items-center gap-1.5 text-ink-mute">
+      <div className="flex flex-col overflow-hidden rounded-sm border border-hairline bg-canvas-cream">
+        <div className="flex flex-wrap items-center gap-3 p-4 text-sm">
           <input
-            type="checkbox"
-            checked={filtered.length > 0 && selected.size === filtered.length}
-            onChange={toggleSelectAll}
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="제품명·규격·비고 검색"
+            className="rounded-sm border border-hairline bg-background px-3 py-1.5 text-ink outline-none focus:border-primary"
           />
-          현재 목록 전체 선택
-        </label>
-        <span className="rounded-full bg-canvas-cream px-2.5 py-1 font-semibold text-ink">
-          {selected.size.toLocaleString("ko-KR")}개 선택됨
-        </span>
-        <div className="ml-auto flex items-center gap-2">
-          <select
-            value={bulkVendorId}
-            onChange={(e) => setBulkVendorId(e.target.value)}
-            disabled={selected.size === 0}
-            className="rounded-md border border-hairline bg-background px-2 py-1.5 text-ink disabled:opacity-50"
-          >
-            <option value="__choose__">공급 협력사 선택</option>
-            <option value="__none__">협력사 연결 해제</option>
-            {vendors.map((v) => (
-              <option key={v.id} value={v.id}>
-                {v.companyName}
-              </option>
-            ))}
-          </select>
-          <button
-            type="button"
-            onClick={handleBulkAssign}
-            disabled={selected.size === 0 || bulkVendorId === "__choose__"}
-            className="rounded-lg bg-primary px-4 py-1.5 font-bold text-white hover:bg-primary-press disabled:opacity-50"
-          >
-            선택 제품 일괄 적용
-          </button>
+          <span className="text-xs text-ink-mute">
+            전체 <strong className="text-ink">{products.length.toLocaleString("ko-KR")}</strong>건 중{" "}
+            <strong className="text-ink">{filtered.length.toLocaleString("ko-KR")}</strong>건 표시 중입니다.
+          </span>
+          <div className="ml-auto flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => downloadCsv(products)}
+              className="flex items-center gap-1.5 rounded-lg border border-hairline bg-background px-4 py-1.5 text-xs font-bold text-ink hover:bg-[#f7f7f8]"
+            >
+              CSV 다운로드
+            </button>
+            <button
+              type="button"
+              onClick={() => downloadWorkbook([], "제품카탈로그_양식.xlsx")}
+              className="flex items-center gap-1.5 rounded-lg border border-hairline bg-background px-4 py-1.5 text-xs font-bold text-ink hover:bg-[#f7f7f8]"
+            >
+              엑셀 양식 다운로드
+            </button>
+            <button
+              type="button"
+              onClick={() => downloadWorkbook(products, `제품카탈로그_${new Date().toISOString().slice(0, 10)}.xlsx`)}
+              className="flex items-center gap-1.5 rounded-lg border border-hairline bg-background px-4 py-1.5 text-xs font-bold text-ink hover:bg-[#f7f7f8]"
+            >
+              엑셀 내보내기
+            </button>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="flex items-center gap-1.5 rounded-lg border border-hairline bg-background px-4 py-1.5 text-xs font-bold text-ink hover:bg-[#f7f7f8]"
+            >
+              엑셀로 가져오기
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+              onChange={(e) => void handleFileSelected(e.target.files)}
+              hidden
+            />
+            <button
+              type="button"
+              onClick={() => setEditing("new")}
+              className="flex items-center gap-1.5 rounded-lg bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press"
+            >
+              + 새 제품 추가
+            </button>
+          </div>
         </div>
-      </div>
 
-      <div className="overflow-auto rounded-sm border border-hairline bg-canvas-cream">
-        <table className="w-full text-xs">
+        <div
+          className={`flex flex-wrap items-center gap-3 border-t p-3 text-xs transition-colors ${
+            selected.size > 0 ? "border-primary/30 bg-canvas-lavender/30" : "border-hairline"
+          }`}
+        >
+          <label className="flex items-center gap-1.5 text-ink-mute">
+            <input
+              type="checkbox"
+              checked={filtered.length > 0 && selected.size === filtered.length}
+              onChange={toggleSelectAll}
+            />
+            현재 목록 전체 선택
+          </label>
+          <span className="rounded-full bg-background px-2.5 py-1 font-semibold text-ink">
+            {selected.size.toLocaleString("ko-KR")}개 선택됨
+          </span>
+          <div className="ml-auto flex items-center gap-2">
+            <select
+              value={bulkVendorId}
+              onChange={(e) => setBulkVendorId(e.target.value)}
+              disabled={selected.size === 0}
+              className="rounded-sm border border-hairline bg-background px-2 py-1.5 text-ink disabled:opacity-50"
+            >
+              <option value="__choose__">공급 협력사 선택</option>
+              <option value="__none__">협력사 연결 해제</option>
+              {vendors.map((v) => (
+                <option key={v.id} value={v.id}>
+                  {v.companyName}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              onClick={handleBulkAssign}
+              disabled={selected.size === 0 || bulkVendorId === "__choose__"}
+              className="rounded-lg bg-primary px-4 py-1.5 font-bold text-white hover:bg-primary-press disabled:opacity-50"
+            >
+              선택 제품 일괄 적용
+            </button>
+          </div>
+        </div>
+
+        <div className="overflow-auto border-t border-hairline">
+          <table className="w-full text-xs">
           <thead className="sticky top-0 bg-[#f7f7f8] text-left text-ink-mute">
             <tr>
               <th className="whitespace-nowrap px-2 py-1.5 font-medium"></th>
@@ -517,6 +518,7 @@ export function ProductCatalogTable({
             )}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );
