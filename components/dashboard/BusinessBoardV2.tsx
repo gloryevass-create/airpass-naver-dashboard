@@ -373,8 +373,11 @@ function ProjectCard({
   }
 
   return (
-    <div className="flex flex-col gap-1.5 rounded-lg border border-hairline bg-background p-2 text-xs">
-      <button type="button" onClick={onEdit} className="flex flex-col gap-1 text-left hover:text-primary">
+    <div
+      onClick={onEdit}
+      className="flex cursor-pointer flex-col gap-1.5 rounded-lg border border-hairline bg-background p-2 text-xs hover:border-primary"
+    >
+      <div className="flex flex-col gap-1">
         <span className="truncate font-medium text-ink" title={project.title}>
           {project.title}
         </span>
@@ -388,11 +391,12 @@ function ProjectCard({
             {project.orgName}
           </span>
         )}
-      </button>
+      </div>
       <select
         value={project.stage ?? ""}
         onChange={(e) => handleStageChange(e.target.value)}
-        className="rounded-sm border border-hairline bg-canvas-cream px-1.5 py-1 text-[11px] text-ink-mute outline-none focus:border-primary"
+        onClick={(e) => e.stopPropagation()}
+        className="cursor-pointer rounded-sm border border-hairline bg-canvas-cream px-1.5 py-1 text-[11px] text-ink-mute outline-none focus:border-primary"
       >
         <option value="">미분류</option>
         {STAGES.map((s) => (
