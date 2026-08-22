@@ -171,7 +171,7 @@ function ProductForm({
         <button
           type="button"
           onClick={onDone}
-          className="rounded-full border border-hairline px-4 py-1.5 text-xs font-medium text-ink hover:bg-canvas-cream"
+          className="rounded-full border border-hairline px-4 py-1.5 text-xs font-medium text-ink hover:bg-[#f7f7f8]"
         >
           취소
         </button>
@@ -243,7 +243,7 @@ function ImportPreview({
         <button
           type="button"
           onClick={onCancel}
-          className="rounded-full border border-hairline px-4 py-1.5 text-xs font-medium text-ink hover:bg-canvas-cream"
+          className="rounded-full border border-hairline px-4 py-1.5 text-xs font-medium text-ink hover:bg-[#f7f7f8]"
         >
           취소
         </button>
@@ -392,7 +392,7 @@ export function ProductCatalogTable({
 
       <div
         className={`flex flex-wrap items-center gap-3 rounded-xl border p-3 text-xs transition-colors ${
-          selected.size > 0 ? "border-primary/30 bg-canvas-lavender/30" : "border-hairline"
+          selected.size > 0 ? "border-primary/30 bg-canvas-lavender/30" : "border-hairline bg-canvas-cream"
         }`}
       >
         <label className="flex items-center gap-1.5 text-ink-mute">
@@ -432,7 +432,7 @@ export function ProductCatalogTable({
         </div>
       </div>
 
-      <div className="overflow-auto rounded-sm border border-hairline">
+      <div className="overflow-auto rounded-sm border border-hairline bg-canvas-cream">
         <table className="w-full text-xs">
           <thead className="sticky top-0 bg-[#f7f7f8] text-left text-ink-mute">
             <tr>
