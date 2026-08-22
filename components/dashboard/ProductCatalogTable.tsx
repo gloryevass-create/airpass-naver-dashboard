@@ -164,14 +164,14 @@ function ProductForm({
         <button
           type="submit"
           disabled={pending}
-          className="rounded-full bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press disabled:opacity-50"
+          className="rounded-lg bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press disabled:opacity-50"
         >
           {pending ? "저장 중..." : product ? "수정 저장" : "제품 추가"}
         </button>
         <button
           type="button"
           onClick={onDone}
-          className="rounded-full border border-hairline px-4 py-1.5 text-xs font-medium text-ink hover:bg-[#f7f7f8]"
+          className="rounded-lg border border-hairline px-4 py-1.5 text-xs font-medium text-ink hover:bg-[#f7f7f8]"
         >
           취소
         </button>
@@ -236,14 +236,14 @@ function ImportPreview({
           type="button"
           onClick={handleImport}
           disabled={pending || valid.length === 0}
-          className="rounded-full bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press disabled:opacity-50"
+          className="rounded-lg bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press disabled:opacity-50"
         >
           {pending ? "가져오는 중..." : `${valid.length}건 가져오기`}
         </button>
         <button
           type="button"
           onClick={onCancel}
-          className="rounded-full border border-hairline px-4 py-1.5 text-xs font-medium text-ink hover:bg-[#f7f7f8]"
+          className="rounded-lg border border-hairline px-4 py-1.5 text-xs font-medium text-ink hover:bg-[#f7f7f8]"
         >
           취소
         </button>
@@ -338,28 +338,28 @@ export function ProductCatalogTable({
           <button
             type="button"
             onClick={() => downloadCsv(products)}
-            className="flex items-center gap-1.5 rounded-full border border-hairline px-4 py-1.5 text-xs font-bold text-ink hover:bg-canvas-cream"
+            className="flex items-center gap-1.5 rounded-lg border border-hairline px-4 py-1.5 text-xs font-bold text-ink hover:bg-canvas-cream"
           >
             CSV 다운로드
           </button>
           <button
             type="button"
             onClick={() => downloadWorkbook([], "제품카탈로그_양식.xlsx")}
-            className="flex items-center gap-1.5 rounded-full border border-hairline px-4 py-1.5 text-xs font-bold text-ink hover:bg-canvas-cream"
+            className="flex items-center gap-1.5 rounded-lg border border-hairline px-4 py-1.5 text-xs font-bold text-ink hover:bg-canvas-cream"
           >
             엑셀 양식 다운로드
           </button>
           <button
             type="button"
             onClick={() => downloadWorkbook(products, `제품카탈로그_${new Date().toISOString().slice(0, 10)}.xlsx`)}
-            className="flex items-center gap-1.5 rounded-full border border-hairline px-4 py-1.5 text-xs font-bold text-ink hover:bg-canvas-cream"
+            className="flex items-center gap-1.5 rounded-lg border border-hairline px-4 py-1.5 text-xs font-bold text-ink hover:bg-canvas-cream"
           >
             엑셀 내보내기
           </button>
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="flex items-center gap-1.5 rounded-full border border-hairline px-4 py-1.5 text-xs font-bold text-ink hover:bg-canvas-cream"
+            className="flex items-center gap-1.5 rounded-lg border border-hairline px-4 py-1.5 text-xs font-bold text-ink hover:bg-canvas-cream"
           >
             엑셀로 가져오기
           </button>
@@ -373,7 +373,7 @@ export function ProductCatalogTable({
           <button
             type="button"
             onClick={() => setEditing("new")}
-            className="flex items-center gap-1.5 rounded-full bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press"
+            className="flex items-center gap-1.5 rounded-lg bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press"
           >
             + 새 제품 추가
           </button>
@@ -425,7 +425,7 @@ export function ProductCatalogTable({
             type="button"
             onClick={handleBulkAssign}
             disabled={selected.size === 0 || bulkVendorId === "__choose__"}
-            className="rounded-full bg-primary px-4 py-1.5 font-bold text-white hover:bg-primary-press disabled:opacity-50"
+            className="rounded-lg bg-primary px-4 py-1.5 font-bold text-white hover:bg-primary-press disabled:opacity-50"
           >
             선택 제품 일괄 적용
           </button>
