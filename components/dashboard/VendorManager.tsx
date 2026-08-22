@@ -115,14 +115,16 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
     <div className="flex flex-col gap-4 lg:flex-row">
       <aside className="flex w-full flex-col gap-3 lg:w-72 lg:shrink-0">
         <div className="flex items-center justify-between">
-          <div className="text-sm">
-            <strong className="text-ink">등록 업체</strong>{" "}
-            <span className="text-ink-mute">{vendors.length}곳</span>
+          <div className="flex items-center gap-1.5 text-sm">
+            <strong className="text-ink">등록 업체</strong>
+            <span className="rounded-full bg-canvas-cream px-2 py-0.5 text-xs font-semibold text-ink-mute">
+              {vendors.length}곳
+            </span>
           </div>
           <button
             type="button"
             onClick={newVendor}
-            className="rounded-full bg-primary px-3 py-1 text-xs font-bold text-white hover:bg-primary-press"
+            className="rounded-full border border-primary px-3 py-1 text-xs font-bold text-primary hover:bg-canvas-lavender"
           >
             + 새 업체
           </button>
@@ -140,12 +142,19 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
               key={v.id}
               type="button"
               onClick={() => choose(v)}
-              className={`flex flex-col rounded-md px-3 py-2 text-left text-sm transition-colors ${
-                selected?.id === v.id ? "bg-canvas-lavender text-primary" : "hover:bg-canvas-cream"
+              className={`flex flex-col gap-0.5 rounded-md border-l-2 px-3 py-2 text-left text-sm transition-colors ${
+                selected?.id === v.id
+                  ? "border-l-primary bg-canvas-lavender/60"
+                  : "border-l-transparent hover:bg-canvas-cream"
               }`}
             >
-              <span className="font-medium">{v.companyName}</span>
+              <span className={`font-medium ${selected?.id === v.id ? "text-primary" : "text-ink"}`}>
+                {v.companyName}
+              </span>
               <span className="text-xs text-ink-mute">{v.businessNumber || "사업자번호 미등록"}</span>
+              <span className="text-xs text-ink-mute">
+                {v.contactName || v.phone || "담당자 정보 미등록"}
+              </span>
             </button>
           ))}
           {filtered.length === 0 && <p className="px-3 py-6 text-center text-sm text-ink-mute">등록된 업체가 없습니다.</p>}
@@ -154,13 +163,13 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
 
       <form action={formAction} className="flex flex-1 flex-col gap-4">
         {(selected || isNew) && <input type="hidden" name="id" value={selected?.id ?? ""} />}
-        <div className="flex items-center justify-between rounded-xl border border-hairline p-4">
+        <div className="flex items-center justify-between border-b border-hairline pb-4">
           <div>
-            <span className="text-xs font-semibold uppercase tracking-wide text-ink-mute">PARTNER VENDOR</span>
-            <h2 className="text-lg font-bold text-ink">
+            <span className="text-xs font-semibold uppercase tracking-wide text-ink-mute">Partner Vendor</span>
+            <h2 className="mt-0.5 text-lg font-bold text-ink">
               {selected ? selected.companyName || "업체 정보" : "새 협력사 등록"}
             </h2>
-            <p className="text-xs text-ink-mute">문서를 올리면 내용을 자동 입력하며, 모든 항목은 직접 수정할 수 있습니다.</p>
+            <p className="mt-0.5 text-xs text-ink-mute">문서를 올리면 내용을 자동 입력하며, 모든 항목은 직접 수정할 수 있습니다.</p>
           </div>
           <div className="flex items-center gap-2">
             {selected && (
@@ -189,15 +198,18 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
         )}
 
         <section className="rounded-xl border border-hairline p-4">
-          <div className="mb-3 flex items-center justify-between">
-            <strong className="text-sm text-ink">업체 문서</strong>
+          <div className="mb-4 flex items-center justify-between">
+            <strong className="text-sm font-bold text-ink">업체 문서</strong>
             <span className="text-xs text-ink-mute">JPG·PNG·WebP·PDF, 파일당 12MB 이하</span>
           </div>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-            {DOCUMENT_TYPES.map((type) => {
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            {DOCUMENT_TYPES.map((type, i) => {
               const docs = selected?.documents.filter((d) => d.documentType === type) ?? [];
               return (
-                <div key={type} className="flex flex-col gap-2 rounded-md border border-hairline p-3">
+                <div
+                  key={type}
+                  className={`flex flex-col gap-2 ${i > 0 ? "sm:border-l sm:border-hairline sm:pl-4" : ""}`}
+                >
                   <div>
                     <b className="text-sm text-ink">{DOCUMENT_LABELS[type]}</b>
                     <p className="text-xs text-ink-mute">{DOCUMENT_HINTS[type]}</p>
@@ -225,7 +237,7 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
                       </button>
                     </div>
                   ))}
-                  <label className="flex cursor-pointer items-center justify-center rounded-md border border-dashed border-hairline px-3 py-1.5 text-xs text-ink-mute hover:border-primary hover:text-primary">
+                  <label className="flex cursor-pointer items-center justify-center rounded-md border border-dashed border-hairline px-3 py-2 text-xs font-medium text-ink-mute transition-colors hover:border-primary hover:text-primary">
                     <input
                       ref={(el) => {
                         fileInputRefs.current[type] = el;
