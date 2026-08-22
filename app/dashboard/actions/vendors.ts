@@ -93,7 +93,7 @@ export async function uploadVendorDocument(formData: FormData): Promise<UploadVe
 
   let extracted: Record<string, string> = {};
   try {
-    extracted = await extractVendorInfoFromDocument(bytes, file.type);
+    extracted = await extractVendorInfoFromDocument(bytes, file.type, documentType);
   } catch (e) {
     // AI 추출 실패해도 파일 업로드/등록 자체는 계속 진행한다.
     extracted = {};
