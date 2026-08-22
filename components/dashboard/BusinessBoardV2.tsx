@@ -25,6 +25,17 @@ const STATUS_DOT: Record<string, string> = {
   실패: "bg-ink-mute",
 };
 
+// 상태 배지 배경·글자색 — STATUS_DOT과 같은 색 계열을 pill 형태로 확장해 한눈에 구분되게 한다.
+const STATUS_BADGE: Record<string, string> = {
+  "진행 중": "bg-canvas-lavender text-link-blue",
+  "시작 전": "bg-[#f0f0f2] text-ink-mute",
+  완료: "bg-semantic-success/15 text-semantic-success",
+  보류: "bg-semantic-error/10 text-semantic-error",
+  실패: "bg-[#f0f0f2] text-ink-mute",
+};
+
+const STAGE_BADGE = "border-primary/30 bg-canvas-lavender text-primary";
+
 function formatDate(value: string | null): string | null {
   if (!value) return null;
   return new Date(value).toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" });
@@ -364,6 +375,7 @@ function ProjectCard({
 }) {
   const [, startTransition] = useTransition();
   const dotColor = STATUS_DOT[project.status] || "bg-ink-mute";
+  const statusBadge = STATUS_BADGE[project.status] || "bg-[#f0f0f2] text-ink-mute";
   const date = formatDate(project.submissionDate);
 
   function handleStageChange(stage: string) {
@@ -381,7 +393,7 @@ function ProjectCard({
         <span className="truncate font-medium text-ink" title={project.title}>
           {project.title}
         </span>
-        <span className="flex items-center gap-1.5 text-ink-mute">
+        <span className={`flex w-fit items-center gap-1.5 rounded-md px-1.5 py-0.5 font-medium ${statusBadge}`}>
           <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${dotColor}`} />
           {project.status}
         </span>
@@ -396,7 +408,7 @@ function ProjectCard({
         value={project.stage ?? ""}
         onChange={(e) => handleStageChange(e.target.value)}
         onClick={(e) => e.stopPropagation()}
-        className="cursor-pointer rounded-sm border border-hairline bg-canvas-cream px-1.5 py-1 text-[11px] text-ink-mute outline-none focus:border-primary"
+        className={`cursor-pointer rounded-sm border px-1.5 py-1 text-[11px] font-medium outline-none focus:border-primary ${STAGE_BADGE}`}
       >
         <option value="">미분류</option>
         {STAGES.map((s) => (
@@ -436,8 +448,12 @@ function BusinessListView({
               onClick={() => onEdit(p)}
               className="cursor-pointer border-t border-hairline hover:bg-[#f7f7f8]"
             >
-              <td className="px-4 py-2 text-ink-mute">
-                <span className="flex items-center gap-1.5">
+              <td className="px-4 py-2">
+                <span
+                  className={`flex w-fit items-center gap-1.5 rounded-md px-1.5 py-0.5 text-xs font-medium ${
+                    STATUS_BADGE[p.status] || "bg-[#f0f0f2] text-ink-mute"
+                  }`}
+                >
                   <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${STATUS_DOT[p.status] || "bg-ink-mute"}`} />
                   {p.status}
                 </span>
@@ -445,7 +461,11 @@ function BusinessListView({
               <td className="px-4 py-2">
                 <span className="text-left text-link-blue hover:underline">{p.title}</span>
               </td>
-              <td className="px-4 py-2 text-ink-mute">{p.stage ?? "미분류"}</td>
+              <td className="px-4 py-2">
+                <span className={`inline-flex w-fit rounded-md border px-1.5 py-0.5 text-xs font-medium ${STAGE_BADGE}`}>
+                  {p.stage ?? "미분류"}
+                </span>
+              </td>
               <td className="px-4 py-2 text-ink-mute">{p.orgName ?? "-"}</td>
               <td className="px-4 py-2 text-ink-mute">{p.assignees.join(", ") || "-"}</td>
               <td className="px-4 py-2 text-ink-mute">{formatDate(p.submissionDate) ?? "-"}</td>
