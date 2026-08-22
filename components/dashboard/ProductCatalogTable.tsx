@@ -271,11 +271,26 @@ export function ProductCatalogTable({
   const [bulkVendorId, setBulkVendorId] = useState<string>("__choose__");
   const [, startTransition] = useTransition();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  // router.refresh()가 서버 왕복을 마치고 새 props를 내려줄 때까지는 시간이 걸려서,
+  // 클릭 즉시 화면에 반영되도록 로컬에서 먼저 뒤집어 보여준다(서버 반영 후 실제 products
+  // prop이 갱신되면 이 오버라이드는 자연스럽게 무시된다 — 항상 실제 값과 합쳐서 계산).
+  const [favoriteOverrides, setFavoriteOverrides] = useState<Map<string, boolean>>(new Map());
 
-  const favoriteCount = useMemo(() => products.filter((p) => p.isFavorite).length, [products]);
+  const productsWithOverrides = useMemo(
+    () =>
+      products.map((p) =>
+        favoriteOverrides.has(p.id) ? { ...p, isFavorite: favoriteOverrides.get(p.id)! } : p
+      ),
+    [products, favoriteOverrides]
+  );
+
+  const favoriteCount = useMemo(
+    () => productsWithOverrides.filter((p) => p.isFavorite).length,
+    [productsWithOverrides]
+  );
 
   const filtered = useMemo(() => {
-    let list = products;
+    let list = productsWithOverrides;
     if (favoritesOnly) list = list.filter((p) => p.isFavorite);
     if (search.trim()) {
       const q = search.trim().toLowerCase();
@@ -287,7 +302,7 @@ export function ProductCatalogTable({
       );
     }
     return list;
-  }, [products, search, favoritesOnly]);
+  }, [productsWithOverrides, search, favoritesOnly]);
 
   // 화살표 순서 변경은 전체 116건 기준 순서를 바꾸는데, 검색·즐겨찾기 필터가 걸려 있으면
   // 맞바뀔 상대가 화면에 안 보여서 "눌러도 아무 반응 없는 것처럼" 보인다 — 필터가 없을
@@ -295,6 +310,8 @@ export function ProductCatalogTable({
   const canReorder = !search.trim() && !favoritesOnly;
 
   function handleToggleFavorite(id: string) {
+    const current = productsWithOverrides.find((p) => p.id === id)?.isFavorite ?? false;
+    setFavoriteOverrides((prev) => new Map(prev).set(id, !current));
     startTransition(async () => {
       await toggleProductFavorite(id);
       router.refresh();
