@@ -520,16 +520,16 @@ function BusinessListView({
   onEdit: (project: BusinessProjectV2) => void;
 }) {
   return (
-    <div className="overflow-hidden rounded-sm border border-hairline bg-canvas-cream">
+    <div className="overflow-x-auto rounded-sm border border-hairline bg-canvas-cream">
       <table className="w-full text-sm">
         <thead className="bg-background text-left text-ink-mute">
           <tr>
-            <th className="px-4 py-2 font-medium">상태</th>
-            <th className="px-4 py-2 font-medium">사업명</th>
-            <th className="px-4 py-2 font-medium">단계</th>
-            <th className="px-4 py-2 font-medium">발주기관</th>
-            <th className="px-4 py-2 font-medium">담당자</th>
-            <th className="px-4 py-2 font-medium">제출일</th>
+            <th className="whitespace-nowrap px-4 py-2 font-medium">상태</th>
+            <th className="whitespace-nowrap px-4 py-2 font-medium">사업명</th>
+            <th className="whitespace-nowrap px-4 py-2 font-medium">단계</th>
+            <th className="whitespace-nowrap px-4 py-2 font-medium">발주기관</th>
+            <th className="whitespace-nowrap px-4 py-2 font-medium">담당자</th>
+            <th className="whitespace-nowrap px-4 py-2 font-medium">제출일</th>
           </tr>
         </thead>
         <tbody>
@@ -539,9 +539,9 @@ function BusinessListView({
               onClick={() => onEdit(p)}
               className="cursor-pointer border-t border-hairline hover:bg-[#f7f7f8]"
             >
-              <td className="px-4 py-2">
+              <td className="whitespace-nowrap px-4 py-2">
                 <span
-                  className={`flex w-fit items-center gap-1.5 rounded-md px-1.5 py-0.5 text-xs font-medium ${
+                  className={`flex w-fit items-center gap-1.5 whitespace-nowrap rounded-md px-1.5 py-0.5 text-xs font-medium ${
                     STATUS_BADGE[p.status] || "bg-[#f0f0f2] text-ink-mute"
                   }`}
                 >
@@ -549,19 +549,19 @@ function BusinessListView({
                   {p.status}
                 </span>
               </td>
-              <td className="px-4 py-2">
+              <td className="whitespace-nowrap px-4 py-2">
                 <span className="text-left text-link-blue hover:underline">{p.title}</span>
               </td>
-              <td className="px-4 py-2">
+              <td className="whitespace-nowrap px-4 py-2">
                 <span
-                  className={`inline-flex w-fit rounded-md border px-1.5 py-0.5 text-xs font-medium ${stageColors(p.stage).badge}`}
+                  className={`inline-flex w-fit whitespace-nowrap rounded-md border px-1.5 py-0.5 text-xs font-medium ${stageColors(p.stage).badge}`}
                 >
                   {p.stage ?? "미분류"}
                 </span>
               </td>
-              <td className="px-4 py-2 text-ink-mute">{p.orgName ?? "-"}</td>
-              <td className="px-4 py-2 text-ink-mute">{p.assignees.join(", ") || "-"}</td>
-              <td className="px-4 py-2 text-ink-mute">{formatDate(p.submissionDate) ?? "-"}</td>
+              <td className="whitespace-nowrap px-4 py-2 text-ink-mute">{p.orgName ?? "-"}</td>
+              <td className="whitespace-nowrap px-4 py-2 text-ink-mute">{p.assignees.join(", ") || "-"}</td>
+              <td className="whitespace-nowrap px-4 py-2 text-ink-mute">{formatDate(p.submissionDate) ?? "-"}</td>
             </tr>
           ))}
           {projects.length === 0 && (
