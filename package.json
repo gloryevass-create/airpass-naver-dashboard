@@ -13,10 +13,12 @@
     "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.112.3",
     "fflate": "^0.8.3",
+    "googleapis": "^176.0.0",
     "next": "16.3.1",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "recharts": "^3.10.1"
+    "recharts": "^3.10.1",
+    "resend": "^6.22.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

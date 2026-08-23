@@ -1890,6 +1890,42 @@ export type Database = {
         };
         Relationships: [];
       };
+      material_email_logs: {
+        Row: {
+          id: string;
+          sender_id: string;
+          sender_email: string;
+          recipient_emails: string[];
+          subject: string;
+          message: string;
+          file_names: string[];
+          file_links: string[];
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          sender_id: string;
+          sender_email: string;
+          recipient_emails: string[];
+          subject: string;
+          message: string;
+          file_names?: string[];
+          file_links?: string[];
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          sender_id?: string;
+          sender_email?: string;
+          recipient_emails?: string[];
+          subject?: string;
+          message?: string;
+          file_names?: string[];
+          file_links?: string[];
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;

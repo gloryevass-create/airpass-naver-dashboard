@@ -74,6 +74,29 @@ npm run dev
 `/auth/callback`을 반드시 추가하세요. 등록하지 않으면 초대·비밀번호 재설정 메일의 링크가
 동작하지 않습니다.
 
+### 8. 자료메일발송 설정 (선택 — 안 하면 이 메뉴만 설정 안내가 뜨고 나머지는 정상 동작)
+
+**구글드라이브 서비스 계정**
+1. [Google Cloud Console](https://console.cloud.google.com/)에서 프로젝트를 만들고
+   "Google Drive API"를 사용 설정합니다.
+2. IAM 및 관리자 → 서비스 계정 → 새 서비스 계정 생성 → 키 탭에서 JSON 키를 발급받습니다.
+3. 자료를 모아둘 구글드라이브 폴더를 만들고, 그 폴더를 서비스 계정 이메일(JSON의
+   `client_email`)에 **"편집자"** 권한으로 공유합니다 — "뷰어"로는 발송 직전 파일 공유
+   링크 생성이 실패합니다.
+4. `.env.local`에 `GOOGLE_SERVICE_ACCOUNT_EMAIL`(JSON의 `client_email`),
+   `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY`(JSON의 `private_key`, 줄바꿈이 `\n`으로 이스케이프된
+   상태 그대로 붙여넣기), `GOOGLE_DRIVE_MATERIALS_FOLDER_ID`(폴더 URL의 마지막 부분)를 입력합니다.
+
+**Resend**
+1. [resend.com](https://resend.com)에서 계정을 만들고 API 키를 발급받습니다.
+2. Domains 메뉴에서 발신에 쓸 도메인을 추가하고, 안내되는 DNS 레코드(SPF/DKIM)를 도메인
+   관리 콘솔에 등록해 인증을 완료합니다 — 인증 없이 보내면 대부분 스팸함으로 분류됩니다.
+3. `.env.local`에 `RESEND_API_KEY`와, 인증된 도메인의 발신 주소(`MATERIAL_EMAIL_FROM`,
+   예: `noreply@airpass.ai.kr`)를 입력합니다.
+
+로컬에서 확인했으면 Vercel 프로젝트 설정 → Environment Variables에도 위 5개 값을 동일하게
+등록해야 배포 환경에서도 동작합니다.
+
 ## 로컬 개발
 
 ```bash
