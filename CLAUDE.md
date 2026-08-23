@@ -11,7 +11,7 @@
 - Next.js 16 (App Router, TypeScript, Tailwind CSS v4)
 - Supabase: `@supabase/supabase-js` + `@supabase/ssr`
 - Recharts (차트)
-- `googleapis`(구글드라이브 자료 목록/공유 링크) + `resend`(자료메일발송)
+- `googleapis`(구글드라이브 자료 목록/공유 링크) + `nodemailer`(자료메일발송, SMTP 직접 로그인)
 - Vercel 배포
 - 시스템 폰트 스택 사용 (`next/font/google` 미사용 — 네트워크 제한 환경 빌드 실패 방지)
 
@@ -62,10 +62,14 @@
   폴더 바로 아래 파일 목록만 조회한다(하위 폴더 재귀 탐색은 안 함). 서비스 계정은 폴더에
   **"편집자" 이상**으로 공유돼 있어야 한다 — "뷰어"로는 발송 직전 `ensureFileShared()`가
   개별 파일에 "링크가 있는 모든 사용자" 권한을 부여하지 못해 403으로 실패한다.
-- **Resend**(`lib/materialEmail.ts`): 자료를 이메일에 실제로 첨부하지 않고, 위 공유 링크를
-  본문에 나열해서 보낸다(용량 제한 회피 — 이메일 첨부는 보통 20~40MB 상한이라 카탈로그·영상류
-  자료가 실패할 수 있음). `MATERIAL_EMAIL_FROM`은 Resend에 도메인 인증(DNS SPF/DKIM)까지
-  마친 발신 주소여야 스팸함으로 안 걸린다.
+- **메일 발송**(`lib/materialEmail.ts`, `nodemailer`): 이메일 API(Resend 등) 대신 실제 회사
+  메일 계정(현재 하이웍스, `smtps.hiworks.com:465`)에 SMTP로 직접 로그인해서 그 이름으로
+  보낸다 — 도메인 인증(DNS)이 필요 없는 대신, `MATERIAL_EMAIL_SMTP_PASSWORD`에 그 계정의
+  실제 로그인 비밀번호를 그대로 저장한다(하이웍스는 앱 전용 비밀번호가 없음, 사용자 확인
+  2026-08-23 — Resend 대비 "발송 전용" 권한 분리가 안 된다는 트레이드오프를 감안하고 선택).
+  자료를 이메일에 실제로 첨부하지 않고, 위 공유 링크를 본문에 나열해서 보낸다(용량 제한
+  회피 — 이메일 첨부는 보통 20~40MB 상한이라 카탈로그·영상류 자료가 실패할 수 있음). 다른
+  메일 서비스로 바꾸려면 `MATERIAL_EMAIL_SMTP_HOST`/`PORT`만 교체하면 된다.
 - Supabase 기본 메일(인증 전용, 시간당 발송량 극히 제한적)과는 무관한 별도 경로다 — 자세한
   제약은 이 대화의 이전 답변 참고, 필요하면 다시 물어보면 됨.
 - 발송 이력은 `material_email_logs`(0040)에 팀 전체가 볼 수 있게 남긴다(감사 추적용,

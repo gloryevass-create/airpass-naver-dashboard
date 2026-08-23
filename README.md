@@ -87,12 +87,28 @@ npm run dev
    `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY`(JSON의 `private_key`, 줄바꿈이 `\n`으로 이스케이프된
    상태 그대로 붙여넣기), `GOOGLE_DRIVE_MATERIALS_FOLDER_ID`(폴더 URL의 마지막 부분)를 입력합니다.
 
-**Resend**
-1. [resend.com](https://resend.com)에서 계정을 만들고 API 키를 발급받습니다.
-2. Domains 메뉴에서 발신에 쓸 도메인을 추가하고, 안내되는 DNS 레코드(SPF/DKIM)를 도메인
-   관리 콘솔에 등록해 인증을 완료합니다 — 인증 없이 보내면 대부분 스팸함으로 분류됩니다.
-3. `.env.local`에 `RESEND_API_KEY`와, 인증된 도메인의 발신 주소(`MATERIAL_EMAIL_FROM`,
-   예: `noreply@airpass.ai.kr`)를 입력합니다.
+**메일 발송(SMTP 직접 로그인)**
+
+이메일 API(Resend 등) 대신 실제 회사 메일 계정에 SMTP로 직접 로그인해서 그 이름으로
+보낸다 — 도메인 인증(DNS)이 필요 없는 대신, 그 계정의 로그인 비밀번호를 그대로 서버
+환경변수에 저장하게 된다는 차이가 있다(하이웍스는 앱 전용 비밀번호 기능이 없음,
+2026-08-23 확인 — Gmail을 쓴다면 계정 비밀번호 대신 "앱 비밀번호"를 만들어 그 값을
+써서 이 위험을 줄일 수 있다).
+
+1. 메일 서비스 웹 설정에서 POP3/SMTP 사용을 켭니다(하이웍스는 메일 → 환경설정 →
+   기본 설정 → POP3/SMTP 사용함). 오랫동안 안 썼거나 의심스러운 로그인이 감지되면
+   자동으로 꺼지기도 하니, 발송이 갑자기 실패하면 이 설정부터 다시 확인합니다.
+2. 해외 접속을 차단하는 보안 설정이 있다면(예: "허용 국가: 대한민국") Vercel 서버가
+   해외 리전에서 접속할 수 있으니 국가 제한을 풀거나 모든 국가를 허용해야 합니다.
+3. `.env.local`에 SMTP 서버 정보를 입력합니다. 하이웍스 기준:
+   ```
+   MATERIAL_EMAIL_SMTP_HOST=smtps.hiworks.com
+   MATERIAL_EMAIL_SMTP_PORT=465
+   MATERIAL_EMAIL_SMTP_USER=본인계정@회사도메인
+   MATERIAL_EMAIL_SMTP_PASSWORD=메일 로그인 비밀번호
+   MATERIAL_EMAIL_FROM_NAME=발신자 표시 이름(선택, 예: 에어패스)
+   ```
+   다른 메일 서비스를 쓴다면 `HOST`/`PORT`만 그 서비스의 SMTP 정보로 바꾸면 됩니다.
 
 로컬에서 확인했으면 Vercel 프로젝트 설정 → Environment Variables에도 위 5개 값을 동일하게
 등록해야 배포 환경에서도 동작합니다.

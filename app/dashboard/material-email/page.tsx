@@ -39,7 +39,14 @@ export default async function MaterialEmailPage() {
     ...(isGoogleDriveConfigured
       ? []
       : ["GOOGLE_SERVICE_ACCOUNT_EMAIL", "GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY", "GOOGLE_DRIVE_MATERIALS_FOLDER_ID"]),
-    ...(isMaterialEmailConfigured ? [] : ["RESEND_API_KEY", "MATERIAL_EMAIL_FROM"]),
+    ...(isMaterialEmailConfigured
+      ? []
+      : [
+          "MATERIAL_EMAIL_SMTP_HOST",
+          "MATERIAL_EMAIL_SMTP_PORT",
+          "MATERIAL_EMAIL_SMTP_USER",
+          "MATERIAL_EMAIL_SMTP_PASSWORD",
+        ]),
   ];
 
   const logs = await getMaterialEmailLogs(supabase);
