@@ -11,7 +11,7 @@ export default async function AdminPage() {
     .order("created_at", { ascending: false });
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-col gap-8 p-6">
+    <main className="mx-auto flex w-full max-w-5xl flex-col gap-8 p-6">
       <div>
         <h1 className="text-xl font-bold tracking-tight text-primary">관리자 — 팀원 초대</h1>
         <p className="mt-1 text-sm text-ink-mute">
@@ -25,31 +25,31 @@ export default async function AdminPage() {
 
       <section>
         <h2 className="mb-3 text-sm font-semibold text-ink">가입자 목록</h2>
-        <div className="overflow-hidden rounded-sm border border-hairline bg-canvas-cream">
+        <div className="overflow-x-auto rounded-sm border border-hairline bg-canvas-cream">
           <table className="w-full text-sm">
             <thead className="bg-canvas-cream text-left text-ink-mute">
               <tr>
-                <th className="px-4 py-2 font-medium">이름(직함)</th>
-                <th className="px-4 py-2 font-medium">이메일</th>
-                <th className="px-4 py-2 font-medium">역할</th>
-                <th className="px-4 py-2 font-medium">가입일</th>
-                <th className="px-4 py-2 font-medium">최근 로그인</th>
-                <th className="px-4 py-2 font-medium">접속 IP</th>
+                <th className="whitespace-nowrap px-4 py-2 font-medium">이름(직함)</th>
+                <th className="whitespace-nowrap px-4 py-2 font-medium">이메일</th>
+                <th className="whitespace-nowrap px-4 py-2 font-medium">역할</th>
+                <th className="whitespace-nowrap px-4 py-2 font-medium">가입일</th>
+                <th className="whitespace-nowrap px-4 py-2 font-medium">최근 로그인</th>
+                <th className="whitespace-nowrap px-4 py-2 font-medium">접속 IP</th>
               </tr>
             </thead>
             <tbody>
               {(profiles ?? []).map((p) => (
                 <tr key={p.id} className="border-t border-hairline">
-                  <td className="px-4 py-2">{formatMember(p.name, p.title, p.email)}</td>
-                  <td className="px-4 py-2 text-ink-mute">{p.email}</td>
-                  <td className="px-4 py-2">{p.role}</td>
-                  <td className="px-4 py-2 text-ink-mute">
+                  <td className="whitespace-nowrap px-4 py-2">{formatMember(p.name, p.title, p.email)}</td>
+                  <td className="whitespace-nowrap px-4 py-2 text-ink-mute">{p.email}</td>
+                  <td className="whitespace-nowrap px-4 py-2">{p.role}</td>
+                  <td className="whitespace-nowrap px-4 py-2 text-ink-mute">
                     {new Date(p.created_at).toLocaleDateString("ko-KR")}
                   </td>
-                  <td className="px-4 py-2 text-ink-mute">
+                  <td className="whitespace-nowrap px-4 py-2 text-ink-mute">
                     {p.last_login_at ? new Date(p.last_login_at).toLocaleString("ko-KR") : "-"}
                   </td>
-                  <td className="px-4 py-2 text-ink-mute">{p.last_login_ip ?? "-"}</td>
+                  <td className="whitespace-nowrap px-4 py-2 text-ink-mute">{p.last_login_ip ?? "-"}</td>
                 </tr>
               ))}
               {(!profiles || profiles.length === 0) && (
