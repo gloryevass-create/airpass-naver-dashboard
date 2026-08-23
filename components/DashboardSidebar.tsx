@@ -194,18 +194,20 @@ export function DashboardSidebar({ latestDate }: { latestDate: string | null }) 
         })}
       </div>
       <div className="border-t border-hairline px-3 pt-3">
-        <p className="text-xs text-ink-mute">
+        <p className="flex items-center gap-1.5 text-xs text-ink-mute">
+          <NavIcon name="calendar" className="h-3.5 w-3.5 shrink-0" />
           {latestDate ? `최근 수집일: ${latestDate}` : "아직 수집된 데이터가 없습니다"}
         </p>
         <Link
           href="/dashboard/changelog"
           onClick={close}
-          className={`mt-1 block text-xs transition-colors ${
+          className={`mt-1 flex items-center gap-1.5 text-xs transition-colors ${
             isActivePath(pathname, "/dashboard/changelog")
               ? "font-semibold text-primary"
               : "text-ink-mute hover:text-primary"
           }`}
         >
+          <NavIcon name="history" className="h-3.5 w-3.5 shrink-0" />
           업데이트 히스토리
         </Link>
       </div>
