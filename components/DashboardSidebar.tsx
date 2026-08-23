@@ -120,7 +120,9 @@ function NavLink({ item, active, indent }: { item: LeafItem; active: boolean; in
 
 export function DashboardSidebar({ latestDate }: { latestDate: string | null }) {
   const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  // "데이터베이스" 그룹은 자주 안 쓰는 참고용 공공 DB 목록이라 기본은 접힌 상태로 시작한다
+  // (다른 그룹은 그대로 펼쳐진 기본값 유지 — 사용자 확인, 2026-08-24).
+  const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set(["데이터베이스"]));
   const { open, close } = useMobileNav();
 
   // 모바일에서 링크를 눌러 페이지가 바뀌면 드로어를 자동으로 닫는다(NavLink의
