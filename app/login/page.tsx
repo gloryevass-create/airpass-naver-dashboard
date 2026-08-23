@@ -11,11 +11,10 @@ export default async function LoginPage({
 
   return (
     <main className="flex flex-1 flex-col items-center justify-center gap-8 p-6">
-      <div className="text-center">
-        <div className="mb-3 flex items-center justify-center">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/login-logo.png" alt="Strategic Planning Team" className="h-16 w-auto" />
-        </div>
+      <div className="w-full max-w-sm text-center">
+        {/* 로그인 폼(LoginForm)과 같은 max-w-sm 폭에 맞춘다 */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/login-logo.png" alt="Strategic Planning Team" className="mb-3 h-auto w-full" />
         <p className="mt-1 text-sm text-ink-mute">팀 계정으로 로그인하세요.</p>
       </div>
       {isSupabaseConfigured ? (
