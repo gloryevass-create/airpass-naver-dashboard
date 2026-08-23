@@ -67,7 +67,9 @@ export async function getBusinessProjectsV2(supabase: Client): Promise<BusinessP
   } = await supabase.auth.getUser();
 
   const [{ data }, { data: comments }, { data: history }, authorDisplayById] = await Promise.all([
-    supabase.from("business_projects_v2").select("*").order("created_at", { ascending: false }),
+    // 수정(단계 이동 포함)한 사업이 칸반 보드 맨 위로 오도록 생성일이 아니라
+    // 최근 수정일 기준 최신순으로 정렬한다(사용자 확인, 2026-08-23).
+    supabase.from("business_projects_v2").select("*").order("updated_at", { ascending: false }),
     supabase
       .from("business_projects_v2_comments")
       .select("*")
