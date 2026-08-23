@@ -1785,6 +1785,111 @@ export type Database = {
         };
         Relationships: [];
       };
+      marketing_tasks: {
+        Row: {
+          id: string;
+          title: string;
+          content: string | null;
+          category: string | null;
+          work_type: string | null;
+          stage: string | null;
+          status: string;
+          due_date: string | null;
+          due_date_end: string | null;
+          due_date_is_datetime: boolean;
+          assignees: string[];
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          content?: string | null;
+          category?: string | null;
+          work_type?: string | null;
+          stage?: string | null;
+          status?: string;
+          due_date?: string | null;
+          due_date_end?: string | null;
+          due_date_is_datetime?: boolean;
+          assignees?: string[];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          content?: string | null;
+          category?: string | null;
+          work_type?: string | null;
+          stage?: string | null;
+          status?: string;
+          due_date?: string | null;
+          due_date_end?: string | null;
+          due_date_is_datetime?: boolean;
+          assignees?: string[];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      marketing_tasks_comments: {
+        Row: {
+          id: string;
+          task_id: string;
+          author_id: string;
+          author_email: string;
+          content: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          task_id: string;
+          author_id: string;
+          author_email: string;
+          content: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          task_id?: string;
+          author_id?: string;
+          author_email?: string;
+          content?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      marketing_tasks_history: {
+        Row: {
+          id: string;
+          task_id: string;
+          author_id: string;
+          author_email: string;
+          content: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          task_id: string;
+          author_id: string;
+          author_email: string;
+          content: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          task_id?: string;
+          author_id?: string;
+          author_email?: string;
+          content?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
