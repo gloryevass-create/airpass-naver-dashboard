@@ -53,7 +53,7 @@ export default async function BlogPage() {
       <div>
         <h1 className="flex items-center gap-2 text-xl font-bold tracking-tight text-primary">
           <NavIcon name="document" className="h-5 w-5" />
-          네이버 블로그 분석
+          네이버블로그
         </h1>
         <p className="mt-1 text-sm text-ink-mute">
           경쟁사 블로그 포스팅 현황과 콘텐츠 노출 점유율(SOV)을 모니터링합니다.

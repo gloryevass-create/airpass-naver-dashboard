@@ -13,7 +13,7 @@ export default async function YouthFacilitiesPage() {
       <div>
         <h1 className="flex items-center gap-2 text-xl font-bold tracking-tight text-primary">
           <NavIcon name="tag" className="h-5 w-5" />
-          청소년관련기관DB
+          청소년관련기관
         </h1>
         <p className="mt-1 text-sm text-ink-mute">
           전국청소년수련시설 현황(공공데이터포털, 여성가족부·한국청소년활동진흥원 공식 API) —

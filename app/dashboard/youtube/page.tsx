@@ -20,7 +20,7 @@ export default async function YoutubePage({ searchParams }: { searchParams: Sear
       <div>
         <h1 className="flex items-center gap-2 text-xl font-bold tracking-tight text-primary">
           <NavIcon name="play" className="h-5 w-5" />
-          유튜브 채널 분석
+          유튜브채널분석
         </h1>
         <p className="mt-1 text-sm text-ink-mute">
           에어패스 공식 유튜브 채널(

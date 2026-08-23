@@ -13,7 +13,7 @@ export default async function SeniorWelfareFacilitiesPage() {
       <div>
         <h1 className="flex items-center gap-2 text-xl font-bold tracking-tight text-primary">
           <NavIcon name="tag" className="h-5 w-5" />
-          전국 경로당 현황
+          전국경로당현황
         </h1>
         <p className="mt-1 text-sm text-ink-mute">
           공공데이터포털 전국마을회관및경로당표준데이터 중 시설유형

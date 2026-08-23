@@ -19,7 +19,7 @@ export default async function MemosPage() {
         <div>
           <h1 className="flex items-center gap-2 text-xl font-bold tracking-tight text-primary">
             <NavIcon name="clipboard" className="h-5 w-5" />
-            광고전략메모
+            Memo Board
           </h1>
           <p className="mt-1 text-sm text-ink-mute">키워드·블로그 운영 관련 논의와 결정을 기록합니다.</p>
         </div>

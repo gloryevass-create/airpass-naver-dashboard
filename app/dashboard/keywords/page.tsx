@@ -26,7 +26,7 @@ export default async function KeywordsPage({ searchParams }: { searchParams: Sea
       <div>
         <h1 className="flex items-center gap-2 text-xl font-bold tracking-tight text-primary">
           <NavIcon name="search" className="h-5 w-5" />
-          네이버 키워드 분석
+          네이버키워드
         </h1>
         <p className="mt-1 text-sm text-ink-mute">
           네이버 검색광고 키워드 실적과 경쟁사 대비 노출순위를 모니터링합니다.

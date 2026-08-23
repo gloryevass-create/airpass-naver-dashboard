@@ -26,7 +26,7 @@ export default async function Events2Page({ searchParams }: { searchParams: Sear
       <div>
         <h1 className="flex items-center gap-2 text-xl font-bold tracking-tight text-primary">
           <NavIcon name="calendar" className="h-5 w-5" />
-          팀일정2
+          Calendar
         </h1>
         <p className="mt-1 text-sm text-ink-mute">
           이 화면에서 직접 일정을 추가·수정·삭제합니다(Notion 연동 없음 — 이 시스템이 원본입니다).
