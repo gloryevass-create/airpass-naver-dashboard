@@ -1,11 +1,15 @@
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { getCooperationProjects } from "@/lib/queries/cooperationProjects";
+import { getTeamMemberNames } from "@/lib/queries/teamMembers";
 import { CooperationBoard } from "@/components/dashboard/CooperationBoard";
 import { NavIcon } from "@/components/icons/NavIcon";
 
 export default async function CooperationPage() {
   const { supabase } = await requireAuthedClient();
-  const projects = await getCooperationProjects(supabase);
+  const [projects, members] = await Promise.all([
+    getCooperationProjects(supabase),
+    getTeamMemberNames(supabase),
+  ]);
 
   return (
     <main className="flex w-full flex-col gap-6 p-6">
@@ -19,7 +23,7 @@ export default async function CooperationPage() {
         </p>
       </div>
 
-      <CooperationBoard projects={projects} />
+      <CooperationBoard projects={projects} members={members} />
     </main>
   );
 }

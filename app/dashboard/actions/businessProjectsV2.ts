@@ -22,13 +22,10 @@ function dateOrNull(formData: FormData, key: string): string | null {
   return raw || null;
 }
 
+// MemberMultiSelect가 같은 name으로 여러 값을 제출하므로 getAll로 받는다
+// (예전 "쉼표로 구분" 자유 텍스트 입력을 실제 팀원 선택으로 대체, 2026-08-23).
 function assigneesFromForm(formData: FormData): string[] {
-  const raw = String(formData.get("assignees") ?? "").trim();
-  if (!raw) return [];
-  return raw
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
+  return formData.getAll("assignees").map(String).filter(Boolean);
 }
 
 function fieldsFromForm(formData: FormData) {

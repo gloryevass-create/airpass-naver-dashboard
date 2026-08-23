@@ -8,6 +8,7 @@ import {
   updateTeamEventV2,
   deleteTeamEventV2,
 } from "@/app/dashboard/actions/eventsV2";
+import { MemberMultiSelect } from "@/components/dashboard/MemberMultiSelect";
 
 const TAG_COLORS: Record<string, string> = {
   회식: "bg-pink-100 text-pink-800",
@@ -78,10 +79,12 @@ const WEEKDAYS = ["월", "화", "수", "목", "금", "토", "일"];
 function EventForm({
   event,
   defaultDate,
+  members,
   onDone,
 }: {
   event: TeamEventV2 | null;
   defaultDate: string | null;
+  members: string[];
   onDone: () => void;
 }) {
   const router = useRouter();
@@ -183,22 +186,8 @@ function EventForm({
             className="rounded-sm border border-hairline px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
           />
         </label>
-        <label className="flex flex-col gap-1 text-xs text-ink-mute">
-          담당자(쉼표로 구분)
-          <input
-            name="assignees"
-            defaultValue={event?.assignees.join(", ") ?? ""}
-            className="rounded-sm border border-hairline px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
-          />
-        </label>
-        <label className="flex flex-col gap-1 text-xs text-ink-mute">
-          참석자(쉼표로 구분)
-          <input
-            name="attendees"
-            defaultValue={event?.attendees.join(", ") ?? ""}
-            className="rounded-sm border border-hairline px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
-          />
-        </label>
+        <MemberMultiSelect name="assignees" label="담당자" members={members} defaultValue={event?.assignees ?? []} />
+        <MemberMultiSelect name="attendees" label="참석자" members={members} defaultValue={event?.attendees ?? []} />
       </div>
       <label className="flex flex-col gap-1 text-xs text-ink-mute">
         내용
@@ -241,7 +230,15 @@ function EventForm({
   );
 }
 
-export function TeamEventCalendarV2({ events, month }: { events: TeamEventV2[]; month: string }) {
+export function TeamEventCalendarV2({
+  events,
+  month,
+  members,
+}: {
+  events: TeamEventV2[];
+  month: string;
+  members: string[];
+}) {
   const [editing, setEditing] = useState<TeamEventV2 | "new" | null>(null);
   const [newEventDate, setNewEventDate] = useState<string | null>(null);
   const weeks = buildMonthGrid(month);
@@ -345,7 +342,12 @@ export function TeamEventCalendarV2({ events, month }: { events: TeamEventV2[]; 
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="mb-3 text-lg font-bold text-ink">{editing === "new" ? "새 일정" : "일정 수정"}</h3>
-            <EventForm event={editing === "new" ? null : editing} defaultDate={newEventDate} onDone={close} />
+            <EventForm
+              event={editing === "new" ? null : editing}
+              defaultDate={newEventDate}
+              members={members}
+              onDone={close}
+            />
           </div>
         </div>
       )}

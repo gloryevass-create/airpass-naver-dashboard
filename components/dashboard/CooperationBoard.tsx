@@ -13,6 +13,7 @@ import {
   createCooperationProjectHistoryEntry,
   updateCooperationProjectHistoryEntry,
 } from "@/app/dashboard/actions/cooperationProjects";
+import { MemberMultiSelect } from "@/components/dashboard/MemberMultiSelect";
 
 const RELATION_TYPES = ["콘텐츠", "하드웨어", "공동생산 판매", "제품 판매", "자재구매", "일반", "비즈니스협업"];
 const WORK_TYPES = ["아이디어", "시장조사", "기획", "개발", "상품화", "제품생산", "조달등록", "자료", "판매", "첫 미팅"];
@@ -59,9 +60,11 @@ function toDateInputValue(value: string | null): string {
 
 function ProjectForm({
   project,
+  members,
   onDone,
 }: {
   project: CooperationProject | null;
+  members: string[];
   onDone: () => void;
 }) {
   const action = project ? updateCooperationProject : createCooperationProject;
@@ -156,24 +159,18 @@ function ProjectForm({
             className="rounded-sm border border-hairline px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
           />
         </label>
-        <label className="flex flex-col gap-1 text-xs text-ink-mute">
-          메인담당 (쉼표로 구분)
-          <input
-            name="mainAssignees"
-            defaultValue={project?.mainAssignees.join(", ") ?? ""}
-            placeholder="예: 홍길동, 김철수"
-            className="rounded-sm border border-hairline px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
-          />
-        </label>
-        <label className="flex flex-col gap-1 text-xs text-ink-mute">
-          서브담당 (쉼표로 구분)
-          <input
-            name="subAssignees"
-            defaultValue={project?.subAssignees.join(", ") ?? ""}
-            placeholder="예: 홍길동, 김철수"
-            className="rounded-sm border border-hairline px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
-          />
-        </label>
+        <MemberMultiSelect
+          name="mainAssignees"
+          label="메인담당"
+          members={members}
+          defaultValue={project?.mainAssignees ?? []}
+        />
+        <MemberMultiSelect
+          name="subAssignees"
+          label="서브담당"
+          members={members}
+          defaultValue={project?.subAssignees ?? []}
+        />
         <label className="flex flex-col gap-1 text-xs text-ink-mute sm:col-span-2">
           내용
           <textarea
@@ -532,7 +529,7 @@ function CooperationListView({
   );
 }
 
-export function CooperationBoard({ projects }: { projects: CooperationProject[] }) {
+export function CooperationBoard({ projects, members }: { projects: CooperationProject[]; members: string[] }) {
   const [showAll, setShowAll] = useState(false);
   const [view, setView] = useState<"board" | "list">("board");
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
@@ -621,10 +618,10 @@ export function CooperationBoard({ projects }: { projects: CooperationProject[] 
         </button>
       )}
 
-      {editingId === "new" && <ProjectForm project={null} onDone={() => setEditingId(null)} />}
+      {editingId === "new" && <ProjectForm project={null} members={members} onDone={() => setEditingId(null)} />}
       {editingProject && (
         <div className="flex flex-col gap-4">
-          <ProjectForm project={editingProject} onDone={() => setEditingId(null)} />
+          <ProjectForm project={editingProject} members={members} onDone={() => setEditingId(null)} />
           <button
             type="button"
             onClick={() => handleDelete(editingProject.id)}

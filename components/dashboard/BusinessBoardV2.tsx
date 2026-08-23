@@ -13,6 +13,7 @@ import {
   createBusinessProjectV2HistoryEntry,
   updateBusinessProjectV2HistoryEntry,
 } from "@/app/dashboard/actions/businessProjectsV2";
+import { MemberMultiSelect } from "@/components/dashboard/MemberMultiSelect";
 
 const STAGES = ["Ⅰ영업진행", "Ⅱ사업제안", "Ⅲ제안서작성", "Ⅳ사업수행", "Ⅴ사업완료"];
 const STATUSES = ["시작 전", "진행 중", "완료", "보류", "실패"];
@@ -61,9 +62,11 @@ function toDateInputValue(value: string | null): string {
 
 function ProjectForm({
   project,
+  members,
   onDone,
 }: {
   project: BusinessProjectV2 | null;
+  members: string[];
   onDone: () => void;
 }) {
   const action = project ? updateBusinessProjectV2 : createBusinessProjectV2;
@@ -219,15 +222,9 @@ function ProjectForm({
             className="rounded-sm border border-hairline px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
           />
         </label>
-        <label className="flex flex-col gap-1 text-xs text-ink-mute sm:col-span-2">
-          담당자 (쉼표로 구분)
-          <input
-            name="assignees"
-            defaultValue={project?.assignees.join(", ") ?? ""}
-            placeholder="예: 홍길동, 김철수"
-            className="rounded-sm border border-hairline px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
-          />
-        </label>
+        <div className="sm:col-span-2">
+          <MemberMultiSelect name="assignees" label="담당자" members={members} defaultValue={project?.assignees ?? []} />
+        </div>
         <label className="flex flex-col gap-1 text-xs text-ink-mute sm:col-span-2">
           참고 사항
           <textarea
@@ -575,7 +572,7 @@ function BusinessListView({
   );
 }
 
-export function BusinessBoardV2({ projects }: { projects: BusinessProjectV2[] }) {
+export function BusinessBoardV2({ projects, members }: { projects: BusinessProjectV2[]; members: string[] }) {
   const [showAll, setShowAll] = useState(false);
   const [view, setView] = useState<"board" | "list">("board");
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
@@ -671,10 +668,10 @@ export function BusinessBoardV2({ projects }: { projects: BusinessProjectV2[] })
         </button>
       )}
 
-      {editingId === "new" && <ProjectForm project={null} onDone={() => setEditingId(null)} />}
+      {editingId === "new" && <ProjectForm project={null} members={members} onDone={() => setEditingId(null)} />}
       {editingProject && (
         <div className="flex flex-col gap-4">
-          <ProjectForm project={editingProject} onDone={() => setEditingId(null)} />
+          <ProjectForm project={editingProject} members={members} onDone={() => setEditingId(null)} />
           <button
             type="button"
             onClick={() => handleDelete(editingProject.id)}

@@ -21,6 +21,13 @@ function listFromForm(formData: FormData, key: string): string[] {
     .filter(Boolean);
 }
 
+// MemberMultiSelect(담당자/참석자)는 같은 name으로 여러 값을 제출하므로 getAll로
+// 받는다 — 태그는 여전히 자유 텍스트라 listFromForm(쉼표 파싱)을 그대로 쓴다
+// (예전 "쉼표로 구분" 자유 텍스트 입력을 실제 팀원 선택으로 대체, 2026-08-23).
+function memberListFromForm(formData: FormData, key: string): string[] {
+  return formData.getAll(key).map(String).filter(Boolean);
+}
+
 // <input type="datetime-local">가 주는 "YYYY-MM-DDTHH:mm"에는 타임존 정보가 없다 —
 // 브라우저에서는 사용자의 로컬 시간(KST)로 보이지만, new Date(문자열)을 서버(Vercel,
 // UTC)에서 그대로 파싱하면 서버 로컬시간(UTC)으로 잘못 해석돼 9시간이 밀린다. 이 앱은
@@ -42,8 +49,8 @@ function fieldsFromForm(formData: FormData) {
     target: text(formData, "target"),
     location: text(formData, "location"),
     content: text(formData, "content"),
-    assignees: listFromForm(formData, "assignees"),
-    attendees: listFromForm(formData, "attendees"),
+    assignees: memberListFromForm(formData, "assignees"),
+    attendees: memberListFromForm(formData, "attendees"),
   };
 }
 

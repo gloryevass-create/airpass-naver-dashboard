@@ -1,11 +1,12 @@
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { getMarketingTasks } from "@/lib/queries/marketingTasks";
+import { getTeamMemberNames } from "@/lib/queries/teamMembers";
 import { MarketingTaskBoard } from "@/components/dashboard/MarketingTaskBoard";
 import { NavIcon } from "@/components/icons/NavIcon";
 
 export default async function MarketingTasksPage() {
   const { supabase } = await requireAuthedClient();
-  const tasks = await getMarketingTasks(supabase);
+  const [tasks, members] = await Promise.all([getMarketingTasks(supabase), getTeamMemberNames(supabase)]);
 
   return (
     <main className="flex w-full flex-col gap-6 p-6">
@@ -19,7 +20,7 @@ export default async function MarketingTasksPage() {
         </p>
       </div>
 
-      <MarketingTaskBoard tasks={tasks} />
+      <MarketingTaskBoard tasks={tasks} members={members} />
     </main>
   );
 }

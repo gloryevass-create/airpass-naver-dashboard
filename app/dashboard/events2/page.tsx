@@ -1,5 +1,6 @@
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { getTeamEventsV2 } from "@/lib/queries/eventsV2";
+import { getTeamMemberNames } from "@/lib/queries/teamMembers";
 import { TeamEventCalendarV2 } from "@/components/dashboard/TeamEventCalendarV2";
 import { EventMonthNav } from "@/components/dashboard/EventMonthNav";
 import { NavIcon } from "@/components/icons/NavIcon";
@@ -15,7 +16,10 @@ export default async function Events2Page({ searchParams }: { searchParams: Sear
   const { month: monthParam } = await searchParams;
   const month = monthParam ?? currentMonth();
   const { supabase } = await requireAuthedClient();
-  const events = await getTeamEventsV2(supabase, month);
+  const [events, members] = await Promise.all([
+    getTeamEventsV2(supabase, month),
+    getTeamMemberNames(supabase),
+  ]);
 
   return (
     <main className="flex w-full flex-col gap-6 p-6">
@@ -30,7 +34,7 @@ export default async function Events2Page({ searchParams }: { searchParams: Sear
       </div>
 
       <EventMonthNav basePath="/dashboard/events2" month={month} />
-      <TeamEventCalendarV2 events={events} month={month} />
+      <TeamEventCalendarV2 events={events} month={month} members={members} />
     </main>
   );
 }

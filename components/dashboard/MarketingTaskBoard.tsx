@@ -13,6 +13,7 @@ import {
   createMarketingTaskHistoryEntry,
   updateMarketingTaskHistoryEntry,
 } from "@/app/dashboard/actions/marketingTasks";
+import { MemberMultiSelect } from "@/components/dashboard/MemberMultiSelect";
 
 const CATEGORIES = ["문서", "영상", "사진", "웹페이지", "광고"];
 const WORK_TYPES = ["브로슈어", "매뉴얼", "홈페이지", "SNS", "영상", "기타"];
@@ -58,9 +59,11 @@ function toDateInputValue(value: string | null): string {
 
 function TaskForm({
   task,
+  members,
   onDone,
 }: {
   task: MarketingTask | null;
+  members: string[];
   onDone: () => void;
 }) {
   const action = task ? updateMarketingTask : createMarketingTask;
@@ -162,15 +165,9 @@ function TaskForm({
             className="rounded-sm border border-hairline px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
           />
         </label>
-        <label className="flex flex-col gap-1 text-xs text-ink-mute sm:col-span-2">
-          담당자 (쉼표로 구분)
-          <input
-            name="assignees"
-            defaultValue={task?.assignees.join(", ") ?? ""}
-            placeholder="예: 홍길동, 김철수"
-            className="rounded-sm border border-hairline px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
-          />
-        </label>
+        <div className="sm:col-span-2">
+          <MemberMultiSelect name="assignees" label="담당자" members={members} defaultValue={task?.assignees ?? []} />
+        </div>
         <label className="flex flex-col gap-1 text-xs text-ink-mute sm:col-span-2">
           내용
           <textarea
@@ -514,7 +511,7 @@ function MarketingTaskListView({
   );
 }
 
-export function MarketingTaskBoard({ tasks }: { tasks: MarketingTask[] }) {
+export function MarketingTaskBoard({ tasks, members }: { tasks: MarketingTask[]; members: string[] }) {
   const [showAll, setShowAll] = useState(false);
   const [view, setView] = useState<"board" | "list">("board");
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
@@ -603,10 +600,10 @@ export function MarketingTaskBoard({ tasks }: { tasks: MarketingTask[] }) {
         </button>
       )}
 
-      {editingId === "new" && <TaskForm task={null} onDone={() => setEditingId(null)} />}
+      {editingId === "new" && <TaskForm task={null} members={members} onDone={() => setEditingId(null)} />}
       {editingTask && (
         <div className="flex flex-col gap-4">
-          <TaskForm task={editingTask} onDone={() => setEditingId(null)} />
+          <TaskForm task={editingTask} members={members} onDone={() => setEditingId(null)} />
           <button
             type="button"
             onClick={() => handleDelete(editingTask.id)}
