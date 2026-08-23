@@ -1728,6 +1728,63 @@ export type Database = {
         };
         Relationships: [];
       };
+      cooperation_projects_comments: {
+        Row: {
+          id: string;
+          project_id: string;
+          author_id: string;
+          author_email: string;
+          content: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          project_id: string;
+          author_id: string;
+          author_email: string;
+          content: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          project_id?: string;
+          author_id?: string;
+          author_email?: string;
+          content?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      cooperation_projects_history: {
+        Row: {
+          id: string;
+          project_id: string;
+          author_id: string;
+          author_email: string;
+          content: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          project_id: string;
+          author_id: string;
+          author_email: string;
+          content: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          project_id?: string;
+          author_id?: string;
+          author_email?: string;
+          content?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;

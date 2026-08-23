@@ -95,3 +95,82 @@ export async function moveCooperationProjectRelation(id: string, relationType: s
     .eq("id", id);
   revalidatePath(PATH);
 }
+
+export type CooperationProjectCommentState = { error?: string } | undefined;
+
+export async function createCooperationProjectComment(
+  projectId: string,
+  _prevState: CooperationProjectCommentState,
+  formData: FormData
+): Promise<CooperationProjectCommentState> {
+  const { supabase, user } = await requireAuthedClient();
+
+  const content = String(formData.get("content") ?? "").trim();
+  if (!content) return { error: "댓글 내용을 입력하세요." };
+
+  const { error } = await supabase.from("cooperation_projects_comments").insert({
+    project_id: projectId,
+    author_id: user.id,
+    author_email: user.email ?? "",
+    content,
+  });
+
+  if (error) return { error: `댓글 저장 실패: ${error.message}` };
+
+  revalidatePath(PATH);
+  return undefined;
+}
+
+export async function deleteCooperationProjectComment(commentId: string): Promise<void> {
+  const { supabase } = await requireAuthedClient();
+  await supabase.from("cooperation_projects_comments").delete().eq("id", commentId);
+  revalidatePath(PATH);
+}
+
+export type CooperationProjectHistoryState = { error?: string } | undefined;
+
+/** 히스토리는 댓글과 달리 삭제 기능을 두지 않는다 — 기록 자체가 사라지는 것을 막기 위함.
+ * 다만 작성자 본인은 오탈자·내용을 바로잡을 수 있도록 수정은 허용한다. */
+export async function createCooperationProjectHistoryEntry(
+  projectId: string,
+  _prevState: CooperationProjectHistoryState,
+  formData: FormData
+): Promise<CooperationProjectHistoryState> {
+  const { supabase, user } = await requireAuthedClient();
+
+  const content = String(formData.get("content") ?? "").trim();
+  if (!content) return { error: "히스토리 내용을 입력하세요." };
+
+  const { error } = await supabase.from("cooperation_projects_history").insert({
+    project_id: projectId,
+    author_id: user.id,
+    author_email: user.email ?? "",
+    content,
+  });
+
+  if (error) return { error: `히스토리 저장 실패: ${error.message}` };
+
+  revalidatePath(PATH);
+  return undefined;
+}
+
+export async function updateCooperationProjectHistoryEntry(
+  historyId: string,
+  _prevState: CooperationProjectHistoryState,
+  formData: FormData
+): Promise<CooperationProjectHistoryState> {
+  const { supabase } = await requireAuthedClient();
+
+  const content = String(formData.get("content") ?? "").trim();
+  if (!content) return { error: "히스토리 내용을 입력하세요." };
+
+  const { error } = await supabase
+    .from("cooperation_projects_history")
+    .update({ content, updated_at: new Date().toISOString() })
+    .eq("id", historyId);
+
+  if (error) return { error: `히스토리 수정 실패: ${error.message}` };
+
+  revalidatePath(PATH);
+  return undefined;
+}
