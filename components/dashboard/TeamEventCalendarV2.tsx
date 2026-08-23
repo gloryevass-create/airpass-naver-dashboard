@@ -269,9 +269,9 @@ export function TeamEventCalendarV2({
 
       <div className="overflow-x-auto rounded-sm border border-hairline bg-canvas-cream">
         <div className="min-w-[720px]">
-          <div className="grid grid-cols-7 border-b border-hairline bg-canvas-cream text-xs font-semibold text-ink-mute">
+          <div className="grid grid-cols-7 border-b border-hairline bg-canvas-cream text-xs font-bold text-ink-mute">
             {WEEKDAYS.map((w) => (
-              <div key={w} className="px-2 py-2 text-center">
+              <div key={w} className={`px-2 py-2 text-center ${w === "일" ? "text-semantic-error" : ""}`}>
                 {w}
               </div>
             ))}
