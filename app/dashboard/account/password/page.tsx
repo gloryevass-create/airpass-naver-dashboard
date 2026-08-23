@@ -9,7 +9,7 @@ export default async function ChangePasswordPage() {
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-6">
       <Link
-        href="/dashboard/events"
+        href="/dashboard/events2"
         className="flex items-center gap-1 text-sm text-ink-mute hover:text-ink"
       >
         ← 대시보드

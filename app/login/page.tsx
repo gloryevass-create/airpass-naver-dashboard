@@ -22,7 +22,7 @@ export default async function LoginPage({
         <p className="mt-1 text-sm text-ink-mute">팀 계정으로 로그인하세요.</p>
       </div>
       {isSupabaseConfigured ? (
-        <LoginForm redirectTo={redirectTo && redirectTo.startsWith("/") ? redirectTo : "/dashboard/events"} />
+        <LoginForm redirectTo={redirectTo && redirectTo.startsWith("/") ? redirectTo : "/dashboard/events2"} />
       ) : (
         <SetupNotice />
       )}

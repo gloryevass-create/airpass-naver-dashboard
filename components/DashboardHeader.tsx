@@ -59,7 +59,7 @@ export function DashboardHeader({
         >
           <NavIcon name="menu" className="h-5 w-5" />
         </button>
-        <Link href="/dashboard/events" className="flex min-w-0 items-center gap-2.5">
+        <Link href="/dashboard/events2" className="flex min-w-0 items-center gap-2.5">
           <AppLogo className="h-8 w-8 shrink-0" />
           <div className="min-w-0">
             <h1 className="text-sm font-bold leading-tight tracking-tight text-white">

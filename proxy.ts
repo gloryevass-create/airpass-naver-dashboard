@@ -61,7 +61,7 @@ export async function proxy(request: NextRequest) {
   const isServerAction = request.headers.has("next-action");
 
   if (user && pathname === "/login" && !isServerAction) {
-    return NextResponse.redirect(new URL("/dashboard/events", request.url));
+    return NextResponse.redirect(new URL("/dashboard/events2", request.url));
   }
 
   return response;
