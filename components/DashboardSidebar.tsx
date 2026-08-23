@@ -26,10 +26,11 @@ const ITEMS: MenuEntry[] = [
     label: "WORKSPACE",
     icon: "sparkle",
     children: [
-      { href: "/dashboard/events2", label: "calendar", icon: "calendar" },
+      { href: "/dashboard/events2", label: "Calendar", icon: "calendar" },
       { href: "/dashboard/business2", label: "SI Business", icon: "briefcase" },
-      { href: "/dashboard/cooperation", label: "cooperation", icon: "share" },
-      { href: "/dashboard/marketing-tasks", label: "marketing", icon: "list" },
+      { href: "/dashboard/cooperation", label: "Cooperation", icon: "share" },
+      { href: "/dashboard/marketing-tasks", label: "Marketing", icon: "list" },
+      { href: "/dashboard/memos", label: "Memo Board", icon: "clipboard" },
     ],
   },
   {
@@ -47,7 +48,6 @@ const ITEMS: MenuEntry[] = [
       { href: "/dashboard/keywords", label: "네이버키워드", icon: "search" },
       { href: "/dashboard/blog", label: "네이버블로그", icon: "document" },
       { href: "/dashboard/youtube", label: "유튜브채널분석", icon: "play" },
-      { href: "/dashboard/memos", label: "광고전략메모", icon: "clipboard" },
     ],
   },
   {
