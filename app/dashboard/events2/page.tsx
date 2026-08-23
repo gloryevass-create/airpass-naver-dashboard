@@ -2,7 +2,6 @@ import { requireAuthedClient } from "@/lib/supabase/authed";
 import { getTeamEventsV2 } from "@/lib/queries/eventsV2";
 import { getTeamMemberNames } from "@/lib/queries/teamMembers";
 import { TeamEventCalendarV2 } from "@/components/dashboard/TeamEventCalendarV2";
-import { EventMonthNav } from "@/components/dashboard/EventMonthNav";
 import { NavIcon } from "@/components/icons/NavIcon";
 
 type SearchParams = Promise<{ month?: string }>;
@@ -33,7 +32,6 @@ export default async function Events2Page({ searchParams }: { searchParams: Sear
         </p>
       </div>
 
-      <EventMonthNav basePath="/dashboard/events2" month={month} />
       <TeamEventCalendarV2 events={events} month={month} members={members} />
     </main>
   );

@@ -9,6 +9,7 @@ import {
   deleteTeamEventV2,
 } from "@/app/dashboard/actions/eventsV2";
 import { MemberMultiSelect } from "@/components/dashboard/MemberMultiSelect";
+import { EventMonthNav } from "@/components/dashboard/EventMonthNav";
 
 const TAG_COLORS: Record<string, string> = {
   회식: "bg-pink-100 text-pink-800",
@@ -255,7 +256,8 @@ export function TeamEventCalendarV2({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex justify-end">
+      <div className="flex items-center justify-between">
+        <EventMonthNav basePath="/dashboard/events2" month={month} />
         <button
           type="button"
           onClick={() => openNew(new Date().toISOString().slice(0, 10))}
