@@ -58,7 +58,9 @@ export async function getMarketingTasks(supabase: Client): Promise<MarketingTask
   } = await supabase.auth.getUser();
 
   const [{ data }, { data: comments }, { data: history }, authorDisplayById] = await Promise.all([
-    supabase.from("marketing_tasks").select("*").order("created_at", { ascending: false }),
+    // 수정(분류 이동 포함)한 업무가 칸반 보드 맨 위로 오도록 생성일이 아니라
+    // 최근 수정일 기준 최신순으로 정렬한다(SI Business와 동일, 사용자 확인 2026-08-23).
+    supabase.from("marketing_tasks").select("*").order("updated_at", { ascending: false }),
     supabase
       .from("marketing_tasks_comments")
       .select("*")

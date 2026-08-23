@@ -60,7 +60,9 @@ export async function getCooperationProjects(supabase: Client): Promise<Cooperat
   } = await supabase.auth.getUser();
 
   const [{ data }, { data: comments }, { data: history }, authorDisplayById] = await Promise.all([
-    supabase.from("cooperation_projects").select("*").order("created_at", { ascending: false }),
+    // 수정(관계 이동 포함)한 항목이 칸반 보드 맨 위로 오도록 생성일이 아니라
+    // 최근 수정일 기준 최신순으로 정렬한다(SI Business와 동일, 사용자 확인 2026-08-23).
+    supabase.from("cooperation_projects").select("*").order("updated_at", { ascending: false }),
     supabase
       .from("cooperation_projects_comments")
       .select("*")
