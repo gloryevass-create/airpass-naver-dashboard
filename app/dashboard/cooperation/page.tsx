@@ -12,7 +12,7 @@ export default async function CooperationPage() {
       <div>
         <h1 className="flex items-center gap-2 text-xl font-bold tracking-tight text-primary">
           <NavIcon name="share" className="h-5 w-5" />
-          협업
+          Cooperation
         </h1>
         <p className="mt-1 text-sm text-ink-mute">
           이 화면에서 직접 협업 항목을 추가·수정·삭제합니다(Notion 연동 없음 — 이 시스템이 원본입니다).
