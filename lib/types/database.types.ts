@@ -792,6 +792,57 @@ export type Database = {
         };
         Relationships: [];
       };
+      team_events_v2: {
+        Row: {
+          id: string;
+          title: string;
+          date_start: string;
+          date_end: string | null;
+          is_datetime: boolean;
+          category: string | null;
+          tags: string[];
+          target: string | null;
+          location: string | null;
+          content: string | null;
+          assignees: string[];
+          attendees: string[];
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          date_start: string;
+          date_end?: string | null;
+          is_datetime?: boolean;
+          category?: string | null;
+          tags?: string[];
+          target?: string | null;
+          location?: string | null;
+          content?: string | null;
+          assignees?: string[];
+          attendees?: string[];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          date_start?: string;
+          date_end?: string | null;
+          is_datetime?: boolean;
+          category?: string | null;
+          tags?: string[];
+          target?: string | null;
+          location?: string | null;
+          content?: string | null;
+          assignees?: string[];
+          attendees?: string[];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       business_projects: {
         Row: {
           id: string;
