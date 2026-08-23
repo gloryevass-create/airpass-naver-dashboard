@@ -166,7 +166,11 @@ export function DashboardSidebar({ latestDate }: { latestDate: string | null }) 
                   type="button"
                   onClick={() => toggleGroup(entry.label)}
                   aria-expanded={expanded}
-                  className="flex items-center gap-2.5 rounded-sm px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-ink-mute hover:bg-canvas-lavender/40 hover:text-ink"
+                  className={`flex items-center gap-2.5 rounded-sm px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wide transition-colors ${
+                    hasActiveChild
+                      ? "bg-canvas-lavender/40 text-ink"
+                      : "text-ink-mute hover:bg-canvas-lavender/40 hover:text-ink"
+                  }`}
                 >
                   <NavIcon name={entry.icon} className="h-3.5 w-3.5 shrink-0" />
                   <span className="flex-1 text-left">{entry.label}</span>
