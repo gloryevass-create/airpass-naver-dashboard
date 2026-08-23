@@ -36,12 +36,13 @@ function toKstDateStr(iso: string) {
   return kst.toISOString().slice(0, 10);
 }
 
-// datetime-local input은 로컬(브라우저) 타임존 기준 "YYYY-MM-DDTHH:mm"을 받는다.
+// datetime-local input은 타임존 없는 "YYYY-MM-DDTHH:mm"을 주고받는다 — 브라우저의
+// OS 타임존 설정에 기대지 않고, 이 앱의 고정 기준인 KST(UTC+9)로 항상 명시적으로
+// 변환한다(저장 시 서버 쪽 kstLocalToIso와 짝을 이룬다).
 function toDatetimeLocalValue(iso: string | null): string {
   if (!iso) return "";
-  const d = new Date(iso);
-  const offset = d.getTimezoneOffset() * 60000;
-  return new Date(d.getTime() - offset).toISOString().slice(0, 16);
+  const kst = new Date(new Date(iso).getTime() + 9 * 60 * 60 * 1000);
+  return kst.toISOString().slice(0, 16);
 }
 
 function buildMonthGrid(month: string): string[][] {

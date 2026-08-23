@@ -20,13 +20,21 @@ function listFromForm(formData: FormData, key: string): string[] {
     .filter(Boolean);
 }
 
+// <input type="datetime-local">가 주는 "YYYY-MM-DDTHH:mm"에는 타임존 정보가 없다 —
+// 브라우저에서는 사용자의 로컬 시간(KST)로 보이지만, new Date(문자열)을 서버(Vercel,
+// UTC)에서 그대로 파싱하면 서버 로컬시간(UTC)으로 잘못 해석돼 9시간이 밀린다. 이 앱은
+// 항상 KST 기준이므로 명시적으로 +09:00을 붙여 파싱한다.
+function kstLocalToIso(value: string): string {
+  return new Date(`${value}:00+09:00`).toISOString();
+}
+
 function fieldsFromForm(formData: FormData) {
   const dateStart = String(formData.get("dateStart") ?? "").trim();
   const dateEnd = String(formData.get("dateEnd") ?? "").trim();
   return {
     title: text(formData, "title") ?? "",
-    date_start: dateStart ? new Date(dateStart).toISOString() : "",
-    date_end: dateEnd ? new Date(dateEnd).toISOString() : null,
+    date_start: dateStart ? kstLocalToIso(dateStart) : "",
+    date_end: dateEnd ? kstLocalToIso(dateEnd) : null,
     is_datetime: formData.get("isDatetime") === "on",
     category: text(formData, "category"),
     tags: listFromForm(formData, "tags"),
