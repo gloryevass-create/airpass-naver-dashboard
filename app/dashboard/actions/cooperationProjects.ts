@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireAuthedClient } from "@/lib/supabase/authed";
+import { formatMember } from "@/lib/formatMember";
 
 const PATH = "/dashboard/cooperation";
 
@@ -45,13 +46,22 @@ export async function createCooperationProject(
   _prevState: CooperationProjectFormState,
   formData: FormData
 ): Promise<CooperationProjectFormState> {
-  const { supabase } = await requireAuthedClient();
+  const { supabase, user } = await requireAuthedClient();
 
   const fields = fieldsFromForm(formData);
   if (!fields.title) return { error: "협업 이름을 입력하세요." };
 
   const { error } = await supabase.from("cooperation_projects").insert(fields);
   if (error) return { error: `저장 실패: ${error.message}` };
+
+  const { data: profile } = await supabase.from("profiles").select("name, email").eq("id", user.id).single();
+  const actor = formatMember(profile?.name ?? null, null, profile?.email ?? user.email ?? "");
+  await supabase.from("notifications").insert({
+    type: "cooperation",
+    title: fields.title,
+    message: `${actor}님이 새 협업 항목을 등록했습니다.`,
+    link: PATH,
+  });
 
   revalidatePath(PATH);
   return undefined;

@@ -20,6 +20,8 @@ const TYPE_LABEL: Record<NotificationType, string> = {
   budget_scrap: "입찰공고",
   prespec_scrap: "사전규격",
   news_scrap: "뉴스",
+  cooperation: "협업",
+  marketing: "마케팅",
 };
 
 function relativeTime(iso: string): string {

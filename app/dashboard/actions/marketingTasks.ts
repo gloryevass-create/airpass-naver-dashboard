@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireAuthedClient } from "@/lib/supabase/authed";
+import { formatMember } from "@/lib/formatMember";
 
 const PATH = "/dashboard/marketing-tasks";
 
@@ -43,13 +44,22 @@ export async function createMarketingTask(
   _prevState: MarketingTaskFormState,
   formData: FormData
 ): Promise<MarketingTaskFormState> {
-  const { supabase } = await requireAuthedClient();
+  const { supabase, user } = await requireAuthedClient();
 
   const fields = fieldsFromForm(formData);
   if (!fields.title) return { error: "업무명을 입력하세요." };
 
   const { error } = await supabase.from("marketing_tasks").insert(fields);
   if (error) return { error: `저장 실패: ${error.message}` };
+
+  const { data: profile } = await supabase.from("profiles").select("name, email").eq("id", user.id).single();
+  const actor = formatMember(profile?.name ?? null, null, profile?.email ?? user.email ?? "");
+  await supabase.from("notifications").insert({
+    type: "marketing",
+    title: fields.title,
+    message: `${actor}님이 새 마케팅 업무를 등록했습니다.`,
+    link: PATH,
+  });
 
   revalidatePath(PATH);
   return undefined;

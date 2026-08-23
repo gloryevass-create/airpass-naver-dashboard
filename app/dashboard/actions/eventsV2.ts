@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireAuthedClient } from "@/lib/supabase/authed";
+import { formatMember } from "@/lib/formatMember";
 
 const PATH = "/dashboard/events2";
 
@@ -50,7 +51,7 @@ export async function createTeamEventV2(
   _prevState: TeamEventV2FormState,
   formData: FormData
 ): Promise<TeamEventV2FormState> {
-  const { supabase } = await requireAuthedClient();
+  const { supabase, user } = await requireAuthedClient();
 
   const fields = fieldsFromForm(formData);
   if (!fields.title) return { error: "일정 제목을 입력하세요." };
@@ -58,6 +59,15 @@ export async function createTeamEventV2(
 
   const { error } = await supabase.from("team_events_v2").insert(fields);
   if (error) return { error: `저장 실패: ${error.message}` };
+
+  const { data: profile } = await supabase.from("profiles").select("name, email").eq("id", user.id).single();
+  const actor = formatMember(profile?.name ?? null, null, profile?.email ?? user.email ?? "");
+  await supabase.from("notifications").insert({
+    type: "event",
+    title: fields.title,
+    message: `${actor}님이 새 일정을 등록했습니다.`,
+    link: PATH,
+  });
 
   revalidatePath(PATH);
   return undefined;

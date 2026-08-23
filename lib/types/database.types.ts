@@ -1437,7 +1437,7 @@ export type Database = {
       notifications: {
         Row: {
           id: string;
-          type: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap" | "news_scrap";
+          type: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap" | "news_scrap" | "cooperation" | "marketing";
           title: string;
           message: string | null;
           link: string | null;
@@ -1445,7 +1445,7 @@ export type Database = {
         };
         Insert: {
           id?: string;
-          type: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap" | "news_scrap";
+          type: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap" | "news_scrap" | "cooperation" | "marketing";
           title: string;
           message?: string | null;
           link?: string | null;
@@ -1453,7 +1453,7 @@ export type Database = {
         };
         Update: {
           id?: string;
-          type?: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap" | "news_scrap";
+          type?: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap" | "news_scrap" | "cooperation" | "marketing";
           title?: string;
           message?: string | null;
           link?: string | null;
