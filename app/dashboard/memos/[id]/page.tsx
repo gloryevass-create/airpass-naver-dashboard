@@ -31,9 +31,17 @@ function formatFileSize(bytes: number | null) {
 }
 
 type Params = Promise<{ id: string }>;
+type SearchParams = Promise<{ attachmentError?: string }>;
 
-export default async function MemoDetailPage({ params }: { params: Params }) {
+export default async function MemoDetailPage({
+  params,
+  searchParams,
+}: {
+  params: Params;
+  searchParams: SearchParams;
+}) {
   const { id } = await params;
+  const { attachmentError } = await searchParams;
   const { supabase, user } = await requireAuthedClient();
   const memo = await getMemoDetail(supabase, id);
 
@@ -82,6 +90,12 @@ export default async function MemoDetailPage({ params }: { params: Params }) {
           </div>
         )}
       </div>
+
+      {attachmentError === "1" && (
+        <p className="rounded-sm border border-semantic-error/30 bg-semantic-error/5 px-4 py-2 text-sm text-semantic-error">
+          일부 첨부파일 업로드에 실패했습니다. 저장은 됐지만 해당 파일은 빠졌습니다 — 수정 화면에서 다시 첨부해주세요.
+        </p>
+      )}
 
       <div className="whitespace-pre-wrap rounded-sm border border-hairline bg-canvas-cream p-4 text-sm text-ink">
         {memo.content}
