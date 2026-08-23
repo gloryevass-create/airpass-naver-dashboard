@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { requireAuthedClient } from "@/lib/supabase/authed";
-import { getNewsArticles } from "@/lib/queries/news";
+import { getNewsArticles, getScrapedNewsArticles } from "@/lib/queries/news";
 import { getMonitorKeywords } from "@/lib/queries/monitorKeywords";
 import { getScrapedNoticeIds } from "@/lib/queries/scraps";
 import { extractHotKeywordsWithAI } from "@/lib/newsHotKeywordsAi";
@@ -39,6 +39,7 @@ export default async function NewsPage({ searchParams }: { searchParams: SearchP
     getMonitorKeywords(supabase, "news"),
     getScrapedNoticeIds(supabase, user.id, "news"),
   ]);
+  const scrapedArticles = await getScrapedNewsArticles(supabase, Array.from(scrapedIds));
 
   return (
     <main className="flex w-full flex-col gap-6 p-6">
@@ -57,7 +58,12 @@ export default async function NewsPage({ searchParams }: { searchParams: SearchP
       <Suspense fallback={<HotKeywordsSkeleton />}>
         <HotKeywordsSection titles={articles.map((a) => a.title)} />
       </Suspense>
-      <NewsList articles={articles} registeredKeywords={keywords.map((k) => k.keyword)} scrapedIds={scrapedIds} />
+      <NewsList
+        articles={articles}
+        scrapedArticles={scrapedArticles}
+        registeredKeywords={keywords.map((k) => k.keyword)}
+        scrapedIds={scrapedIds}
+      />
     </main>
   );
 }

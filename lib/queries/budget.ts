@@ -74,3 +74,29 @@ export async function getBudgetBids(
 
   return { bids, range: { since, until } };
 }
+
+/** 스크랩한 공고는 조회 기간(기본 30일 롤링 윈도우) 밖으로 밀려나도 "스크랩" 탭에서는
+ * 계속 보여야 한다 — getBudgetBids는 항상 기간 필터가 걸려 있어 이 용도로 못 쓴다.
+ * (news_articles와 동일한 버그, 사용자 확인 2026-08-24) */
+export async function getScrapedBudgetBids(supabase: Client, ids: string[]): Promise<BudgetBid[]> {
+  if (ids.length === 0) return [];
+  const { data } = await supabase
+    .from("budget_bids")
+    .select("*")
+    .in("id", ids)
+    .order("notice_date", { ascending: false, nullsFirst: false });
+
+  return (data ?? []).map((b) => ({
+    id: b.id,
+    keyword: b.keyword,
+    businessType: b.business_type,
+    bidNo: b.bid_no,
+    title: b.title,
+    noticeInst: b.notice_inst,
+    demandInst: b.demand_inst,
+    budgetAmount: b.budget_amount != null ? Number(b.budget_amount) : null,
+    presmptPrice: b.presmpt_price != null ? Number(b.presmpt_price) : null,
+    noticeDate: b.notice_date,
+    detailUrl: b.detail_url,
+  }));
+}

@@ -1,5 +1,5 @@
 import { requireAuthedClient } from "@/lib/supabase/authed";
-import { getBudgetBids } from "@/lib/queries/budget";
+import { getBudgetBids, getScrapedBudgetBids } from "@/lib/queries/budget";
 import { getMonitorKeywords } from "@/lib/queries/monitorKeywords";
 import { getScrapedNoticeIds } from "@/lib/queries/scraps";
 import { BudgetBidList } from "@/components/dashboard/BudgetBidList";
@@ -18,6 +18,7 @@ export default async function BudgetPage({ searchParams }: { searchParams: Searc
     getMonitorKeywords(supabase, "budget"),
     getScrapedNoticeIds(supabase, user.id, "budget"),
   ]);
+  const scrapedBids = await getScrapedBudgetBids(supabase, Array.from(scrapedIds));
 
   return (
     <main className="flex w-full flex-col gap-6 p-6">
@@ -35,6 +36,7 @@ export default async function BudgetPage({ searchParams }: { searchParams: Searc
       <MonitorDateRangeFilter basePath={PATH} range={range} resultCount={bids.length} />
       <BudgetBidList
         bids={bids}
+        scrapedBids={scrapedBids}
         registeredKeywords={keywords.map((k) => k.keyword)}
         scrapedIds={scrapedIds}
         path={PATH}

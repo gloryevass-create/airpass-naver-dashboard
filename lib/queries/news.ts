@@ -68,3 +68,26 @@ export async function getNewsArticles(
 
   return { articles, range: { since, until } };
 }
+
+/** 스크랩한 기사는 조회 기간(기본 30일 롤링 윈도우) 밖으로 밀려나도 "스크랩" 탭에서는
+ * 계속 보여야 한다 — getNewsArticles는 항상 기간 필터가 걸려 있어 이 용도로 못 쓴다.
+ * (버그: 스크랩 배지 카운트는 notice_scraps 기준이라 안 줄어드는데, 목록은 기간 필터를
+ * 통과 못 해 사라지는 것처럼 보였음 — 사용자 확인, 2026-08-24) */
+export async function getScrapedNewsArticles(supabase: Client, ids: string[]): Promise<NewsArticle[]> {
+  if (ids.length === 0) return [];
+  const { data } = await supabase
+    .from("news_articles")
+    .select("*")
+    .in("id", ids)
+    .order("published_at", { ascending: false, nullsFirst: false });
+
+  return (data ?? []).map((a) => ({
+    id: a.id,
+    keyword: a.keyword,
+    title: a.title,
+    link: a.link,
+    description: a.description,
+    publishedAt: a.published_at,
+    collectedAt: a.collected_at,
+  }));
+}

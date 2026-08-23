@@ -22,30 +22,41 @@ function formatWon(amount: number | null) {
 
 export function BudgetBidList({
   bids,
+  scrapedBids,
   registeredKeywords,
   scrapedIds,
   path,
 }: {
   bids: BudgetBid[];
+  scrapedBids: BudgetBid[];
   registeredKeywords: string[];
   scrapedIds: Set<string>;
   path: string;
 }) {
   // 등록된 키워드는 이번 조회 기간에 매칭된 공고가 0건이어도 항상 탭에 보여야 한다 —
   // 그렇지 않으면 "키워드를 등록했는데 화면에 아무 흔적이 없다"는 혼란이 생긴다. 데이터에만
-  // 있고 목록에서 삭제된 키워드도(과거 기록이니) 계속 보여준다.
+  // 있고 목록에서 삭제된 키워드도(과거 기록이니) 계속 보여준다. 스크랩한 공고가 조회
+  // 기간 밖에 있어도 그 키워드가 탭에 보이도록 scrapedBids도 함께 반영한다.
   const keywords = useMemo(() => {
-    const set = new Set([...registeredKeywords, ...bids.map((b) => b.keyword)]);
+    const set = new Set([...registeredKeywords, ...bids.map((b) => b.keyword), ...scrapedBids.map((b) => b.keyword)]);
     return ["전체", ...Array.from(set).sort()];
-  }, [registeredKeywords, bids]);
+  }, [registeredKeywords, bids, scrapedBids]);
   const [filter, setFilter] = useState("전체");
   const scrap = useScrapToolbar("budget", path);
 
+  // "스크랩" 탭은 조회 기간으로 걸러진 bids가 아니라, 기간과 무관하게 항상 불러온
+  // scrapedBids를 기준으로 삼는다 — 그래야 스크랩한 공고가 조회 기간 밖으로 밀려나도
+  // (다음날 자동 수집으로 30일 롤링 윈도우가 앞으로 이동) 스크랩 탭에서 계속 보인다.
+  const scrapPool = useMemo(() => {
+    const map = new Map(scrapedBids.map((b) => [b.id, b]));
+    for (const b of bids) if (!map.has(b.id)) map.set(b.id, b);
+    return Array.from(map.values());
+  }, [bids, scrapedBids]);
+
   const filtered = useMemo(() => {
-    let list = filter === "전체" ? bids : bids.filter((b) => b.keyword === filter);
-    if (scrap.view === "scrap") list = list.filter((b) => scrapedIds.has(b.id));
-    return list;
-  }, [bids, filter, scrap.view, scrapedIds]);
+    const pool = scrap.view === "scrap" ? scrapPool.filter((b) => scrapedIds.has(b.id)) : bids;
+    return filter === "전체" ? pool : pool.filter((b) => b.keyword === filter);
+  }, [bids, scrapPool, filter, scrap.view, scrapedIds]);
 
   if (keywords.length <= 1) {
     return (

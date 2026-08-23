@@ -1,5 +1,5 @@
 import { requireAuthedClient } from "@/lib/supabase/authed";
-import { getPrespecNotices } from "@/lib/queries/prespec";
+import { getPrespecNotices, getScrapedPrespecNotices } from "@/lib/queries/prespec";
 import { getMonitorKeywords } from "@/lib/queries/monitorKeywords";
 import { getScrapedNoticeIds } from "@/lib/queries/scraps";
 import { PrespecNoticeList } from "@/components/dashboard/PrespecNoticeList";
@@ -18,6 +18,7 @@ export default async function PrespecPage({ searchParams }: { searchParams: Sear
     getMonitorKeywords(supabase, "budget"),
     getScrapedNoticeIds(supabase, user.id, "prespec"),
   ]);
+  const scrapedNotices = await getScrapedPrespecNotices(supabase, Array.from(scrapedIds));
 
   return (
     <main className="flex w-full flex-col gap-6 p-6">
@@ -38,6 +39,7 @@ export default async function PrespecPage({ searchParams }: { searchParams: Sear
       <MonitorDateRangeFilter basePath={PATH} range={range} resultCount={notices.length} />
       <PrespecNoticeList
         notices={notices}
+        scrapedNotices={scrapedNotices}
         registeredKeywords={keywords.map((k) => k.keyword)}
         scrapedIds={scrapedIds}
         path={PATH}

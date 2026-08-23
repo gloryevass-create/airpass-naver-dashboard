@@ -104,20 +104,27 @@ function NewsActions({
 
 export function NewsList({
   articles,
+  scrapedArticles,
   registeredKeywords,
   scrapedIds: initialScrapedIds,
 }: {
   articles: NewsArticle[];
+  scrapedArticles: NewsArticle[];
   registeredKeywords: string[];
   scrapedIds: Set<string>;
 }) {
   // 등록된 키워드는 이번 조회 기간에 매칭된 기사가 0건이어도 항상 탭에 보여야 한다 —
   // 그렇지 않으면 "키워드를 등록했는데 화면에 아무 흔적이 없다"는 혼란이 생긴다. 데이터에만
-  // 있고 목록에서 삭제된 키워드도(과거 기록이니) 계속 보여준다.
+  // 있고 목록에서 삭제된 키워드도(과거 기록이니) 계속 보여준다. 스크랩한 기사가 조회
+  // 기간 밖에 있어도 그 키워드가 탭에 보이도록 scrapedArticles도 함께 반영한다.
   const keywords = useMemo(() => {
-    const set = new Set([...registeredKeywords, ...articles.map((a) => a.keyword)]);
+    const set = new Set([
+      ...registeredKeywords,
+      ...articles.map((a) => a.keyword),
+      ...scrapedArticles.map((a) => a.keyword),
+    ]);
     return ["전체", ...Array.from(set).sort()];
-  }, [registeredKeywords, articles]);
+  }, [registeredKeywords, articles, scrapedArticles]);
   const [filter, setFilter] = useState("전체");
   const [view, setView] = useState<"all" | "scrap">("all");
   const [scrapedIds, setScrapedIds] = useState(initialScrapedIds);
@@ -137,8 +144,17 @@ export function NewsList({
     });
   }
 
-  const byKeyword = filter === "전체" ? articles : articles.filter((a) => a.keyword === filter);
-  const filtered = view === "scrap" ? byKeyword.filter((a) => scrapedIds.has(a.id)) : byKeyword;
+  // "스크랩" 탭은 조회 기간으로 걸러진 articles가 아니라, 기간과 무관하게 항상 불러온
+  // scrapedArticles를 기준으로 삼는다 — 그래야 스크랩한 기사가 조회 기간 밖으로 밀려나도
+  // (예: 다음날 자동 수집으로 30일 롤링 윈도우가 앞으로 이동) 스크랩 탭에서 계속 보인다.
+  const scrapPool = useMemo(() => {
+    const map = new Map(scrapedArticles.map((a) => [a.id, a]));
+    for (const a of articles) if (!map.has(a.id)) map.set(a.id, a);
+    return Array.from(map.values());
+  }, [articles, scrapedArticles]);
+
+  const pool = view === "scrap" ? scrapPool.filter((a) => scrapedIds.has(a.id)) : articles;
+  const filtered = filter === "전체" ? pool : pool.filter((a) => a.keyword === filter);
 
   if (keywords.length <= 1) {
     return (

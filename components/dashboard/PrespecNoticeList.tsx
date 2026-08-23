@@ -22,29 +22,44 @@ function formatWon(amount: number | null) {
 
 export function PrespecNoticeList({
   notices,
+  scrapedNotices,
   registeredKeywords,
   scrapedIds,
   path,
 }: {
   notices: PrespecNotice[];
+  scrapedNotices: PrespecNotice[];
   registeredKeywords: string[];
   scrapedIds: Set<string>;
   path: string;
 }) {
   // 등록된 키워드는 이번 조회 기간에 매칭된 사전규격이 0건이어도 항상 탭에 보여야 한다 —
-  // budget_bids와 동일한 이유(BudgetBidList 참고).
+  // budget_bids와 동일한 이유(BudgetBidList 참고). 스크랩한 사전규격이 조회 기간 밖에
+  // 있어도 그 키워드가 탭에 보이도록 scrapedNotices도 함께 반영한다.
   const keywords = useMemo(() => {
-    const set = new Set([...registeredKeywords, ...notices.map((n) => n.keyword)]);
+    const set = new Set([
+      ...registeredKeywords,
+      ...notices.map((n) => n.keyword),
+      ...scrapedNotices.map((n) => n.keyword),
+    ]);
     return ["전체", ...Array.from(set).sort()];
-  }, [registeredKeywords, notices]);
+  }, [registeredKeywords, notices, scrapedNotices]);
   const [filter, setFilter] = useState("전체");
   const scrap = useScrapToolbar("prespec", path);
 
+  // "스크랩" 탭은 조회 기간으로 걸러진 notices가 아니라, 기간과 무관하게 항상 불러온
+  // scrapedNotices를 기준으로 삼는다 — 그래야 스크랩한 사전규격이 조회 기간 밖으로
+  // 밀려나도(다음날 자동 수집으로 30일 롤링 윈도우가 앞으로 이동) 스크랩 탭에서 계속 보인다.
+  const scrapPool = useMemo(() => {
+    const map = new Map(scrapedNotices.map((n) => [n.id, n]));
+    for (const n of notices) if (!map.has(n.id)) map.set(n.id, n);
+    return Array.from(map.values());
+  }, [notices, scrapedNotices]);
+
   const filtered = useMemo(() => {
-    let list = filter === "전체" ? notices : notices.filter((n) => n.keyword === filter);
-    if (scrap.view === "scrap") list = list.filter((n) => scrapedIds.has(n.id));
-    return list;
-  }, [notices, filter, scrap.view, scrapedIds]);
+    const pool = scrap.view === "scrap" ? scrapPool.filter((n) => scrapedIds.has(n.id)) : notices;
+    return filter === "전체" ? pool : pool.filter((n) => n.keyword === filter);
+  }, [notices, scrapPool, filter, scrap.view, scrapedIds]);
 
   if (keywords.length <= 1) {
     return (
