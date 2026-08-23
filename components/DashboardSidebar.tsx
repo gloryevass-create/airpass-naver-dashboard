@@ -26,7 +26,7 @@ const ITEMS: MenuEntry[] = [
     label: "WORKSPACE",
     icon: "sparkle",
     children: [
-      { href: "/dashboard/events2", label: "팀일정2", icon: "calendar" },
+      { href: "/dashboard/events2", label: "calendar", icon: "calendar" },
       { href: "/dashboard/business2", label: "SI Business", icon: "briefcase" },
     ],
   },
