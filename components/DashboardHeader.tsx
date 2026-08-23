@@ -60,7 +60,7 @@ export function DashboardHeader({
         </button>
         <Link href="/dashboard/events2" className="flex min-w-0 shrink-0 items-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="Strategic Planning Team" className="h-10 w-auto" />
+          <img src="/logo.png" alt="Strategic Planning Team" className="-ml-3 h-10 w-auto" />
         </Link>
       </div>
       <div className="flex items-center gap-2 text-sm md:gap-4">
