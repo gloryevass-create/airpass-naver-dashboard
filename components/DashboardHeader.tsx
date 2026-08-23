@@ -92,7 +92,7 @@ export function DashboardHeader({
         {isAdmin && (
           <a
             href="/dashboard/admin"
-            className="flex items-center gap-1 text-white/70 hover:text-white hover:underline"
+            className="flex items-center gap-1.5 rounded-md border border-transparent px-2.5 py-1.5 text-white/70 transition-colors hover:border-white/20 hover:text-white md:px-3"
           >
             <NavIcon name="shield" className="h-3.5 w-3.5" />
             <span className="hidden md:inline">관리자</span>
@@ -100,7 +100,7 @@ export function DashboardHeader({
         )}
         <button
           onClick={handleSignOut}
-          className="flex items-center gap-1 text-white/70 hover:text-white hover:underline"
+          className="flex items-center gap-1.5 rounded-md border border-transparent px-2.5 py-1.5 text-white/70 transition-colors hover:border-white/20 hover:text-white md:px-3"
         >
           <NavIcon name="logout" className="h-3.5 w-3.5" />
           <span className="hidden md:inline">로그아웃</span>
