@@ -4,7 +4,7 @@ import { formatMember } from "@/lib/formatMember";
 
 type Client = SupabaseClient<Database>;
 
-export type MemoCategory = "keyword" | "blog" | "etc";
+export type MemoCategory = "business" | "cooperation" | "marketing" | "etc";
 
 export type MemoListItem = {
   id: string;

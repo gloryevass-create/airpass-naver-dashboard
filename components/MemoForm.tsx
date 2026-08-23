@@ -6,9 +6,10 @@ import { createMemo, type CreateMemoState } from "@/app/dashboard/memos/actions"
 const initialState: CreateMemoState = undefined;
 
 const CATEGORY_OPTIONS = [
-  { value: "keyword", label: "키워드" },
-  { value: "blog", label: "블로그" },
-  { value: "etc", label: "기타" },
+  { value: "business", label: "SI Business" },
+  { value: "cooperation", label: "Cooperation" },
+  { value: "marketing", label: "Marketing" },
+  { value: "etc", label: "etc" },
 ];
 
 export function MemoForm() {

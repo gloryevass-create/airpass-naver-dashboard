@@ -7,7 +7,7 @@ import { requireAuthedClient } from "@/lib/supabase/authed";
 import type { MemoCategory } from "@/lib/queries/memos";
 import { formatMember } from "@/lib/formatMember";
 
-const CATEGORIES: MemoCategory[] = ["keyword", "blog", "etc"];
+const CATEGORIES: MemoCategory[] = ["business", "cooperation", "marketing", "etc"];
 
 // 협력사 서류 첨부(vendors.ts)와 동일한 크기 상한(12MB)을 쓰되, 메모는 스크린샷·
 // 기획서·시트 등 더 다양한 자료가 붙으므로 MIME 화이트리스트는 이미지/PDF/오피스

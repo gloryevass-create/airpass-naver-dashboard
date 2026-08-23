@@ -404,7 +404,7 @@ export type Database = {
           id: string;
           author_id: string;
           author_email: string;
-          category: "keyword" | "blog" | "etc";
+          category: "business" | "cooperation" | "marketing" | "etc";
           title: string;
           content: string;
           created_at: string;
@@ -413,7 +413,7 @@ export type Database = {
           id?: string;
           author_id: string;
           author_email: string;
-          category: "keyword" | "blog" | "etc";
+          category: "business" | "cooperation" | "marketing" | "etc";
           title: string;
           content: string;
           created_at?: string;
@@ -422,7 +422,7 @@ export type Database = {
           id?: string;
           author_id?: string;
           author_email?: string;
-          category?: "keyword" | "blog" | "etc";
+          category?: "business" | "cooperation" | "marketing" | "etc";
           title?: string;
           content?: string;
           created_at?: string;

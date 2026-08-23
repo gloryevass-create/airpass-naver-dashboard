@@ -4,9 +4,10 @@ import { getMemos } from "@/lib/queries/memos";
 import { NavIcon } from "@/components/icons/NavIcon";
 
 const CATEGORY_LABEL: Record<string, string> = {
-  keyword: "키워드",
-  blog: "블로그",
-  etc: "기타",
+  business: "SI Business",
+  cooperation: "Cooperation",
+  marketing: "Marketing",
+  etc: "etc",
 };
 
 export default async function MemosPage() {
