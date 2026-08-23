@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { NavIcon } from "@/components/icons/NavIcon";
-import { AppLogo } from "@/components/icons/AppLogo";
 import { NotificationBell } from "@/components/NotificationBell";
 import { useMobileNav } from "@/components/MobileNavContext";
 import { formatMember } from "@/lib/formatMember";
@@ -59,13 +58,9 @@ export function DashboardHeader({
         >
           <NavIcon name="menu" className="h-5 w-5" />
         </button>
-        <Link href="/dashboard/events2" className="flex min-w-0 items-center gap-2.5">
-          <AppLogo className="h-8 w-8 shrink-0" />
-          <div className="min-w-0">
-            <h1 className="text-sm font-bold leading-tight tracking-tight text-white">
-              Strategic Planning Team Business AGENT
-            </h1>
-          </div>
+        <Link href="/dashboard/events2" className="flex min-w-0 shrink-0 items-center">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.png" alt="Strategic Planning Team" className="h-10 w-auto" />
         </Link>
       </div>
       <div className="flex items-center gap-2 text-sm md:gap-4">
