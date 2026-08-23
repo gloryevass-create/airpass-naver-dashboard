@@ -14,7 +14,7 @@ import {
   updateCooperationProjectHistoryEntry,
 } from "@/app/dashboard/actions/cooperationProjects";
 
-const RELATION_TYPES = ["콘텐츠", "콘텐츠/하드웨어", "공동생산 판매", "제품 판매", "자재구매", "일반", "비즈니스협업"];
+const RELATION_TYPES = ["콘텐츠", "하드웨어", "공동생산 판매", "제품 판매", "자재구매", "일반", "비즈니스협업"];
 const WORK_TYPES = ["아이디어", "시장조사", "기획", "개발", "상품화", "제품생산", "조달등록", "자료", "판매", "첫 미팅"];
 const STATUSES = ["시작 전", "진행 중", "완료", "종료"];
 const TERMINAL_STATUSES = new Set(["완료", "종료"]);
@@ -35,7 +35,7 @@ const STATUS_BADGE: Record<string, string> = {
 
 const RELATION_HEADER_COLOR: Record<string, string> = {
   콘텐츠: "bg-[#e8f2ff] text-[#0066cc]",
-  "콘텐츠/하드웨어": "bg-[#fff4e0] text-[#c2740c]",
+  하드웨어: "bg-[#fff4e0] text-[#c2740c]",
   "공동생산 판매": "bg-[#f3ecff] text-[#7c3aed]",
   "제품 판매": "bg-[#e0f7f5] text-[#0d9488]",
   자재구매: "bg-[#ffe8ec] text-[#c2264c]",
