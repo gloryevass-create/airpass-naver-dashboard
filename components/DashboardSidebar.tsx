@@ -29,6 +29,7 @@ const ITEMS: MenuEntry[] = [
       { href: "/dashboard/events2", label: "calendar", icon: "calendar" },
       { href: "/dashboard/business2", label: "SI Business", icon: "briefcase" },
       { href: "/dashboard/cooperation", label: "cooperation", icon: "share" },
+      { href: "/dashboard/marketing-tasks", label: "marketing", icon: "list" },
     ],
   },
   {
@@ -47,7 +48,6 @@ const ITEMS: MenuEntry[] = [
       { href: "/dashboard/blog", label: "네이버블로그", icon: "document" },
       { href: "/dashboard/youtube", label: "유튜브채널분석", icon: "play" },
       { href: "/dashboard/memos", label: "광고전략메모", icon: "clipboard" },
-      { href: "/dashboard/marketing-tasks", label: "마케팅업무", icon: "list" },
     ],
   },
   {
