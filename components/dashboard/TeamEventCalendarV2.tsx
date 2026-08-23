@@ -286,7 +286,7 @@ export function TeamEventCalendarV2({
                   <div
                     key={day}
                     className={`group min-h-24 border-r border-hairline p-1 last:border-r-0 ${
-                      inMonth ? "" : "bg-black/10"
+                      inMonth ? "" : "bg-[#f7f8fb]"
                     }`}
                   >
                     <div className="mb-1 flex items-center justify-between">
