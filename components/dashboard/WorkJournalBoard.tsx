@@ -291,7 +291,10 @@ export function WorkJournalBoard({ entries, members }: { entries: WorkJournalEnt
             <button
               key={a}
               type="button"
-              onClick={() => setAuthorFilter(a)}
+              onClick={() => {
+                setAuthorFilter(a);
+                setEditingId(null);
+              }}
               className={`rounded-lg px-3 py-1 text-xs font-medium transition-colors ${
                 authorFilter === a ? "bg-primary text-white" : "bg-canvas-cream text-ink-mute hover:text-ink"
               }`}

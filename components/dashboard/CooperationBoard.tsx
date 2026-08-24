@@ -577,7 +577,10 @@ export function CooperationBoard({ projects, members }: { projects: CooperationP
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         <button
           type="button"
-          onClick={() => setStatusFilter(null)}
+          onClick={() => {
+            setStatusFilter(null);
+            setEditingId(null);
+          }}
           className={`flex flex-col gap-1 rounded-sm border bg-primary p-3 text-left text-white transition-shadow ${
             statusFilter === null ? "border-current shadow-[0_0_0_2px_currentColor]" : "border-primary"
           }`}
@@ -592,7 +595,10 @@ export function CooperationBoard({ projects, members }: { projects: CooperationP
             <button
               key={s}
               type="button"
-              onClick={() => setStatusFilter((prev) => (prev === s ? null : s))}
+              onClick={() => {
+                setStatusFilter((prev) => (prev === s ? null : s));
+                setEditingId(null);
+              }}
               className={`flex flex-col gap-1 rounded-sm border p-3 text-left transition-shadow ${badge} ${
                 active ? "border-current shadow-[0_0_0_2px_currentColor]" : "border-hairline"
               }`}
@@ -611,7 +617,10 @@ export function CooperationBoard({ projects, members }: { projects: CooperationP
       {statusFilter && (
         <button
           type="button"
-          onClick={() => setStatusFilter(null)}
+          onClick={() => {
+            setStatusFilter(null);
+            setEditingId(null);
+          }}
           className="w-fit text-xs text-link-blue hover:underline"
         >
           &ldquo;{statusFilter}&rdquo; 필터 해제
