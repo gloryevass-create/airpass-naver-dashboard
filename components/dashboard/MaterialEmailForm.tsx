@@ -178,10 +178,10 @@ export function MaterialEmailForm({ files }: { files: DriveMaterialFile[] }) {
           </p>
         ) : (
           <div className="flex flex-col gap-3 sm:flex-row">
-            <div className="max-h-72 flex-1 overflow-auto rounded-sm border border-hairline bg-background">
+            <div className="max-h-72 flex-1 overflow-auto rounded-sm border border-hairline bg-canvas-cream">
               <FileGroup title="보낼 문서" files={documents} selected={selected} onToggle={toggle} onToggleAll={toggleAll} />
             </div>
-            <div className="max-h-72 flex-1 overflow-auto rounded-sm border border-hairline bg-background">
+            <div className="max-h-72 flex-1 overflow-auto rounded-sm border border-hairline bg-canvas-cream">
               <FileGroup title="보낼 영상" files={videos} selected={selected} onToggle={toggle} onToggleAll={toggleAll} />
             </div>
           </div>
