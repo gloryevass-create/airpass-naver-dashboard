@@ -168,7 +168,7 @@ export function DashboardSidebar({ latestDate }: { latestDate: string | null }) 
                   aria-expanded={expanded}
                   className={`flex items-center gap-2.5 rounded-sm px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wide transition-colors ${
                     hasActiveChild
-                      ? "bg-canvas-lavender/40 text-ink"
+                      ? "bg-canvas-lavender text-ink"
                       : "text-ink-mute hover:bg-canvas-lavender/40 hover:text-ink"
                   }`}
                 >
