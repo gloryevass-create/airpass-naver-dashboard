@@ -3,7 +3,7 @@ import { requireAuthedClient } from "@/lib/supabase/authed";
 import { getDashboardData, type DashboardData } from "@/lib/queries/dashboard";
 import { getActiveCompetitors } from "@/lib/queries/competitors";
 import { getKeywordStrategyComment } from "@/lib/blogKeywordStrategyAi";
-import { SovChart } from "@/components/dashboard/SovChart";
+import { SovTrendChart } from "@/components/dashboard/SovTrendChart";
 import { CadenceTable } from "@/components/dashboard/CadenceTable";
 import { ContentMatchedKeywordTable } from "@/components/dashboard/ContentMatchedKeywordTable";
 import { AiKeywordStrategyComment } from "@/components/dashboard/AiKeywordStrategyComment";
@@ -72,9 +72,9 @@ export default async function BlogPage() {
         <div className="rounded-sm border border-hairline bg-canvas-cream p-4">
           <h2 className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-ink-mute">
             <NavIcon name="pie" className="h-4 w-4" />
-            블로그 노출 점유율 (SOV)
+            블로그 노출 점유율 (SOV) — 최근 14일 추이
           </h2>
-          <SovChart data={dashboard.sov} />
+          <SovTrendChart data={dashboard.sovTrend} />
         </div>
         <div className="rounded-sm border border-hairline bg-canvas-cream p-4">
           <h2 className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-ink-mute">

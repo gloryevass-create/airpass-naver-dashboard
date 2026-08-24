@@ -88,6 +88,10 @@ export type DashboardData = {
     matchCount: number;
   }[];
   sov: { competitorId: string; competitorName: string; sharePct: number }[];
+  sovTrend: {
+    keys: string[];
+    rows: Record<string, number | string>[];
+  };
   cadence: {
     competitorId: string;
     competitorName: string;
@@ -127,6 +131,7 @@ const EMPTY: DashboardData = {
   keywordTable: [],
   contentMatchedKeywords: [],
   sov: [],
+  sovTrend: { keys: [], rows: [] },
   cadence: [],
   alerts: [],
   reports: [],
@@ -171,7 +176,7 @@ export async function getDashboardData(
       .select("date, our_rank")
       .gte("date", trendStart)
       .lte("date", latestDate),
-    supabase.from("blog_sov_daily").select("*").eq("date", latestDate),
+    supabase.from("blog_sov_daily").select("*").gte("date", trendStart).lte("date", latestDate),
     supabase.from("posting_cadence").select("*").eq("date", latestDate),
     // 총 게시물 수는 posting_cadence에 저장된 값이 아니라(스키마에 없음),
     // blog_posts에 지금까지 수집·누적된(url 기준 중복 제거) 전체 건수를 직접 센다.
@@ -293,8 +298,11 @@ export async function getDashboardData(
 
   // 블로그 SOV — 채널별 평균 점유율. 블로그 등록된(blog_id 있는) 채널은 오늘 노출 매칭이
   // 없었더라도 0%로 표시한다 — 매칭된 채널만 보이면 "우리가 몇 곳을 추적 중인지" 알 수 없다.
+  // sovRes는 최근 14일치를 한 번에 받아오므로(아래 sovTrend와 공유), 스냅샷 집계는
+  // latestDate 하루치 행만 걸러서 쓴다.
   const sovByCompetitor = new Map<string, number[]>();
   for (const row of sovRes.data ?? []) {
+    if (row.date !== latestDate) continue;
     const arr = sovByCompetitor.get(row.competitor_id) ?? [];
     arr.push(Number(row.share_pct));
     sovByCompetitor.set(row.competitor_id, arr);
@@ -312,6 +320,43 @@ export async function getDashboardData(
       };
     })
     .sort((a, b) => b.sharePct - a.sharePct);
+
+  // SOV 추이 — 경쟁사가 많으면 선이 겹쳐 못 알아보게 되므로, 최신일 기준 상위 6곳만 개별
+  // 선으로 그리고 나머지는 "기타 평균" 한 줄로 묶는다.
+  const SOV_TREND_TOP_N = 6;
+  const sovByDateCompetitor = new Map<string, Map<string, number[]>>();
+  for (const row of sovRes.data ?? []) {
+    const dateMap = sovByDateCompetitor.get(row.date) ?? new Map<string, number[]>();
+    const arr = dateMap.get(row.competitor_id) ?? [];
+    arr.push(Number(row.share_pct));
+    dateMap.set(row.competitor_id, arr);
+    sovByDateCompetitor.set(row.date, dateMap);
+  }
+  const sovTrendTop = sov.slice(0, SOV_TREND_TOP_N);
+  const sovTrendOthers = sov.slice(SOV_TREND_TOP_N);
+  const sovTrendKeys = sovTrendTop.map((c) => c.competitorName).concat(sovTrendOthers.length > 0 ? ["기타 평균"] : []);
+  const sovTrendDates: string[] = [];
+  for (let d = new Date(`${trendStart}T00:00:00Z`); d <= new Date(`${latestDate}T00:00:00Z`); d.setUTCDate(d.getUTCDate() + 1)) {
+    sovTrendDates.push(d.toISOString().slice(0, 10));
+  }
+  const sovTrend = sovTrendDates.map((date) => {
+    const dateMap = sovByDateCompetitor.get(date);
+    const row: Record<string, number | string> = { date };
+    for (const c of sovTrendTop) {
+      const arr = dateMap?.get(c.competitorId);
+      row[c.competitorName] = arr?.length
+        ? Math.round((arr.reduce((a, b) => a + b, 0) / arr.length) * 10) / 10
+        : 0;
+    }
+    if (sovTrendOthers.length > 0) {
+      const values = sovTrendOthers.map((c) => {
+        const arr = dateMap?.get(c.competitorId);
+        return arr?.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
+      });
+      row["기타 평균"] = Math.round((values.reduce((a, b) => a + b, 0) / values.length) * 10) / 10;
+    }
+    return row;
+  });
 
   // 총 게시물 수 — blog_posts에 지금까지 누적 수집된(url 기준 중복 제거) 건수를 채널별로 집계
   const totalPostCountByCompetitor = new Map<string, number>();
@@ -406,6 +451,7 @@ export async function getDashboardData(
     keywordTable,
     contentMatchedKeywords,
     sov,
+    sovTrend: { keys: sovTrendKeys, rows: sovTrend },
     cadence,
     alerts,
     reports,
