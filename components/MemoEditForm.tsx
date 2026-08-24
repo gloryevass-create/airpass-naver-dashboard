@@ -38,7 +38,7 @@ export function MemoEditForm({ memo }: { memo: MemoDetail }) {
           name="category"
           required
           defaultValue={memo.category}
-          className="w-40 rounded border border-hairline px-3 py-2 text-sm text-ink outline-none focus:border-primary"
+          className="w-40 rounded border border-hairline bg-canvas-cream px-3 py-2 text-sm text-ink outline-none focus:border-primary"
         >
           {CATEGORY_OPTIONS.map((c) => (
             <option key={c.value} value={c.value}>
@@ -59,7 +59,7 @@ export function MemoEditForm({ memo }: { memo: MemoDetail }) {
           required
           maxLength={200}
           defaultValue={memo.title}
-          className="rounded border border-hairline px-3 py-2 text-sm text-ink outline-none focus:border-primary"
+          className="rounded border border-hairline bg-canvas-cream px-3 py-2 text-sm text-ink outline-none focus:border-primary"
         />
       </div>
 
@@ -73,7 +73,7 @@ export function MemoEditForm({ memo }: { memo: MemoDetail }) {
           required
           rows={10}
           defaultValue={memo.content}
-          className="rounded border border-hairline px-3 py-2 text-sm text-ink outline-none focus:border-primary"
+          className="rounded border border-hairline bg-canvas-cream px-3 py-2 text-sm text-ink outline-none focus:border-primary"
         />
       </div>
 
@@ -114,7 +114,7 @@ export function MemoEditForm({ memo }: { memo: MemoDetail }) {
           type="file"
           multiple
           accept="image/jpeg,image/png,image/webp,image/gif,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip"
-          className="rounded border border-hairline px-3 py-2 text-sm text-ink outline-none file:mr-3 file:rounded file:border-0 file:bg-canvas-cream file:px-3 file:py-1 file:text-sm"
+          className="rounded border border-hairline bg-canvas-cream px-3 py-2 text-sm text-ink outline-none file:mr-3 file:rounded file:border-0 file:bg-canvas-cream file:px-3 file:py-1 file:text-sm"
         />
         <p className="text-xs text-ink-mute">이미지·PDF·Office 문서·ZIP, 파일당 12MB 이하, 최대 5개</p>
       </div>

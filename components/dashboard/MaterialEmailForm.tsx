@@ -127,7 +127,7 @@ export function MaterialEmailForm({ files }: { files: DriveMaterialFile[] }) {
           required
           rows={2}
           placeholder="example@company.com, another@company.com"
-          className="rounded border border-hairline px-3 py-2 text-sm text-ink outline-none focus:border-primary"
+          className="rounded border border-hairline bg-canvas-cream px-3 py-2 text-sm text-ink outline-none focus:border-primary"
         />
       </div>
 
@@ -141,7 +141,7 @@ export function MaterialEmailForm({ files }: { files: DriveMaterialFile[] }) {
           type="text"
           required
           maxLength={200}
-          className="rounded border border-hairline px-3 py-2 text-sm text-ink outline-none focus:border-primary"
+          className="rounded border border-hairline bg-canvas-cream px-3 py-2 text-sm text-ink outline-none focus:border-primary"
         />
       </div>
 
@@ -155,7 +155,7 @@ export function MaterialEmailForm({ files }: { files: DriveMaterialFile[] }) {
           required
           rows={6}
           placeholder="보내드리는 자료에 대한 안내 문구를 입력하세요."
-          className="rounded border border-hairline px-3 py-2 text-sm text-ink outline-none focus:border-primary"
+          className="rounded border border-hairline bg-canvas-cream px-3 py-2 text-sm text-ink outline-none focus:border-primary"
         />
       </div>
 
@@ -169,7 +169,7 @@ export function MaterialEmailForm({ files }: { files: DriveMaterialFile[] }) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="자료명 검색"
-            className="w-48 rounded border border-hairline px-2 py-1 text-xs text-ink outline-none focus:border-primary"
+            className="w-48 rounded border border-hairline bg-canvas-cream px-2 py-1 text-xs text-ink outline-none focus:border-primary"
           />
         </div>
         {filtered.length === 0 ? (
