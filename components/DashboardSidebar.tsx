@@ -31,6 +31,7 @@ const ITEMS: MenuEntry[] = [
       { href: "/dashboard/cooperation", label: "Cooperation", icon: "share" },
       { href: "/dashboard/marketing-tasks", label: "Marketing", icon: "list" },
       { href: "/dashboard/memos", label: "Memo Board", icon: "clipboard" },
+      { href: "/dashboard/work-journal", label: "Work Journal", icon: "chat" },
     ],
   },
   {

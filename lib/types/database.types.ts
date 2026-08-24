@@ -1926,6 +1926,63 @@ export type Database = {
         };
         Relationships: [];
       };
+      work_journal_entries: {
+        Row: {
+          id: string;
+          author_name: string;
+          week_label: string | null;
+          entry_date: string | null;
+          content: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          author_name: string;
+          week_label?: string | null;
+          entry_date?: string | null;
+          content?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          author_name?: string;
+          week_label?: string | null;
+          entry_date?: string | null;
+          content?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      work_journal_attachments: {
+        Row: {
+          id: string;
+          entry_id: string;
+          file_name: string;
+          content_type: string | null;
+          storage_path: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          entry_id: string;
+          file_name: string;
+          content_type?: string | null;
+          storage_path: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          entry_id?: string;
+          file_name?: string;
+          content_type?: string | null;
+          storage_path?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
