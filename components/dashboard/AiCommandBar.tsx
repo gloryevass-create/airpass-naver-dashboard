@@ -638,13 +638,27 @@ export function AiCommandBar({ members }: { members: string[] }) {
 
       {showPanel && (
         <div className="absolute left-0 right-0 top-full z-20 mt-2 rounded-md border border-hairline bg-canvas-cream p-3 text-left shadow-lg">
-          {pendingQuestion && (
-            <p className="text-xs text-ink-mute">
-              <span className="font-semibold text-primary">AI</span> {pendingQuestion}
-            </p>
-          )}
-          {statusMessage && <p className="text-xs font-medium text-semantic-success">✓ {statusMessage}</p>}
-          {error && <p className="text-xs text-semantic-error">{error}</p>}
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex-1">
+              {pendingQuestion && (
+                <p className="text-xs text-ink-mute">
+                  <span className="font-semibold text-primary">AI</span> {pendingQuestion}
+                </p>
+              )}
+              {statusMessage && <p className="text-xs font-medium text-semantic-success">✓ {statusMessage}</p>}
+              {error && <p className="text-xs text-semantic-error">{error}</p>}
+            </div>
+            {!fallbackDraft && (history.length > 0 || error || statusMessage) && (
+              <button
+                type="button"
+                onClick={reset}
+                aria-label="닫기"
+                className="shrink-0 text-ink-mute hover:text-ink"
+              >
+                ✕
+              </button>
+            )}
+          </div>
           {fallbackDraft?.tool === "create_calendar_event" && (
             <div className="mt-2">
               <CalendarEventFallbackForm input={fallbackDraft.input} members={members} onDone={reset} />
@@ -669,11 +683,6 @@ export function AiCommandBar({ members }: { members: string[] }) {
             <div className="mt-2">
               <MarketingTaskFallbackForm input={fallbackDraft.input} members={members} onDone={reset} />
             </div>
-          )}
-          {!fallbackDraft && (history.length > 0 || error || statusMessage) && (
-            <button type="button" onClick={reset} className="mt-2 text-xs text-ink-mute hover:underline">
-              초기화
-            </button>
           )}
         </div>
       )}
