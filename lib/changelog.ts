@@ -9,6 +9,12 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: "2026-08-26",
+    items: [
+      "통합 AI 명령 입력창 1단계 추가 — 전 페이지 상단에서 자연어로 Calendar 일정 등록·Memo 작성 가능(AI가 직접 저장하지 않고 항상 미리보기 확인 후 저장, 모호하면 되물음)",
+    ],
+  },
+  {
     date: "2026-08-24",
     items: [
       "대시보드 헤더·로그인 화면 로고를 실제 투명 배경 이미지로 교체, 위치·정렬 조정 및 로그인 화면 안내 문구 삭제",
