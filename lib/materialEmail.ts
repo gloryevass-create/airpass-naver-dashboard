@@ -26,7 +26,7 @@ export async function sendMaterialEmail(params: {
   subject: string;
   message: string;
   senderName: string;
-  files: { name: string; link: string }[];
+  files: { name: string; link: string; mimeType: string }[];
 }): Promise<void> {
   const host = process.env.MATERIAL_EMAIL_SMTP_HOST;
   const port = Number(process.env.MATERIAL_EMAIL_SMTP_PORT);
@@ -39,15 +39,22 @@ export async function sendMaterialEmail(params: {
   }
   const fromName = process.env.MATERIAL_EMAIL_FROM_NAME;
 
-  const fileListHtml =
-    params.files.length > 0
-      ? `<p style="margin:20px 0 8px;font-weight:600;">첨부 자료</p><ul style="margin:0;padding-left:20px;">${params.files
-          .map(
-            (f) =>
-              `<li style="margin-bottom:4px;"><a href="${f.link}" style="color:#2557d6;">${escapeHtml(f.name)}</a></li>`
-          )
-          .join("")}</ul>`
-      : "";
+  // "보낼 자료 선택" 화면의 문서/영상 구분을 메일 본문에도 그대로 반영한다 —
+  // 섞인 목록보다 어떤 파일이 문서고 어떤 게 영상인지 한눈에 구분되게 한다.
+  const documents = params.files.filter((f) => !f.mimeType.startsWith("video/"));
+  const videos = params.files.filter((f) => f.mimeType.startsWith("video/"));
+
+  function fileListSection(title: string, icon: string, group: { name: string; link: string }[]): string {
+    if (group.length === 0) return "";
+    return `<p style="margin:20px 0 8px;font-weight:600;">${title}</p><ul style="margin:0;padding-left:20px;">${group
+      .map(
+        (f) =>
+          `<li style="margin-bottom:4px;">${icon} <a href="${f.link}" style="color:#2557d6;">${escapeHtml(f.name)}</a></li>`
+      )
+      .join("")}</ul>`;
+  }
+
+  const fileListHtml = fileListSection("첨부 문서", "📄", documents) + fileListSection("첨부 영상", "🎬", videos);
 
   const html = `
     <div style="font-family:-apple-system,'Malgun Gothic',sans-serif;font-size:14px;color:#1a1a1a;line-height:1.6;max-width:560px;">

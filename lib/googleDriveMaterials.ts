@@ -79,7 +79,7 @@ export async function listMaterialFiles(): Promise<DriveMaterialFile[]> {
 /** 파일에 "링크가 있는 모든 사용자는 볼 수 있음" 권한이 없으면 부여하고, 파일명과
  * 공유 가능한 열람 링크를 반환한다. 이미 그 권한이 있으면 그대로 재사용한다(중복
  * 부여 방지). 파일명은 클라이언트가 보낸 값을 신뢰하지 않고 이 시점에 다시 조회한다. */
-export async function ensureFileShared(fileId: string): Promise<{ name: string; link: string }> {
+export async function ensureFileShared(fileId: string): Promise<{ name: string; link: string; mimeType: string }> {
   const drive = getDriveClient();
 
   const existing = await drive.permissions.list({
@@ -97,9 +97,9 @@ export async function ensureFileShared(fileId: string): Promise<{ name: string; 
     });
   }
 
-  const file = await drive.files.get({ fileId, fields: "name, webViewLink" });
+  const file = await drive.files.get({ fileId, fields: "name, webViewLink, mimeType" });
   if (!file.data.webViewLink || !file.data.name) {
     throw new Error(`파일(${fileId})의 이름 또는 공유 링크를 가져오지 못했습니다.`);
   }
-  return { name: file.data.name, link: file.data.webViewLink };
+  return { name: file.data.name, link: file.data.webViewLink, mimeType: file.data.mimeType ?? "application/octet-stream" };
 }

@@ -40,7 +40,7 @@ export async function sendMaterialEmailAction(
   if (!message) return { error: "안내 내용을 입력하세요." };
   if (fileIds.length === 0) return { error: "보낼 자료를 하나 이상 선택하세요." };
 
-  let files: { name: string; link: string }[];
+  let files: { name: string; link: string; mimeType: string }[];
   try {
     files = await Promise.all(fileIds.map((id) => ensureFileShared(id)));
   } catch (e) {
