@@ -1,17 +1,20 @@
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { getLatestDataDate } from "@/lib/queries/dashboard";
 import { getNotifications } from "@/lib/queries/notifications";
+import { getTeamMemberNames } from "@/lib/queries/teamMembers";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { DashboardSidebar } from "@/components/DashboardSidebar";
+import { AiCommandBar } from "@/components/dashboard/AiCommandBar";
 import { MobileNavProvider } from "@/components/MobileNavContext";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { supabase, user } = await requireAuthedClient();
 
-  const [{ data: profile }, latestDate, notifications] = await Promise.all([
+  const [{ data: profile }, latestDate, notifications, teamMembers] = await Promise.all([
     supabase.from("profiles").select("role, name, title").eq("id", user.id).single(),
     getLatestDataDate(),
     getNotifications(supabase, user.id),
+    getTeamMemberNames(supabase),
   ]);
 
   return (
@@ -27,7 +30,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
         />
         <div className="flex flex-1 overflow-x-hidden">
           <DashboardSidebar latestDate={latestDate} />
-          <div className="min-w-0 flex-1">{children}</div>
+          <div className="flex min-w-0 flex-1 flex-col">
+            <AiCommandBar members={teamMembers} />
+            <div className="min-w-0 flex-1">{children}</div>
+          </div>
         </div>
       </div>
     </MobileNavProvider>
