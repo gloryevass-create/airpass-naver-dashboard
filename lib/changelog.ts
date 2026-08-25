@@ -12,6 +12,8 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: "2026-08-26",
     items: [
       "통합 AI 명령 입력창 1단계 추가 — 전 페이지 상단에서 자연어로 Calendar 일정 등록·Memo 작성 가능(AI가 직접 저장하지 않고 항상 미리보기 확인 후 저장, 모호하면 되물음)",
+      "통합 AI 명령 입력창 위치를 헤더 최상단 가운데로 이동, 확인 버튼 없이 자동 등록되도록 변경(실패 시에만 수정 폼 표시)",
+      "통합 AI 명령 입력창 2단계 — SI Business/Cooperation/Marketing 신규 항목 등록 추가",
     ],
   },
   {
