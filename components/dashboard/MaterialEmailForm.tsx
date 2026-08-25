@@ -108,8 +108,11 @@ export function MaterialEmailForm({ files }: { files: DriveMaterialFile[] }) {
     try {
       const draft = JSON.parse(raw) as AiMaterialEmailDraft;
       setRecipients(draft.recipients);
-      setSubject(draft.subject);
-      setMessage(draft.message);
+      // 주소만 말하고 제목·내용·자료를 따로 지정하지 않았으면 기본 안내문·전체
+      // 자료 선택을 그대로 쓴다 — AI가 빈 값으로 덮어써서 기본값이 사라지지
+      // 않게 한다(사용자 확인, 2026-08-26).
+      if (draft.subject) setSubject(draft.subject);
+      if (draft.message) setMessage(draft.message);
       if (draft.fileNameHints.length > 0) {
         const hints = draft.fileNameHints.map((h) => h.toLowerCase()).filter(Boolean);
         const matched = files.filter((f) => hints.some((h) => f.name.toLowerCase().includes(h)));
