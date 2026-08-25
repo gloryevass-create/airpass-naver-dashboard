@@ -1,8 +1,9 @@
 "use client";
 
-import { useActionState, useMemo, useState } from "react";
+import { useActionState, useEffect, useMemo, useState } from "react";
 import type { DriveMaterialFile } from "@/lib/googleDriveMaterials";
 import { sendMaterialEmailAction, type SendMaterialEmailState } from "@/app/dashboard/actions/materialEmail";
+import { AI_MATERIAL_EMAIL_DRAFT_KEY, type AiMaterialEmailDraft } from "@/lib/aiMaterialEmailDraft";
 
 const initialState: SendMaterialEmailState = undefined;
 
@@ -78,6 +79,36 @@ export function MaterialEmailForm({ files }: { files: DriveMaterialFile[] }) {
   const [state, formAction, pending] = useActionState(sendMaterialEmailAction, initialState);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [recipients, setRecipients] = useState("");
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
+  const [aiNotice, setAiNotice] = useState(false);
+
+  // AI 명령 입력창에서 넘어온 초안이 있으면 채워 넣는다(자동 발송은 하지 않고
+  // 항상 이 화면에서 사람이 확인 후 직접 "보내기"를 눌러야 한다). sessionStorage는
+  // 브라우저 전용 외부 저장소라 마운트 시 1회 동기화가 정당한 useEffect 용도다.
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    const raw = window.sessionStorage.getItem(AI_MATERIAL_EMAIL_DRAFT_KEY);
+    if (!raw) return;
+    window.sessionStorage.removeItem(AI_MATERIAL_EMAIL_DRAFT_KEY);
+    try {
+      const draft = JSON.parse(raw) as AiMaterialEmailDraft;
+      setRecipients(draft.recipients);
+      setSubject(draft.subject);
+      setMessage(draft.message);
+      if (draft.fileNameHints.length > 0) {
+        const hints = draft.fileNameHints.map((h) => h.toLowerCase()).filter(Boolean);
+        const matched = files.filter((f) => hints.some((h) => f.name.toLowerCase().includes(h)));
+        if (matched.length > 0) setSelected(new Set(matched.map((f) => f.id)));
+      }
+      setAiNotice(true);
+    } catch {
+      // 초안 파싱 실패 시 조용히 무시하고 빈 폼으로 둔다.
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -117,6 +148,11 @@ export function MaterialEmailForm({ files }: { files: DriveMaterialFile[] }) {
       }}
       className="flex flex-col gap-4"
     >
+      {aiNotice && (
+        <p className="rounded-sm border border-primary/30 bg-canvas-lavender/40 px-3 py-2 text-xs text-primary">
+          AI 명령 입력창에서 넘어온 내용으로 미리 채웠습니다 — 내용을 확인하고 직접 보내주세요.
+        </p>
+      )}
       <div className="flex flex-col gap-1">
         <label htmlFor="recipients" className="text-sm font-medium text-ink">
           받는 사람 이메일 (쉼표 또는 줄바꿈으로 여러 명 입력)
@@ -126,6 +162,8 @@ export function MaterialEmailForm({ files }: { files: DriveMaterialFile[] }) {
           name="recipients"
           required
           rows={2}
+          value={recipients}
+          onChange={(e) => setRecipients(e.target.value)}
           placeholder="example@company.com, another@company.com"
           className="rounded border border-hairline bg-canvas-cream px-3 py-2 text-sm text-ink outline-none focus:border-primary"
         />
@@ -141,6 +179,8 @@ export function MaterialEmailForm({ files }: { files: DriveMaterialFile[] }) {
           type="text"
           required
           maxLength={200}
+          value={subject}
+          onChange={(e) => setSubject(e.target.value)}
           className="rounded border border-hairline bg-canvas-cream px-3 py-2 text-sm text-ink outline-none focus:border-primary"
         />
       </div>
@@ -154,6 +194,8 @@ export function MaterialEmailForm({ files }: { files: DriveMaterialFile[] }) {
           name="message"
           required
           rows={6}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
           placeholder="보내드리는 자료에 대한 안내 문구를 입력하세요."
           className="rounded border border-hairline bg-canvas-cream px-3 py-2 text-sm text-ink outline-none focus:border-primary"
         />

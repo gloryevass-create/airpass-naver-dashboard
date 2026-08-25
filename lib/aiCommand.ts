@@ -75,12 +75,20 @@ export type AiMarketingTaskDraft = {
   assignees: string[];
 };
 
+export type AiMaterialEmailDraft = {
+  recipients: string;
+  subject: string;
+  message: string;
+  fileNameHints: string[];
+};
+
 export type AiCommandResult =
   | { tool: "create_calendar_event"; input: AiCalendarEventDraft }
   | { tool: "create_memo"; input: AiMemoDraft }
   | { tool: "create_business_project"; input: AiBusinessProjectDraft }
   | { tool: "create_cooperation_project"; input: AiCooperationProjectDraft }
   | { tool: "create_marketing_task"; input: AiMarketingTaskDraft }
+  | { tool: "send_material_email"; input: AiMaterialEmailDraft }
   | { tool: "ask_clarification"; question: string };
 
 export type AiCommandTurn = { role: "user" | "assistant"; text: string };
@@ -168,10 +176,12 @@ export async function runAiCommand(
 - SI Business: 관공서·기관 대상 영업/사업 진행 건 신규 등록(발주기관, 사업 단계·진행상태 등)
 - Cooperation: 협력사와의 협업 건 신규 등록(콘텐츠/하드웨어/공동생산 등 관계 유형)
 - Marketing: 마케팅 업무 신규 등록(브로슈어·홈페이지·영상 등 제작 업무)
+- 자료메일발송: 구글드라이브 자료를 이메일로 보내기(자료 소개·전달 요청)
 오늘 날짜는 ${todayInSeoul()}(KST)입니다. "내일", "다음주 화요일" 같은 상대 날짜는 이 날짜를 기준으로 계산하세요.
 현재 로그인한 사용자 이름은 "${context.userName}"입니다. "내가", "나" 같은 표현은 이 이름으로 처리하세요.
 실제 팀원 이름 목록: ${context.teamMembers.join(", ") || "(없음)"}. 담당자류 필드는 반드시 이 목록에서 정확히 일치하는 이름만 넣고, 목록에 없거나 불확실한 이름은 추측해서 넣지 말고 빈 배열로 두세요.
-위 5개 메뉴 중 어디에도 해당하지 않거나, 제목처럼 핵심 정보가 빠져 등록할 수 없으면 ask_clarification 도구로 한 가지만 짧게 되물으세요. 억지로 다른 도구를 고르지 마세요.
+자료메일발송의 recipients는 문장에 실제 이메일 주소(@ 포함)가 명시된 경우에만 채우세요. 이름만 언급되고 이메일 주소가 없으면 절대 추측하지 말고 빈 문자열로 두세요(사람 이름을 이메일 주소로 지어내는 것 절대 금지). 이 도구는 실제 발송을 하지 않고 발송 화면으로 안내만 하니, 확신이 없어도 fileNameHints·message는 최선을 다해 채우세요.
+위 6개 메뉴 중 어디에도 해당하지 않거나, 제목처럼 핵심 정보가 빠져 등록할 수 없으면 ask_clarification 도구로 한 가지만 짧게 되물으세요. 억지로 다른 도구를 고르지 마세요.
 모르는 값은 절대 추측하지 말고 빈 문자열/빈 배열로 두세요. enum으로 제한된 필드는 목록에 없으면 빈 문자열을 쓰세요.`,
       messages,
       tools: [
@@ -322,6 +332,29 @@ export async function runAiCommand(
           },
         },
         {
+          name: "send_material_email",
+          description:
+            "자료메일발송 화면으로 안내한다. 실제 발송은 하지 않고, 화면에 내용을 미리 채워 사용자가 확인 후 직접 보내게 한다.",
+          input_schema: {
+            type: "object",
+            properties: {
+              recipients: {
+                type: "string",
+                description: "쉼표로 구분된 실제 이메일 주소만. @가 포함된 명시적 주소가 없으면 빈 문자열.",
+              },
+              subject: { type: "string", description: "이메일 제목" },
+              message: { type: "string", description: "본문 안내 문구(정중한 존댓말로 간결하게 작성)" },
+              fileNameHints: {
+                type: "array",
+                items: { type: "string" },
+                maxItems: 8,
+                description: "보낼 자료 이름에 들어갈 키워드. 확실하지 않으면 빈 배열.",
+              },
+            },
+            required: ["recipients", "subject", "message", "fileNameHints"],
+          },
+        },
+        {
           name: "ask_clarification",
           description: "요청이 모호하거나 필수 정보가 빠졌을 때 짧게 되묻는다.",
           input_schema: {
@@ -434,6 +467,18 @@ export async function runAiCommand(
         dueDate: str(input, "dueDate"),
         dueDateEnd: str(input, "dueDateEnd"),
         assignees: toStringArray(input.assignees),
+      },
+    };
+  }
+
+  if (toolUse.name === "send_material_email") {
+    return {
+      tool: "send_material_email",
+      input: {
+        recipients: str(input, "recipients"),
+        subject: str(input, "subject"),
+        message: str(input, "message"),
+        fileNameHints: toStringArray(input.fileNameHints),
       },
     };
   }
