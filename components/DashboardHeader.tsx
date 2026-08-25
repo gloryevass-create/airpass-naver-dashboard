@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { NavIcon } from "@/components/icons/NavIcon";
 import { NotificationBell } from "@/components/NotificationBell";
+import { AiCommandBar } from "@/components/dashboard/AiCommandBar";
 import { useMobileNav } from "@/components/MobileNavContext";
 import { formatMember } from "@/lib/formatMember";
 import type { Notification } from "@/lib/queries/notifications";
@@ -17,6 +18,7 @@ export function DashboardHeader({
   isAdmin,
   userId,
   notifications,
+  teamMembers,
 }: {
   email: string;
   name: string | null;
@@ -24,6 +26,7 @@ export function DashboardHeader({
   isAdmin: boolean;
   userId: string;
   notifications: Notification[];
+  teamMembers: string[];
 }) {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -62,6 +65,9 @@ export function DashboardHeader({
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logo.png" alt="Strategic Planning Team" className="-ml-3 h-10 w-auto" />
         </Link>
+      </div>
+      <div className="hidden flex-1 justify-center px-4 lg:flex">
+        <AiCommandBar members={teamMembers} />
       </div>
       <div className="flex items-center gap-2 text-sm md:gap-4">
         <NotificationBell initialNotifications={notifications} userId={userId} />

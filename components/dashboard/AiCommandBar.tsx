@@ -22,7 +22,10 @@ const MEMO_CATEGORY_OPTIONS = [
 const FIELD_CLASS =
   "rounded-sm border border-hairline bg-background px-3 py-1.5 text-sm text-ink outline-none focus:border-primary";
 
-function CalendarEventPreview({
+/** 정상 흐름에서는 AI 결과를 그대로 기존 create 액션에 바로 제출해 자동 등록한다
+ * (확인 버튼 클릭 요구 안 함, 사용자 확인 2026-08-26). 이 폼들은 자동 등록이
+ * 실패했을 때(필수값 누락 등)만 나타나는 복구용 수정 화면이다. */
+function CalendarEventFallbackForm({
   input,
   members,
   onDone,
@@ -41,11 +44,8 @@ function CalendarEventPreview({
         router.refresh();
         onDone();
       }}
-      className="flex flex-col gap-2 rounded-sm border border-primary/30 bg-canvas-cream p-3"
+      className="flex flex-col gap-2"
     >
-      <p className="text-xs font-semibold text-primary">
-        Calendar에 새 일정으로 등록합니다 — 확인 후 저장하세요.
-      </p>
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         <label className="flex flex-col gap-1 text-xs text-ink-mute sm:col-span-2">
           제목 *
@@ -104,7 +104,7 @@ function CalendarEventPreview({
   );
 }
 
-function MemoPreview({
+function MemoFallbackForm({
   input,
   onDone,
 }: {
@@ -114,10 +114,7 @@ function MemoPreview({
   const [state, formAction, pending] = useActionState(createMemo, undefined);
 
   return (
-    <form action={formAction} className="flex flex-col gap-2 rounded-sm border border-primary/30 bg-canvas-cream p-3">
-      <p className="text-xs font-semibold text-primary">
-        Memo Board에 새 메모로 등록합니다 — 확인 후 저장하세요.
-      </p>
+    <form action={formAction} className="flex flex-col gap-2">
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-[160px_1fr]">
         <label className="flex flex-col gap-1 text-xs text-ink-mute">
           구분
@@ -159,11 +156,37 @@ function MemoPreview({
   );
 }
 
+function buildCalendarFormData(input: Extract<AiCommandResult, { tool: "create_calendar_event" }>["input"]): FormData {
+  const fd = new FormData();
+  fd.set("title", input.title);
+  fd.set("dateStart", input.dateStart);
+  fd.set("dateEnd", input.dateEnd);
+  if (!input.isAllDay) fd.set("isDatetime", "on");
+  fd.set("tags", "");
+  fd.set("category", input.category);
+  fd.set("location", input.location);
+  fd.set("target", input.target);
+  fd.set("content", input.content);
+  for (const a of input.assignees) fd.append("assignees", a);
+  for (const a of input.attendees) fd.append("attendees", a);
+  return fd;
+}
+
+function buildMemoFormData(input: Extract<AiCommandResult, { tool: "create_memo" }>["input"]): FormData {
+  const fd = new FormData();
+  fd.set("category", input.category);
+  fd.set("title", input.title);
+  fd.set("content", input.content);
+  return fd;
+}
+
 export function AiCommandBar({ members }: { members: string[] }) {
+  const router = useRouter();
   const [message, setMessage] = useState("");
   const [history, setHistory] = useState<AiCommandTurn[]>([]);
   const [pendingQuestion, setPendingQuestion] = useState<string | null>(null);
-  const [draft, setDraft] = useState<AiCommandResult | null>(null);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [fallbackDraft, setFallbackDraft] = useState<AiCommandResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -171,7 +194,8 @@ export function AiCommandBar({ members }: { members: string[] }) {
     setMessage("");
     setHistory([]);
     setPendingQuestion(null);
-    setDraft(null);
+    setStatusMessage(null);
+    setFallbackDraft(null);
     setError(null);
   }
 
@@ -179,6 +203,7 @@ export function AiCommandBar({ members }: { members: string[] }) {
     const text = message.trim();
     if (!text || isPending) return;
     setError(null);
+    setStatusMessage(null);
     startTransition(async () => {
       const res: AiCommandActionResult = await runAiCommand(text, history);
       if ("error" in res) {
@@ -191,41 +216,44 @@ export function AiCommandBar({ members }: { members: string[] }) {
         setMessage("");
         return;
       }
-      setDraft(res);
-      setPendingQuestion(null);
-      setMessage("");
+      if (res.tool === "create_calendar_event") {
+        const result = await createTeamEventV2(undefined, buildCalendarFormData(res.input));
+        if (result?.error) {
+          setError(`자동 등록 실패: ${result.error} — 아래에서 확인 후 등록해 주세요.`);
+          setFallbackDraft(res);
+          return;
+        }
+        router.refresh();
+        setPendingQuestion(null);
+        setHistory([]);
+        setMessage("");
+        setStatusMessage(`Calendar에 "${res.input.title}" 일정을 등록했습니다.`);
+        return;
+      }
+      // create_memo: 성공 시 createMemo 내부에서 redirect()가 던져져 여기 아래 코드는
+      // 실행되지 않고 그대로 이동한다 — 실패(검증 오류)일 때만 아래에 도달한다.
+      const result = await createMemo(undefined, buildMemoFormData(res.input));
+      if (result?.error) {
+        setError(`자동 등록 실패: ${result.error} — 아래에서 확인 후 등록해 주세요.`);
+        setFallbackDraft(res);
+      }
     });
   }
 
-  if (draft?.tool === "create_calendar_event") {
-    return (
-      <div className="border-b border-hairline bg-[#fafafa] px-6 py-3">
-        <CalendarEventPreview input={draft.input} members={members} onDone={reset} />
-      </div>
-    );
-  }
-  if (draft?.tool === "create_memo") {
-    return (
-      <div className="border-b border-hairline bg-[#fafafa] px-6 py-3">
-        <MemoPreview input={draft.input} onDone={reset} />
-      </div>
-    );
-  }
+  const showPanel = Boolean(pendingQuestion || statusMessage || error || fallbackDraft);
 
   return (
-    <div className="border-b border-hairline bg-[#fafafa] px-6 py-3">
-      {pendingQuestion && (
-        <p className="mb-1.5 text-xs text-ink-mute">
-          <span className="font-semibold text-primary">AI</span> {pendingQuestion}
-        </p>
-      )}
+    <div className="relative w-full max-w-xl">
       <div className="flex items-center gap-2">
         <span aria-hidden="true" className="shrink-0 text-primary">
           ✦
         </span>
         <input
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          onChange={(e) => {
+            setMessage(e.target.value);
+            if (statusMessage) setStatusMessage(null);
+          }}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
               e.preventDefault();
@@ -233,26 +261,47 @@ export function AiCommandBar({ members }: { members: string[] }) {
             }
           }}
           placeholder={
-            pendingQuestion ? "답변을 입력하세요" : "예: 내일 오후 2시 김민준님이랑 XR스크린 미팅 캘린더에 등록해줘"
+            pendingQuestion ? "답변을 입력하세요" : "AI에게 일정 등록·메모 작성을 시켜보세요"
           }
           disabled={isPending}
-          className="min-w-0 flex-1 rounded-full border border-hairline bg-canvas-cream px-4 py-2 text-sm text-ink outline-none focus:border-primary disabled:opacity-60"
+          className="min-w-0 flex-1 rounded-full border border-transparent bg-white/95 px-4 py-1.5 text-sm text-ink outline-none focus:border-primary disabled:opacity-60"
         />
         <button
           type="button"
           onClick={submit}
           disabled={isPending || !message.trim()}
-          className="shrink-0 rounded-full bg-primary px-4 py-2 text-xs font-bold text-white hover:bg-primary-press disabled:opacity-50"
+          className="shrink-0 rounded-full bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press disabled:opacity-50"
         >
           {isPending ? "처리 중..." : "AI로 처리"}
         </button>
-        {(history.length > 0 || error) && (
-          <button type="button" onClick={reset} className="shrink-0 text-xs text-ink-mute hover:underline">
-            초기화
-          </button>
-        )}
       </div>
-      {error && <p className="mt-1.5 text-xs text-semantic-error">{error}</p>}
+
+      {showPanel && (
+        <div className="absolute left-0 right-0 top-full z-20 mt-2 rounded-md border border-hairline bg-canvas-cream p-3 text-left shadow-lg">
+          {pendingQuestion && (
+            <p className="text-xs text-ink-mute">
+              <span className="font-semibold text-primary">AI</span> {pendingQuestion}
+            </p>
+          )}
+          {statusMessage && <p className="text-xs font-medium text-semantic-success">✓ {statusMessage}</p>}
+          {error && <p className="text-xs text-semantic-error">{error}</p>}
+          {fallbackDraft?.tool === "create_calendar_event" && (
+            <div className="mt-2">
+              <CalendarEventFallbackForm input={fallbackDraft.input} members={members} onDone={reset} />
+            </div>
+          )}
+          {fallbackDraft?.tool === "create_memo" && (
+            <div className="mt-2">
+              <MemoFallbackForm input={fallbackDraft.input} onDone={reset} />
+            </div>
+          )}
+          {!fallbackDraft && (history.length > 0 || error || statusMessage) && (
+            <button type="button" onClick={reset} className="mt-2 text-xs text-ink-mute hover:underline">
+              초기화
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

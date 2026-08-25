@@ -4,7 +4,6 @@ import { getNotifications } from "@/lib/queries/notifications";
 import { getTeamMemberNames } from "@/lib/queries/teamMembers";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { DashboardSidebar } from "@/components/DashboardSidebar";
-import { AiCommandBar } from "@/components/dashboard/AiCommandBar";
 import { MobileNavProvider } from "@/components/MobileNavContext";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -27,13 +26,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
           isAdmin={profile?.role === "admin"}
           userId={user.id}
           notifications={notifications}
+          teamMembers={teamMembers}
         />
         <div className="flex flex-1 overflow-x-hidden">
           <DashboardSidebar latestDate={latestDate} />
-          <div className="flex min-w-0 flex-1 flex-col">
-            <AiCommandBar members={teamMembers} />
-            <div className="min-w-0 flex-1">{children}</div>
-          </div>
+          <div className="min-w-0 flex-1">{children}</div>
         </div>
       </div>
     </MobileNavProvider>
