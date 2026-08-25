@@ -7,6 +7,7 @@ import { createMemo } from "@/app/dashboard/memos/actions";
 import { createBusinessProjectV2 } from "@/app/dashboard/actions/businessProjectsV2";
 import { createCooperationProject } from "@/app/dashboard/actions/cooperationProjects";
 import { createMarketingTask } from "@/app/dashboard/actions/marketingTasks";
+import { sendMaterialEmailFromAiDraft } from "@/app/dashboard/actions/materialEmail";
 import {
   runAiCommand,
   type AiCommandActionResult,
@@ -578,15 +579,17 @@ export function AiCommandBar({ members }: { members: string[] }) {
         return succeed(`Marketing에 "${res.input.title}" 업무를 등록했습니다.`);
       }
       if (res.tool === "send_material_email") {
-        // 실제 이메일 발송은 리스크가 커서 자동 등록하지 않는다 — 화면에 내용을
-        // 미리 채워두고 사람이 확인 후 직접 보내게 한다(사용자 확인, 2026-08-26).
-        window.sessionStorage.setItem(AI_MATERIAL_EMAIL_DRAFT_KEY, JSON.stringify(res.input));
-        router.push("/dashboard/material-email");
-        setPendingQuestion(null);
-        setHistory([]);
-        setMessage("");
-        setStatusMessage("자료메일발송 화면으로 이동했습니다 — 내용을 확인하고 직접 보내주세요.");
-        return;
+        const result = await sendMaterialEmailFromAiDraft(res.input);
+        if (result?.error) {
+          // 대개 수신자 이메일 누락·형식 오류 — 자동발송하지 않고 화면에서
+          // 직접 채워 넣게 안내한다(테스트 후 사용자 확인, 2026-08-26: 정상
+          // 케이스는 완전 자동발송, 이 경로는 오류 복구용으로만 남긴다).
+          window.sessionStorage.setItem(AI_MATERIAL_EMAIL_DRAFT_KEY, JSON.stringify(res.input));
+          setError(`자동 발송 실패: ${result.error} — 자료메일발송 화면에서 확인 후 보내주세요.`);
+          router.push("/dashboard/material-email");
+          return;
+        }
+        return succeed(`"${res.input.recipients}"로 자료메일을 발송했습니다.`);
       }
       // create_memo: 성공 시 createMemo 내부에서 redirect()가 던져져 여기 아래 코드는
       // 실행되지 않고 그대로 이동한다 — 실패(검증 오류)일 때만 아래에 도달한다.
