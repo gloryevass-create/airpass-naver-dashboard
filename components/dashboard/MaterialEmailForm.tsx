@@ -7,6 +7,19 @@ import { AI_MATERIAL_EMAIL_DRAFT_KEY, type AiMaterialEmailDraft } from "@/lib/ai
 
 const initialState: SendMaterialEmailState = undefined;
 
+// 보낼 때마다 매번 새로 쓰지 않도록 기본 문구를 채워두고(필요하면 수정 가능),
+// 자료도 기본적으로 전체 선택된 상태로 시작한다(사용자 확인, 2026-08-26).
+const DEFAULT_SUBJECT = "에어패스 제품군 브로셔 및 영상 자료 송부드립니다.";
+const DEFAULT_MESSAGE = `안녕하세요! 에어패스 입니다.
+요청하신 에어패스 제품군 브로셔와 영상자료 송부드립니다.
+살펴보시고 궁금한 사항이 있으시면 언제든지 메일이나 편하게 전화 주시면 자세한 상담 드리도록 하겠습니다.
+
+감사합니다.
+
+홈페이지 : http://www.airpass.co.kr
+유튜브 : https://www.youtube.com/@AIRPASS_XR
+전화번호 : 02-561-1511`;
+
 function formatFileSize(bytes: number | null): string {
   if (bytes == null) return "";
   if (bytes < 1024) return `${bytes}B`;
@@ -78,10 +91,10 @@ function FileGroup({
 export function MaterialEmailForm({ files }: { files: DriveMaterialFile[] }) {
   const [state, formAction, pending] = useActionState(sendMaterialEmailAction, initialState);
   const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [selected, setSelected] = useState<Set<string>>(() => new Set(files.map((f) => f.id)));
   const [recipients, setRecipients] = useState("");
-  const [subject, setSubject] = useState("");
-  const [message, setMessage] = useState("");
+  const [subject, setSubject] = useState(DEFAULT_SUBJECT);
+  const [message, setMessage] = useState(DEFAULT_MESSAGE);
   const [aiNotice, setAiNotice] = useState(false);
 
   // AI 명령 입력창에서 넘어온 초안이 있으면 채워 넣는다(자동 발송은 하지 않고
@@ -143,8 +156,9 @@ export function MaterialEmailForm({ files }: { files: DriveMaterialFile[] }) {
     <form
       action={formAction}
       onSubmit={() => {
-        // 성공 시 새 발송을 위해 선택 상태를 비운다(실패 시에는 재시도하기 편하게 유지).
-        if (state?.success) setSelected(new Set());
+        // 성공 시 새 발송을 위해 선택 상태를 기본값(전체 선택)으로 되돌린다
+        // (실패 시에는 재시도하기 편하게 방금 선택 상태를 유지).
+        if (state?.success) setSelected(new Set(files.map((f) => f.id)));
       }}
       className="flex flex-col gap-4"
     >
