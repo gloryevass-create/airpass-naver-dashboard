@@ -40,7 +40,7 @@ async function performSend(
   if (!message) return { error: "안내 내용을 입력하세요." };
   if (fileIds.length === 0) return { error: "보낼 자료를 하나 이상 선택하세요." };
 
-  let files: { name: string; link: string; mimeType: string }[];
+  let files: { name: string; link: string; mimeType: string; iconLink: string | null }[];
   try {
     files = await Promise.all(fileIds.map((id) => ensureFileShared(id)));
   } catch (e) {

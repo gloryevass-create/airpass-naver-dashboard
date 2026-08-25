@@ -26,7 +26,7 @@ export async function sendMaterialEmail(params: {
   subject: string;
   message: string;
   senderName: string;
-  files: { name: string; link: string; mimeType: string }[];
+  files: { name: string; link: string; mimeType: string; iconLink: string | null }[];
 }): Promise<void> {
   const host = process.env.MATERIAL_EMAIL_SMTP_HOST;
   const port = Number(process.env.MATERIAL_EMAIL_SMTP_PORT);
@@ -44,12 +44,25 @@ export async function sendMaterialEmail(params: {
   const documents = params.files.filter((f) => !f.mimeType.startsWith("video/"));
   const videos = params.files.filter((f) => f.mimeType.startsWith("video/"));
 
-  function fileListSection(title: string, icon: string, group: { name: string; link: string }[]): string {
+  // 파일별 아이콘은 구글드라이브가 주는 실제 파일 형식 컬러 아이콘(iconLink)을
+  // 그대로 쓴다 — "보낼 자료 선택" 화면과 동일한 아이콘이라 이모지보다 메일
+  // 클라이언트에 따라 흐릿하게 보이는 문제 없이 일관되게 표시된다.
+  function fileIconHtml(f: { iconLink: string | null }): string {
+    return f.iconLink
+      ? `<img src="${f.iconLink}" width="16" height="16" alt="" style="vertical-align:middle;margin-right:6px;" />`
+      : "";
+  }
+
+  function fileListSection(
+    title: string,
+    titleIcon: string,
+    group: { name: string; link: string; iconLink: string | null }[]
+  ): string {
     if (group.length === 0) return "";
-    return `<p style="margin:20px 0 8px;font-weight:600;">${title}</p><ul style="margin:0;padding-left:20px;">${group
+    return `<p style="margin:20px 0 8px;font-weight:600;">${titleIcon} ${title}</p><ul style="margin:0;padding-left:0;list-style:none;">${group
       .map(
         (f) =>
-          `<li style="margin-bottom:4px;">${icon} <a href="${f.link}" style="color:#2557d6;">${escapeHtml(f.name)}</a></li>`
+          `<li style="margin-bottom:6px;">${fileIconHtml(f)}<a href="${f.link}" style="color:#2557d6;vertical-align:middle;">${escapeHtml(f.name)}</a></li>`
       )
       .join("")}</ul>`;
   }
