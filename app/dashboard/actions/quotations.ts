@@ -1,5 +1,6 @@
 "use server";
 
+import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { formatMember } from "@/lib/formatMember";
@@ -46,6 +47,7 @@ function parseItems(formData: FormData): { items: QuotationItem[]; error?: strin
     const quantity = Math.max(0, Number(row.quantity) || 0);
     const unitPrice = Math.max(0, Number(row.unitPrice) || 0);
     return {
+      id: typeof row.id === "string" && row.id ? row.id : randomUUID(),
       productId: typeof row.productId === "string" && row.productId ? row.productId : null,
       name: String(row.name ?? "").trim(),
       specification: String(row.specification ?? "").trim(),

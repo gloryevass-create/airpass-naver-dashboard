@@ -4,6 +4,9 @@ import type { Database } from "@/lib/types/database.types";
 type Client = SupabaseClient<Database>;
 
 export type QuotationItem = {
+  // 화면에서 드래그로 순서를 바꿀 때 "같은 품목이 자리를 옮겼다"를 구분하기 위한
+  // 클라이언트 전용 id — DB에서 온 값이 없으면(예전 데이터) 불러올 때 하나 붙여준다.
+  id: string;
   productId: string | null;
   name: string;
   specification: string;
@@ -43,9 +46,10 @@ export type Quotation = {
 
 function toItems(raw: unknown): QuotationItem[] {
   if (!Array.isArray(raw)) return [];
-  return raw.map((r) => {
+  return raw.map((r, i) => {
     const row = (r ?? {}) as Record<string, unknown>;
     return {
+      id: typeof row.id === "string" && row.id ? row.id : `legacy-${i}`,
       productId: typeof row.productId === "string" ? row.productId : null,
       name: String(row.name ?? ""),
       specification: String(row.specification ?? ""),

@@ -11,6 +11,7 @@ import {
   type MouseEvent,
 } from "react";
 import Link from "next/link";
+import { AnimatePresence, motion } from "framer-motion";
 import type { Quotation, QuotationItem } from "@/lib/queries/quotations";
 import type { ProductCatalogItem } from "@/lib/queries/productCatalog";
 import { createQuotation, updateQuotation, deleteQuotation } from "@/app/dashboard/actions/quotations";
@@ -31,7 +32,17 @@ function todayStr(): string {
 }
 
 function emptyItem(): QuotationItem {
-  return { productId: null, name: "", specification: "", unit: "EA", quantity: 1, unitPrice: 0, amount: 0, note: "" };
+  return {
+    id: crypto.randomUUID(),
+    productId: null,
+    name: "",
+    specification: "",
+    unit: "EA",
+    quantity: 1,
+    unitPrice: 0,
+    amount: 0,
+    note: "",
+  };
 }
 
 const FIELD_CLASS =
@@ -41,6 +52,10 @@ const FIELD_CLASS =
 // 빽빽해 보이지 않게 한다(레퍼런스 디자인 참고, 2026-08-27).
 const CELL_FIELD_CLASS =
   "w-full rounded-sm border border-transparent bg-transparent px-1.5 py-1 text-xs text-ink outline-none focus:border-hairline focus:bg-canvas-cream";
+// 드래그·품목 추가/삭제 시 framer-motion이 각 행을 부드럽게 슬라이드시킬 수 있도록
+// <table>이 아니라 CSS 그리드로 "표처럼 보이는" 레이아웃을 구성한다 — 실제 <tr>은
+// display:table-row라 transform 애니메이션이 브라우저에 따라 제대로 안 먹는다.
+const ITEM_GRID_COLS = "32px 40px minmax(160px,1.4fr) minmax(140px,1fr) 64px 56px 108px 108px minmax(96px,1fr) 40px";
 
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
@@ -61,6 +76,7 @@ function isBlankItem(item: QuotationItem): boolean {
 function itemFromProduct(p: ProductCatalogItem): QuotationItem {
   const unitPrice = p.unitPrice ?? 0;
   return {
+    id: crypto.randomUUID(),
     productId: p.id,
     name: p.name,
     specification: p.specification ?? "",
@@ -100,7 +116,7 @@ function ItemsEditor({
     };
   }
   function handleRowDragOver(index: number) {
-    return (e: DragEvent<HTMLTableRowElement>) => {
+    return (e: DragEvent<HTMLDivElement>) => {
       e.preventDefault();
       if (dragIndex === null || dragIndex === index) return;
       const next = [...items];
@@ -110,7 +126,7 @@ function ItemsEditor({
       setDragIndex(index);
     };
   }
-  function handleDrop(e: DragEvent<HTMLTableRowElement>) {
+  function handleDrop(e: DragEvent<HTMLDivElement>) {
     e.preventDefault();
     setDragIndex(null);
   }
@@ -236,31 +252,43 @@ function ItemsEditor({
         )}
       </div>
 
-      <div className="overflow-x-auto rounded-sm border border-hairline">
-        <table className="w-full border-collapse text-sm">
-          <thead className="bg-background text-left text-ink-mute">
-            <tr>
-              <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium"></th>
-              <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium">No</th>
-              <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium">품명 *</th>
-              <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium">규격</th>
-              <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium text-right">수량</th>
-              <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium">단위</th>
-              <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium text-right">단가(VAT 포함)</th>
-              <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium text-right">금액</th>
-              <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium">비고</th>
-              <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium"></th>
-            </tr>
-          </thead>
-          <tbody>
+      <div className="overflow-x-auto rounded-sm border-l border-t border-hairline">
+        <div className="min-w-[880px]">
+          <div
+            className="grid bg-background text-left text-xs font-medium text-ink-mute"
+            style={{ gridTemplateColumns: ITEM_GRID_COLS }}
+          >
+            <div className="border-b border-r border-hairline px-2 py-2.5" />
+            <div className="whitespace-nowrap border-b border-r border-hairline px-2 py-2.5">No</div>
+            <div className="whitespace-nowrap border-b border-r border-hairline px-2 py-2.5">품명 *</div>
+            <div className="whitespace-nowrap border-b border-r border-hairline px-2 py-2.5">규격</div>
+            <div className="whitespace-nowrap border-b border-r border-hairline px-2 py-2.5 text-right">수량</div>
+            <div className="whitespace-nowrap border-b border-r border-hairline px-2 py-2.5">단위</div>
+            <div className="whitespace-nowrap border-b border-r border-hairline px-2 py-2.5 text-right">
+              단가(VAT 포함)
+            </div>
+            <div className="whitespace-nowrap border-b border-r border-hairline px-2 py-2.5 text-right">금액</div>
+            <div className="whitespace-nowrap border-b border-r border-hairline px-2 py-2.5">비고</div>
+            <div className="whitespace-nowrap border-b border-r border-hairline px-2 py-2.5" />
+          </div>
+
+          <AnimatePresence initial={false}>
             {items.map((item, index) => (
-              <tr
-                key={index}
+              <motion.div
+                key={item.id}
+                layout
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ type: "spring", stiffness: 500, damping: 38 }}
                 onDragOver={handleRowDragOver(index)}
                 onDrop={handleDrop}
-                className={dragIndex === index ? "relative z-10 outline outline-2 -outline-offset-2 outline-primary" : ""}
+                className={`grid bg-canvas-cream text-sm ${
+                  dragIndex === index ? "relative z-10 outline outline-2 -outline-offset-2 outline-primary" : ""
+                }`}
+                style={{ gridTemplateColumns: ITEM_GRID_COLS }}
               >
-                <td className="border border-hairline px-1 py-1.5 text-center">
+                <div className="flex items-center justify-center border-b border-r border-hairline px-1 py-1.5">
                   <span
                     draggable
                     onDragStart={handleDragStart(index)}
@@ -270,23 +298,25 @@ function ItemsEditor({
                   >
                     ⠿
                   </span>
-                </td>
-                <td className="border border-hairline px-2 py-1.5 text-center text-xs text-ink-mute">{index + 1}</td>
-                <td className="min-w-28 border border-hairline px-2 py-1.5">
+                </div>
+                <div className="flex items-center justify-center border-b border-r border-hairline px-2 py-1.5 text-xs text-ink-mute">
+                  {index + 1}
+                </div>
+                <div className="border-b border-r border-hairline px-2 py-1.5">
                   <input
                     value={item.name}
                     onChange={(e) => update(index, { name: e.target.value })}
                     className={CELL_FIELD_CLASS}
                   />
-                </td>
-                <td className="min-w-24 border border-hairline px-2 py-1.5">
+                </div>
+                <div className="border-b border-r border-hairline px-2 py-1.5">
                   <input
                     value={item.specification}
                     onChange={(e) => update(index, { specification: e.target.value })}
                     className={CELL_FIELD_CLASS}
                   />
-                </td>
-                <td className="w-20 border border-hairline px-2 py-1.5">
+                </div>
+                <div className="border-b border-r border-hairline px-2 py-1.5">
                   <input
                     type="number"
                     min={0}
@@ -294,15 +324,15 @@ function ItemsEditor({
                     onChange={(e) => update(index, { quantity: Number(e.target.value) || 0 })}
                     className={`${CELL_FIELD_CLASS} text-right`}
                   />
-                </td>
-                <td className="w-16 border border-hairline px-2 py-1.5">
+                </div>
+                <div className="border-b border-r border-hairline px-2 py-1.5">
                   <input
                     value={item.unit}
                     onChange={(e) => update(index, { unit: e.target.value })}
                     className={`${CELL_FIELD_CLASS} text-center`}
                   />
-                </td>
-                <td className="w-28 border border-hairline px-2 py-1.5">
+                </div>
+                <div className="border-b border-r border-hairline px-2 py-1.5">
                   <input
                     type="number"
                     min={0}
@@ -310,18 +340,18 @@ function ItemsEditor({
                     onChange={(e) => update(index, { unitPrice: Number(e.target.value) || 0 })}
                     className={`${CELL_FIELD_CLASS} text-right`}
                   />
-                </td>
-                <td className="whitespace-nowrap border border-hairline px-2 py-1.5 text-right text-xs font-bold tabular-nums text-ink">
+                </div>
+                <div className="flex items-center justify-end whitespace-nowrap border-b border-r border-hairline px-2 py-1.5 text-xs font-bold tabular-nums text-ink">
                   {formatCurrency(item.amount)}
-                </td>
-                <td className="min-w-24 border border-hairline px-2 py-1.5">
+                </div>
+                <div className="border-b border-r border-hairline px-2 py-1.5">
                   <input
                     value={item.note}
                     onChange={(e) => update(index, { note: e.target.value })}
                     className={CELL_FIELD_CLASS}
                   />
-                </td>
-                <td className="border border-hairline px-2 py-1.5 text-center">
+                </div>
+                <div className="flex items-center justify-center border-b border-r border-hairline px-2 py-1.5">
                   <button
                     type="button"
                     onClick={() => onChange(items.filter((_, i) => i !== index))}
@@ -330,18 +360,17 @@ function ItemsEditor({
                   >
                     ✕
                   </button>
-                </td>
-              </tr>
+                </div>
+              </motion.div>
             ))}
-            {items.length === 0 && (
-              <tr>
-                <td colSpan={10} className="border border-hairline px-2 py-6 text-center text-xs text-ink-mute">
-                  물품을 검색하거나 행을 추가해 견적을 작성해 주세요.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+          </AnimatePresence>
+
+          {items.length === 0 && (
+            <p className="border-b border-r border-hairline px-2 py-6 text-center text-xs text-ink-mute">
+              물품을 검색하거나 행을 추가해 견적을 작성해 주세요.
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
