@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useMemo, useRef, useState, useTransition, type MouseEvent } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { AnimatePresence, Reorder, useDragControls } from "framer-motion";
 import type { Quotation, QuotationItem } from "@/lib/queries/quotations";
@@ -100,16 +101,35 @@ function BusinessProjectField({
 }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [rect, setRect] = useState<{ top: number; left: number; width: number } | null>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const selected = projects.find((p) => p.id === value) ?? null;
 
+  // 견적정보 박스와 그 바깥 카드가 둘 다 overflow-hidden(모서리를 둥글게 자르는
+  // 용도)이라, 드롭다운을 이 박스 안에 그대로 두면 박스 경계에서 잘려 보이지
+  // 않는다(사용자 확인, 2026-08-28). 물품 검색처럼 표 위에 완전히 떠 보이도록
+  // document.body에 포털로 그려서 그 어떤 조상의 overflow에도 잘리지 않게 한다.
   useEffect(() => {
-    function handleClickOutside(e: globalThis.MouseEvent) {
-      if (panelRef.current && !panelRef.current.contains(e.target as Node)) setOpen(false);
+    if (!open) return;
+    function handlePointerDown(e: globalThis.MouseEvent) {
+      const target = e.target as Node;
+      if (triggerRef.current?.contains(target)) return;
+      if (panelRef.current?.contains(target)) return;
+      setOpen(false);
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    function handleReposition() {
+      setOpen(false);
+    }
+    document.addEventListener("mousedown", handlePointerDown);
+    window.addEventListener("scroll", handleReposition, true);
+    window.addEventListener("resize", handleReposition);
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      window.removeEventListener("scroll", handleReposition, true);
+      window.removeEventListener("resize", handleReposition);
+    };
+  }, [open]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -117,15 +137,25 @@ function BusinessProjectField({
     return projects.filter((p) => p.title.toLowerCase().includes(q));
   }, [projects, search]);
 
+  function openPanel() {
+    const el = triggerRef.current;
+    if (el) {
+      const r = el.getBoundingClientRect();
+      setRect({ top: r.bottom + 4, left: r.left, width: r.width });
+    }
+    setOpen(true);
+  }
+
   return (
     <div className="flex border-t border-hairline">
       <div className="w-24 shrink-0 border-r border-hairline bg-background px-2 py-1.5 text-center text-[11px] font-medium text-ink-mute">
         연결 사업
       </div>
-      <div ref={panelRef} className="relative flex flex-1 items-center gap-1.5 px-3 py-1.5">
+      <div className="flex flex-1 items-center gap-1.5 px-3 py-1.5">
         <button
+          ref={triggerRef}
           type="button"
-          onClick={() => setOpen(true)}
+          onClick={openPanel}
           className="flex min-w-0 flex-1 items-center justify-center gap-1.5 truncate rounded-full border border-primary px-3 py-1 text-[11px] font-medium text-primary hover:bg-canvas-lavender/40"
         >
           <NavIcon name="search" className="h-3 w-3 shrink-0" />
@@ -141,9 +171,16 @@ function BusinessProjectField({
             ✕
           </button>
         )}
+      </div>
 
-        {open && (
-          <div className="absolute left-0 top-full z-20 mt-1 max-h-64 w-full overflow-y-auto rounded-sm border border-hairline bg-canvas-cream text-left shadow-lg">
+      {open &&
+        rect &&
+        createPortal(
+          <div
+            ref={panelRef}
+            style={{ position: "fixed", top: rect.top, left: rect.left, width: rect.width }}
+            className="z-50 max-h-64 overflow-y-auto rounded-sm border border-hairline bg-canvas-cream text-left shadow-lg"
+          >
             <div className="sticky top-0 flex items-center gap-2 border-b border-hairline bg-canvas-cream px-3 py-2">
               <input
                 autoFocus
@@ -180,9 +217,9 @@ function BusinessProjectField({
                 </button>
               ))
             )}
-          </div>
+          </div>,
+          document.body
         )}
-      </div>
     </div>
   );
 }
