@@ -64,10 +64,12 @@ function parseItems(formData: FormData): { items: QuotationItem[]; error?: strin
   return { items };
 }
 
-// product_catalog.procurement_fee_rate가 비어 있는(0 이하) 조달 품목에는 이
-// 기본 요율을 적용한다(사용자 확인, 2026-08-28) — QuotationBoard.tsx의 클라이언트
-// 미리보기 계산과 같은 값을 써야 한다.
-const DEFAULT_PROCUREMENT_FEE_RATE = 0.54;
+// product_catalog.procurement_fee_rate는 퍼센트가 아니라 분수(0.0054 = 0.54%)로
+// 저장된다 — app/dashboard/actions/productCatalog.ts의 자동 감지 로직이 그대로
+// 심는 값(feeRate: 0.0054)과 같은 표현이라야 한다(사용자 확인, 2026-08-28 —
+// 앞서 퍼센트로 착각해 100으로 한 번 더 나눠 수수료가 100배 작게 계산됐었음).
+// rate가 비어 있는(0 이하) 조달 품목에는 이 기본값을 그대로 적용한다.
+const DEFAULT_PROCUREMENT_FEE_RATE = 0.0054;
 
 // 조달수수료율(product_catalog.procurement_fee_rate)이 걸린 품목만 골라 수수료를
 // 계산한다(WHIZZUP 참고, 사용자 확인 2026-08-27) — 수수료는 부가세 계산과는 별개로
@@ -91,7 +93,7 @@ async function computeProcurementFee(supabase: SupabaseClient<Database>, items: 
   return Math.round(
     items.reduce((sum, item) => {
       const rate = (item.productId && feeRateById.get(item.productId)) || 0;
-      return sum + item.amount * (rate / 100);
+      return sum + item.amount * rate;
     }, 0)
   );
 }

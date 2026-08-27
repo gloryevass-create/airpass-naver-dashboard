@@ -48,10 +48,12 @@ const CELL_FIELD_CLASS =
 // <table>이 아니라 CSS 그리드로 "표처럼 보이는" 레이아웃을 구성한다 — 실제 <tr>은
 // display:table-row라 transform 애니메이션이 브라우저에 따라 제대로 안 먹는다.
 const ITEM_GRID_COLS = "32px 40px minmax(160px,1.4fr) minmax(140px,1fr) 64px 56px 108px 108px minmax(96px,1fr) 40px";
-// product_catalog.procurement_fee_rate가 비어 있는(0 이하) 조달 품목에 적용하는
-// 기본 조달수수료율 — 서버(app/dashboard/actions/quotations.ts)와 동일한 값을
-// 써야 한다(사용자 확인, 2026-08-28).
-const DEFAULT_PROCUREMENT_FEE_RATE = 0.54;
+// product_catalog.procurement_fee_rate는 퍼센트가 아니라 분수(0.0054 = 0.54%)로
+// 저장된다(app/dashboard/actions/productCatalog.ts의 자동 감지 로직과 동일한
+// 표현 — 앞서 퍼센트로 착각해 100으로 한 번 더 나눠 수수료가 100배 작게 계산됐던
+// 버그를 사용자가 신고해 수정함, 2026-08-28). rate가 비어 있는(0 이하) 조달
+// 품목에 적용하는 기본값 — 서버(app/dashboard/actions/quotations.ts)와 같아야 한다.
+const DEFAULT_PROCUREMENT_FEE_RATE = 0.0054;
 
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
@@ -583,7 +585,7 @@ function QuotationForm({
     const product = it.productId ? productById.get(it.productId) : null;
     if (!product?.procurement) return sum;
     const rate = product.procurementFeeRate && product.procurementFeeRate > 0 ? product.procurementFeeRate : DEFAULT_PROCUREMENT_FEE_RATE;
-    return sum + Math.round(it.amount * (rate / 100));
+    return sum + Math.round(it.amount * rate);
   }, 0);
   const total = adjustedAmount + procurementFeeAmount;
 
