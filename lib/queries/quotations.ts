@@ -137,6 +137,32 @@ export async function getBusinessProjectOptions(
   return data ?? [];
 }
 
+export type QuotationSummary = {
+  id: string;
+  quoteNumber: string;
+  customerName: string;
+  projectTitle: string | null;
+  totalAmount: number;
+  status: "draft" | "final";
+};
+
+/** 자료메일발송 화면의 "산출내역 첨부" 검색에 쓰는 최소 필드 — 품목(items)까지
+ * 통째로 불러오는 getQuotations보다 가볍다. */
+export async function getQuotationSummaries(supabase: Client): Promise<QuotationSummary[]> {
+  const { data } = await supabase
+    .from("quotations")
+    .select("id, quote_number, customer_name, project_title, total_amount, status")
+    .order("updated_at", { ascending: false });
+  return (data ?? []).map((q) => ({
+    id: q.id,
+    quoteNumber: q.quote_number,
+    customerName: q.customer_name,
+    projectTitle: q.project_title,
+    totalAmount: Number(q.total_amount),
+    status: q.status,
+  }));
+}
+
 /** "Q-YYYYMMDD-001" 형식 — 같은 날짜에 발급된 개수 기준으로 순번을 매긴다.
  * 동시에 여러 명이 같은 날 마지막 순번에 등록하면 충돌할 수 있으나(unique 제약),
  * 팀 규모상 실무에서 부딪힐 가능성은 낮고 부딪히면 다시 저장하면 된다. */

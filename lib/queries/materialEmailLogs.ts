@@ -11,6 +11,7 @@ export type MaterialEmailLog = {
   message: string;
   fileNames: string[];
   fileLinks: string[];
+  quotationQuoteNumber: string | null;
   createdAt: string;
 };
 
@@ -31,6 +32,7 @@ export async function getMaterialEmailLogs(supabase: Client): Promise<MaterialEm
     message: l.message,
     fileNames: l.file_names,
     fileLinks: l.file_links,
+    quotationQuoteNumber: l.quotation_quote_number,
     createdAt: l.created_at,
   }));
 }

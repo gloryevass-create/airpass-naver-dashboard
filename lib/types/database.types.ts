@@ -1900,6 +1900,8 @@ export type Database = {
           message: string;
           file_names: string[];
           file_links: string[];
+          quotation_id: string | null;
+          quotation_quote_number: string | null;
           created_at: string;
         };
         Insert: {
@@ -1911,6 +1913,8 @@ export type Database = {
           message: string;
           file_names?: string[];
           file_links?: string[];
+          quotation_id?: string | null;
+          quotation_quote_number?: string | null;
           created_at?: string;
         };
         Update: {
@@ -1922,6 +1926,8 @@ export type Database = {
           message?: string;
           file_names?: string[];
           file_links?: string[];
+          quotation_id?: string | null;
+          quotation_quote_number?: string | null;
           created_at?: string;
         };
         Relationships: [];

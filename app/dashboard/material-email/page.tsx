@@ -1,7 +1,9 @@
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { getMaterialEmailLogs } from "@/lib/queries/materialEmailLogs";
+import { getQuotationSummaries } from "@/lib/queries/quotations";
 import { isGoogleDriveConfigured, listMaterialFiles } from "@/lib/googleDriveMaterials";
 import { isMaterialEmailConfigured } from "@/lib/materialEmail";
+import { matchProductMaterialFiles } from "@/lib/materialEmailTemplate";
 import { MaterialEmailForm } from "@/components/dashboard/MaterialEmailForm";
 import { NavIcon } from "@/components/icons/NavIcon";
 
@@ -49,7 +51,21 @@ export default async function MaterialEmailPage() {
         ]),
   ];
 
-  const logs = await getMaterialEmailLogs(supabase);
+  const [logs, quotations, profile] = await Promise.all([
+    getMaterialEmailLogs(supabase),
+    getQuotationSummaries(supabase),
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) return null;
+      const { data } = await supabase.from("profiles").select("name, title, email").eq("id", user.id).single();
+      return data;
+    }),
+  ]);
+
+  const files = missing.length === 0 ? await listMaterialFiles() : [];
+  const productLinkLabels = matchProductMaterialFiles(files).map(({ label, fileId }) => ({
+    label,
+    matched: fileId != null,
+  }));
 
   return (
     <main className="flex w-full flex-col gap-6 p-6">
@@ -67,7 +83,14 @@ export default async function MaterialEmailPage() {
       {missing.length > 0 ? (
         <SetupNotice missing={missing} />
       ) : (
-        <MaterialEmailForm files={await listMaterialFiles()} />
+        <MaterialEmailForm
+          files={files}
+          quotations={quotations}
+          productLinkLabels={productLinkLabels}
+          senderName={profile?.name ?? profile?.email ?? ""}
+          senderTitle={profile?.title ?? null}
+          senderEmail={profile?.email ?? ""}
+        />
       )}
 
       <div>
@@ -87,6 +110,9 @@ export default async function MaterialEmailPage() {
               <p className="mt-1 text-xs text-ink-mute">받는 사람: {l.recipientEmails.join(", ")}</p>
               {l.fileNames.length > 0 && (
                 <p className="mt-1 text-xs text-ink-mute">자료: {l.fileNames.join(", ")}</p>
+              )}
+              {l.quotationQuoteNumber && (
+                <p className="mt-1 text-xs text-ink-mute">첨부 산출내역: {l.quotationQuoteNumber}</p>
               )}
             </div>
           ))}

@@ -1,5 +1,11 @@
 import "server-only";
 import nodemailer from "nodemailer";
+import {
+  buildMaterialEmailHtml,
+  type MaterialEmailFileLink,
+  type MaterialEmailProductLink,
+  type MaterialEmailQuotation,
+} from "@/lib/materialEmailTemplate";
 
 // Resend 같은 이메일 API 대신, 실제 회사 메일 계정(하이웍스 등)에 SMTP로 직접
 // 로그인해서 그 계정 이름으로 보낸다 — 도메인 인증(DNS) 없이 바로 쓸 수 있다는
@@ -12,21 +18,17 @@ export const isMaterialEmailConfigured = Boolean(
     process.env.MATERIAL_EMAIL_SMTP_PASSWORD
 );
 
-function escapeHtml(text: string): string {
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
 export async function sendMaterialEmail(params: {
   to: string[];
   subject: string;
   message: string;
   senderName: string;
-  files: { name: string; link: string; mimeType: string; iconLink: string | null }[];
+  senderTitle: string | null;
+  senderEmail: string;
+  documents: MaterialEmailFileLink[];
+  videos: MaterialEmailFileLink[];
+  quotation: MaterialEmailQuotation;
+  productLinks: MaterialEmailProductLink[];
 }): Promise<void> {
   const host = process.env.MATERIAL_EMAIL_SMTP_HOST;
   const port = Number(process.env.MATERIAL_EMAIL_SMTP_PORT);
@@ -39,45 +41,17 @@ export async function sendMaterialEmail(params: {
   }
   const fromName = process.env.MATERIAL_EMAIL_FROM_NAME;
 
-  // "보낼 자료 선택" 화면의 문서/영상 구분을 메일 본문에도 그대로 반영한다 —
-  // 섞인 목록보다 어떤 파일이 문서고 어떤 게 영상인지 한눈에 구분되게 한다.
-  const documents = params.files.filter((f) => !f.mimeType.startsWith("video/"));
-  const videos = params.files.filter((f) => f.mimeType.startsWith("video/"));
-
-  // 파일별 아이콘은 구글드라이브가 주는 실제 파일 형식 컬러 아이콘(iconLink)을
-  // 그대로 쓴다 — "보낼 자료 선택" 화면과 동일한 아이콘이라 이모지보다 메일
-  // 클라이언트에 따라 흐릿하게 보이는 문제 없이 일관되게 표시된다.
-  function fileIconHtml(f: { iconLink: string | null }): string {
-    return f.iconLink
-      ? `<img src="${f.iconLink}" width="16" height="16" alt="" style="vertical-align:middle;margin-right:6px;" />`
-      : "";
-  }
-
-  function fileListSection(
-    title: string,
-    titleIcon: string,
-    group: { name: string; link: string; iconLink: string | null }[]
-  ): string {
-    if (group.length === 0) return "";
-    return `<p style="margin:20px 0 8px;font-weight:600;">${titleIcon} ${title}</p><ul style="margin:0;padding-left:0;list-style:none;">${group
-      .map(
-        (f) =>
-          `<li style="margin-bottom:6px;">${fileIconHtml(f)}<a href="${f.link}" style="color:#2557d6;vertical-align:middle;">${escapeHtml(f.name)}</a></li>`
-      )
-      .join("")}</ul>`;
-  }
-
-  const fileListHtml = fileListSection("첨부 문서", "📄", documents) + fileListSection("첨부 영상", "🎬", videos);
-
-  const html = `
-    <div style="font-family:-apple-system,'Malgun Gothic',sans-serif;font-size:14px;color:#1a1a1a;line-height:1.6;max-width:560px;">
-      <p style="white-space:pre-wrap;margin:0;">${escapeHtml(params.message)}</p>
-      ${fileListHtml}
-      <p style="margin-top:28px;padding-top:12px;border-top:1px solid #e5e5e5;color:#888;font-size:12px;">
-        ${escapeHtml(params.senderName)}님이 AIRPASS 자료메일발송을 통해 보냈습니다.
-      </p>
-    </div>
-  `;
+  const html = buildMaterialEmailHtml({
+    subject: params.subject,
+    message: params.message,
+    senderName: params.senderName,
+    senderTitle: params.senderTitle,
+    senderEmail: params.senderEmail,
+    documents: params.documents,
+    videos: params.videos,
+    quotation: params.quotation,
+    productLinks: params.productLinks,
+  });
 
   const transporter = nodemailer.createTransport({
     host,

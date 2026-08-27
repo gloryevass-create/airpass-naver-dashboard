@@ -76,6 +76,19 @@
   `business_projects_v2` 히스토리와 같은 취지) — 누가/언제/누구에게/무슨 자료를 보냈는지.
 - 두 서비스 중 하나라도 환경변수가 비어 있으면 폼 대신 설정 안내 배너를 보여준다
   (`isGoogleDriveConfigured`/`isMaterialEmailConfigured`).
+- 메일 본문 HTML은 사용자가 Claude Design으로 만든 템플릿을 그대로 이식했다(`lib/materialEmailTemplate.ts::buildMaterialEmailHtml`,
+  2026-08-28). I/O가 전혀 없는 순수 함수라 서버(실제 발송)와 클라이언트(미리보기, `MaterialEmailForm.tsx`의
+  iframe `srcDoc`) 양쪽에서 그대로 재사용한다 — 미리보기는 구글드라이브 실 링크 생성 API를
+  호출하지 않으려고 자리표시 링크(`#`)를 쓰고, 실제 발송(`app/dashboard/actions/materialEmail.ts`)
+  시점에만 `ensureFileShared`로 진짜 공유 링크를 만든다.
+  - **산출내역(견적) 첨부**: 화면에서 저장된 산출내역을 검색해 최대 1건 연결하면(`quotations.id`,
+    `material_email_logs.quotation_id`/`quotation_quote_number`로 이력에 남김), 메일에 "견적 및
+    제품자료 안내" 섹션(산출내역 인쇄용 페이지 절대 URL 포함)이 추가된다 — 첨부하지 않으면 이
+    섹션 자체가 통째로 빠진다. 절대 URL은 `next/headers`의 요청 host로 만든다(별도 SITE_URL
+    환경변수 없이 어느 배포에서도 맞는 링크가 나오게).
+  - **"회사 및 제품소개 자료" 7개 링크**: `PRODUCT_MATERIAL_CATALOG`(고정 이름 목록)가 자료
+    폴더 파일명과 키워드로 매칭되면 그 파일의 실제 공유 링크를 넣고, 못 찾으면 그 항목은 메일에서
+    빠진다(가짜 링크를 만들지 않음) — 파일을 폴더에 추가/이름 변경하면 코드 수정 없이 바로 반영된다.
 
 ## 산출내역 관리
 
