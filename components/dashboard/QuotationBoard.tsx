@@ -51,8 +51,37 @@ const ITEM_GRID_COLS = "32px 40px minmax(160px,1.4fr) minmax(140px,1fr) 64px 56p
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex border-t border-hairline first:border-t-0">
-      <div className="w-20 shrink-0 bg-background px-3 py-2 text-xs font-medium text-ink-mute">{label}</div>
-      <div className="flex-1 px-3 py-2 text-xs font-bold text-ink">{value}</div>
+      <div className="w-24 shrink-0 border-r border-hairline bg-background px-2 py-2.5 text-center text-sm font-medium text-ink-mute">
+        {label}
+      </div>
+      <div className="flex-1 px-3 py-2.5 text-center text-sm font-bold text-ink">{value}</div>
+    </div>
+  );
+}
+
+function InfoSplitRow({
+  leftLabel,
+  leftValue,
+  rightLabel,
+  rightValue,
+}: {
+  leftLabel: string;
+  leftValue: string;
+  rightLabel: string;
+  rightValue: string;
+}) {
+  return (
+    <div className="flex border-t border-hairline">
+      <div className="w-24 shrink-0 border-r border-hairline bg-background px-2 py-2.5 text-center text-sm font-medium text-ink-mute">
+        {leftLabel}
+      </div>
+      <div className="flex-1 border-r border-hairline px-3 py-2.5 text-center text-sm font-bold text-ink">
+        {leftValue}
+      </div>
+      <div className="w-24 shrink-0 border-r border-hairline bg-background px-2 py-2.5 text-center text-sm font-medium text-ink-mute">
+        {rightLabel}
+      </div>
+      <div className="flex-1 px-3 py-2.5 text-center text-sm font-bold text-ink">{rightValue}</div>
     </div>
   );
 }
@@ -446,19 +475,23 @@ function QuotationForm({
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:items-start">
           {/* 견적정보 */}
           <div className="flex flex-col overflow-hidden rounded-sm border border-hairline">
-            <div className="bg-background px-3 py-2 text-xs font-bold text-ink">견적정보</div>
-            <div className="flex border-t border-hairline">
-              <div className="w-20 shrink-0 bg-background px-3 py-2 text-xs font-medium text-ink-mute">견적일자</div>
+            <div className="border-b border-hairline py-2.5 text-center text-sm font-bold tracking-[0.3em] text-ink">
+              견적정보
+            </div>
+            <div className="flex border-t border-hairline first:border-t-0">
+              <div className="w-24 shrink-0 border-r border-hairline bg-background px-2 py-2.5 text-center text-sm font-medium text-ink-mute">
+                견적일자
+              </div>
               <input
                 name="quoteDate"
                 type="date"
                 defaultValue={quotation?.quoteDate ?? todayStr()}
                 required
-                className="flex-1 border-0 bg-canvas-cream px-3 py-2 text-xs font-bold text-ink outline-none focus:bg-background"
+                className="flex-1 border-0 bg-canvas-cream px-3 py-2.5 text-center text-sm font-bold text-ink outline-none focus:bg-background"
               />
             </div>
             <div className="flex border-t border-hairline">
-              <div className="w-20 shrink-0 bg-background px-3 py-2 text-xs font-medium text-ink-mute">
+              <div className="w-24 shrink-0 border-r border-hairline bg-background px-2 py-2.5 text-center text-sm font-medium text-ink-mute">
                 수신 기관명 *
               </div>
               <input
@@ -466,49 +499,27 @@ function QuotationForm({
                 defaultValue={quotation?.customerName ?? ""}
                 required
                 placeholder="기관명 또는 업체명"
-                className="flex-1 border-0 bg-canvas-cream px-3 py-2 text-xs font-bold text-ink outline-none focus:bg-background"
+                className="flex-1 border-0 bg-canvas-cream px-3 py-2.5 text-center text-sm font-bold text-ink outline-none focus:bg-background"
               />
             </div>
             <div className="flex border-t border-hairline">
-              <div className="w-20 shrink-0 bg-background px-3 py-2 text-xs font-medium text-ink-mute">견적명</div>
+              <div className="w-24 shrink-0 border-r border-hairline bg-background px-2 py-2.5 text-center text-sm font-medium text-ink-mute">
+                견적명
+              </div>
               <input
                 name="projectTitle"
                 defaultValue={quotation?.projectTitle ?? ""}
                 placeholder="예: 가상현실 스포츠실 구축"
-                className="flex-1 border-0 bg-canvas-cream px-3 py-2 text-xs font-bold text-ink outline-none focus:bg-background"
+                className="flex-1 border-0 bg-canvas-cream px-3 py-2.5 text-center text-sm font-bold text-ink outline-none focus:bg-background"
               />
-            </div>
-            <div className="flex border-t border-hairline">
-              <div className="w-20 shrink-0 bg-background px-3 py-2 text-xs font-medium text-ink-mute">유효기간</div>
-              <input
-                name="validUntil"
-                type="date"
-                defaultValue={quotation?.validUntil ?? ""}
-                className="flex-1 border-0 bg-canvas-cream px-3 py-2 text-xs font-bold text-ink outline-none focus:bg-background"
-              />
-            </div>
-            <div className="flex border-t border-hairline">
-              <div className="w-20 shrink-0 bg-background px-3 py-2 text-xs font-medium text-ink-mute">담당자</div>
-              <select
-                name="managerName"
-                defaultValue={quotation?.managerName ?? ""}
-                className="flex-1 border-0 bg-canvas-cream px-3 py-2 text-xs font-bold text-ink outline-none focus:bg-background"
-              >
-                <option value="">선택</option>
-                {members.map((m) => (
-                  <option key={m} value={m}>
-                    {m}
-                  </option>
-                ))}
-              </select>
             </div>
           </div>
 
           {/* 공급자 (고정 정보) */}
           <div className="flex flex-col overflow-hidden rounded-sm border border-hairline">
-            <div className="flex items-center justify-between bg-background px-3 py-2">
-              <span className="text-xs font-bold text-ink">공급자</span>
-              <label className="flex items-center gap-1.5 text-[11px] text-ink-mute">
+            <div className="relative border-b border-hairline py-2.5 text-center text-sm font-bold tracking-[0.3em] text-ink">
+              공급자
+              <label className="absolute right-3 top-1/2 flex -translate-y-1/2 items-center gap-1.5 text-[11px] font-normal tracking-normal text-ink-mute">
                 <input
                   type="checkbox"
                   name="includeStamp"
@@ -524,8 +535,13 @@ function QuotationForm({
               <InfoRow label="사업자번호" value={QUOTATION_SUPPLIER.businessNumber} />
               <InfoRow label="대표자" value={QUOTATION_SUPPLIER.representative} />
               <InfoRow label="주소" value={QUOTATION_SUPPLIER.address} />
-              <InfoRow label="업태" value={QUOTATION_SUPPLIER.businessType} />
-              <InfoRow label="종목" value={QUOTATION_SUPPLIER.businessItems} />
+              <InfoRow label="전화번호" value={QUOTATION_SUPPLIER.phone} />
+              <InfoSplitRow
+                leftLabel="업태"
+                leftValue={QUOTATION_SUPPLIER.businessType}
+                rightLabel="종목"
+                rightValue={QUOTATION_SUPPLIER.businessItems}
+              />
               {includeStamp && (
                 <span className="absolute right-3 top-10 flex h-11 w-11 items-center justify-center rounded-full border-2 border-semantic-error text-xs font-bold text-semantic-error">
                   인
@@ -632,6 +648,22 @@ function QuotationForm({
           <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-primary">Sales Info</p>
           <p className="mt-0.5 text-sm font-bold text-ink">영업 정보</p>
         </div>
+
+        <label className="flex flex-col gap-1 text-xs text-ink-mute">
+          담당자
+          <select
+            name="managerName"
+            defaultValue={quotation?.managerName ?? ""}
+            className="rounded-sm border border-hairline bg-background px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
+          >
+            <option value="">선택</option>
+            {members.map((m) => (
+              <option key={m} value={m}>
+                {m}
+              </option>
+            ))}
+          </select>
+        </label>
 
         <label className="flex flex-col gap-1 text-xs text-ink-mute">
           협업 구분
