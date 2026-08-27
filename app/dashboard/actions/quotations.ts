@@ -59,11 +59,14 @@ function parseItems(formData: FormData): { items: QuotationItem[]; error?: strin
   return { items };
 }
 
+// 품목 단가는 부가세 별도가 아니라 부가세 포함가다(사용자 확인, 2026-08-27) —
+// 품목금액 합계가 곧 최종 합계이고, 공급가액·부가세는 그 합계를 1.1로 나눠
+// 거꾸로 계산한다(공급가액에 10%를 더해 합계를 구하는 것과 반대 방향).
 function computeTotals(items: QuotationItem[], discountAmount: number, extraAmount: number) {
   const subtotalAmount = items.reduce((sum, item) => sum + item.amount, 0);
-  const supplyAmount = Math.max(0, subtotalAmount - discountAmount + extraAmount);
-  const taxAmount = Math.round(supplyAmount * 0.1);
-  const totalAmount = supplyAmount + taxAmount;
+  const totalAmount = Math.max(0, subtotalAmount - discountAmount + extraAmount);
+  const supplyAmount = Math.round(totalAmount / 1.1);
+  const taxAmount = totalAmount - supplyAmount;
   return {
     subtotal_amount: subtotalAmount,
     supply_amount: supplyAmount,

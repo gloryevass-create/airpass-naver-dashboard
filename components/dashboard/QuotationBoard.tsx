@@ -75,7 +75,7 @@ function ItemsEditor({
               <th className="whitespace-nowrap px-2 py-2 font-medium">규격</th>
               <th className="whitespace-nowrap px-2 py-2 font-medium">단위</th>
               <th className="whitespace-nowrap px-2 py-2 font-medium text-right">수량</th>
-              <th className="whitespace-nowrap px-2 py-2 font-medium text-right">단가</th>
+              <th className="whitespace-nowrap px-2 py-2 font-medium text-right">단가(VAT 포함)</th>
               <th className="whitespace-nowrap px-2 py-2 font-medium text-right">금액</th>
               <th className="whitespace-nowrap px-2 py-2 font-medium"></th>
             </tr>
@@ -194,10 +194,12 @@ function QuotationForm({
   const [consortiumRate, setConsortiumRate] = useState(quotation?.consortiumRate ?? 0);
   const [extraInternalCost, setExtraInternalCost] = useState(quotation?.extraInternalCost ?? 0);
 
+  // 품목 단가는 부가세 포함가라 품목금액 합계가 곧 최종 합계이고, 공급가액·부가세는
+  // 그 합계를 1.1로 나눠 거꾸로 계산한다(서버의 computeTotals와 동일한 방식).
   const subtotal = items.reduce((sum, it) => sum + it.amount, 0);
-  const supply = Math.max(0, subtotal - discountAmount + extraAmount);
-  const tax = Math.round(supply * 0.1);
-  const total = supply + tax;
+  const total = Math.max(0, subtotal - discountAmount + extraAmount);
+  const supply = Math.round(total / 1.1);
+  const tax = total - supply;
 
   // 내부용 수익 분석 — 제품 카탈로그에서 고른 품목만 마진율을 알 수 있어 계산에
   // 넣고, 직접 입력한 품목은 마진을 알 수 없으니 추측하지 않고 0으로 둔다.
