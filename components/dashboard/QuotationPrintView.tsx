@@ -12,6 +12,17 @@ function formatDate(value: string | null): string {
   return new Date(`${value}T00:00:00`).toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" });
 }
 
+function InfoRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex border-t border-hairline first:border-t-0">
+      <div className="w-24 shrink-0 bg-[#f5f5f7] px-3 py-2 text-xs font-medium text-ink-mute print:bg-[#f5f5f7]">
+        {label}
+      </div>
+      <div className="flex-1 px-3 py-2 text-xs text-ink">{value}</div>
+    </div>
+  );
+}
+
 export function QuotationPrintView({ quotation }: { quotation: Quotation }) {
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-4 p-6">
@@ -25,97 +36,97 @@ export function QuotationPrintView({ quotation }: { quotation: Quotation }) {
         </button>
       </div>
 
-      <div className="rounded-sm border border-hairline bg-white p-10 text-ink shadow-sm print:border-0 print:p-0 print:shadow-none">
-        <h1 className="text-center text-2xl font-bold tracking-[0.4em]">견 적 서</h1>
-
-        <div className="mt-8 flex flex-wrap justify-between gap-4 text-sm">
-          <div>
-            <p className="font-medium">수신: {quotation.customerName} 귀중</p>
-            {quotation.projectTitle && <p className="mt-1 text-ink-mute">건명: {quotation.projectTitle}</p>}
-          </div>
-          <div className="text-right text-ink-mute">
-            <p>견적번호 {quotation.quoteNumber}</p>
-            <p>견적일자 {formatDate(quotation.quoteDate)}</p>
-            {quotation.validUntil && <p>유효기간 {formatDate(quotation.validUntil)}까지</p>}
-          </div>
+      <div className="overflow-hidden rounded-sm border border-hairline bg-white text-ink shadow-sm print:border-0 print:shadow-none">
+        <div className="flex items-center justify-between bg-[#262b3a] px-8 py-6 print:bg-[#262b3a]">
+          <span className="w-28 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40">Quotation</span>
+          <h1 className="text-center text-2xl font-bold tracking-[0.5em] text-white">견 적 서</h1>
+          <span className="w-28 text-right text-[11px] text-white/60">{formatDate(quotation.quoteDate)}</span>
         </div>
 
-        <p className="mt-6 text-sm text-ink-mute">아래와 같이 견적합니다.</p>
-        <p className="mt-1 text-xl font-bold">
-          합계금액 : 일금 {formatCurrency(quotation.totalAmount)}원整 (VAT 포함)
-        </p>
-
-        <div className="mt-6 overflow-x-auto">
-          <table className="w-full min-w-[560px] border-collapse text-sm">
-            <thead>
-              <tr className="border-y-2 border-ink bg-[#f5f5f7]">
-                <th className="border border-hairline px-2 py-1.5">품명</th>
-                <th className="border border-hairline px-2 py-1.5">규격</th>
-                <th className="border border-hairline px-2 py-1.5">단위</th>
-                <th className="border border-hairline px-2 py-1.5">수량</th>
-                <th className="border border-hairline px-2 py-1.5">단가</th>
-                <th className="border border-hairline px-2 py-1.5">금액</th>
-              </tr>
-            </thead>
-            <tbody>
-              {quotation.items.map((item, i) => (
-                <tr key={i}>
-                  <td className="border border-hairline px-2 py-1.5">{item.name}</td>
-                  <td className="border border-hairline px-2 py-1.5">{item.specification}</td>
-                  <td className="border border-hairline px-2 py-1.5 text-center">{item.unit}</td>
-                  <td className="border border-hairline px-2 py-1.5 text-right tabular-nums">
-                    {item.quantity.toLocaleString("ko-KR")}
-                  </td>
-                  <td className="border border-hairline px-2 py-1.5 text-right tabular-nums">
-                    {formatCurrency(item.unitPrice)}
-                  </td>
-                  <td className="border border-hairline px-2 py-1.5 text-right tabular-nums">
-                    {formatCurrency(item.amount)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="mt-4 flex justify-end">
-          <div className="flex w-64 flex-col gap-1 text-sm">
-            <div className="flex justify-between">
-              <span className="text-ink-mute">공급가액</span>
-              <span className="tabular-nums">{formatCurrency(quotation.supplyAmount)}원</span>
+        <div className="p-8">
+          <div className="grid grid-cols-1 overflow-hidden rounded-sm border border-hairline sm:grid-cols-2">
+            <div className="flex flex-col">
+              <div className="bg-[#f5f5f7] px-3 py-2 text-xs font-bold text-ink">견적정보</div>
+              <InfoRow label="수신" value={`${quotation.customerName} 귀중`} />
+              <InfoRow label="견적명" value={quotation.projectTitle || "-"} />
+              <InfoRow label="견적번호" value={quotation.quoteNumber} />
+              <InfoRow label="견적일자" value={formatDate(quotation.quoteDate)} />
+              <InfoRow label="유효기간" value={quotation.validUntil ? `${formatDate(quotation.validUntil)}까지` : "-"} />
+              {quotation.managerName && <InfoRow label="담당자" value={quotation.managerName} />}
             </div>
-            <div className="flex justify-between">
-              <span className="text-ink-mute">부가세(10%)</span>
-              <span className="tabular-nums">{formatCurrency(quotation.taxAmount)}원</span>
-            </div>
-            <div className="flex justify-between border-t border-hairline pt-1 font-bold">
-              <span>합계</span>
-              <span className="tabular-nums">{formatCurrency(quotation.totalAmount)}원</span>
-            </div>
-          </div>
-        </div>
-
-        {quotation.memo && <p className="mt-6 whitespace-pre-wrap text-sm text-ink-mute">{quotation.memo}</p>}
-
-        <div className="mt-10 flex flex-wrap items-start justify-between gap-4 border-t border-hairline pt-6 text-sm">
-          <div>
-            <p className="flex items-center gap-2 font-bold">
-              {QUOTATION_SUPPLIER.name}
+            <div className="relative flex flex-col border-t border-hairline sm:border-l sm:border-t-0">
+              <div className="bg-[#f5f5f7] px-3 py-2 text-xs font-bold text-ink">공급자</div>
+              <InfoRow label="상호" value={QUOTATION_SUPPLIER.name} />
+              <InfoRow label="사업자번호" value={QUOTATION_SUPPLIER.businessNumber} />
+              <InfoRow label="대표자" value={QUOTATION_SUPPLIER.representative} />
+              <InfoRow label="주소" value={QUOTATION_SUPPLIER.address} />
+              <InfoRow label="업태" value={QUOTATION_SUPPLIER.businessType} />
+              <InfoRow label="종목" value={QUOTATION_SUPPLIER.businessItems} />
+              <InfoRow label="TEL" value={QUOTATION_SUPPLIER.phone} />
               {quotation.includeStamp && (
-                <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border-2 border-semantic-error text-xs font-bold text-semantic-error">
+                <span className="absolute right-4 top-12 flex h-12 w-12 items-center justify-center rounded-full border-2 border-semantic-error text-sm font-bold text-semantic-error">
                   인
                 </span>
               )}
-            </p>
-            <p className="mt-1 text-ink-mute">사업자등록번호 {QUOTATION_SUPPLIER.businessNumber}</p>
-            <p className="text-ink-mute">대표자 {QUOTATION_SUPPLIER.representative}</p>
-            <p className="text-ink-mute">{QUOTATION_SUPPLIER.address}</p>
-            <p className="text-ink-mute">
-              {QUOTATION_SUPPLIER.businessType} · {QUOTATION_SUPPLIER.businessItems}
-            </p>
-            <p className="text-ink-mute">TEL {QUOTATION_SUPPLIER.phone}</p>
+            </div>
           </div>
-          {quotation.managerName && <p className="text-ink-mute">담당자 {quotation.managerName}</p>}
+
+          <div className="mt-4 flex items-center justify-between rounded-sm border border-hairline bg-[#f5f5f7] px-4 py-3">
+            <span className="text-sm font-medium text-ink-mute">견적금액 (VAT 포함)</span>
+            <span className="text-xl font-bold tabular-nums">{formatCurrency(quotation.totalAmount)}원</span>
+          </div>
+
+          <div className="mt-6 overflow-x-auto">
+            <table className="w-full min-w-[560px] border-collapse text-sm">
+              <thead>
+                <tr className="border-y-2 border-ink bg-[#f5f5f7]">
+                  <th className="border border-hairline px-2 py-1.5">품명</th>
+                  <th className="border border-hairline px-2 py-1.5">규격</th>
+                  <th className="border border-hairline px-2 py-1.5">단위</th>
+                  <th className="border border-hairline px-2 py-1.5">수량</th>
+                  <th className="border border-hairline px-2 py-1.5">단가</th>
+                  <th className="border border-hairline px-2 py-1.5">금액</th>
+                </tr>
+              </thead>
+              <tbody>
+                {quotation.items.map((item, i) => (
+                  <tr key={i}>
+                    <td className="border border-hairline px-2 py-1.5">{item.name}</td>
+                    <td className="border border-hairline px-2 py-1.5">{item.specification}</td>
+                    <td className="border border-hairline px-2 py-1.5 text-center">{item.unit}</td>
+                    <td className="border border-hairline px-2 py-1.5 text-right tabular-nums">
+                      {item.quantity.toLocaleString("ko-KR")}
+                    </td>
+                    <td className="border border-hairline px-2 py-1.5 text-right tabular-nums">
+                      {formatCurrency(item.unitPrice)}
+                    </td>
+                    <td className="border border-hairline px-2 py-1.5 text-right tabular-nums">
+                      {formatCurrency(item.amount)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="mt-4 flex justify-end">
+            <div className="flex w-64 flex-col gap-1 text-sm">
+              <div className="flex justify-between">
+                <span className="text-ink-mute">공급가액</span>
+                <span className="tabular-nums">{formatCurrency(quotation.supplyAmount)}원</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-ink-mute">부가세(10%)</span>
+                <span className="tabular-nums">{formatCurrency(quotation.taxAmount)}원</span>
+              </div>
+              <div className="flex justify-between border-t border-hairline pt-1 font-bold">
+                <span>합계</span>
+                <span className="tabular-nums">{formatCurrency(quotation.totalAmount)}원</span>
+              </div>
+            </div>
+          </div>
+
+          {quotation.memo && <p className="mt-6 whitespace-pre-wrap text-sm text-ink-mute">{quotation.memo}</p>}
         </div>
       </div>
     </div>
