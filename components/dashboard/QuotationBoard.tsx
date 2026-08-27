@@ -143,7 +143,7 @@ function BusinessProjectField({
         )}
 
         {open && (
-          <div className="absolute left-0 top-full z-20 mt-1 max-h-96 w-full overflow-y-auto rounded-sm border border-hairline bg-canvas-cream text-left shadow-lg">
+          <div className="absolute left-0 top-full z-20 mt-1 max-h-64 w-full overflow-y-auto rounded-sm border border-hairline bg-canvas-cream text-left shadow-lg">
             <div className="sticky top-0 flex items-center gap-2 border-b border-hairline bg-canvas-cream px-3 py-2">
               <input
                 autoFocus
