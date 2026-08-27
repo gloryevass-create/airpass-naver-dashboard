@@ -1,7 +1,6 @@
 "use client";
 
 import { useActionState, useMemo, useRef, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import type { ProductCatalogItem } from "@/lib/queries/productCatalog";
 import {
   createProduct,
@@ -262,7 +261,6 @@ export function ProductCatalogTable({
   products: ProductCatalogItem[];
   vendors: { id: string; companyName: string }[];
 }) {
-  const router = useRouter();
   const [search, setSearch] = useState("");
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [editing, setEditing] = useState<ProductCatalogItem | null | "new">(null);
@@ -271,12 +269,13 @@ export function ProductCatalogTable({
   const [bulkVendorId, setBulkVendorId] = useState<string>("__choose__");
   const [, startTransition] = useTransition();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  // router.refresh()가 서버 왕복을 마치고 새 props를 내려줄 때까지는 시간이 걸려서,
-  // 클릭 즉시 화면에 반영되도록 로컬에서 먼저 뒤집어 보여준다(서버 반영 후 실제 products
-  // prop이 갱신되면 이 오버라이드는 자연스럽게 무시된다 — 항상 실제 값과 합쳐서 계산).
+  // 클릭 즉시 화면에 반영되도록 로컬에서 먼저 뒤집어 보여준다. 서버 액션 완료 후
+  // router.refresh()를 부르지 않으므로(화살표 연타 시 매번 전체 재조회가 쌓여 앱
+  // 전체가 느려지는 원인이었다, 사용자 확인 2026-08-27) 다음 실제 페이지 이동/새로고침
+  // 전까지는 이 오버라이드가 유일한 표시 기준이다 — products prop이 새로 내려오면
+  // 그때 자연스럽게 실제 값과 합쳐진다.
   const [favoriteOverrides, setFavoriteOverrides] = useState<Map<string, boolean>>(new Map());
-  // 화살표도 같은 이유로 로컬에서 먼저 순서를 바꿔 보여준다 — 서버 액션(인증 확인 +
-  // 조회 3번 + 저장 1번)을 매번 기다리면 클릭할 때마다 눈에 띄게 느리게 느껴진다.
+  // 화살표도 같은 이유로 로컬에서 먼저 순서를 바꿔 보여준다.
   const [orderOverride, setOrderOverride] = useState<string[] | null>(null);
 
   const productsWithOverrides = useMemo(() => {
@@ -326,12 +325,16 @@ export function ProductCatalogTable({
   // 때만 허용한다.
   const canReorder = !search.trim() && !favoritesOnly;
 
+  // 낙관적 업데이트(favoriteOverrides/orderOverride)가 이미 화면에 정확한 결과를
+  // 즉시 반영하므로, 클릭마다 router.refresh()로 서버 컴포넌트를 다시 실행해
+  // product_catalog 전체를 재조회할 필요가 없다 — 화살표를 연타하면 그때마다
+  // 불필요한 왕복 쿼리가 쌓여 전체 앱이 느려지는 원인이었다(사용자 확인,
+  // 2026-08-27). 페이지를 새로고침/재방문하면 서버 데이터로 자연히 맞춰진다.
   function handleToggleFavorite(id: string) {
     const current = productsWithOverrides.find((p) => p.id === id)?.isFavorite ?? false;
     setFavoriteOverrides((prev) => new Map(prev).set(id, !current));
     startTransition(async () => {
       await toggleProductFavorite(id);
-      router.refresh();
     });
   }
 
@@ -349,7 +352,6 @@ export function ProductCatalogTable({
 
     startTransition(async () => {
       await moveProductInUserOrder(id, direction);
-      router.refresh();
     });
   }
 
