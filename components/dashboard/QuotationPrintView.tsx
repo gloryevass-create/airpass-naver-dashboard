@@ -117,7 +117,7 @@ export function QuotationPrintView({ quotation }: { quotation: Quotation }) {
           </div>
 
           <div className="mt-4 flex justify-end">
-            <div className="flex w-64 flex-col divide-y divide-hairline border-t border-hairline text-xs">
+            <div className="flex w-64 flex-col divide-y divide-hairline border-y border-hairline text-xs">
               <div className="flex items-baseline justify-between py-1.5">
                 <span className="text-ink-mute">품목금액 (VAT 포함)</span>
                 <span className="font-semibold tabular-nums">{formatCurrency(adjustedAmount)}원</span>

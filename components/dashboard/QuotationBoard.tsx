@@ -572,7 +572,7 @@ function QuotationForm({
               />
             </label>
           </div>
-          <div className="flex flex-col divide-y divide-hairline border-t border-hairline text-xs sm:w-64">
+          <div className="flex flex-col divide-y divide-hairline border-y border-hairline text-xs sm:w-64">
             <div className="flex items-baseline justify-between py-1.5">
               <span className="text-ink-mute">품목금액 (VAT 포함)</span>
               <span className="font-semibold tabular-nums text-ink">{formatCurrency(adjustedAmount)}원</span>
