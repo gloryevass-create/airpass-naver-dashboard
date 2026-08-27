@@ -99,71 +99,87 @@ function BusinessProjectField({
   onChange: (id: string | null) => void;
 }) {
   const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState("");
-  const ref = useRef<HTMLDivElement>(null);
+  const [search, setSearch] = useState("");
+  const panelRef = useRef<HTMLDivElement>(null);
   const selected = projects.find((p) => p.id === value) ?? null;
 
   useEffect(() => {
     function handleClickOutside(e: globalThis.MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      if (panelRef.current && !panelRef.current.contains(e.target as Node)) setOpen(false);
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const q = search.trim().toLowerCase();
     if (!q) return projects;
     return projects.filter((p) => p.title.toLowerCase().includes(q));
-  }, [projects, query]);
+  }, [projects, search]);
 
   return (
-    <div ref={ref} className="relative flex border-t border-hairline">
+    <div className="flex border-t border-hairline">
       <div className="w-24 shrink-0 border-r border-hairline bg-background px-2 py-1.5 text-center text-[11px] font-medium text-ink-mute">
         연결 사업
       </div>
-      <div className="relative flex-1">
-        <input
-          type="text"
-          value={selected ? selected.title : query}
-          onChange={(e) => {
-            if (selected) onChange(null);
-            setQuery(e.target.value);
-            setOpen(true);
-          }}
-          onFocus={() => setOpen(true)}
-          placeholder="SI Business 프로젝트 검색"
-          className="w-full border-0 bg-canvas-cream px-3 py-1.5 pr-6 text-center text-[11px] font-bold text-[#4b5563] outline-none focus:bg-background"
-        />
+      <div ref={panelRef} className="relative flex flex-1 items-center gap-1.5 px-3 py-1.5">
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="flex min-w-0 flex-1 items-center justify-center gap-1.5 truncate rounded-full border border-primary px-3 py-1 text-[11px] font-medium text-primary hover:bg-canvas-lavender/40"
+        >
+          <NavIcon name="search" className="h-3 w-3 shrink-0" />
+          <span className="truncate">{selected ? selected.title : `사업 검색 (${projects.length}개)`}</span>
+        </button>
         {selected && (
           <button
             type="button"
-            onClick={() => {
-              onChange(null);
-              setQuery("");
-            }}
+            onClick={() => onChange(null)}
             aria-label="연결 해제"
-            className="absolute right-1.5 top-1/2 -translate-y-1/2 text-ink-mute hover:text-ink"
+            className="shrink-0 text-ink-mute hover:text-ink"
           >
             ✕
           </button>
         )}
-        {open && !selected && filtered.length > 0 && (
-          <div className="absolute inset-x-0 top-full z-10 max-h-48 overflow-y-auto rounded-b-sm border border-t-0 border-hairline bg-canvas-cream shadow-md">
-            {filtered.map((p) => (
+
+        {open && (
+          <div className="absolute left-0 top-full z-20 mt-1 max-h-60 w-full overflow-y-auto rounded-sm border border-hairline bg-canvas-cream text-left shadow-lg">
+            <div className="sticky top-0 flex items-center gap-2 border-b border-hairline bg-canvas-cream px-3 py-2">
+              <input
+                autoFocus
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="사업명으로 검색"
+                className="min-w-0 flex-1 rounded-sm border border-hairline bg-background px-2 py-1 text-xs text-ink outline-none focus:border-primary"
+              />
               <button
-                key={p.id}
                 type="button"
-                onClick={() => {
-                  onChange(p.id);
-                  setQuery("");
-                  setOpen(false);
-                }}
-                className="block w-full px-3 py-1.5 text-left text-xs text-ink hover:bg-background"
+                onClick={() => setOpen(false)}
+                className="shrink-0 rounded-lg bg-primary px-2.5 py-1 text-[11px] font-bold text-white hover:bg-primary-press"
               >
-                {p.title}
+                선택 완료
               </button>
-            ))}
+            </div>
+            {filtered.length === 0 ? (
+              <p className="px-3 py-4 text-center text-xs text-ink-mute">검색 결과가 없습니다.</p>
+            ) : (
+              filtered.map((p) => (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => {
+                    onChange(p.id);
+                    setSearch("");
+                    setOpen(false);
+                  }}
+                  className={`flex w-full items-center gap-2 border-t border-hairline px-3 py-1.5 text-left first:border-t-0 hover:bg-canvas-lavender/30 ${
+                    p.id === value ? "bg-canvas-lavender/20" : ""
+                  }`}
+                >
+                  <span className="truncate text-xs font-bold text-ink">{p.title}</span>
+                </button>
+              ))
+            )}
           </div>
         )}
       </div>
