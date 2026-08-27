@@ -118,7 +118,11 @@ function BusinessProjectField({
       if (panelRef.current?.contains(target)) return;
       setOpen(false);
     }
-    function handleReposition() {
+    function handleReposition(e: Event) {
+      // 패널 자체를 스크롤할 때도 capture 단계라 window의 scroll 리스너가 걸린다 —
+      // 목록 내부 스크롤까지 닫아버리면 스크롤이 안 되는 것처럼 보이므로, 패널
+      // 내부에서 난 스크롤은 무시하고 바깥(페이지) 스크롤일 때만 닫는다.
+      if (panelRef.current && e.target instanceof Node && panelRef.current.contains(e.target)) return;
       setOpen(false);
     }
     document.addEventListener("mousedown", handlePointerDown);
