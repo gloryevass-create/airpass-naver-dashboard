@@ -572,29 +572,29 @@ function QuotationForm({
               />
             </label>
           </div>
-          <div className="flex flex-col divide-y divide-hairline border-t border-hairline text-base sm:w-80">
-            <div className="flex items-baseline justify-between py-2.5">
+          <div className="flex flex-col divide-y divide-hairline border-t border-hairline text-xs sm:w-64">
+            <div className="flex items-baseline justify-between py-1.5">
               <span className="text-ink-mute">품목금액 (VAT 포함)</span>
               <span className="font-semibold tabular-nums text-ink">{formatCurrency(adjustedAmount)}원</span>
             </div>
-            <div className="flex items-baseline justify-between py-2.5">
+            <div className="flex items-baseline justify-between py-1.5">
               <span className="text-ink-mute">조달수수료 (별도)</span>
               <span className="font-semibold tabular-nums text-ink">{formatCurrency(procurementFeeAmount)}원</span>
             </div>
-            <div className="flex items-baseline justify-between py-2.5">
+            <div className="flex items-baseline justify-between py-1.5">
               <span className="text-ink-mute">최종 합계</span>
-              <span className="text-lg font-bold tabular-nums text-ink">{formatCurrency(total)}원</span>
+              <span className="text-sm font-bold tabular-nums text-ink">{formatCurrency(total)}원</span>
             </div>
-            <div className="flex items-start justify-between py-2.5">
+            <div className="flex items-start justify-between py-1.5">
               <div>
-                <span className="text-lg font-bold text-primary">공급가액</span>
-                <p className="mt-1 text-xs text-ink-mute">세액 참고 · 품목금액 기준</p>
+                <span className="text-sm font-bold text-primary">공급가액</span>
+                <p className="mt-0.5 text-[10px] text-ink-mute">세액 참고 · 품목금액 기준</p>
               </div>
-              <span className="text-lg font-bold tabular-nums text-primary">{formatCurrency(supply)}원</span>
+              <span className="text-sm font-bold tabular-nums text-primary">{formatCurrency(supply)}원</span>
             </div>
-            <div className="flex items-baseline justify-between py-2.5">
-              <span className="text-lg font-bold text-primary">부가세</span>
-              <span className="text-lg font-bold tabular-nums text-primary">{formatCurrency(tax)}원</span>
+            <div className="flex items-baseline justify-between py-1.5">
+              <span className="text-sm font-bold text-primary">부가세</span>
+              <span className="text-sm font-bold tabular-nums text-primary">{formatCurrency(tax)}원</span>
             </div>
           </div>
         </div>
