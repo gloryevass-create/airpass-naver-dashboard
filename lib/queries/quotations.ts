@@ -22,6 +22,8 @@ export type Quotation = {
   quoteNumber: string;
   customerName: string;
   projectTitle: string | null;
+  businessProjectId: string | null;
+  businessProjectTitle: string | null;
   quoteDate: string;
   validUntil: string | null;
   managerName: string | null;
@@ -63,12 +65,19 @@ function toItems(raw: unknown): QuotationItem[] {
   });
 }
 
-function toQuotation(row: Database["public"]["Tables"]["quotations"]["Row"]): Quotation {
+function toQuotation(
+  row: Database["public"]["Tables"]["quotations"]["Row"],
+  businessProjectTitleById: Map<string, string>
+): Quotation {
   return {
     id: row.id,
     quoteNumber: row.quote_number,
     customerName: row.customer_name,
     projectTitle: row.project_title,
+    businessProjectId: row.business_project_id,
+    businessProjectTitle: row.business_project_id
+      ? (businessProjectTitleById.get(row.business_project_id) ?? null)
+      : null,
     quoteDate: row.quote_date,
     validUntil: row.valid_until,
     managerName: row.manager_name,
@@ -93,14 +102,39 @@ function toQuotation(row: Database["public"]["Tables"]["quotations"]["Row"]): Qu
   };
 }
 
+// PostgREST 임베디드 조인 대신 business_projects_v2를 별도 조회해 Map으로
+// JS 레벨 조인한다(이 프로젝트의 기존 컨벤션 — lib/queries/dashboard.ts 참고).
+async function fetchBusinessProjectTitleById(supabase: Client): Promise<Map<string, string>> {
+  const { data } = await supabase.from("business_projects_v2").select("id, title");
+  return new Map((data ?? []).map((p) => [p.id, p.title]));
+}
+
 export async function getQuotations(supabase: Client): Promise<Quotation[]> {
-  const { data } = await supabase.from("quotations").select("*").order("updated_at", { ascending: false });
-  return (data ?? []).map(toQuotation);
+  const [{ data }, businessProjectTitleById] = await Promise.all([
+    supabase.from("quotations").select("*").order("updated_at", { ascending: false }),
+    fetchBusinessProjectTitleById(supabase),
+  ]);
+  return (data ?? []).map((row) => toQuotation(row, businessProjectTitleById));
 }
 
 export async function getQuotation(supabase: Client, id: string): Promise<Quotation | null> {
-  const { data } = await supabase.from("quotations").select("*").eq("id", id).maybeSingle();
-  return data ? toQuotation(data) : null;
+  const [{ data }, businessProjectTitleById] = await Promise.all([
+    supabase.from("quotations").select("*").eq("id", id).maybeSingle(),
+    fetchBusinessProjectTitleById(supabase),
+  ]);
+  return data ? toQuotation(data, businessProjectTitleById) : null;
+}
+
+/** 견적서 작성 화면의 "연결 사업" 검색에 쓰는 최소 필드 — 전체 사업 정보(댓글·
+ * 히스토리 포함)를 불러오는 getBusinessProjectsV2보다 가볍다. */
+export async function getBusinessProjectOptions(
+  supabase: Client
+): Promise<{ id: string; title: string }[]> {
+  const { data } = await supabase
+    .from("business_projects_v2")
+    .select("id, title")
+    .order("updated_at", { ascending: false });
+  return data ?? [];
 }
 
 /** "Q-YYYYMMDD-001" 형식 — 같은 날짜에 발급된 개수 기준으로 순번을 매긴다.

@@ -1989,6 +1989,7 @@ export type Database = {
           quote_number: string;
           customer_name: string;
           project_title: string | null;
+          business_project_id: string | null;
           quote_date: string;
           valid_until: string | null;
           manager_name: string | null;
@@ -2017,6 +2018,7 @@ export type Database = {
           quote_number: string;
           customer_name: string;
           project_title?: string | null;
+          business_project_id?: string | null;
           quote_date?: string;
           valid_until?: string | null;
           manager_name?: string | null;
@@ -2045,6 +2047,7 @@ export type Database = {
           quote_number?: string;
           customer_name?: string;
           project_title?: string | null;
+          business_project_id?: string | null;
           quote_date?: string;
           valid_until?: string | null;
           manager_name?: string | null;

@@ -2,7 +2,9 @@
 
 import { useActionState, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import type { BusinessProjectV2, BusinessProjectV2HistoryEntry } from "@/lib/queries/businessProjectsV2";
+import type { Quotation } from "@/lib/queries/quotations";
 import {
   createBusinessProjectV2,
   updateBusinessProjectV2,
@@ -391,6 +393,61 @@ function ProjectHistory({ project }: { project: BusinessProjectV2 }) {
   );
 }
 
+/** 견적서 작성 화면에서 이 사업(SI Business 프로젝트)에 연결해 둔 견적서
+ * 목록 — 견적서 쪽이 연결의 출발점이라 여기서는 조회만 한다(사용자 확인,
+ * 2026-08-27). */
+function ProjectQuotations({ project, quotations }: { project: BusinessProjectV2; quotations: Quotation[] }) {
+  const linked = quotations.filter((q) => q.businessProjectId === project.id);
+
+  return (
+    <div className="flex flex-col gap-3 rounded-sm border border-hairline bg-canvas-cream p-4">
+      <div>
+        <strong className="text-sm font-bold text-ink">연결된 견적서</strong>
+        <p className="mt-0.5 text-xs text-ink-mute">
+          견적서 작성 화면의 &ldquo;연결 사업&rdquo;에서 이 프로젝트를 선택하면 여기 표시됩니다.
+        </p>
+      </div>
+      {linked.length === 0 ? (
+        <p className="text-sm text-ink-mute">연결된 견적서가 없습니다.</p>
+      ) : (
+        <div className="flex flex-col gap-1.5">
+          {linked.map((q) => (
+            <div
+              key={q.id}
+              className="flex flex-wrap items-center justify-between gap-2 rounded-sm border border-hairline bg-background px-3 py-2 text-sm"
+            >
+              <div className="flex min-w-0 flex-wrap items-center gap-2">
+                <span className="shrink-0 text-xs font-medium text-link-blue">{q.quoteNumber}</span>
+                <span className="truncate font-medium text-ink">{q.customerName}</span>
+                <span
+                  className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                    q.status === "final" ? "bg-semantic-success/15 text-semantic-success" : "bg-[#f0f0f2] text-ink-mute"
+                  }`}
+                >
+                  {q.status === "final" ? "최종" : "임시"}
+                </span>
+              </div>
+              <div className="flex shrink-0 items-center gap-3">
+                <span className="font-bold tabular-nums text-ink">{Math.round(q.totalAmount).toLocaleString("ko-KR")}원</span>
+                <Link
+                  href={`/dashboard/quotations/${q.id}/print`}
+                  target="_blank"
+                  className="rounded-lg border border-hairline px-2.5 py-1 text-xs font-medium text-ink hover:bg-[#f7f7f8]"
+                >
+                  인쇄
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      <Link href="/dashboard/quotations" className="w-fit text-xs text-link-blue hover:underline">
+        견적서 관리에서 새로 만들거나 연결 변경하기 →
+      </Link>
+    </div>
+  );
+}
+
 function ProjectComments({ project }: { project: BusinessProjectV2 }) {
   const router = useRouter();
   const action = createBusinessProjectV2Comment.bind(null, project.id);
@@ -572,7 +629,15 @@ function BusinessListView({
   );
 }
 
-export function BusinessBoardV2({ projects, members }: { projects: BusinessProjectV2[]; members: string[] }) {
+export function BusinessBoardV2({
+  projects,
+  members,
+  quotations,
+}: {
+  projects: BusinessProjectV2[];
+  members: string[];
+  quotations: Quotation[];
+}) {
   const [showAll, setShowAll] = useState(false);
   const [view, setView] = useState<"board" | "list">("board");
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
@@ -646,6 +711,7 @@ export function BusinessBoardV2({ projects, members }: { projects: BusinessProje
               >
                 이 사업 삭제
               </button>
+              <ProjectQuotations project={editingProject} quotations={quotations} />
               <ProjectHistory project={editingProject} />
               <ProjectComments project={editingProject} />
             </>

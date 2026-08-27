@@ -86,6 +86,91 @@ function InfoSplitRow({
   );
 }
 
+/** 견적정보 박스 안에서 SI Business(business_projects_v2) 프로젝트를 검색해
+ * 견적서와 연결한다 — 연결해두면 그 프로젝트 상세 화면에서도 이 견적서를 볼 수
+ * 있다(사용자 확인, 2026-08-27). */
+function BusinessProjectField({
+  projects,
+  value,
+  onChange,
+}: {
+  projects: { id: string; title: string }[];
+  value: string | null;
+  onChange: (id: string | null) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const ref = useRef<HTMLDivElement>(null);
+  const selected = projects.find((p) => p.id === value) ?? null;
+
+  useEffect(() => {
+    function handleClickOutside(e: globalThis.MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return projects;
+    return projects.filter((p) => p.title.toLowerCase().includes(q));
+  }, [projects, query]);
+
+  return (
+    <div ref={ref} className="relative flex border-t border-hairline">
+      <div className="w-24 shrink-0 border-r border-hairline bg-background px-2 py-1.5 text-center text-[11px] font-medium text-ink-mute">
+        연결 사업
+      </div>
+      <div className="relative flex-1">
+        <input
+          type="text"
+          value={selected ? selected.title : query}
+          onChange={(e) => {
+            if (selected) onChange(null);
+            setQuery(e.target.value);
+            setOpen(true);
+          }}
+          onFocus={() => setOpen(true)}
+          placeholder="SI Business 프로젝트 검색"
+          className="w-full border-0 bg-canvas-cream px-3 py-1.5 pr-6 text-center text-[11px] font-bold text-[#4b5563] outline-none focus:bg-background"
+        />
+        {selected && (
+          <button
+            type="button"
+            onClick={() => {
+              onChange(null);
+              setQuery("");
+            }}
+            aria-label="연결 해제"
+            className="absolute right-1.5 top-1/2 -translate-y-1/2 text-ink-mute hover:text-ink"
+          >
+            ✕
+          </button>
+        )}
+        {open && !selected && filtered.length > 0 && (
+          <div className="absolute inset-x-0 top-full z-10 max-h-48 overflow-y-auto rounded-b-sm border border-t-0 border-hairline bg-canvas-cream shadow-md">
+            {filtered.map((p) => (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => {
+                  onChange(p.id);
+                  setQuery("");
+                  setOpen(false);
+                }}
+                className="block w-full px-3 py-1.5 text-left text-xs text-ink hover:bg-background"
+              >
+                {p.title}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 /** 방금 검색해서 추가한 품목이라 아직 아무것도 손대지 않은 "빈 직접입력 행"이면
  * 그 자리를 대신 채우고, 그렇지 않으면 새 행으로 덧붙인다 — 검색으로 여러 개를
  * 연속 선택할 때마다 매번 빈 행이 하나씩 남는 것을 막는다. */
@@ -401,11 +486,13 @@ function QuotationForm({
   quotation,
   members,
   products,
+  businessProjects,
   onDone,
 }: {
   quotation: Quotation | null;
   members: string[];
   products: ProductCatalogItem[];
+  businessProjects: { id: string; title: string }[];
   onDone: () => void;
 }) {
   const action = quotation ? updateQuotation : createQuotation;
@@ -419,6 +506,7 @@ function QuotationForm({
   const [executionType, setExecutionType] = useState(quotation?.executionType ?? "직영");
   const [consortiumRate, setConsortiumRate] = useState(quotation?.consortiumRate ?? 0);
   const [extraInternalCost, setExtraInternalCost] = useState(quotation?.extraInternalCost ?? 0);
+  const [businessProjectId, setBusinessProjectId] = useState<string | null>(quotation?.businessProjectId ?? null);
 
   const productById = useMemo(() => new Map(products.map((p) => [p.id, p])), [products]);
 
@@ -513,6 +601,8 @@ function QuotationForm({
                 className="flex-1 border-0 bg-canvas-cream px-3 py-1.5 text-center text-[11px] font-bold text-[#4b5563] outline-none focus:bg-background"
               />
             </div>
+            <BusinessProjectField projects={businessProjects} value={businessProjectId} onChange={setBusinessProjectId} />
+            <input type="hidden" name="businessProjectId" value={businessProjectId ?? ""} />
           </div>
 
           {/* 공급자 (고정 정보) */}
@@ -800,6 +890,11 @@ function QuotationCard({
               {quotation.projectTitle}
             </span>
           )}
+          {quotation.businessProjectTitle && (
+            <span className="rounded-md border border-primary/30 bg-primary/10 px-1.5 py-0.5 font-medium text-primary">
+              SI Business · {quotation.businessProjectTitle}
+            </span>
+          )}
           <span>견적일자 {formatDate(quotation.quoteDate)}</span>
           {quotation.managerName && <span>담당 {quotation.managerName}</span>}
         </div>
@@ -832,10 +927,12 @@ export function QuotationBoard({
   quotations,
   members,
   products,
+  businessProjects,
 }: {
   quotations: Quotation[];
   members: string[];
   products: ProductCatalogItem[];
+  businessProjects: { id: string; title: string }[];
 }) {
   const [editingId, setEditingId] = useState<string | null | "new">(null);
   const [search, setSearch] = useState("");
@@ -879,6 +976,7 @@ export function QuotationBoard({
             quotation={editingId === "new" ? null : editingQuotation}
             members={members}
             products={products}
+            businessProjects={businessProjects}
             onDone={() => setEditingId(null)}
           />
           {editingQuotation && (

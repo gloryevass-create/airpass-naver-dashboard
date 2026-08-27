@@ -134,6 +134,7 @@ export async function createQuotation(
       quote_number: quoteNumber,
       customer_name: customerName,
       project_title: text(formData, "projectTitle"),
+      business_project_id: text(formData, "businessProjectId"),
       quote_date: quoteDate,
       valid_until: text(formData, "validUntil"),
       manager_name: text(formData, "managerName"),
@@ -164,6 +165,7 @@ export async function createQuotation(
   });
 
   revalidatePath(PATH);
+  revalidatePath("/dashboard/business2");
   return undefined;
 }
 
@@ -194,6 +196,7 @@ export async function updateQuotation(
     .update({
       customer_name: customerName,
       project_title: text(formData, "projectTitle"),
+      business_project_id: text(formData, "businessProjectId"),
       quote_date: quoteDate,
       valid_until: text(formData, "validUntil"),
       manager_name: text(formData, "managerName"),
@@ -215,6 +218,7 @@ export async function updateQuotation(
   if (error) return { error: `저장 실패: ${error.message}` };
 
   revalidatePath(PATH);
+  revalidatePath("/dashboard/business2");
   return undefined;
 }
 
@@ -222,4 +226,5 @@ export async function deleteQuotation(id: string): Promise<void> {
   const { supabase } = await requireAuthedClient();
   await supabase.from("quotations").delete().eq("id", id);
   revalidatePath(PATH);
+  revalidatePath("/dashboard/business2");
 }

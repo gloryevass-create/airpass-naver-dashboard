@@ -1,5 +1,5 @@
 import { requireAuthedClient } from "@/lib/supabase/authed";
-import { getQuotations } from "@/lib/queries/quotations";
+import { getQuotations, getBusinessProjectOptions } from "@/lib/queries/quotations";
 import { getTeamMemberNames } from "@/lib/queries/teamMembers";
 import { getProductCatalog } from "@/lib/queries/productCatalog";
 import { QuotationBoard } from "@/components/dashboard/QuotationBoard";
@@ -7,10 +7,11 @@ import { NavIcon } from "@/components/icons/NavIcon";
 
 export default async function QuotationsPage() {
   const { supabase } = await requireAuthedClient();
-  const [quotations, members, products] = await Promise.all([
+  const [quotations, members, products, businessProjects] = await Promise.all([
     getQuotations(supabase),
     getTeamMemberNames(supabase),
     getProductCatalog(supabase),
+    getBusinessProjectOptions(supabase),
   ]);
 
   return (
@@ -25,7 +26,7 @@ export default async function QuotationsPage() {
           제품 카탈로그 정보로 견적서를 작성·수정·삭제하고 인쇄용 화면으로 출력합니다.
         </p>
       </div>
-      <QuotationBoard quotations={quotations} members={members} products={products} />
+      <QuotationBoard quotations={quotations} members={members} products={products} businessProjects={businessProjects} />
     </main>
   );
 }
