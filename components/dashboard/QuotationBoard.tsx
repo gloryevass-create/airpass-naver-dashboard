@@ -111,9 +111,12 @@ function BusinessProjectField({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // 검색어가 없을 땐 최근 수정순 상위 10개만 보여준다 — 사업 수가 많아지면
+  // 목록이 끝없이 길어지는 것을 막는다(사용자 확인, 2026-08-28). 검색어를 입력하면
+  // 전체 목록에서 찾는다.
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return projects;
+    if (!q) return projects.slice(0, 10);
     return projects.filter((p) => p.title.toLowerCase().includes(q));
   }, [projects, search]);
 
@@ -179,6 +182,11 @@ function BusinessProjectField({
                   <span className="truncate text-xs font-bold text-ink">{p.title}</span>
                 </button>
               ))
+            )}
+            {!search.trim() && projects.length > 10 && (
+              <p className="border-t border-hairline px-3 py-1.5 text-center text-[11px] text-ink-mute">
+                최근 수정순 10개만 표시 중 — 더 찾으려면 검색어를 입력하세요
+              </p>
             )}
           </div>
         )}
