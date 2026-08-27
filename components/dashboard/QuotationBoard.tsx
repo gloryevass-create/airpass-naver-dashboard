@@ -90,27 +90,29 @@ function ItemsEditor({
 
   // 드래그 핸들(⋮⋮)에서만 드래그를 시작하고, 행 전체는 드롭 대상 역할만 한다 —
   // 그래야 행 안의 입력칸을 클릭·드래그해서 텍스트를 선택하는 동작과 충돌하지 않는다.
+  // 드래그해서 지나가는 순간 바로 자리를 맞바꿔 다른 행들도 함께 밀려나는 것처럼
+  // 보이게 하고(호버할 때마다 실시간 재정렬), 현재 자리를 차지한 행에는 파란 테두리
+  // 박스를 표시해 어디로 옮겨질지 눈에 보이게 한다(사용자 확인, 2026-08-27).
   function handleDragStart(index: number) {
     return (e: DragEvent<HTMLSpanElement>) => {
       e.dataTransfer.effectAllowed = "move";
       setDragIndex(index);
     };
   }
-  function handleDragOver(e: DragEvent<HTMLTableRowElement>) {
-    e.preventDefault();
-  }
-  function handleDrop(index: number) {
-    return () => {
-      if (dragIndex === null || dragIndex === index) {
-        setDragIndex(null);
-        return;
-      }
+  function handleRowDragOver(index: number) {
+    return (e: DragEvent<HTMLTableRowElement>) => {
+      e.preventDefault();
+      if (dragIndex === null || dragIndex === index) return;
       const next = [...items];
       const [moved] = next.splice(dragIndex, 1);
       next.splice(index, 0, moved);
       onChange(next);
-      setDragIndex(null);
+      setDragIndex(index);
     };
+  }
+  function handleDrop(e: DragEvent<HTMLTableRowElement>) {
+    e.preventDefault();
+    setDragIndex(null);
   }
 
   useEffect(() => {
@@ -254,9 +256,9 @@ function ItemsEditor({
             {items.map((item, index) => (
               <tr
                 key={index}
-                onDragOver={handleDragOver}
-                onDrop={handleDrop(index)}
-                className={dragIndex === index ? "opacity-40" : ""}
+                onDragOver={handleRowDragOver(index)}
+                onDrop={handleDrop}
+                className={dragIndex === index ? "relative z-10 outline outline-2 -outline-offset-2 outline-primary" : ""}
               >
                 <td className="border border-hairline px-1 py-1.5 text-center">
                   <span
