@@ -496,6 +496,29 @@ function buildCooperationFormData(input: Extract<AiCommandResult, { tool: "creat
   return fd;
 }
 
+const MAX_CLARIFICATION_ROUNDS = 3;
+const AI_CALL_TIMEOUT_MS = 28000;
+
+/** 서버 쪽이 아무 응답 없이 멈추거나(플랫폼 강제 종료, 네트워크 문제 등) 연결이
+ * 끊겨도 클라이언트가 "처리 중" 상태로 영영 멈추지 않도록 일정 시간 후 반드시
+ * 실패로 확정한다 — 실제로 겪었던 무한 대기 버그의 재발 방지(사용자 확인,
+ * 2026-08-27). */
+function withTimeout<T>(promise: Promise<T>, ms: number, message: string): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(message)), ms);
+    promise.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (err) => {
+        clearTimeout(timer);
+        reject(err instanceof Error ? err : new Error(String(err)));
+      }
+    );
+  });
+}
+
 function buildMarketingFormData(input: Extract<AiCommandResult, { tool: "create_marketing_task" }>["input"]): FormData {
   const fd = new FormData();
   fd.set("title", input.title);
@@ -514,6 +537,7 @@ export function AiCommandBar({ members }: { members: string[] }) {
   const router = useRouter();
   const [message, setMessage] = useState("");
   const [history, setHistory] = useState<AiCommandTurn[]>([]);
+  const [clarificationRounds, setClarificationRounds] = useState(0);
   const [pendingQuestion, setPendingQuestion] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [fallbackDraft, setFallbackDraft] = useState<AiCommandResult | null>(null);
@@ -523,6 +547,7 @@ export function AiCommandBar({ members }: { members: string[] }) {
   function reset() {
     setMessage("");
     setHistory([]);
+    setClarificationRounds(0);
     setPendingQuestion(null);
     setStatusMessage(null);
     setFallbackDraft(null);
@@ -535,13 +560,38 @@ export function AiCommandBar({ members }: { members: string[] }) {
     setError(null);
     setStatusMessage(null);
     startTransition(async () => {
-      const res: AiCommandActionResult = await runAiCommand(text, history);
+      // 서버가 응답 없이 멈추거나 연결이 끊겨도 여기서 반드시 실패로 확정되므로
+      // isPending(처리 중)이 영영 풀리지 않는 상태에 빠지지 않는다.
+      let res: AiCommandActionResult;
+      try {
+        res = await withTimeout(
+          runAiCommand(text, history),
+          AI_CALL_TIMEOUT_MS,
+          "AI 응답이 너무 오래 걸려 요청을 중단했습니다. 다시 시도해 주세요."
+        );
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "AI 처리 중 오류가 발생했습니다.");
+        return;
+      }
       if ("error" in res) {
         setError(res.error);
         return;
       }
       if (res.tool === "ask_clarification") {
+        // 같은 요청을 여러 번 되물어도 계속 모호하면("무한 루프"처럼 느껴지는 원인) 이쯤에서
+        // 멈추고 메뉴를 직접 언급해 다시 시도하도록 안내한다(사용자 확인, 2026-08-27).
+        if (clarificationRounds + 1 >= MAX_CLARIFICATION_ROUNDS) {
+          setError(
+            "입력하신 내용만으로는 어느 메뉴인지 계속 판단하기 어렵습니다 — \"캘린더에 회의 일정 등록해줘\"처럼 메뉴를 직접 언급해서 다시 시도해 주세요."
+          );
+          setHistory([]);
+          setClarificationRounds(0);
+          setPendingQuestion(null);
+          setMessage("");
+          return;
+        }
         setHistory((h) => [...h, { role: "user", text }, { role: "assistant", text: res.question }]);
+        setClarificationRounds((n) => n + 1);
         setPendingQuestion(res.question);
         setMessage("");
         return;
@@ -550,6 +600,7 @@ export function AiCommandBar({ members }: { members: string[] }) {
         router.refresh();
         setPendingQuestion(null);
         setHistory([]);
+        setClarificationRounds(0);
         setMessage("");
         setStatusMessage(label);
       }
@@ -558,43 +609,51 @@ export function AiCommandBar({ members }: { members: string[] }) {
         setFallbackDraft(draft);
       }
 
-      if (res.tool === "create_calendar_event") {
-        const result = await createTeamEventV2(undefined, buildCalendarFormData(res.input));
-        if (result?.error) return fail(result.error, res);
-        return succeed(`Calendar에 "${res.input.title}" 일정을 등록했습니다.`);
-      }
-      if (res.tool === "create_business_project") {
-        const result = await createBusinessProjectV2(undefined, buildBusinessFormData(res.input));
-        if (result?.error) return fail(result.error, res);
-        return succeed(`SI Business에 "${res.input.title}" 항목을 등록했습니다.`);
-      }
-      if (res.tool === "create_cooperation_project") {
-        const result = await createCooperationProject(undefined, buildCooperationFormData(res.input));
-        if (result?.error) return fail(result.error, res);
-        return succeed(`Cooperation에 "${res.input.title}" 항목을 등록했습니다.`);
-      }
-      if (res.tool === "create_marketing_task") {
-        const result = await createMarketingTask(undefined, buildMarketingFormData(res.input));
-        if (result?.error) return fail(result.error, res);
-        return succeed(`Marketing에 "${res.input.title}" 업무를 등록했습니다.`);
-      }
-      if (res.tool === "send_material_email") {
-        const result = await sendMaterialEmailFromAiDraft(res.input);
-        if (result?.error) {
-          // 대개 수신자 이메일 누락·형식 오류 — 자동발송하지 않고 화면에서
-          // 직접 채워 넣게 안내한다(테스트 후 사용자 확인, 2026-08-26: 정상
-          // 케이스는 완전 자동발송, 이 경로는 오류 복구용으로만 남긴다).
-          window.sessionStorage.setItem(AI_MATERIAL_EMAIL_DRAFT_KEY, JSON.stringify(res.input));
-          setError(`자동 발송 실패: ${result.error} — 자료메일발송 화면에서 확인 후 보내주세요.`);
-          router.push("/dashboard/material-email");
-          return;
+      try {
+        if (res.tool === "create_calendar_event") {
+          const result = await createTeamEventV2(undefined, buildCalendarFormData(res.input));
+          if (result?.error) return fail(result.error, res);
+          return succeed(`Calendar에 "${res.input.title}" 일정을 등록했습니다.`);
         }
-        return succeed(`"${res.input.recipients}"로 자료메일을 발송했습니다.`);
+        if (res.tool === "create_business_project") {
+          const result = await createBusinessProjectV2(undefined, buildBusinessFormData(res.input));
+          if (result?.error) return fail(result.error, res);
+          return succeed(`SI Business에 "${res.input.title}" 항목을 등록했습니다.`);
+        }
+        if (res.tool === "create_cooperation_project") {
+          const result = await createCooperationProject(undefined, buildCooperationFormData(res.input));
+          if (result?.error) return fail(result.error, res);
+          return succeed(`Cooperation에 "${res.input.title}" 항목을 등록했습니다.`);
+        }
+        if (res.tool === "create_marketing_task") {
+          const result = await createMarketingTask(undefined, buildMarketingFormData(res.input));
+          if (result?.error) return fail(result.error, res);
+          return succeed(`Marketing에 "${res.input.title}" 업무를 등록했습니다.`);
+        }
+        if (res.tool === "send_material_email") {
+          const result = await sendMaterialEmailFromAiDraft(res.input);
+          if (result?.error) {
+            // 대개 수신자 이메일 누락·형식 오류 — 자동발송하지 않고 화면에서
+            // 직접 채워 넣게 안내한다(테스트 후 사용자 확인, 2026-08-26: 정상
+            // 케이스는 완전 자동발송, 이 경로는 오류 복구용으로만 남긴다).
+            window.sessionStorage.setItem(AI_MATERIAL_EMAIL_DRAFT_KEY, JSON.stringify(res.input));
+            setError(`자동 발송 실패: ${result.error} — 자료메일발송 화면에서 확인 후 보내주세요.`);
+            router.push("/dashboard/material-email");
+            return;
+          }
+          return succeed(`"${res.input.recipients}"로 자료메일을 발송했습니다.`);
+        }
+        // create_memo: 성공 시 createMemo 내부에서 redirect()가 던져져 여기 아래 코드는
+        // 실행되지 않고 그대로 이동한다 — 실패(검증 오류)일 때만 아래에 도달한다.
+        const result = await createMemo(undefined, buildMemoFormData(res.input));
+        if (result?.error) fail(result.error, res);
+      } catch (err) {
+        // createMemo 성공 시 Next.js가 던지는 리다이렉트 신호(NEXT_REDIRECT)는 실제
+        // 오류가 아니라 페이지 이동 메커니즘이므로 그대로 다시 던져 정상 동작하게 둔다.
+        const digest = (err as { digest?: unknown } | null)?.digest;
+        if (typeof digest === "string" && digest.startsWith("NEXT_REDIRECT")) throw err;
+        setError(err instanceof Error ? err.message : "처리 중 오류가 발생했습니다.");
       }
-      // create_memo: 성공 시 createMemo 내부에서 redirect()가 던져져 여기 아래 코드는
-      // 실행되지 않고 그대로 이동한다 — 실패(검증 오류)일 때만 아래에 도달한다.
-      const result = await createMemo(undefined, buildMemoFormData(res.input));
-      if (result?.error) fail(result.error, res);
     });
   }
 
@@ -648,7 +707,7 @@ export function AiCommandBar({ members }: { members: string[] }) {
               {statusMessage && <p className="text-xs font-medium text-semantic-success">✓ {statusMessage}</p>}
               {error && <p className="text-xs text-semantic-error">{error}</p>}
             </div>
-            {!fallbackDraft && (history.length > 0 || error || statusMessage) && (
+            {!fallbackDraft && (pendingQuestion || history.length > 0 || error || statusMessage) && (
               <button
                 type="button"
                 onClick={reset}

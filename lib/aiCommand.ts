@@ -375,7 +375,9 @@ export async function runAiCommand(
       ],
       tool_choice: { type: "any" },
     }),
-    signal: AbortSignal.timeout(30000),
+    // 서버 액션의 maxDuration(30초)보다 먼저 정상적으로 실패 응답을 내야 클라이언트가
+    // 영영 응답을 못 받는 상황을 피할 수 있다(사용자 확인, 2026-08-27).
+    signal: AbortSignal.timeout(25000),
   });
 
   if (!response.ok) {
