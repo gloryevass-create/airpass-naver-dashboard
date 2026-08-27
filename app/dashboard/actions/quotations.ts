@@ -19,6 +19,17 @@ function numberOrZero(formData: FormData, key: string): number {
   return Number.isFinite(n) ? n : 0;
 }
 
+const EXECUTION_TYPES = ["직영", "컨소", "해당없음"] as const;
+
+function executionType(formData: FormData): "직영" | "컨소" | "해당없음" {
+  const raw = String(formData.get("executionType") ?? "");
+  return (EXECUTION_TYPES as readonly string[]).includes(raw) ? (raw as (typeof EXECUTION_TYPES)[number]) : "직영";
+}
+
+function status(formData: FormData): "draft" | "final" {
+  return String(formData.get("status") ?? "") === "final" ? "final" : "draft";
+}
+
 function parseItems(formData: FormData): { items: QuotationItem[]; error?: string } {
   const raw = String(formData.get("itemsJson") ?? "[]");
   let parsed: unknown;
@@ -99,6 +110,11 @@ export async function createQuotation(
       ...totals,
       memo: text(formData, "memo"),
       include_stamp: formData.get("includeStamp") === "on",
+      execution_type: executionType(formData),
+      consortium_company: text(formData, "consortiumCompany"),
+      consortium_rate: numberOrZero(formData, "consortiumRate"),
+      extra_internal_cost: numberOrZero(formData, "extraInternalCost"),
+      status: status(formData),
       created_by: user.id,
       created_by_name: actor,
     })
@@ -153,6 +169,11 @@ export async function updateQuotation(
       ...totals,
       memo: text(formData, "memo"),
       include_stamp: formData.get("includeStamp") === "on",
+      execution_type: executionType(formData),
+      consortium_company: text(formData, "consortiumCompany"),
+      consortium_rate: numberOrZero(formData, "consortiumRate"),
+      extra_internal_cost: numberOrZero(formData, "extraInternalCost"),
+      status: status(formData),
       updated_at: new Date().toISOString(),
     })
     .eq("id", id);

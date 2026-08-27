@@ -2001,6 +2001,11 @@ export type Database = {
           total_amount: number;
           memo: string | null;
           include_stamp: boolean;
+          execution_type: "직영" | "컨소" | "해당없음";
+          consortium_company: string | null;
+          consortium_rate: number;
+          extra_internal_cost: number;
+          status: "draft" | "final";
           created_by: string | null;
           created_by_name: string | null;
           created_at: string;
@@ -2023,6 +2028,11 @@ export type Database = {
           total_amount?: number;
           memo?: string | null;
           include_stamp?: boolean;
+          execution_type?: "직영" | "컨소" | "해당없음";
+          consortium_company?: string | null;
+          consortium_rate?: number;
+          extra_internal_cost?: number;
+          status?: "draft" | "final";
           created_by?: string | null;
           created_by_name?: string | null;
           created_at?: string;
@@ -2045,6 +2055,11 @@ export type Database = {
           total_amount?: number;
           memo?: string | null;
           include_stamp?: boolean;
+          execution_type?: "직영" | "컨소" | "해당없음";
+          consortium_company?: string | null;
+          consortium_rate?: number;
+          extra_internal_cost?: number;
+          status?: "draft" | "final";
           created_by?: string | null;
           created_by_name?: string | null;
           created_at?: string;

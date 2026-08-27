@@ -30,6 +30,11 @@ export type Quotation = {
   totalAmount: number;
   memo: string | null;
   includeStamp: boolean;
+  executionType: "직영" | "컨소" | "해당없음";
+  consortiumCompany: string | null;
+  consortiumRate: number;
+  extraInternalCost: number;
+  status: "draft" | "final";
   createdByName: string | null;
   createdAt: string;
   updatedAt: string;
@@ -69,6 +74,11 @@ function toQuotation(row: Database["public"]["Tables"]["quotations"]["Row"]): Qu
     totalAmount: Number(row.total_amount),
     memo: row.memo,
     includeStamp: row.include_stamp,
+    executionType: row.execution_type,
+    consortiumCompany: row.consortium_company,
+    consortiumRate: Number(row.consortium_rate),
+    extraInternalCost: Number(row.extra_internal_cost),
+    status: row.status,
     createdByName: row.created_by_name,
     createdAt: row.created_at,
     updatedAt: row.updated_at,

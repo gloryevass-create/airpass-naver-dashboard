@@ -190,11 +190,28 @@ function QuotationForm({
   const [discountAmount, setDiscountAmount] = useState(quotation?.discountAmount ?? 0);
   const [extraAmount, setExtraAmount] = useState(quotation?.extraAmount ?? 0);
   const [includeStamp, setIncludeStamp] = useState(quotation?.includeStamp ?? false);
+  const [executionType, setExecutionType] = useState(quotation?.executionType ?? "직영");
+  const [consortiumRate, setConsortiumRate] = useState(quotation?.consortiumRate ?? 0);
+  const [extraInternalCost, setExtraInternalCost] = useState(quotation?.extraInternalCost ?? 0);
 
   const subtotal = items.reduce((sum, it) => sum + it.amount, 0);
   const supply = Math.max(0, subtotal - discountAmount + extraAmount);
   const tax = Math.round(supply * 0.1);
   const total = supply + tax;
+
+  // 내부용 수익 분석 — 제품 카탈로그에서 고른 품목만 마진율을 알 수 있어 계산에
+  // 넣고, 직접 입력한 품목은 마진을 알 수 없으니 추측하지 않고 0으로 둔다.
+  // 이 값들은 QuotationPrintView(인쇄용 화면)에는 애초에 전달하지 않아 밖으로
+  // 나가는 문서에는 절대 노출되지 않는다(사용자 확인, 2026-08-27).
+  const productById = useMemo(() => new Map(products.map((p) => [p.id, p])), [products]);
+  const estimatedProfit = items.reduce((sum, it) => {
+    if (!it.productId) return sum;
+    const marginRate = productById.get(it.productId)?.marginRate ?? 0;
+    return sum + Math.round(it.amount * (marginRate / 100));
+  }, 0);
+  const consortiumPayment = executionType === "컨소" ? Math.round(estimatedProfit * (consortiumRate / 100)) : 0;
+  const finalProfit = estimatedProfit - consortiumPayment - extraInternalCost;
+  const marginPercent = supply > 0 ? (finalProfit / supply) * 100 : 0;
 
   return (
     <form
@@ -203,10 +220,11 @@ function QuotationForm({
         await formAction(formData);
         onDone();
       }}
-      className="flex flex-col gap-4 overflow-hidden rounded-sm border border-hairline bg-canvas-cream"
+      className="flex flex-col gap-4 lg:flex-row lg:items-start"
     >
       {quotation && <input type="hidden" name="id" value={quotation.id} />}
 
+      <div className="min-w-0 flex-1 overflow-hidden rounded-sm border border-hairline bg-canvas-cream">
       {/* 견적서 상단 레터헤드 바 — 인쇄용 화면과 톤을 맞춰 미리보기처럼 보이게 한다 */}
       <div className="flex items-center justify-between bg-[#262b3a] px-6 py-4">
         <span className="w-24 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40">Quotation</span>
@@ -367,15 +385,7 @@ function QuotationForm({
           <textarea name="memo" defaultValue={quotation?.memo ?? ""} rows={3} className={FIELD_CLASS} />
         </label>
 
-        {state?.error && <p className="text-sm text-semantic-error">{state.error}</p>}
         <div className="flex flex-wrap gap-2">
-          <button
-            type="submit"
-            disabled={pending}
-            className="w-fit rounded-lg bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press disabled:opacity-50"
-          >
-            {pending ? "저장 중..." : quotation ? "수정 저장" : "견적서 작성"}
-          </button>
           <button
             type="button"
             onClick={onDone}
@@ -392,6 +402,113 @@ function QuotationForm({
               인쇄용 보기
             </Link>
           )}
+        </div>
+      </div>
+      </div>
+
+      {/* 영업 정보 — WHIZZUP 레퍼런스의 SALES INFO 패널. 협업 구분·내부 수익 분석은
+          이 폼(화면)에만 보이고 인쇄용 화면에는 애초에 전달되지 않는다. */}
+      <div className="flex w-full flex-col gap-3 rounded-sm border border-hairline bg-canvas-cream p-4 lg:w-72 lg:shrink-0">
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-primary">Sales Info</p>
+          <p className="mt-0.5 text-sm font-bold text-ink">영업 정보</p>
+        </div>
+
+        <label className="flex flex-col gap-1 text-xs text-ink-mute">
+          협업 구분
+          <select
+            name="executionType"
+            value={executionType}
+            onChange={(e) => setExecutionType(e.target.value as typeof executionType)}
+            className="rounded-sm border border-hairline bg-background px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
+          >
+            <option value="직영">직영</option>
+            <option value="컨소">컨소</option>
+            <option value="해당없음">해당없음</option>
+          </select>
+        </label>
+
+        {executionType === "컨소" && (
+          <>
+            <label className="flex flex-col gap-1 text-xs text-ink-mute">
+              컨소 업체명
+              <input name="consortiumCompany" defaultValue={quotation?.consortiumCompany ?? ""} className={FIELD_CLASS} />
+            </label>
+            <label className="flex flex-col gap-1 text-xs text-ink-mute">
+              컨소 지급률(%)
+              <input
+                name="consortiumRate"
+                type="number"
+                min={0}
+                max={100}
+                value={consortiumRate}
+                onChange={(e) => setConsortiumRate(Number(e.target.value) || 0)}
+                className={FIELD_CLASS}
+              />
+            </label>
+          </>
+        )}
+
+        <div className="flex flex-col gap-1.5 rounded-sm border border-hairline bg-[#fff8ec] p-3 text-xs">
+          <div className="flex items-center justify-between">
+            <span className="font-bold text-ink">수익 분석</span>
+            <span className="rounded-full bg-[#f0dfc0] px-2 py-0.5 text-[10px] font-semibold text-[#8a5a00]">
+              내부용
+            </span>
+          </div>
+          <div className="flex justify-between text-ink-mute">
+            <span>예상 수익</span>
+            <span className="tabular-nums text-ink">{formatCurrency(estimatedProfit)}원</span>
+          </div>
+          <div className="flex justify-between text-ink-mute">
+            <span>컨소 지급</span>
+            <span className="tabular-nums text-ink">{formatCurrency(consortiumPayment)}원</span>
+          </div>
+          <label className="flex items-center justify-between text-ink-mute">
+            <span>추가 내부비용</span>
+            <input
+              name="extraInternalCost"
+              type="number"
+              min={0}
+              value={extraInternalCost}
+              onChange={(e) => setExtraInternalCost(Number(e.target.value) || 0)}
+              className="w-24 rounded-sm border border-hairline bg-canvas-cream px-1.5 py-1 text-right text-xs text-ink outline-none focus:border-primary"
+            />
+          </label>
+          <div className="flex justify-between border-t border-hairline pt-1 font-bold text-ink">
+            <span>최종 총이익</span>
+            <span className="tabular-nums">{formatCurrency(finalProfit)}원</span>
+          </div>
+          <div className="flex justify-between text-ink-mute">
+            <span>마진%</span>
+            <span className="tabular-nums text-ink">{marginPercent.toFixed(1)}%</span>
+          </div>
+          <p className="text-[10px] text-ink-mute">
+            제품 카탈로그의 마진율을 기준으로 계산되며(직접 입력한 품목은 마진율을 몰라 0으로 처리),
+            인쇄·PDF 화면에는 표시되지 않습니다.
+          </p>
+        </div>
+
+        {state?.error && <p className="text-xs text-semantic-error">{state.error}</p>}
+        <div className="flex flex-col gap-2">
+          <button
+            type="submit"
+            name="status"
+            value="draft"
+            disabled={pending}
+            className="rounded-lg border border-hairline px-4 py-1.5 text-xs font-bold text-ink hover:bg-[#f7f7f8] disabled:opacity-50"
+          >
+            {pending ? "저장 중..." : "임시 저장"}
+          </button>
+          <button
+            type="submit"
+            name="status"
+            value="final"
+            disabled={pending}
+            className="rounded-lg bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press disabled:opacity-50"
+          >
+            {pending ? "저장 중..." : "최종 저장"}
+          </button>
         </div>
       </div>
     </form>
@@ -416,6 +533,15 @@ function QuotationCard({
         <div className="flex flex-wrap items-center gap-2">
           <span className="truncate text-base font-bold text-ink">{quotation.customerName}</span>
           <span className="shrink-0 text-xs font-medium text-link-blue">{quotation.quoteNumber}</span>
+          <span
+            className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+              quotation.status === "final"
+                ? "bg-semantic-success/15 text-semantic-success"
+                : "bg-[#f0f0f2] text-ink-mute"
+            }`}
+          >
+            {quotation.status === "final" ? "최종" : "임시"}
+          </span>
         </div>
         <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-ink-mute">
           {quotation.projectTitle && (
