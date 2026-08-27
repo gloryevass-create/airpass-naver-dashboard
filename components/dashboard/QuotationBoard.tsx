@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useMemo, useState, useTransition, type MouseEvent } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState, useTransition, type MouseEvent } from "react";
 import Link from "next/link";
 import type { Quotation, QuotationItem } from "@/lib/queries/quotations";
 import type { ProductCatalogItem } from "@/lib/queries/productCatalog";
@@ -38,6 +38,26 @@ function InfoRow({ label, value }: { label: string; value: string }) {
   );
 }
 
+/** 방금 검색해서 추가한 품목이라 아직 아무것도 손대지 않은 "빈 직접입력 행"이면
+ * 그 자리를 대신 채우고, 그렇지 않으면 새 행으로 덧붙인다 — 검색으로 여러 개를
+ * 연속 선택할 때마다 매번 빈 행이 하나씩 남는 것을 막는다. */
+function isBlankItem(item: QuotationItem): boolean {
+  return !item.productId && !item.name && item.unitPrice === 0;
+}
+
+function itemFromProduct(p: ProductCatalogItem): QuotationItem {
+  const unitPrice = p.unitPrice ?? 0;
+  return {
+    productId: p.id,
+    name: p.name,
+    specification: p.specification ?? "",
+    unit: "EA",
+    quantity: 1,
+    unitPrice,
+    amount: unitPrice,
+  };
+}
+
 function ItemsEditor({
   items,
   products,
@@ -47,30 +67,135 @@ function ItemsEditor({
   products: ProductCatalogItem[];
   onChange: (items: QuotationItem[]) => void;
 }) {
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [favoritesOnly, setFavoritesOnly] = useState(false);
+  const [justAddedId, setJustAddedId] = useState<string | null>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: globalThis.MouseEvent) {
+      if (panelRef.current && !panelRef.current.contains(e.target as Node)) setSearchOpen(false);
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const favoriteCount = products.filter((p) => p.isFavorite).length;
+  const filteredProducts = useMemo(() => {
+    let list = favoritesOnly ? products.filter((p) => p.isFavorite) : products;
+    const q = search.trim().toLowerCase();
+    if (q) {
+      list = list.filter(
+        (p) => p.name.toLowerCase().includes(q) || (p.specification ?? "").toLowerCase().includes(q)
+      );
+    }
+    return list;
+  }, [products, search, favoritesOnly]);
+
   function update(index: number, patch: Partial<QuotationItem>) {
     const next = items.map((it, i) => (i === index ? { ...it, ...patch } : it));
     next[index] = { ...next[index], amount: Math.round(next[index].quantity * next[index].unitPrice) };
     onChange(next);
   }
 
-  function pickProduct(index: number, productId: string) {
-    const p = products.find((pr) => pr.id === productId);
-    if (!p) return;
-    update(index, {
-      productId: p.id,
-      name: p.name,
-      specification: p.specification ?? "",
-      unitPrice: p.unitPrice ?? 0,
-    });
+  function addProduct(p: ProductCatalogItem) {
+    const blankIndex = items.findIndex(isBlankItem);
+    const newItem = itemFromProduct(p);
+    if (blankIndex !== -1) {
+      onChange(items.map((it, i) => (i === blankIndex ? newItem : it)));
+    } else {
+      onChange([...items, newItem]);
+    }
+    setJustAddedId(p.id);
+    window.setTimeout(() => setJustAddedId((cur) => (cur === p.id ? null : cur)), 1200);
   }
 
   return (
     <div className="flex flex-col gap-2">
+      <div ref={panelRef} className="relative">
+        <div className="flex flex-wrap items-center gap-2">
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onFocus={() => setSearchOpen(true)}
+            placeholder={`물품 검색 (${products.length}개)`}
+            className="min-w-[200px] flex-1 rounded-sm border border-hairline bg-canvas-cream px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
+          />
+          <button
+            type="button"
+            onClick={() => onChange([...items, emptyItem()])}
+            className="shrink-0 rounded-lg border border-hairline px-3 py-1.5 text-xs font-medium text-ink hover:bg-[#f7f7f8]"
+          >
+            + 직접 입력
+          </button>
+        </div>
+        <div className="mt-2 flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => setFavoritesOnly(false)}
+            className={`rounded-full border px-3 py-1 text-xs font-medium ${
+              !favoritesOnly ? "border-primary bg-canvas-lavender text-primary" : "border-hairline text-ink-mute"
+            }`}
+          >
+            전체 제품
+          </button>
+          <button
+            type="button"
+            onClick={() => setFavoritesOnly(true)}
+            className={`rounded-full border px-3 py-1 text-xs font-medium ${
+              favoritesOnly ? "border-primary bg-canvas-lavender text-primary" : "border-hairline text-ink-mute"
+            }`}
+          >
+            ★ 즐겨찾기 {favoriteCount}
+          </button>
+        </div>
+
+        {searchOpen && (
+          <div className="absolute left-0 right-0 top-full z-20 mt-2 max-h-96 overflow-y-auto rounded-sm border border-hairline bg-canvas-cream shadow-lg">
+            <div className="sticky top-0 flex items-center justify-between border-b border-hairline bg-canvas-cream px-4 py-3">
+              <span className="text-xs text-ink-mute">물품을 연속으로 선택할 수 있습니다.</span>
+              <button
+                type="button"
+                onClick={() => setSearchOpen(false)}
+                className="rounded-lg bg-primary px-3 py-1 text-xs font-bold text-white hover:bg-primary-press"
+              >
+                선택 완료
+              </button>
+            </div>
+            {filteredProducts.length === 0 ? (
+              <p className="px-4 py-6 text-center text-xs text-ink-mute">검색 결과가 없습니다.</p>
+            ) : (
+              filteredProducts.map((p) => (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => addProduct(p)}
+                  className={`flex w-full items-center justify-between gap-3 border-t border-hairline px-4 py-3 text-left first:border-t-0 hover:bg-canvas-lavender/30 ${
+                    justAddedId === p.id ? "border-2 border-primary" : ""
+                  }`}
+                >
+                  <span className="min-w-0">
+                    <span className="block truncate text-sm font-bold text-ink">
+                      {p.isFavorite && <span className="mr-1 text-primary">★</span>}
+                      {p.name}
+                    </span>
+                    {p.specification && <span className="block truncate text-xs text-ink-mute">{p.specification}</span>}
+                  </span>
+                  <span className="shrink-0 text-sm font-bold tabular-nums text-primary">
+                    {p.unitPrice != null ? `${formatCurrency(p.unitPrice)}원` : "-"}
+                  </span>
+                </button>
+              ))
+            )}
+          </div>
+        )}
+      </div>
+
       <div className="overflow-x-auto rounded-sm border border-hairline">
         <table className="w-full border-collapse text-sm">
           <thead className="bg-background text-left text-ink-mute">
             <tr>
-              <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium">제품(선택)</th>
               <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium">품명 *</th>
               <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium">규격</th>
               <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium">단위</th>
@@ -83,20 +208,6 @@ function ItemsEditor({
           <tbody>
             {items.map((item, index) => (
               <tr key={index}>
-                <td className="min-w-32 border border-hairline px-2 py-1.5">
-                  <select
-                    value={item.productId ?? ""}
-                    onChange={(e) => e.target.value && pickProduct(index, e.target.value)}
-                    className={CELL_FIELD_CLASS}
-                  >
-                    <option value="">직접입력</option>
-                    {products.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.name}
-                      </option>
-                    ))}
-                  </select>
-                </td>
                 <td className="min-w-28 border border-hairline px-2 py-1.5">
                   <input
                     value={item.name}
@@ -152,7 +263,7 @@ function ItemsEditor({
             ))}
             {items.length === 0 && (
               <tr>
-                <td colSpan={8} className="border border-hairline px-2 py-6 text-center text-xs text-ink-mute">
+                <td colSpan={7} className="border border-hairline px-2 py-6 text-center text-xs text-ink-mute">
                   물품을 검색하거나 행을 추가해 견적을 작성해 주세요.
                 </td>
               </tr>
@@ -160,13 +271,6 @@ function ItemsEditor({
           </tbody>
         </table>
       </div>
-      <button
-        type="button"
-        onClick={() => onChange([...items, emptyItem()])}
-        className="w-fit self-center rounded-full border border-dashed border-hairline px-4 py-1 text-xs font-medium text-ink-mute hover:border-primary hover:text-primary"
-      >
-        + 품목 추가
-      </button>
     </div>
   );
 }
