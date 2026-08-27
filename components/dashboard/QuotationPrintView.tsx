@@ -118,26 +118,26 @@ export function QuotationPrintView({ quotation }: { quotation: Quotation }) {
 
           <div className="mt-4 flex justify-end">
             <div className="flex w-80 flex-col divide-y divide-hairline border-t border-hairline text-base">
-              <div className="flex items-baseline justify-between py-5">
+              <div className="flex items-baseline justify-between py-2.5">
                 <span className="text-ink-mute">품목금액 (VAT 포함)</span>
                 <span className="font-semibold tabular-nums">{formatCurrency(adjustedAmount)}원</span>
               </div>
-              <div className="flex items-baseline justify-between py-5">
+              <div className="flex items-baseline justify-between py-2.5">
                 <span className="text-ink-mute">조달수수료 (별도)</span>
                 <span className="font-semibold tabular-nums">{formatCurrency(quotation.procurementFeeAmount)}원</span>
               </div>
-              <div className="flex items-baseline justify-between py-5">
+              <div className="flex items-baseline justify-between py-2.5">
                 <span className="text-ink-mute">최종 합계</span>
                 <span className="text-lg font-bold tabular-nums">{formatCurrency(quotation.totalAmount)}원</span>
               </div>
-              <div className="flex items-start justify-between py-5">
+              <div className="flex items-start justify-between py-2.5">
                 <div>
                   <span className="text-lg font-bold text-primary">공급가액</span>
                   <p className="mt-1 text-xs text-ink-mute">세액 참고 · 품목금액 기준</p>
                 </div>
                 <span className="text-lg font-bold tabular-nums text-primary">{formatCurrency(quotation.supplyAmount)}원</span>
               </div>
-              <div className="flex items-baseline justify-between py-5">
+              <div className="flex items-baseline justify-between py-2.5">
                 <span className="text-lg font-bold text-primary">부가세</span>
                 <span className="text-lg font-bold tabular-nums text-primary">{formatCurrency(quotation.taxAmount)}원</span>
               </div>
