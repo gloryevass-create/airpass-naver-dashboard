@@ -1,6 +1,15 @@
 "use client";
 
-import { useActionState, useEffect, useMemo, useRef, useState, useTransition, type MouseEvent } from "react";
+import {
+  useActionState,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+  type DragEvent,
+  type MouseEvent,
+} from "react";
 import Link from "next/link";
 import type { Quotation, QuotationItem } from "@/lib/queries/quotations";
 import type { ProductCatalogItem } from "@/lib/queries/productCatalog";
@@ -76,7 +85,33 @@ function ItemsEditor({
   const [search, setSearch] = useState("");
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [justAddedId, setJustAddedId] = useState<string | null>(null);
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+
+  // 드래그 핸들(⋮⋮)에서만 드래그를 시작하고, 행 전체는 드롭 대상 역할만 한다 —
+  // 그래야 행 안의 입력칸을 클릭·드래그해서 텍스트를 선택하는 동작과 충돌하지 않는다.
+  function handleDragStart(index: number) {
+    return (e: DragEvent<HTMLSpanElement>) => {
+      e.dataTransfer.effectAllowed = "move";
+      setDragIndex(index);
+    };
+  }
+  function handleDragOver(e: DragEvent<HTMLTableRowElement>) {
+    e.preventDefault();
+  }
+  function handleDrop(index: number) {
+    return () => {
+      if (dragIndex === null || dragIndex === index) {
+        setDragIndex(null);
+        return;
+      }
+      const next = [...items];
+      const [moved] = next.splice(dragIndex, 1);
+      next.splice(index, 0, moved);
+      onChange(next);
+      setDragIndex(null);
+    };
+  }
 
   useEffect(() => {
     function handleClickOutside(e: globalThis.MouseEvent) {
@@ -204,6 +239,7 @@ function ItemsEditor({
         <table className="w-full border-collapse text-sm">
           <thead className="bg-background text-left text-ink-mute">
             <tr>
+              <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium"></th>
               <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium">No</th>
               <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium">품명 *</th>
               <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium">규격</th>
@@ -217,7 +253,23 @@ function ItemsEditor({
           </thead>
           <tbody>
             {items.map((item, index) => (
-              <tr key={index}>
+              <tr
+                key={index}
+                onDragOver={handleDragOver}
+                onDrop={handleDrop(index)}
+                className={dragIndex === index ? "opacity-40" : ""}
+              >
+                <td className="border border-hairline px-1 py-1.5 text-center">
+                  <span
+                    draggable
+                    onDragStart={handleDragStart(index)}
+                    onDragEnd={() => setDragIndex(null)}
+                    className="inline-block cursor-grab select-none text-ink-mute active:cursor-grabbing"
+                    aria-label="드래그해서 순서 변경"
+                  >
+                    ⠿
+                  </span>
+                </td>
                 <td className="border border-hairline px-2 py-1.5 text-center text-xs text-ink-mute">{index + 1}</td>
                 <td className="min-w-28 border border-hairline px-2 py-1.5">
                   <input
@@ -282,7 +334,7 @@ function ItemsEditor({
             ))}
             {items.length === 0 && (
               <tr>
-                <td colSpan={9} className="border border-hairline px-2 py-6 text-center text-xs text-ink-mute">
+                <td colSpan={10} className="border border-hairline px-2 py-6 text-center text-xs text-ink-mute">
                   물품을 검색하거나 행을 추가해 견적을 작성해 주세요.
                 </td>
               </tr>
