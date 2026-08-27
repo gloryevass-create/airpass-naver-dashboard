@@ -622,146 +622,152 @@ export function BusinessBoardV2({ projects, members }: { projects: BusinessProje
     setEditingId(null);
   }
 
+  const isEditing = editingId === "new" || Boolean(editingProject);
+
   return (
     <div className="flex flex-col gap-4">
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-        <button
-          type="button"
-          onClick={() => {
-            setStatusFilter(null);
-            setEditingId(null);
-          }}
-          className={`flex flex-col gap-1 rounded-sm border bg-primary p-3 text-left text-white transition-shadow ${
-            statusFilter === null ? "border-current shadow-[0_0_0_2px_currentColor]" : "border-primary"
-          }`}
-        >
-          <span className="text-xs font-semibold">전체</span>
-          <span className="text-2xl font-bold tracking-tight">{projects.length.toLocaleString("ko-KR")}</span>
-        </button>
-        {STATUSES.map((s) => {
-          const badge = STATUS_BADGE[s] || "bg-[#f0f0f2] text-ink-mute";
-          const active = statusFilter === s;
-          return (
-            <button
-              key={s}
-              type="button"
-              onClick={() => {
-                setStatusFilter((prev) => (prev === s ? null : s));
-                setEditingId(null);
-              }}
-              className={`flex flex-col gap-1 rounded-sm border p-3 text-left transition-shadow ${badge} ${
-                active ? "border-current shadow-[0_0_0_2px_currentColor]" : "border-hairline"
-              }`}
-            >
-              <span className="flex items-center gap-1.5 text-xs font-semibold">
-                <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${STATUS_DOT[s] || "bg-ink-mute"}`} />
-                {s}
-              </span>
-              <span className="text-2xl font-bold tracking-tight">
-                {(statusCounts.get(s) ?? 0).toLocaleString("ko-KR")}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-      {statusFilter && (
-        <button
-          type="button"
-          onClick={() => {
-            setStatusFilter(null);
-            setEditingId(null);
-          }}
-          className="w-fit text-xs text-link-blue hover:underline"
-        >
-          &ldquo;{statusFilter}&rdquo; 필터 해제
-        </button>
-      )}
-
-      {editingId === "new" && <ProjectForm project={null} members={members} onDone={() => setEditingId(null)} />}
-      {editingProject && (
+      {isEditing ? (
         <div className="flex flex-col gap-4">
-          <ProjectForm project={editingProject} members={members} onDone={() => setEditingId(null)} />
           <button
             type="button"
-            onClick={() => handleDelete(editingProject.id)}
-            className="w-fit rounded-lg border border-hairline px-4 py-1.5 text-xs font-medium text-semantic-error hover:bg-[#f7f7f8]"
+            onClick={() => setEditingId(null)}
+            className="flex w-fit items-center gap-1 text-sm font-medium text-ink-mute hover:text-ink"
           >
-            이 사업 삭제
+            ← 목록으로
           </button>
-          <ProjectHistory project={editingProject} />
-          <ProjectComments project={editingProject} />
+          {editingId === "new" && <ProjectForm project={null} members={members} onDone={() => setEditingId(null)} />}
+          {editingProject && (
+            <>
+              <ProjectForm project={editingProject} members={members} onDone={() => setEditingId(null)} />
+              <button
+                type="button"
+                onClick={() => handleDelete(editingProject.id)}
+                className="w-fit rounded-lg border border-hairline px-4 py-1.5 text-xs font-medium text-semantic-error hover:bg-[#f7f7f8]"
+              >
+                이 사업 삭제
+              </button>
+              <ProjectHistory project={editingProject} />
+              <ProjectComments project={editingProject} />
+            </>
+          )}
         </div>
-      )}
-
-      <div className="flex flex-col gap-4 rounded-sm border border-hairline bg-canvas-cream p-4">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <label className="flex items-center gap-2 text-xs text-ink-mute">
-            <input
-              type="checkbox"
-              checked={showAll}
-              onChange={(e) => setShowAll(e.target.checked)}
-              className="h-3.5 w-3.5"
-            />
-            완료·보류 포함
-          </label>
-          <div className="flex items-center gap-2">
-            <div className="flex rounded-lg bg-background p-0.5 text-xs font-medium">
-              <button
-                type="button"
-                onClick={() => setView("board")}
-                className={`rounded-lg px-3 py-1 transition-colors ${
-                  view === "board" ? "bg-primary text-white shadow-sm" : "text-ink-mute hover:text-ink"
-                }`}
-              >
-                목록
-              </button>
-              <button
-                type="button"
-                onClick={() => setView("list")}
-                className={`rounded-lg px-3 py-1 transition-colors ${
-                  view === "list" ? "bg-primary text-white shadow-sm" : "text-ink-mute hover:text-ink"
-                }`}
-              >
-                리스트
-              </button>
-            </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
             <button
               type="button"
-              onClick={() => setEditingId("new")}
-              className="rounded-lg bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press"
+              onClick={() => setStatusFilter(null)}
+              className={`flex flex-col gap-1 rounded-sm border bg-primary p-3 text-left text-white transition-shadow ${
+                statusFilter === null ? "border-current shadow-[0_0_0_2px_currentColor]" : "border-primary"
+              }`}
             >
-              + 새 사업 추가
+              <span className="text-xs font-semibold">전체</span>
+              <span className="text-2xl font-bold tracking-tight">{projects.length.toLocaleString("ko-KR")}</span>
             </button>
-          </div>
-        </div>
-
-        {view === "board" ? (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-            {Array.from(byStage.entries()).map(([stage, items]) => (
-              <div key={stage} className="flex min-w-0 flex-col gap-2">
-                <div
-                  className={`flex items-center gap-1.5 rounded-sm px-2 py-1.5 text-sm font-semibold ${stageHeaderColor(stage)}`}
+            {STATUSES.map((s) => {
+              const badge = STATUS_BADGE[s] || "bg-[#f0f0f2] text-ink-mute";
+              const active = statusFilter === s;
+              return (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setStatusFilter((prev) => (prev === s ? null : s))}
+                  className={`flex flex-col gap-1 rounded-sm border p-3 text-left transition-shadow ${badge} ${
+                    active ? "border-current shadow-[0_0_0_2px_currentColor]" : "border-hairline"
+                  }`}
                 >
-                  <span className="truncate">{stage}</span>
-                  <span className="shrink-0 font-normal opacity-70">{items.length}</span>
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  {items.map((p) => (
-                    <ProjectCard key={p.id} project={p} onEdit={() => setEditingId(p.id)} />
-                  ))}
-                  {items.length === 0 && (
-                    <div className="rounded-lg border border-dashed border-hairline p-2 text-center text-xs text-ink-mute">
-                      없음
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
+                  <span className="flex items-center gap-1.5 text-xs font-semibold">
+                    <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${STATUS_DOT[s] || "bg-ink-mute"}`} />
+                    {s}
+                  </span>
+                  <span className="text-2xl font-bold tracking-tight">
+                    {(statusCounts.get(s) ?? 0).toLocaleString("ko-KR")}
+                  </span>
+                </button>
+              );
+            })}
           </div>
-        ) : (
-          <BusinessListView projects={visible} onEdit={(p) => setEditingId(p.id)} />
-        )}
-      </div>
+          {statusFilter && (
+            <button
+              type="button"
+              onClick={() => setStatusFilter(null)}
+              className="w-fit text-xs text-link-blue hover:underline"
+            >
+              &ldquo;{statusFilter}&rdquo; 필터 해제
+            </button>
+          )}
+
+          <div className="flex flex-col gap-4 rounded-sm border border-hairline bg-canvas-cream p-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <label className="flex items-center gap-2 text-xs text-ink-mute">
+                <input
+                  type="checkbox"
+                  checked={showAll}
+                  onChange={(e) => setShowAll(e.target.checked)}
+                  className="h-3.5 w-3.5"
+                />
+                완료·보류 포함
+              </label>
+              <div className="flex items-center gap-2">
+                <div className="flex rounded-lg bg-background p-0.5 text-xs font-medium">
+                  <button
+                    type="button"
+                    onClick={() => setView("board")}
+                    className={`rounded-lg px-3 py-1 transition-colors ${
+                      view === "board" ? "bg-primary text-white shadow-sm" : "text-ink-mute hover:text-ink"
+                    }`}
+                  >
+                    목록
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setView("list")}
+                    className={`rounded-lg px-3 py-1 transition-colors ${
+                      view === "list" ? "bg-primary text-white shadow-sm" : "text-ink-mute hover:text-ink"
+                    }`}
+                  >
+                    리스트
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setEditingId("new")}
+                  className="rounded-lg bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press"
+                >
+                  + 새 사업 추가
+                </button>
+              </div>
+            </div>
+
+            {view === "board" ? (
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+                {Array.from(byStage.entries()).map(([stage, items]) => (
+                  <div key={stage} className="flex min-w-0 flex-col gap-2">
+                    <div
+                      className={`flex items-center gap-1.5 rounded-sm px-2 py-1.5 text-sm font-semibold ${stageHeaderColor(stage)}`}
+                    >
+                      <span className="truncate">{stage}</span>
+                      <span className="shrink-0 font-normal opacity-70">{items.length}</span>
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                      {items.map((p) => (
+                        <ProjectCard key={p.id} project={p} onEdit={() => setEditingId(p.id)} />
+                      ))}
+                      {items.length === 0 && (
+                        <div className="rounded-lg border border-dashed border-hairline p-2 text-center text-xs text-ink-mute">
+                          없음
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <BusinessListView projects={visible} onEdit={(p) => setEditingId(p.id)} />
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }
