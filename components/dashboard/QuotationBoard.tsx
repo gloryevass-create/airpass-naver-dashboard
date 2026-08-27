@@ -6,6 +6,7 @@ import type { Quotation, QuotationItem } from "@/lib/queries/quotations";
 import type { ProductCatalogItem } from "@/lib/queries/productCatalog";
 import { createQuotation, updateQuotation, deleteQuotation } from "@/app/dashboard/actions/quotations";
 import { QUOTATION_SUPPLIER } from "@/lib/quotationCompany";
+import { NavIcon } from "@/components/icons/NavIcon";
 
 function formatCurrency(n: number): string {
   return Math.round(n).toLocaleString("ko-KR");
@@ -21,13 +22,16 @@ function todayStr(): string {
 }
 
 function emptyItem(): QuotationItem {
-  return { productId: null, name: "", specification: "", unit: "EA", quantity: 1, unitPrice: 0, amount: 0 };
+  return { productId: null, name: "", specification: "", unit: "EA", quantity: 1, unitPrice: 0, amount: 0, note: "" };
 }
 
 const FIELD_CLASS =
   "rounded-sm border border-hairline bg-canvas-cream px-3 py-1.5 text-sm text-ink outline-none focus:border-primary";
+// 표 안의 입력칸은 평소엔 일반 표 텍스트처럼 보이다가(테두리 없음) 포커스했을 때만
+// 입력 중임을 보여준다 — 편집 가능한 셀이라는 걸 알 수 있으면서도 표가 입력창들로
+// 빽빽해 보이지 않게 한다(레퍼런스 디자인 참고, 2026-08-27).
 const CELL_FIELD_CLASS =
-  "w-full rounded-sm border border-hairline bg-canvas-cream px-1.5 py-1 text-xs text-ink outline-none focus:border-primary";
+  "w-full rounded-sm border border-transparent bg-transparent px-1.5 py-1 text-xs text-ink outline-none focus:border-hairline focus:bg-canvas-cream";
 
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
@@ -55,6 +59,7 @@ function itemFromProduct(p: ProductCatalogItem): QuotationItem {
     quantity: 1,
     unitPrice,
     amount: unitPrice,
+    note: "",
   };
 }
 
@@ -113,52 +118,55 @@ function ItemsEditor({
 
   return (
     <div className="flex flex-col gap-2">
-      <div ref={panelRef} className="relative">
-        <div className="flex flex-wrap items-center gap-2">
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            onFocus={() => setSearchOpen(true)}
-            placeholder={`물품 검색 (${products.length}개)`}
-            className="min-w-[200px] flex-1 rounded-sm border border-hairline bg-canvas-cream px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
-          />
-          <button
-            type="button"
-            onClick={() => onChange([...items, emptyItem()])}
-            className="shrink-0 rounded-lg border border-hairline px-3 py-1.5 text-xs font-medium text-ink hover:bg-[#f7f7f8]"
-          >
-            + 직접 입력
-          </button>
-        </div>
-        <div className="mt-2 flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={() => setFavoritesOnly(false)}
-            className={`rounded-full border px-3 py-1 text-xs font-medium ${
-              !favoritesOnly ? "border-primary bg-canvas-lavender text-primary" : "border-hairline text-ink-mute"
-            }`}
-          >
-            전체 제품
-          </button>
-          <button
-            type="button"
-            onClick={() => setFavoritesOnly(true)}
-            className={`rounded-full border px-3 py-1 text-xs font-medium ${
-              favoritesOnly ? "border-primary bg-canvas-lavender text-primary" : "border-hairline text-ink-mute"
-            }`}
-          >
-            ★ 즐겨찾기 {favoriteCount}
-          </button>
-        </div>
+      <div ref={panelRef} className="relative flex flex-wrap items-center gap-2">
+        <span className="shrink-0 rounded-full bg-background px-3 py-1.5 text-xs font-medium text-ink-mute">
+          {items.length}개 품목
+        </span>
+        <button
+          type="button"
+          onClick={() => {
+            setFavoritesOnly(false);
+            setSearchOpen(true);
+          }}
+          className="flex shrink-0 items-center gap-1.5 rounded-full border border-primary px-3 py-1.5 text-xs font-medium text-primary hover:bg-canvas-lavender/40"
+        >
+          <NavIcon name="search" className="h-3.5 w-3.5" />
+          물품 검색 ({products.length}개)
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setFavoritesOnly(true);
+            setSearchOpen(true);
+          }}
+          className="shrink-0 rounded-full border border-primary px-3 py-1.5 text-xs font-medium text-primary hover:bg-canvas-lavender/40"
+        >
+          ★ 즐겨찾기 ({favoriteCount}개)
+        </button>
+        <div className="flex-1" />
+        <button
+          type="button"
+          onClick={() => onChange([...items, emptyItem()])}
+          className="shrink-0 rounded-lg border border-dashed border-hairline px-3 py-1.5 text-xs font-medium text-ink-mute hover:border-primary hover:text-primary"
+        >
+          + 행 추가
+        </button>
 
         {searchOpen && (
           <div className="absolute left-0 right-0 top-full z-20 mt-2 max-h-96 overflow-y-auto rounded-sm border border-hairline bg-canvas-cream shadow-lg">
-            <div className="sticky top-0 flex items-center justify-between border-b border-hairline bg-canvas-cream px-4 py-3">
-              <span className="text-xs text-ink-mute">물품을 연속으로 선택할 수 있습니다.</span>
+            <div className="sticky top-0 flex items-center gap-2 border-b border-hairline bg-canvas-cream px-4 py-3">
+              <input
+                autoFocus
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="물품명·규격으로 검색"
+                className="min-w-0 flex-1 rounded-sm border border-hairline bg-background px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
+              />
+              <span className="hidden shrink-0 text-xs text-ink-mute sm:inline">물품을 연속으로 선택할 수 있습니다.</span>
               <button
                 type="button"
                 onClick={() => setSearchOpen(false)}
-                className="rounded-lg bg-primary px-3 py-1 text-xs font-bold text-white hover:bg-primary-press"
+                className="shrink-0 rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-white hover:bg-primary-press"
               >
                 선택 완료
               </button>
@@ -196,18 +204,21 @@ function ItemsEditor({
         <table className="w-full border-collapse text-sm">
           <thead className="bg-background text-left text-ink-mute">
             <tr>
+              <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium">No</th>
               <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium">품명 *</th>
               <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium">규격</th>
-              <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium">단위</th>
               <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium text-right">수량</th>
+              <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium">단위</th>
               <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium text-right">단가(VAT 포함)</th>
               <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium text-right">금액</th>
+              <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium">비고</th>
               <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium"></th>
             </tr>
           </thead>
           <tbody>
             {items.map((item, index) => (
               <tr key={index}>
+                <td className="border border-hairline px-2 py-1.5 text-center text-xs text-ink-mute">{index + 1}</td>
                 <td className="min-w-28 border border-hairline px-2 py-1.5">
                   <input
                     value={item.name}
@@ -222,13 +233,6 @@ function ItemsEditor({
                     className={CELL_FIELD_CLASS}
                   />
                 </td>
-                <td className="w-16 border border-hairline px-2 py-1.5">
-                  <input
-                    value={item.unit}
-                    onChange={(e) => update(index, { unit: e.target.value })}
-                    className={CELL_FIELD_CLASS}
-                  />
-                </td>
                 <td className="w-20 border border-hairline px-2 py-1.5">
                   <input
                     type="number"
@@ -236,6 +240,13 @@ function ItemsEditor({
                     value={item.quantity}
                     onChange={(e) => update(index, { quantity: Number(e.target.value) || 0 })}
                     className={`${CELL_FIELD_CLASS} text-right`}
+                  />
+                </td>
+                <td className="w-16 border border-hairline px-2 py-1.5">
+                  <input
+                    value={item.unit}
+                    onChange={(e) => update(index, { unit: e.target.value })}
+                    className={`${CELL_FIELD_CLASS} text-center`}
                   />
                 </td>
                 <td className="w-28 border border-hairline px-2 py-1.5">
@@ -247,23 +258,31 @@ function ItemsEditor({
                     className={`${CELL_FIELD_CLASS} text-right`}
                   />
                 </td>
-                <td className="whitespace-nowrap border border-hairline px-2 py-1.5 text-right text-xs tabular-nums text-ink">
+                <td className="whitespace-nowrap border border-hairline px-2 py-1.5 text-right text-xs font-bold tabular-nums text-ink">
                   {formatCurrency(item.amount)}
                 </td>
-                <td className="border border-hairline px-2 py-1.5">
+                <td className="min-w-24 border border-hairline px-2 py-1.5">
+                  <input
+                    value={item.note}
+                    onChange={(e) => update(index, { note: e.target.value })}
+                    className={CELL_FIELD_CLASS}
+                  />
+                </td>
+                <td className="border border-hairline px-2 py-1.5 text-center">
                   <button
                     type="button"
                     onClick={() => onChange(items.filter((_, i) => i !== index))}
-                    className="text-xs text-semantic-error hover:underline"
+                    aria-label="품목 삭제"
+                    className="text-semantic-error hover:opacity-70"
                   >
-                    삭제
+                    ✕
                   </button>
                 </td>
               </tr>
             ))}
             {items.length === 0 && (
               <tr>
-                <td colSpan={7} className="border border-hairline px-2 py-6 text-center text-xs text-ink-mute">
+                <td colSpan={9} className="border border-hairline px-2 py-6 text-center text-xs text-ink-mute">
                   물품을 검색하거나 행을 추가해 견적을 작성해 주세요.
                 </td>
               </tr>

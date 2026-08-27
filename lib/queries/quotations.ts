@@ -11,6 +11,7 @@ export type QuotationItem = {
   quantity: number;
   unitPrice: number;
   amount: number;
+  note: string;
 };
 
 export type Quotation = {
@@ -52,6 +53,7 @@ function toItems(raw: unknown): QuotationItem[] {
       quantity: Number(row.quantity ?? 0),
       unitPrice: Number(row.unitPrice ?? 0),
       amount: Number(row.amount ?? 0),
+      note: String(row.note ?? ""),
     };
   });
 }

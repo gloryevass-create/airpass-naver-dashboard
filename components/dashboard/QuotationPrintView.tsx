@@ -80,29 +80,33 @@ export function QuotationPrintView({ quotation }: { quotation: Quotation }) {
             <table className="w-full min-w-[560px] border-collapse text-sm">
               <thead>
                 <tr className="border-y-2 border-ink bg-[#f5f5f7]">
+                  <th className="border border-hairline px-2 py-1.5">No</th>
                   <th className="border border-hairline px-2 py-1.5">품명</th>
                   <th className="border border-hairline px-2 py-1.5">규격</th>
-                  <th className="border border-hairline px-2 py-1.5">단위</th>
                   <th className="border border-hairline px-2 py-1.5">수량</th>
+                  <th className="border border-hairline px-2 py-1.5">단위</th>
                   <th className="border border-hairline px-2 py-1.5">단가(VAT 포함)</th>
                   <th className="border border-hairline px-2 py-1.5">금액</th>
+                  <th className="border border-hairline px-2 py-1.5">비고</th>
                 </tr>
               </thead>
               <tbody>
                 {quotation.items.map((item, i) => (
                   <tr key={i}>
+                    <td className="border border-hairline px-2 py-1.5 text-center">{i + 1}</td>
                     <td className="border border-hairline px-2 py-1.5">{item.name}</td>
                     <td className="border border-hairline px-2 py-1.5">{item.specification}</td>
-                    <td className="border border-hairline px-2 py-1.5 text-center">{item.unit}</td>
                     <td className="border border-hairline px-2 py-1.5 text-right tabular-nums">
                       {item.quantity.toLocaleString("ko-KR")}
                     </td>
+                    <td className="border border-hairline px-2 py-1.5 text-center">{item.unit}</td>
                     <td className="border border-hairline px-2 py-1.5 text-right tabular-nums">
                       {formatCurrency(item.unitPrice)}
                     </td>
                     <td className="border border-hairline px-2 py-1.5 text-right tabular-nums">
                       {formatCurrency(item.amount)}
                     </td>
+                    <td className="border border-hairline px-2 py-1.5">{item.note}</td>
                   </tr>
                 ))}
               </tbody>

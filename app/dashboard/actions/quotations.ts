@@ -53,6 +53,7 @@ function parseItems(formData: FormData): { items: QuotationItem[]; error?: strin
       quantity,
       unitPrice,
       amount: Math.round(quantity * unitPrice),
+      note: String(row.note ?? "").trim(),
     };
   }).filter((item) => item.name);
 
