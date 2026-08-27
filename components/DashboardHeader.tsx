@@ -51,7 +51,7 @@ export function DashboardHeader({
   }
 
   return (
-    <header className="flex items-center justify-between border-b border-white/10 bg-[#262b3a] px-4 py-4 md:px-6">
+    <header className="flex items-center justify-between border-b border-white/10 bg-[#262b3a] px-4 py-4 print:hidden md:px-6">
       <div className="flex min-w-0 items-center gap-1 md:w-56 md:shrink-0 md:gap-2.5">
         <button
           type="button"

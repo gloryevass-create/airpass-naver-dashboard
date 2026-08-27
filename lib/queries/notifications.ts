@@ -13,7 +13,8 @@ export type NotificationType =
   | "prespec_scrap"
   | "news_scrap"
   | "cooperation"
-  | "marketing";
+  | "marketing"
+  | "quotation";
 
 export type Notification = {
   id: string;

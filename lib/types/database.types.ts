@@ -1437,7 +1437,7 @@ export type Database = {
       notifications: {
         Row: {
           id: string;
-          type: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap" | "news_scrap" | "cooperation" | "marketing";
+          type: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap" | "news_scrap" | "cooperation" | "marketing" | "quotation";
           title: string;
           message: string | null;
           link: string | null;
@@ -1445,7 +1445,7 @@ export type Database = {
         };
         Insert: {
           id?: string;
-          type: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap" | "news_scrap" | "cooperation" | "marketing";
+          type: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap" | "news_scrap" | "cooperation" | "marketing" | "quotation";
           title: string;
           message?: string | null;
           link?: string | null;
@@ -1453,7 +1453,7 @@ export type Database = {
         };
         Update: {
           id?: string;
-          type?: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap" | "news_scrap" | "cooperation" | "marketing";
+          type?: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap" | "news_scrap" | "cooperation" | "marketing" | "quotation";
           title?: string;
           message?: string | null;
           link?: string | null;
@@ -1980,6 +1980,75 @@ export type Database = {
           content_type?: string | null;
           storage_path?: string;
           created_at?: string;
+        };
+        Relationships: [];
+      };
+      quotations: {
+        Row: {
+          id: string;
+          quote_number: string;
+          customer_name: string;
+          project_title: string | null;
+          quote_date: string;
+          valid_until: string | null;
+          manager_name: string | null;
+          items: Json;
+          discount_amount: number;
+          extra_amount: number;
+          subtotal_amount: number;
+          supply_amount: number;
+          tax_amount: number;
+          total_amount: number;
+          memo: string | null;
+          include_stamp: boolean;
+          created_by: string | null;
+          created_by_name: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          quote_number: string;
+          customer_name: string;
+          project_title?: string | null;
+          quote_date?: string;
+          valid_until?: string | null;
+          manager_name?: string | null;
+          items?: Json;
+          discount_amount?: number;
+          extra_amount?: number;
+          subtotal_amount?: number;
+          supply_amount?: number;
+          tax_amount?: number;
+          total_amount?: number;
+          memo?: string | null;
+          include_stamp?: boolean;
+          created_by?: string | null;
+          created_by_name?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          quote_number?: string;
+          customer_name?: string;
+          project_title?: string | null;
+          quote_date?: string;
+          valid_until?: string | null;
+          manager_name?: string | null;
+          items?: Json;
+          discount_amount?: number;
+          extra_amount?: number;
+          subtotal_amount?: number;
+          supply_amount?: number;
+          tax_amount?: number;
+          total_amount?: number;
+          memo?: string | null;
+          include_stamp?: boolean;
+          created_by?: string | null;
+          created_by_name?: string | null;
+          created_at?: string;
+          updated_at?: string;
         };
         Relationships: [];
       };

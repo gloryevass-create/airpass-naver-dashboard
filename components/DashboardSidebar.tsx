@@ -41,6 +41,7 @@ const ITEMS: MenuEntry[] = [
       { href: "/dashboard/product-catalog", label: "제품 카탈로그", icon: "tag" },
       { href: "/dashboard/vendors", label: "협력사 관리", icon: "wallet" },
       { href: "/dashboard/material-email", label: "자료메일발송", icon: "paperclip" },
+      { href: "/dashboard/quotations", label: "견적서 관리", icon: "receipt" },
     ],
   },
   {
@@ -152,7 +153,7 @@ export function DashboardSidebar({ latestDate }: { latestDate: string | null }) 
         />
       )}
       <nav
-        className={`fixed inset-y-0 left-0 z-40 flex h-full w-64 shrink-0 flex-col border-r border-hairline bg-[#fafafa] p-4 transition-transform duration-200 md:static md:z-auto md:w-56 md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-40 flex h-full w-64 shrink-0 flex-col border-r border-hairline bg-[#fafafa] p-4 transition-transform duration-200 print:hidden md:static md:z-auto md:w-56 md:translate-x-0 ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >

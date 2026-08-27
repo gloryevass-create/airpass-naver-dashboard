@@ -77,6 +77,29 @@
 - 두 서비스 중 하나라도 환경변수가 비어 있으면 폼 대신 설정 안내 배너를 보여준다
   (`isGoogleDriveConfigured`/`isMaterialEmailConfigured`).
 
+## 견적서 관리
+
+`/dashboard/quotations` — WHIZZUP 레퍼런스 사이트의 견적서 기능을 참고해 핵심만 이식했다
+(2026-08-27). 리비전 이력·정산조정·컨소시엄·내부원가·마진 추적·조달채널·구글드라이브 동기화
+등 WHIZZUP 고유 영업 프로세스는 전부 제외 — 품목·금액 자동계산·인쇄용 출력만 다룬다.
+
+- `quotations`(0043) 테이블 하나로 관리한다. 품목(`items`)은 견적서와 항상 통째로 함께
+  편집되는 종속 데이터라 별도 테이블 대신 jsonb 배열로 저장한다(WHIZZUP의 `items_json`과
+  동일한 접근 — `lib/queries/quotations.ts`가 파싱/직렬화).
+- 품목은 제품 카탈로그(`product_catalog`)에서 선택하면 품명·규격·단가를 자동으로 채우거나,
+  직접 입력도 가능하다. 금액(공급가액/부가세/합계)은 클라이언트가 계산한 값을 신뢰하지 않고
+  서버 액션(`app/dashboard/actions/quotations.ts`)에서 다시 계산해 저장한다.
+- 견적번호는 `Q-YYYYMMDD-순번` 형식으로 같은 날짜 발급 건수를 세어 자동 생성한다
+  (`generateQuoteNumber`) — 팀 규모상 동시 등록 충돌 가능성은 낮다고 보고 재시도 로직은
+  두지 않았다(충돌 시 다시 저장하면 됨).
+- 인쇄는 서버측 PDF 생성 없이 `/dashboard/quotations/[id]/print` 전용 페이지 +
+  `window.print()` 방식이다. 헤더·사이드바·AI 명령창은 Tailwind `print:hidden`으로 인쇄 시
+  숨긴다.
+- 공급자(에어패스) 정보는 `lib/quotationCompany.ts`에 고정값으로 넣어뒀다(사업자등록번호
+  ·대표자·주소 — WHIZZUP이 에어패스 제품 견적을 대행 발급할 때 쓰던 실제 등록 정보를
+  그대로 재사용). 직인(도장) 포함 옵션은 실제 도장 이미지가 없어 원형 텍스트("인")로만
+  표시한다 — 실제 이미지가 필요하면 이미지 파일을 받아 교체해야 한다.
+
 ## 폴더 구조
 
 ```
