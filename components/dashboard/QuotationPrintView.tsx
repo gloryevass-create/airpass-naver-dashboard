@@ -18,7 +18,7 @@ function InfoRow({ label, value }: { label: string; value: string }) {
       <div className="w-24 shrink-0 bg-[#f5f5f7] px-3 py-2 text-xs font-medium text-ink-mute print:bg-[#f5f5f7]">
         {label}
       </div>
-      <div className="flex-1 px-3 py-2 text-xs text-ink">{value}</div>
+      <div className="flex-1 px-3 py-2 text-xs font-bold text-ink">{value}</div>
     </div>
   );
 }
@@ -44,8 +44,8 @@ export function QuotationPrintView({ quotation }: { quotation: Quotation }) {
         </div>
 
         <div className="p-8">
-          <div className="grid grid-cols-1 overflow-hidden rounded-sm border border-hairline sm:grid-cols-2">
-            <div className="flex flex-col">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:items-start">
+            <div className="flex flex-col overflow-hidden rounded-sm border border-hairline">
               <div className="bg-[#f5f5f7] px-3 py-2 text-xs font-bold text-ink">견적정보</div>
               <InfoRow label="수신" value={`${quotation.customerName} 귀중`} />
               <InfoRow label="견적명" value={quotation.projectTitle || "-"} />
@@ -54,7 +54,7 @@ export function QuotationPrintView({ quotation }: { quotation: Quotation }) {
               <InfoRow label="유효기간" value={quotation.validUntil ? `${formatDate(quotation.validUntil)}까지` : "-"} />
               {quotation.managerName && <InfoRow label="담당자" value={quotation.managerName} />}
             </div>
-            <div className="relative flex flex-col border-t border-hairline sm:border-l sm:border-t-0">
+            <div className="relative flex flex-col overflow-hidden rounded-sm border border-hairline">
               <div className="bg-[#f5f5f7] px-3 py-2 text-xs font-bold text-ink">공급자</div>
               <InfoRow label="상호" value={QUOTATION_SUPPLIER.name} />
               <InfoRow label="사업자번호" value={QUOTATION_SUPPLIER.businessNumber} />

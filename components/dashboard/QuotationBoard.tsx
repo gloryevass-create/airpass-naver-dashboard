@@ -37,7 +37,7 @@ function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex border-t border-hairline first:border-t-0">
       <div className="w-20 shrink-0 bg-background px-3 py-2 text-xs font-medium text-ink-mute">{label}</div>
-      <div className="flex-1 px-3 py-2 text-xs text-ink">{value}</div>
+      <div className="flex-1 px-3 py-2 text-xs font-bold text-ink">{value}</div>
     </div>
   );
 }
@@ -359,10 +359,10 @@ function QuotationForm({
         </span>
       </div>
 
-      <div className="flex flex-col gap-4 px-4 pb-4">
-        <div className="grid grid-cols-1 overflow-hidden rounded-sm border border-hairline sm:grid-cols-2">
+      <div className="flex flex-col gap-4 px-4 pt-4 pb-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:items-start">
           {/* 견적정보 */}
-          <div className="flex flex-col">
+          <div className="flex flex-col overflow-hidden rounded-sm border border-hairline">
             <div className="bg-background px-3 py-2 text-xs font-bold text-ink">견적정보</div>
             <div className="flex border-t border-hairline">
               <div className="w-20 shrink-0 bg-background px-3 py-2 text-xs font-medium text-ink-mute">견적일자</div>
@@ -371,7 +371,7 @@ function QuotationForm({
                 type="date"
                 defaultValue={quotation?.quoteDate ?? todayStr()}
                 required
-                className="flex-1 border-0 bg-canvas-cream px-3 py-2 text-xs text-ink outline-none focus:bg-background"
+                className="flex-1 border-0 bg-canvas-cream px-3 py-2 text-xs font-bold text-ink outline-none focus:bg-background"
               />
             </div>
             <div className="flex border-t border-hairline">
@@ -383,7 +383,7 @@ function QuotationForm({
                 defaultValue={quotation?.customerName ?? ""}
                 required
                 placeholder="기관명 또는 업체명"
-                className="flex-1 border-0 bg-canvas-cream px-3 py-2 text-xs text-ink outline-none focus:bg-background"
+                className="flex-1 border-0 bg-canvas-cream px-3 py-2 text-xs font-bold text-ink outline-none focus:bg-background"
               />
             </div>
             <div className="flex border-t border-hairline">
@@ -392,7 +392,7 @@ function QuotationForm({
                 name="projectTitle"
                 defaultValue={quotation?.projectTitle ?? ""}
                 placeholder="예: 가상현실 스포츠실 구축"
-                className="flex-1 border-0 bg-canvas-cream px-3 py-2 text-xs text-ink outline-none focus:bg-background"
+                className="flex-1 border-0 bg-canvas-cream px-3 py-2 text-xs font-bold text-ink outline-none focus:bg-background"
               />
             </div>
             <div className="flex border-t border-hairline">
@@ -401,7 +401,7 @@ function QuotationForm({
                 name="validUntil"
                 type="date"
                 defaultValue={quotation?.validUntil ?? ""}
-                className="flex-1 border-0 bg-canvas-cream px-3 py-2 text-xs text-ink outline-none focus:bg-background"
+                className="flex-1 border-0 bg-canvas-cream px-3 py-2 text-xs font-bold text-ink outline-none focus:bg-background"
               />
             </div>
             <div className="flex border-t border-hairline">
@@ -409,7 +409,7 @@ function QuotationForm({
               <select
                 name="managerName"
                 defaultValue={quotation?.managerName ?? ""}
-                className="flex-1 border-0 bg-canvas-cream px-3 py-2 text-xs text-ink outline-none focus:bg-background"
+                className="flex-1 border-0 bg-canvas-cream px-3 py-2 text-xs font-bold text-ink outline-none focus:bg-background"
               >
                 <option value="">선택</option>
                 {members.map((m) => (
@@ -422,7 +422,7 @@ function QuotationForm({
           </div>
 
           {/* 공급자 (고정 정보) */}
-          <div className="flex flex-col border-t border-hairline sm:border-l sm:border-t-0">
+          <div className="flex flex-col overflow-hidden rounded-sm border border-hairline">
             <div className="flex items-center justify-between bg-background px-3 py-2">
               <span className="text-xs font-bold text-ink">공급자</span>
               <label className="flex items-center gap-1.5 text-[11px] text-ink-mute">
@@ -741,7 +741,7 @@ export function QuotationBoard({
   return (
     <div className="flex flex-col gap-4">
       {isEditing ? (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-4">
           <button
             type="button"
             onClick={() => setEditingId(null)}
