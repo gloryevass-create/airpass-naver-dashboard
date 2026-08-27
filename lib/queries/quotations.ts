@@ -125,7 +125,7 @@ export async function getQuotation(supabase: Client, id: string): Promise<Quotat
   return data ? toQuotation(data, businessProjectTitleById) : null;
 }
 
-/** 견적서 작성 화면의 "연결 사업" 검색에 쓰는 최소 필드 — 전체 사업 정보(댓글·
+/** 산출내역 작성 화면의 "연결 사업" 검색에 쓰는 최소 필드 — 전체 사업 정보(댓글·
  * 히스토리 포함)를 불러오는 getBusinessProjectsV2보다 가볍다. */
 export async function getBusinessProjectOptions(
   supabase: Client

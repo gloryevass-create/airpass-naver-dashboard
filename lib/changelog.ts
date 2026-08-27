@@ -9,6 +9,12 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: "2026-08-28",
+    items: [
+      "\"견적서\" 관련 화면 문구를 \"산출내역\"으로 전면 변경 — 사이드바 메뉴명, 목록/작성/인쇄 화면, 알림, SI Business 연결 안내 문구 전체 통일(내부 코드의 quotation 관련 파일명·라우트·테이블명은 그대로 유지)",
+    ],
+  },
+  {
     date: "2026-08-26",
     items: [
       "통합 AI 명령 입력창 1단계 추가 — 전 페이지 상단에서 자연어로 Calendar 일정 등록·Memo 작성 가능(AI가 직접 저장하지 않고 항상 미리보기 확인 후 저장, 모호하면 되물음)",

@@ -42,18 +42,18 @@ export function QuotationPrintView({ quotation }: { quotation: Quotation }) {
       <div className="overflow-hidden rounded-sm border border-hairline bg-white text-ink shadow-sm print:border-0 print:shadow-none">
         <div className="flex items-center justify-between bg-[#262b3a] px-8 py-6 print:bg-[#262b3a]">
           <span className="w-28 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40">Quotation</span>
-          <h1 className="text-center text-2xl font-bold tracking-[0.5em] text-white">견 적 서</h1>
+          <h1 className="text-center text-2xl font-bold tracking-[0.5em] text-white">산 출 내 역</h1>
           <span className="w-28 text-right text-[11px] text-white/60">{formatDate(quotation.quoteDate)}</span>
         </div>
 
         <div className="p-8">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:items-start">
             <div className="flex flex-col overflow-hidden rounded-sm border border-hairline">
-              <div className="bg-[#f5f5f7] px-3 py-2 text-xs font-bold text-ink">견적정보</div>
+              <div className="bg-[#f5f5f7] px-3 py-2 text-xs font-bold text-ink">산출정보</div>
               <InfoRow label="수신" value={`${quotation.customerName} 귀중`} />
-              <InfoRow label="견적명" value={quotation.projectTitle || "-"} />
-              <InfoRow label="견적번호" value={quotation.quoteNumber} />
-              <InfoRow label="견적일자" value={formatDate(quotation.quoteDate)} />
+              <InfoRow label="산출명" value={quotation.projectTitle || "-"} />
+              <InfoRow label="산출번호" value={quotation.quoteNumber} />
+              <InfoRow label="산출일자" value={formatDate(quotation.quoteDate)} />
               <InfoRow label="유효기간" value={quotation.validUntil ? `${formatDate(quotation.validUntil)}까지` : "-"} />
               {quotation.managerName && <InfoRow label="담당자" value={quotation.managerName} />}
             </div>
@@ -75,7 +75,7 @@ export function QuotationPrintView({ quotation }: { quotation: Quotation }) {
           </div>
 
           <div className="mt-4 flex items-center justify-between rounded-sm border border-hairline bg-[#f5f5f7] px-4 py-3">
-            <span className="text-sm font-medium text-ink-mute">견적금액 (VAT 포함)</span>
+            <span className="text-sm font-medium text-ink-mute">산출금액 (VAT 포함)</span>
             <span className="text-xl font-bold tabular-nums">{formatCurrency(quotation.totalAmount)}원</span>
           </div>
 

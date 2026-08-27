@@ -393,8 +393,8 @@ function ProjectHistory({ project }: { project: BusinessProjectV2 }) {
   );
 }
 
-/** 견적서 작성 화면에서 이 사업(SI Business 프로젝트)에 연결해 둔 견적서
- * 목록 — 견적서 쪽이 연결의 출발점이라 여기서는 조회만 한다(사용자 확인,
+/** 산출내역 작성 화면에서 이 사업(SI Business 프로젝트)에 연결해 둔 산출내역
+ * 목록 — 산출내역 쪽이 연결의 출발점이라 여기서는 조회만 한다(사용자 확인,
  * 2026-08-27). */
 function ProjectQuotations({ project, quotations }: { project: BusinessProjectV2; quotations: Quotation[] }) {
   const linked = quotations.filter((q) => q.businessProjectId === project.id);
@@ -402,13 +402,13 @@ function ProjectQuotations({ project, quotations }: { project: BusinessProjectV2
   return (
     <div className="flex flex-col gap-3 rounded-sm border border-hairline bg-canvas-cream p-4">
       <div>
-        <strong className="text-sm font-bold text-ink">연결된 견적서</strong>
+        <strong className="text-sm font-bold text-ink">연결된 산출내역</strong>
         <p className="mt-0.5 text-xs text-ink-mute">
-          견적서 작성 화면의 &ldquo;연결 사업&rdquo;에서 이 프로젝트를 선택하면 여기 표시됩니다.
+          산출내역 작성 화면의 &ldquo;연결 사업&rdquo;에서 이 프로젝트를 선택하면 여기 표시됩니다.
         </p>
       </div>
       {linked.length === 0 ? (
-        <p className="text-sm text-ink-mute">연결된 견적서가 없습니다.</p>
+        <p className="text-sm text-ink-mute">연결된 산출내역이 없습니다.</p>
       ) : (
         <div className="flex flex-col gap-1.5">
           {linked.map((q) => (
@@ -442,7 +442,7 @@ function ProjectQuotations({ project, quotations }: { project: BusinessProjectV2
         </div>
       )}
       <Link href="/dashboard/quotations" className="w-fit text-xs text-link-blue hover:underline">
-        견적서 관리에서 새로 만들거나 연결 변경하기 →
+        산출내역 관리에서 새로 만들거나 연결 변경하기 →
       </Link>
     </div>
   );

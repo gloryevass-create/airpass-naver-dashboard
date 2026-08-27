@@ -173,7 +173,7 @@ export async function createQuotation(
   await supabase.from("notifications").insert({
     type: "quotation",
     title: `${quoteNumber} (${customerName})`,
-    message: `${actor}님이 새 견적서를 작성했습니다.`,
+    message: `${actor}님이 새 산출내역을 작성했습니다.`,
     link: PATH,
   });
 

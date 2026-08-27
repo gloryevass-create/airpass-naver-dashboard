@@ -93,8 +93,8 @@ function InfoSplitRow({
   );
 }
 
-/** 견적정보 박스 안에서 SI Business(business_projects_v2) 프로젝트를 검색해
- * 견적서와 연결한다 — 연결해두면 그 프로젝트 상세 화면에서도 이 견적서를 볼 수
+/** 산출정보 박스 안에서 SI Business(business_projects_v2) 프로젝트를 검색해
+ * 산출내역과 연결한다 — 연결해두면 그 프로젝트 상세 화면에서도 이 산출내역을 볼 수
  * 있다(사용자 확인, 2026-08-27). */
 function BusinessProjectField({
   projects,
@@ -112,7 +112,7 @@ function BusinessProjectField({
   const panelRef = useRef<HTMLDivElement>(null);
   const selected = projects.find((p) => p.id === value) ?? null;
 
-  // 견적정보 박스와 그 바깥 카드가 둘 다 overflow-hidden(모서리를 둥글게 자르는
+  // 산출정보 박스와 그 바깥 카드가 둘 다 overflow-hidden(모서리를 둥글게 자르는
   // 용도)이라, 드롭다운을 이 박스 안에 그대로 두면 박스 경계에서 잘려 보이지
   // 않는다(사용자 확인, 2026-08-28). 물품 검색처럼 표 위에 완전히 떠 보이도록
   // document.body에 포털로 그려서 그 어떤 조상의 overflow에도 잘리지 않게 한다.
@@ -536,7 +536,7 @@ function ItemsEditor({
 
           {items.length === 0 && (
             <p className="border-b border-r border-hairline px-2 py-6 text-center text-xs text-ink-mute">
-              물품을 검색하거나 행을 추가해 견적을 작성해 주세요.
+              물품을 검색하거나 행을 추가해 산출내역을 작성해 주세요.
             </p>
           )}
         </div>
@@ -627,10 +627,10 @@ function QuotationForm({
       {quotation && <input type="hidden" name="id" value={quotation.id} />}
 
       <div className="min-w-0 flex-1 overflow-hidden rounded-sm border border-hairline bg-canvas-cream">
-      {/* 견적서 상단 레터헤드 바 — 인쇄용 화면과 톤을 맞춰 미리보기처럼 보이게 한다 */}
+      {/* 산출내역 상단 레터헤드 바 — 인쇄용 화면과 톤을 맞춰 미리보기처럼 보이게 한다 */}
       <div className="flex items-center justify-between bg-[#262b3a] px-6 py-4">
         <span className="w-24 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40">Quotation</span>
-        <h2 className="text-center text-lg font-bold tracking-[0.5em] text-white">견 적 서</h2>
+        <h2 className="text-center text-lg font-bold tracking-[0.5em] text-white">산 출 내 역</h2>
         <span className="w-24 text-right text-[10px] text-white/60">
           {quotation ? quotation.quoteNumber : "저장 시 번호 발급"}
         </span>
@@ -638,14 +638,14 @@ function QuotationForm({
 
       <div className="flex flex-col gap-4 px-4 pt-4 pb-4">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:items-start">
-          {/* 견적정보 */}
+          {/* 산출정보 */}
           <div className="flex flex-col overflow-hidden rounded-sm border border-hairline">
             <div className="border-b border-hairline py-1.5 text-center text-[11px] font-bold tracking-[0.3em] text-[#4b5563]">
-              견적정보
+              산출정보
             </div>
             <div className="flex border-t border-hairline first:border-t-0">
               <div className="w-24 shrink-0 border-r border-hairline bg-background px-2 py-1.5 text-center text-[11px] font-medium text-ink-mute">
-                견적일자
+                산출일자
               </div>
               <input
                 name="quoteDate"
@@ -669,7 +669,7 @@ function QuotationForm({
             </div>
             <div className="flex border-t border-hairline">
               <div className="w-24 shrink-0 border-r border-hairline bg-background px-2 py-1.5 text-center text-[11px] font-medium text-ink-mute">
-                견적명
+                산출명
               </div>
               <input
                 name="projectTitle"
@@ -718,14 +718,14 @@ function QuotationForm({
           </div>
         </div>
 
-        {/* 견적금액 요약 바 — 인쇄본과 동일하게 상단에 크게 강조 */}
+        {/* 산출금액 요약 바 — 인쇄본과 동일하게 상단에 크게 강조 */}
         <div className="flex items-center justify-between rounded-sm border border-hairline bg-background px-4 py-3">
-          <span className="text-xs font-medium text-ink-mute">견적금액 (VAT 포함)</span>
+          <span className="text-xs font-medium text-ink-mute">산출금액 (VAT 포함)</span>
           <span className="text-xl font-bold text-primary tabular-nums">{formatCurrency(total)}원</span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-sm font-bold text-ink">견적 품목 {items.length}개</span>
+          <span className="text-sm font-bold text-ink">산출 품목 {items.length}개</span>
           <span className="text-xs text-ink-mute">제품 카탈로그에서 선택하면 품명·규격·단가가 자동으로 채워집니다.</span>
         </div>
         <ItemsEditor items={items} products={products} onChange={setItems} />
@@ -972,7 +972,7 @@ function QuotationCard({
               SI Business · {quotation.businessProjectTitle}
             </span>
           )}
-          <span>견적일자 {formatDate(quotation.quoteDate)}</span>
+          <span>산출일자 {formatDate(quotation.quoteDate)}</span>
           {quotation.managerName && <span>담당 {quotation.managerName}</span>}
         </div>
       </div>
@@ -992,7 +992,7 @@ function QuotationCard({
             onClick={onEdit}
             className="rounded-lg bg-primary px-3 py-1 text-xs font-bold text-white hover:bg-primary-press"
           >
-            견적 수정
+            산출내역 수정
           </button>
         </div>
       </div>
@@ -1029,7 +1029,7 @@ export function QuotationBoard({
   }, [quotations, search]);
 
   function handleDelete(id: string) {
-    if (!window.confirm("이 견적서를 삭제할까요?")) return;
+    if (!window.confirm("이 산출내역을 삭제할까요?")) return;
     startTransition(() => {
       void deleteQuotation(id);
     });
@@ -1062,7 +1062,7 @@ export function QuotationBoard({
               onClick={() => handleDelete(editingQuotation.id)}
               className="w-fit rounded-lg border border-hairline px-4 py-1.5 text-xs font-medium text-semantic-error hover:bg-[#f7f7f8]"
             >
-              이 견적서 삭제
+              이 산출내역 삭제
             </button>
           )}
         </div>
@@ -1072,7 +1072,7 @@ export function QuotationBoard({
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="기관명·사업명·견적번호 검색"
+              placeholder="기관명·사업명·산출번호 검색"
               className="flex-1 border-0 bg-transparent text-sm text-ink outline-none placeholder:text-ink-mute"
             />
             <span className="shrink-0 text-sm font-medium text-ink-mute">{filtered.length}건</span>
@@ -1081,7 +1081,7 @@ export function QuotationBoard({
               onClick={() => setEditingId("new")}
               className="shrink-0 rounded-lg bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press"
             >
-              + 새 견적 만들기
+              + 새 산출내역 만들기
             </button>
           </div>
 
@@ -1096,7 +1096,7 @@ export function QuotationBoard({
             ))}
             {filtered.length === 0 && (
               <p className="rounded-sm border border-hairline bg-canvas-cream p-6 text-center text-sm text-ink-mute">
-                {quotations.length === 0 ? "등록된 견적서가 없습니다." : "검색 결과가 없습니다."}
+                {quotations.length === 0 ? "등록된 산출내역이 없습니다." : "검색 결과가 없습니다."}
               </p>
             )}
           </div>

@@ -22,7 +22,7 @@ const TYPE_LABEL: Record<NotificationType, string> = {
   news_scrap: "뉴스",
   cooperation: "협업",
   marketing: "마케팅",
-  quotation: "견적서",
+  quotation: "산출내역",
 };
 
 function relativeTime(iso: string): string {
