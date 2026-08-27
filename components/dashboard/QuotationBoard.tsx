@@ -67,23 +67,23 @@ function ItemsEditor({
   return (
     <div className="flex flex-col gap-2">
       <div className="overflow-x-auto rounded-sm border border-hairline">
-        <table className="w-full text-sm">
+        <table className="w-full border-collapse text-sm">
           <thead className="bg-background text-left text-ink-mute">
             <tr>
-              <th className="whitespace-nowrap px-2 py-2 font-medium">제품(선택)</th>
-              <th className="whitespace-nowrap px-2 py-2 font-medium">품명 *</th>
-              <th className="whitespace-nowrap px-2 py-2 font-medium">규격</th>
-              <th className="whitespace-nowrap px-2 py-2 font-medium">단위</th>
-              <th className="whitespace-nowrap px-2 py-2 font-medium text-right">수량</th>
-              <th className="whitespace-nowrap px-2 py-2 font-medium text-right">단가(VAT 포함)</th>
-              <th className="whitespace-nowrap px-2 py-2 font-medium text-right">금액</th>
-              <th className="whitespace-nowrap px-2 py-2 font-medium"></th>
+              <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium">제품(선택)</th>
+              <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium">품명 *</th>
+              <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium">규격</th>
+              <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium">단위</th>
+              <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium text-right">수량</th>
+              <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium text-right">단가(VAT 포함)</th>
+              <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium text-right">금액</th>
+              <th className="whitespace-nowrap border border-hairline px-2 py-2.5 font-medium"></th>
             </tr>
           </thead>
           <tbody>
             {items.map((item, index) => (
-              <tr key={index} className="border-t border-hairline">
-                <td className="min-w-32 px-2 py-1.5">
+              <tr key={index}>
+                <td className="min-w-32 border border-hairline px-2 py-1.5">
                   <select
                     value={item.productId ?? ""}
                     onChange={(e) => e.target.value && pickProduct(index, e.target.value)}
@@ -97,28 +97,28 @@ function ItemsEditor({
                     ))}
                   </select>
                 </td>
-                <td className="min-w-28 px-2 py-1.5">
+                <td className="min-w-28 border border-hairline px-2 py-1.5">
                   <input
                     value={item.name}
                     onChange={(e) => update(index, { name: e.target.value })}
                     className={CELL_FIELD_CLASS}
                   />
                 </td>
-                <td className="min-w-24 px-2 py-1.5">
+                <td className="min-w-24 border border-hairline px-2 py-1.5">
                   <input
                     value={item.specification}
                     onChange={(e) => update(index, { specification: e.target.value })}
                     className={CELL_FIELD_CLASS}
                   />
                 </td>
-                <td className="w-16 px-2 py-1.5">
+                <td className="w-16 border border-hairline px-2 py-1.5">
                   <input
                     value={item.unit}
                     onChange={(e) => update(index, { unit: e.target.value })}
                     className={CELL_FIELD_CLASS}
                   />
                 </td>
-                <td className="w-20 px-2 py-1.5">
+                <td className="w-20 border border-hairline px-2 py-1.5">
                   <input
                     type="number"
                     min={0}
@@ -127,7 +127,7 @@ function ItemsEditor({
                     className={`${CELL_FIELD_CLASS} text-right`}
                   />
                 </td>
-                <td className="w-28 px-2 py-1.5">
+                <td className="w-28 border border-hairline px-2 py-1.5">
                   <input
                     type="number"
                     min={0}
@@ -136,10 +136,10 @@ function ItemsEditor({
                     className={`${CELL_FIELD_CLASS} text-right`}
                   />
                 </td>
-                <td className="whitespace-nowrap px-2 py-1.5 text-right text-xs tabular-nums text-ink">
+                <td className="whitespace-nowrap border border-hairline px-2 py-1.5 text-right text-xs tabular-nums text-ink">
                   {formatCurrency(item.amount)}
                 </td>
-                <td className="px-2 py-1.5">
+                <td className="border border-hairline px-2 py-1.5">
                   <button
                     type="button"
                     onClick={() => onChange(items.filter((_, i) => i !== index))}
@@ -152,7 +152,7 @@ function ItemsEditor({
             ))}
             {items.length === 0 && (
               <tr>
-                <td colSpan={8} className="px-2 py-6 text-center text-xs text-ink-mute">
+                <td colSpan={8} className="border border-hairline px-2 py-6 text-center text-xs text-ink-mute">
                   물품을 검색하거나 행을 추가해 견적을 작성해 주세요.
                 </td>
               </tr>
@@ -618,7 +618,7 @@ export function QuotationBoard({
   return (
     <div className="flex flex-col gap-4">
       {isEditing ? (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-6">
           <button
             type="button"
             onClick={() => setEditingId(null)}
