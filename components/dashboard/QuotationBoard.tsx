@@ -600,12 +600,25 @@ function QuotationForm({
   const finalProfit = estimatedProfit - consortiumPayment - extraInternalCost;
   const marginPercent = supply > 0 ? (finalProfit / supply) * 100 : 0;
 
+  // formAction(dispatch)을 직접 호출해도 서버 액션의 반환값(성공/에러)을 그
+  // 자리에서 알 수 없다(useActionState는 다음 렌더에서만 state를 갱신) — 그런데도
+  // 예전 코드는 매번 무조건 onDone()을 불러 폼을 닫아버렸고, 그 결과 저장이 실패해도
+  // 에러 메시지 없이 그냥 목록으로 돌아가 "저장이 안 되는데 아무 반응도 없는"
+  // 것처럼 보였다(사용자 확인, 2026-08-28). pending이 true→false로 바뀌는 순간
+  // state에 에러가 없을 때만 닫아, 실패 시에는 폼에 남아 에러를 보여준다.
+  const wasPendingRef = useRef(false);
+  useEffect(() => {
+    if (wasPendingRef.current && !pending && !state?.error) {
+      onDone();
+    }
+    wasPendingRef.current = pending;
+  }, [pending, state, onDone]);
+
   return (
     <form
-      action={async (formData) => {
+      action={(formData) => {
         formData.set("itemsJson", JSON.stringify(items));
-        await formAction(formData);
-        onDone();
+        formAction(formData);
       }}
       className="flex flex-col gap-4 lg:flex-row lg:items-start"
     >
