@@ -188,44 +188,43 @@ function ItemsEditor({
         </button>
 
         {searchOpen && (
-          <div className="absolute left-0 right-0 top-full z-20 mt-2 max-h-96 overflow-y-auto rounded-sm border border-hairline bg-canvas-cream shadow-lg">
-            <div className="sticky top-0 flex items-center gap-2 border-b border-hairline bg-canvas-cream px-4 py-3">
+          <div className="absolute left-0 top-full z-20 mt-2 max-h-72 w-full overflow-y-auto rounded-sm border border-hairline bg-canvas-cream shadow-lg sm:w-1/2">
+            <div className="sticky top-0 flex items-center gap-2 border-b border-hairline bg-canvas-cream px-3 py-2">
               <input
                 autoFocus
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="물품명·규격으로 검색"
-                className="min-w-0 flex-1 rounded-sm border border-hairline bg-background px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
+                className="min-w-0 flex-1 rounded-sm border border-hairline bg-background px-2 py-1 text-xs text-ink outline-none focus:border-primary"
               />
-              <span className="hidden shrink-0 text-xs text-ink-mute sm:inline">물품을 연속으로 선택할 수 있습니다.</span>
               <button
                 type="button"
                 onClick={() => setSearchOpen(false)}
-                className="shrink-0 rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-white hover:bg-primary-press"
+                className="shrink-0 rounded-lg bg-primary px-2.5 py-1 text-[11px] font-bold text-white hover:bg-primary-press"
               >
                 선택 완료
               </button>
             </div>
             {filteredProducts.length === 0 ? (
-              <p className="px-4 py-6 text-center text-xs text-ink-mute">검색 결과가 없습니다.</p>
+              <p className="px-3 py-4 text-center text-xs text-ink-mute">검색 결과가 없습니다.</p>
             ) : (
               filteredProducts.map((p) => (
                 <button
                   key={p.id}
                   type="button"
                   onClick={() => addProduct(p)}
-                  className={`flex w-full items-center justify-between gap-3 border-t border-hairline px-4 py-3 text-left first:border-t-0 hover:bg-canvas-lavender/30 ${
+                  className={`flex w-full items-center justify-between gap-2 border-t border-hairline px-3 py-1.5 text-left first:border-t-0 hover:bg-canvas-lavender/30 ${
                     justAddedId === p.id ? "border-2 border-primary" : ""
                   }`}
                 >
                   <span className="min-w-0">
-                    <span className="block truncate text-sm font-bold text-ink">
+                    <span className="block truncate text-xs font-bold text-ink">
                       {p.isFavorite && <span className="mr-1 text-primary">★</span>}
                       {p.name}
                     </span>
-                    {p.specification && <span className="block truncate text-xs text-ink-mute">{p.specification}</span>}
+                    {p.specification && <span className="block truncate text-[11px] text-ink-mute">{p.specification}</span>}
                   </span>
-                  <span className="shrink-0 text-sm font-bold tabular-nums text-primary">
+                  <span className="shrink-0 text-xs font-bold tabular-nums text-primary">
                     {p.unitPrice != null ? `${formatCurrency(p.unitPrice)}원` : "-"}
                   </span>
                 </button>
