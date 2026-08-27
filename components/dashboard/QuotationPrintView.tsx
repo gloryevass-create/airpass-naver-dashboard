@@ -24,6 +24,9 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 }
 
 export function QuotationPrintView({ quotation }: { quotation: Quotation }) {
+  // 공급가액+부가세를 더하면 조달수수료를 뺀 품목금액(VAT 포함)이 나온다
+  // (서버 computeTotals와 동일한 역산 관계).
+  const adjustedAmount = quotation.supplyAmount + quotation.taxAmount;
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-4 p-6">
       <div className="flex justify-end print:hidden">
@@ -114,18 +117,31 @@ export function QuotationPrintView({ quotation }: { quotation: Quotation }) {
           </div>
 
           <div className="mt-4 flex justify-end">
-            <div className="flex w-64 flex-col gap-1 text-sm">
-              <div className="flex justify-between">
-                <span className="text-ink-mute">공급가액</span>
-                <span className="tabular-nums">{formatCurrency(quotation.supplyAmount)}원</span>
+            <div className="flex w-72 flex-col gap-2 rounded-sm border border-hairline p-3 text-sm">
+              <div className="flex flex-col gap-1">
+                <div className="flex justify-between text-ink-mute">
+                  <span>품목금액 (VAT 포함)</span>
+                  <span className="tabular-nums">{formatCurrency(adjustedAmount)}원</span>
+                </div>
+                <div className="flex justify-between text-ink-mute">
+                  <span>조달수수료 (별도)</span>
+                  <span className="tabular-nums">{formatCurrency(quotation.procurementFeeAmount)}원</span>
+                </div>
+                <div className="flex justify-between border-t border-hairline pt-1 font-bold">
+                  <span>최종 합계</span>
+                  <span className="tabular-nums">{formatCurrency(quotation.totalAmount)}원</span>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-ink-mute">부가세(10%)</span>
-                <span className="tabular-nums">{formatCurrency(quotation.taxAmount)}원</span>
-              </div>
-              <div className="flex justify-between border-t border-hairline pt-1 font-bold">
-                <span>합계</span>
-                <span className="tabular-nums">{formatCurrency(quotation.totalAmount)}원</span>
+              <div className="flex flex-col gap-1 border-t border-hairline pt-2">
+                <div className="flex justify-between font-bold text-primary">
+                  <span>공급가액</span>
+                  <span className="tabular-nums">{formatCurrency(quotation.supplyAmount)}원</span>
+                </div>
+                <div className="flex justify-between font-bold text-primary">
+                  <span>부가세</span>
+                  <span className="tabular-nums">{formatCurrency(quotation.taxAmount)}원</span>
+                </div>
+                <p className="text-[10px] text-ink-mute">세액 참고 · 품목금액 기준</p>
               </div>
             </div>
           </div>

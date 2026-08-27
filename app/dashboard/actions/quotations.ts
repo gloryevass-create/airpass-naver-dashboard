@@ -2,9 +2,11 @@
 
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { formatMember } from "@/lib/formatMember";
 import { generateQuoteNumber, type QuotationItem } from "@/lib/queries/quotations";
+import type { Database } from "@/lib/types/database.types";
 
 const PATH = "/dashboard/quotations";
 
@@ -62,18 +64,42 @@ function parseItems(formData: FormData): { items: QuotationItem[]; error?: strin
   return { items };
 }
 
+// 조달수수료율(product_catalog.procurement_fee_rate)이 걸린 품목만 골라 수수료를
+// 계산한다(WHIZZUP 참고, 사용자 확인 2026-08-27) — 수수료는 부가세 계산과는 별개로
+// 최종 합계에만 얹힌다(공급가액/부가세는 수수료를 뺀 품목금액 기준 그대로 유지).
+async function computeProcurementFee(supabase: SupabaseClient<Database>, items: QuotationItem[]): Promise<number> {
+  const productIds = Array.from(new Set(items.map((item) => item.productId).filter((id): id is string => !!id)));
+  if (productIds.length === 0) return 0;
+
+  const { data } = await supabase
+    .from("product_catalog")
+    .select("id, procurement, procurement_fee_rate")
+    .in("id", productIds);
+  const feeRateById = new Map((data ?? []).map((p) => [p.id, p.procurement ? Number(p.procurement_fee_rate) : 0]));
+
+  return Math.round(
+    items.reduce((sum, item) => {
+      const rate = (item.productId && feeRateById.get(item.productId)) || 0;
+      return sum + item.amount * (rate / 100);
+    }, 0)
+  );
+}
+
 // 품목 단가는 부가세 별도가 아니라 부가세 포함가다(사용자 확인, 2026-08-27) —
 // 품목금액 합계가 곧 최종 합계이고, 공급가액·부가세는 그 합계를 1.1로 나눠
-// 거꾸로 계산한다(공급가액에 10%를 더해 합계를 구하는 것과 반대 방향).
-function computeTotals(items: QuotationItem[], discountAmount: number, extraAmount: number) {
+// 거꾸로 계산한다(공급가액에 10%를 더해 합계를 구하는 것과 반대 방향). 조달수수료는
+// 이 계산 밖에서 최종 합계에만 더해진다.
+function computeTotals(items: QuotationItem[], discountAmount: number, extraAmount: number, procurementFeeAmount: number) {
   const subtotalAmount = items.reduce((sum, item) => sum + item.amount, 0);
-  const totalAmount = Math.max(0, subtotalAmount - discountAmount + extraAmount);
-  const supplyAmount = Math.round(totalAmount / 1.1);
-  const taxAmount = totalAmount - supplyAmount;
+  const adjustedAmount = Math.max(0, subtotalAmount - discountAmount + extraAmount);
+  const supplyAmount = Math.round(adjustedAmount / 1.1);
+  const taxAmount = adjustedAmount - supplyAmount;
+  const totalAmount = adjustedAmount + procurementFeeAmount;
   return {
     subtotal_amount: subtotalAmount,
     supply_amount: supplyAmount,
     tax_amount: taxAmount,
+    procurement_fee_amount: procurementFeeAmount,
     total_amount: totalAmount,
   };
 }
@@ -94,7 +120,8 @@ export async function createQuotation(
 
   const discountAmount = numberOrZero(formData, "discountAmount");
   const extraAmount = numberOrZero(formData, "extraAmount");
-  const totals = computeTotals(items, discountAmount, extraAmount);
+  const procurementFeeAmount = await computeProcurementFee(supabase, items);
+  const totals = computeTotals(items, discountAmount, extraAmount, procurementFeeAmount);
 
   const quoteNumber = await generateQuoteNumber(supabase, quoteDate);
 
@@ -159,7 +186,8 @@ export async function updateQuotation(
 
   const discountAmount = numberOrZero(formData, "discountAmount");
   const extraAmount = numberOrZero(formData, "extraAmount");
-  const totals = computeTotals(items, discountAmount, extraAmount);
+  const procurementFeeAmount = await computeProcurementFee(supabase, items);
+  const totals = computeTotals(items, discountAmount, extraAmount, procurementFeeAmount);
 
   const { error } = await supabase
     .from("quotations")

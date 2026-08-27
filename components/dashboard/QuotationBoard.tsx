@@ -391,18 +391,27 @@ function QuotationForm({
   const [consortiumRate, setConsortiumRate] = useState(quotation?.consortiumRate ?? 0);
   const [extraInternalCost, setExtraInternalCost] = useState(quotation?.extraInternalCost ?? 0);
 
-  // 품목 단가는 부가세 포함가라 품목금액 합계가 곧 최종 합계이고, 공급가액·부가세는
-  // 그 합계를 1.1로 나눠 거꾸로 계산한다(서버의 computeTotals와 동일한 방식).
+  const productById = useMemo(() => new Map(products.map((p) => [p.id, p])), [products]);
+
+  // 품목 단가는 부가세 포함가라 품목금액 합계가 곧 품목금액이고, 공급가액·부가세는
+  // 그 금액을 1.1로 나눠 거꾸로 계산한다(서버의 computeTotals와 동일한 방식). 조달
+  // 수수료(product_catalog.procurement_fee_rate)는 이 계산 밖에서 최종 합계에만
+  // 더해진다 — WHIZZUP 레퍼런스의 "품목금액 → 조달수수료(별도) → 최종 합계" 구조.
   const subtotal = items.reduce((sum, it) => sum + it.amount, 0);
-  const total = Math.max(0, subtotal - discountAmount + extraAmount);
-  const supply = Math.round(total / 1.1);
-  const tax = total - supply;
+  const adjustedAmount = Math.max(0, subtotal - discountAmount + extraAmount);
+  const supply = Math.round(adjustedAmount / 1.1);
+  const tax = adjustedAmount - supply;
+  const procurementFeeAmount = items.reduce((sum, it) => {
+    const product = it.productId ? productById.get(it.productId) : null;
+    if (!product?.procurement) return sum;
+    return sum + Math.round(it.amount * ((product.procurementFeeRate ?? 0) / 100));
+  }, 0);
+  const total = adjustedAmount + procurementFeeAmount;
 
   // 내부용 수익 분석 — 제품 카탈로그에서 고른 품목만 마진율을 알 수 있어 계산에
   // 넣고, 직접 입력한 품목은 마진을 알 수 없으니 추측하지 않고 0으로 둔다.
   // 이 값들은 QuotationPrintView(인쇄용 화면)에는 애초에 전달하지 않아 밖으로
   // 나가는 문서에는 절대 노출되지 않는다(사용자 확인, 2026-08-27).
-  const productById = useMemo(() => new Map(products.map((p) => [p.id, p])), [products]);
   const estimatedProfit = items.reduce((sum, it) => {
     if (!it.productId) return sum;
     const marginRate = productById.get(it.productId)?.marginRate ?? 0;
@@ -563,18 +572,31 @@ function QuotationForm({
               />
             </label>
           </div>
-          <div className="flex flex-col gap-1 rounded-sm border border-hairline bg-background p-3 text-sm sm:w-64">
-            <div className="flex justify-between text-ink-mute">
-              <span>공급가액</span>
-              <span className="tabular-nums">{formatCurrency(supply)}원</span>
+          <div className="flex flex-col gap-2 rounded-sm border border-hairline bg-background p-3 text-sm sm:w-72">
+            <div className="flex flex-col gap-1">
+              <div className="flex justify-between text-ink-mute">
+                <span>품목금액 (VAT 포함)</span>
+                <span className="tabular-nums">{formatCurrency(adjustedAmount)}원</span>
+              </div>
+              <div className="flex justify-between text-ink-mute">
+                <span>조달수수료 (별도)</span>
+                <span className="tabular-nums">{formatCurrency(procurementFeeAmount)}원</span>
+              </div>
+              <div className="flex justify-between border-t border-hairline pt-1 font-bold text-ink">
+                <span>최종 합계</span>
+                <span className="tabular-nums">{formatCurrency(total)}원</span>
+              </div>
             </div>
-            <div className="flex justify-between text-ink-mute">
-              <span>부가세(10%)</span>
-              <span className="tabular-nums">{formatCurrency(tax)}원</span>
-            </div>
-            <div className="flex justify-between border-t border-hairline pt-1 font-bold text-ink">
-              <span>최종 합계</span>
-              <span className="tabular-nums">{formatCurrency(total)}원</span>
+            <div className="flex flex-col gap-1 border-t border-hairline pt-2">
+              <div className="flex justify-between font-bold text-primary">
+                <span>공급가액</span>
+                <span className="tabular-nums">{formatCurrency(supply)}원</span>
+              </div>
+              <div className="flex justify-between font-bold text-primary">
+                <span>부가세</span>
+                <span className="tabular-nums">{formatCurrency(tax)}원</span>
+              </div>
+              <p className="text-[10px] text-ink-mute">세액 참고 · 품목금액 기준</p>
             </div>
           </div>
         </div>

@@ -31,6 +31,7 @@ export type Quotation = {
   subtotalAmount: number;
   supplyAmount: number;
   taxAmount: number;
+  procurementFeeAmount: number;
   totalAmount: number;
   memo: string | null;
   includeStamp: boolean;
@@ -77,6 +78,7 @@ function toQuotation(row: Database["public"]["Tables"]["quotations"]["Row"]): Qu
     subtotalAmount: Number(row.subtotal_amount),
     supplyAmount: Number(row.supply_amount),
     taxAmount: Number(row.tax_amount),
+    procurementFeeAmount: Number(row.procurement_fee_amount),
     totalAmount: Number(row.total_amount),
     memo: row.memo,
     includeStamp: row.include_stamp,

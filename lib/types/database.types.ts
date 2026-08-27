@@ -1998,6 +1998,7 @@ export type Database = {
           subtotal_amount: number;
           supply_amount: number;
           tax_amount: number;
+          procurement_fee_amount: number;
           total_amount: number;
           memo: string | null;
           include_stamp: boolean;
@@ -2025,6 +2026,7 @@ export type Database = {
           subtotal_amount?: number;
           supply_amount?: number;
           tax_amount?: number;
+          procurement_fee_amount?: number;
           total_amount?: number;
           memo?: string | null;
           include_stamp?: boolean;
@@ -2052,6 +2054,7 @@ export type Database = {
           subtotal_amount?: number;
           supply_amount?: number;
           tax_amount?: number;
+          procurement_fee_amount?: number;
           total_amount?: number;
           memo?: string | null;
           include_stamp?: boolean;
