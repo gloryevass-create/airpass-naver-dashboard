@@ -51,10 +51,10 @@ const ITEM_GRID_COLS = "32px 40px minmax(160px,1.4fr) minmax(140px,1fr) 64px 56p
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex border-t border-hairline first:border-t-0">
-      <div className="w-24 shrink-0 border-r border-hairline bg-background px-2 py-2.5 text-center text-sm font-medium text-ink-mute">
+      <div className="w-24 shrink-0 border-r border-hairline bg-background px-2 py-1.5 text-center text-xs font-medium text-ink-mute">
         {label}
       </div>
-      <div className="flex-1 px-3 py-2.5 text-center text-sm font-bold text-ink">{value}</div>
+      <div className="flex-1 px-3 py-1.5 text-center text-xs font-bold text-ink">{value}</div>
     </div>
   );
 }
@@ -72,16 +72,16 @@ function InfoSplitRow({
 }) {
   return (
     <div className="flex border-t border-hairline">
-      <div className="w-24 shrink-0 border-r border-hairline bg-background px-2 py-2.5 text-center text-sm font-medium text-ink-mute">
+      <div className="w-24 shrink-0 border-r border-hairline bg-background px-2 py-1.5 text-center text-xs font-medium text-ink-mute">
         {leftLabel}
       </div>
-      <div className="flex-1 border-r border-hairline px-3 py-2.5 text-center text-sm font-bold text-ink">
+      <div className="flex-1 border-r border-hairline px-3 py-1.5 text-center text-xs font-bold text-ink">
         {leftValue}
       </div>
-      <div className="w-24 shrink-0 border-r border-hairline bg-background px-2 py-2.5 text-center text-sm font-medium text-ink-mute">
+      <div className="w-24 shrink-0 border-r border-hairline bg-background px-2 py-1.5 text-center text-xs font-medium text-ink-mute">
         {rightLabel}
       </div>
-      <div className="flex-1 px-3 py-2.5 text-center text-sm font-bold text-ink">{rightValue}</div>
+      <div className="flex-1 px-3 py-1.5 text-center text-xs font-bold text-ink">{rightValue}</div>
     </div>
   );
 }
@@ -475,11 +475,11 @@ function QuotationForm({
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:items-start">
           {/* 견적정보 */}
           <div className="flex flex-col overflow-hidden rounded-sm border border-hairline">
-            <div className="border-b border-hairline py-2.5 text-center text-sm font-bold tracking-[0.3em] text-ink">
+            <div className="border-b border-hairline py-1.5 text-center text-xs font-bold tracking-[0.3em] text-ink">
               견적정보
             </div>
             <div className="flex border-t border-hairline first:border-t-0">
-              <div className="w-24 shrink-0 border-r border-hairline bg-background px-2 py-2.5 text-center text-sm font-medium text-ink-mute">
+              <div className="w-24 shrink-0 border-r border-hairline bg-background px-2 py-1.5 text-center text-xs font-medium text-ink-mute">
                 견적일자
               </div>
               <input
@@ -487,11 +487,11 @@ function QuotationForm({
                 type="date"
                 defaultValue={quotation?.quoteDate ?? todayStr()}
                 required
-                className="flex-1 border-0 bg-canvas-cream px-3 py-2.5 text-center text-sm font-bold text-ink outline-none focus:bg-background"
+                className="flex-1 border-0 bg-canvas-cream px-3 py-1.5 text-center text-xs font-bold text-ink outline-none focus:bg-background"
               />
             </div>
             <div className="flex border-t border-hairline">
-              <div className="w-24 shrink-0 border-r border-hairline bg-background px-2 py-2.5 text-center text-sm font-medium text-ink-mute">
+              <div className="w-24 shrink-0 border-r border-hairline bg-background px-2 py-1.5 text-center text-xs font-medium text-ink-mute">
                 수신 기관명 *
               </div>
               <input
@@ -499,25 +499,25 @@ function QuotationForm({
                 defaultValue={quotation?.customerName ?? ""}
                 required
                 placeholder="기관명 또는 업체명"
-                className="flex-1 border-0 bg-canvas-cream px-3 py-2.5 text-center text-sm font-bold text-ink outline-none focus:bg-background"
+                className="flex-1 border-0 bg-canvas-cream px-3 py-1.5 text-center text-xs font-bold text-ink outline-none focus:bg-background"
               />
             </div>
             <div className="flex border-t border-hairline">
-              <div className="w-24 shrink-0 border-r border-hairline bg-background px-2 py-2.5 text-center text-sm font-medium text-ink-mute">
+              <div className="w-24 shrink-0 border-r border-hairline bg-background px-2 py-1.5 text-center text-xs font-medium text-ink-mute">
                 견적명
               </div>
               <input
                 name="projectTitle"
                 defaultValue={quotation?.projectTitle ?? ""}
                 placeholder="예: 가상현실 스포츠실 구축"
-                className="flex-1 border-0 bg-canvas-cream px-3 py-2.5 text-center text-sm font-bold text-ink outline-none focus:bg-background"
+                className="flex-1 border-0 bg-canvas-cream px-3 py-1.5 text-center text-xs font-bold text-ink outline-none focus:bg-background"
               />
             </div>
           </div>
 
           {/* 공급자 (고정 정보) */}
           <div className="flex flex-col overflow-hidden rounded-sm border border-hairline">
-            <div className="relative border-b border-hairline py-2.5 text-center text-sm font-bold tracking-[0.3em] text-ink">
+            <div className="relative border-b border-hairline py-1.5 text-center text-xs font-bold tracking-[0.3em] text-ink">
               공급자
               <label className="absolute right-3 top-1/2 flex -translate-y-1/2 items-center gap-1.5 text-[11px] font-normal tracking-normal text-ink-mute">
                 <input
