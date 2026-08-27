@@ -1,17 +1,8 @@
 "use client";
 
-import {
-  useActionState,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  useTransition,
-  type DragEvent,
-  type MouseEvent,
-} from "react";
+import { useActionState, useEffect, useMemo, useRef, useState, useTransition, type MouseEvent } from "react";
 import Link from "next/link";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, Reorder, useDragControls } from "framer-motion";
 import type { Quotation, QuotationItem } from "@/lib/queries/quotations";
 import type { ProductCatalogItem } from "@/lib/queries/productCatalog";
 import { createQuotation, updateQuotation, deleteQuotation } from "@/app/dashboard/actions/quotations";
@@ -88,6 +79,114 @@ function itemFromProduct(p: ProductCatalogItem): QuotationItem {
   };
 }
 
+/** 드래그 핸들(⠿)에서 포인터를 누를 때만 드래그가 시작되도록
+ * dragListener={false} + useDragControls를 쓴다 — 그래야 행 안의 입력칸을
+ * 클릭·드래그해서 텍스트를 선택하는 동작과 충돌하지 않는다. framer-motion의
+ * Reorder는 네이티브 HTML5 드래그(품목 순서 변경에서 이전에 쓰던 방식)와 달리
+ * 포인터 위치를 그대로 따라가며 다른 행들을 스프링 애니메이션으로 밀어내
+ * "버벅거리지 않고 자연스럽게" 움직인다(사용자 확인, 2026-08-27). */
+function ItemRow({
+  item,
+  index,
+  onUpdate,
+  onRemove,
+}: {
+  item: QuotationItem;
+  index: number;
+  onUpdate: (patch: Partial<QuotationItem>) => void;
+  onRemove: () => void;
+}) {
+  const dragControls = useDragControls();
+
+  return (
+    <Reorder.Item
+      value={item}
+      id={item.id}
+      as="div"
+      dragListener={false}
+      dragControls={dragControls}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      whileDrag={{ boxShadow: "0 4px 16px rgba(0,0,0,0.15)", zIndex: 10 }}
+      className="relative grid touch-none bg-canvas-cream text-sm"
+      style={{ gridTemplateColumns: ITEM_GRID_COLS }}
+    >
+      <div className="flex items-center justify-center border-b border-r border-hairline px-1 py-1.5">
+        <span
+          onPointerDown={(e) => dragControls.start(e)}
+          className="inline-block cursor-grab touch-none select-none text-ink-mute active:cursor-grabbing"
+          aria-label="드래그해서 순서 변경"
+        >
+          ⠿
+        </span>
+      </div>
+      <div className="flex items-center justify-center border-b border-r border-hairline px-2 py-1.5 text-xs text-ink-mute">
+        {index + 1}
+      </div>
+      <div className="border-b border-r border-hairline px-2 py-1.5">
+        <input
+          value={item.name}
+          onChange={(e) => onUpdate({ name: e.target.value })}
+          className={CELL_FIELD_CLASS}
+        />
+      </div>
+      <div className="border-b border-r border-hairline px-2 py-1.5">
+        <input
+          value={item.specification}
+          onChange={(e) => onUpdate({ specification: e.target.value })}
+          className={CELL_FIELD_CLASS}
+        />
+      </div>
+      <div className="border-b border-r border-hairline px-2 py-1.5">
+        <input
+          type="number"
+          min={0}
+          value={item.quantity}
+          onChange={(e) => onUpdate({ quantity: Number(e.target.value) || 0 })}
+          className={`${CELL_FIELD_CLASS} text-right`}
+        />
+      </div>
+      <div className="border-b border-r border-hairline px-2 py-1.5">
+        <input
+          value={item.unit}
+          onChange={(e) => onUpdate({ unit: e.target.value })}
+          className={`${CELL_FIELD_CLASS} text-center`}
+        />
+      </div>
+      <div className="border-b border-r border-hairline px-2 py-1.5">
+        <input
+          type="number"
+          min={0}
+          value={item.unitPrice}
+          onChange={(e) => onUpdate({ unitPrice: Number(e.target.value) || 0 })}
+          className={`${CELL_FIELD_CLASS} text-right`}
+        />
+      </div>
+      <div className="flex items-center justify-end whitespace-nowrap border-b border-r border-hairline px-2 py-1.5 text-xs font-bold tabular-nums text-ink">
+        {formatCurrency(item.amount)}
+      </div>
+      <div className="border-b border-r border-hairline px-2 py-1.5">
+        <input
+          value={item.note}
+          onChange={(e) => onUpdate({ note: e.target.value })}
+          className={CELL_FIELD_CLASS}
+        />
+      </div>
+      <div className="flex items-center justify-center border-b border-r border-hairline px-2 py-1.5">
+        <button
+          type="button"
+          onClick={onRemove}
+          aria-label="품목 삭제"
+          className="text-semantic-error hover:opacity-70"
+        >
+          ✕
+        </button>
+      </div>
+    </Reorder.Item>
+  );
+}
+
 function ItemsEditor({
   items,
   products,
@@ -101,35 +200,7 @@ function ItemsEditor({
   const [search, setSearch] = useState("");
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [justAddedId, setJustAddedId] = useState<string | null>(null);
-  const [dragIndex, setDragIndex] = useState<number | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
-
-  // 드래그 핸들(⋮⋮)에서만 드래그를 시작하고, 행 전체는 드롭 대상 역할만 한다 —
-  // 그래야 행 안의 입력칸을 클릭·드래그해서 텍스트를 선택하는 동작과 충돌하지 않는다.
-  // 드래그해서 지나가는 순간 바로 자리를 맞바꿔 다른 행들도 함께 밀려나는 것처럼
-  // 보이게 하고(호버할 때마다 실시간 재정렬), 현재 자리를 차지한 행에는 파란 테두리
-  // 박스를 표시해 어디로 옮겨질지 눈에 보이게 한다(사용자 확인, 2026-08-27).
-  function handleDragStart(index: number) {
-    return (e: DragEvent<HTMLSpanElement>) => {
-      e.dataTransfer.effectAllowed = "move";
-      setDragIndex(index);
-    };
-  }
-  function handleRowDragOver(index: number) {
-    return (e: DragEvent<HTMLDivElement>) => {
-      e.preventDefault();
-      if (dragIndex === null || dragIndex === index) return;
-      const next = [...items];
-      const [moved] = next.splice(dragIndex, 1);
-      next.splice(index, 0, moved);
-      onChange(next);
-      setDragIndex(index);
-    };
-  }
-  function handleDrop(e: DragEvent<HTMLDivElement>) {
-    e.preventDefault();
-    setDragIndex(null);
-  }
 
   useEffect(() => {
     function handleClickOutside(e: globalThis.MouseEvent) {
@@ -272,98 +343,19 @@ function ItemsEditor({
             <div className="whitespace-nowrap border-b border-r border-hairline px-2 py-2.5" />
           </div>
 
-          <AnimatePresence initial={false}>
-            {items.map((item, index) => (
-              <motion.div
-                key={item.id}
-                layout
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ type: "spring", stiffness: 500, damping: 38 }}
-                onDragOver={handleRowDragOver(index)}
-                onDrop={handleDrop}
-                className={`grid bg-canvas-cream text-sm ${
-                  dragIndex === index ? "relative z-10 outline outline-2 -outline-offset-2 outline-primary" : ""
-                }`}
-                style={{ gridTemplateColumns: ITEM_GRID_COLS }}
-              >
-                <div className="flex items-center justify-center border-b border-r border-hairline px-1 py-1.5">
-                  <span
-                    draggable
-                    onDragStart={handleDragStart(index)}
-                    onDragEnd={() => setDragIndex(null)}
-                    className="inline-block cursor-grab select-none text-ink-mute active:cursor-grabbing"
-                    aria-label="드래그해서 순서 변경"
-                  >
-                    ⠿
-                  </span>
-                </div>
-                <div className="flex items-center justify-center border-b border-r border-hairline px-2 py-1.5 text-xs text-ink-mute">
-                  {index + 1}
-                </div>
-                <div className="border-b border-r border-hairline px-2 py-1.5">
-                  <input
-                    value={item.name}
-                    onChange={(e) => update(index, { name: e.target.value })}
-                    className={CELL_FIELD_CLASS}
-                  />
-                </div>
-                <div className="border-b border-r border-hairline px-2 py-1.5">
-                  <input
-                    value={item.specification}
-                    onChange={(e) => update(index, { specification: e.target.value })}
-                    className={CELL_FIELD_CLASS}
-                  />
-                </div>
-                <div className="border-b border-r border-hairline px-2 py-1.5">
-                  <input
-                    type="number"
-                    min={0}
-                    value={item.quantity}
-                    onChange={(e) => update(index, { quantity: Number(e.target.value) || 0 })}
-                    className={`${CELL_FIELD_CLASS} text-right`}
-                  />
-                </div>
-                <div className="border-b border-r border-hairline px-2 py-1.5">
-                  <input
-                    value={item.unit}
-                    onChange={(e) => update(index, { unit: e.target.value })}
-                    className={`${CELL_FIELD_CLASS} text-center`}
-                  />
-                </div>
-                <div className="border-b border-r border-hairline px-2 py-1.5">
-                  <input
-                    type="number"
-                    min={0}
-                    value={item.unitPrice}
-                    onChange={(e) => update(index, { unitPrice: Number(e.target.value) || 0 })}
-                    className={`${CELL_FIELD_CLASS} text-right`}
-                  />
-                </div>
-                <div className="flex items-center justify-end whitespace-nowrap border-b border-r border-hairline px-2 py-1.5 text-xs font-bold tabular-nums text-ink">
-                  {formatCurrency(item.amount)}
-                </div>
-                <div className="border-b border-r border-hairline px-2 py-1.5">
-                  <input
-                    value={item.note}
-                    onChange={(e) => update(index, { note: e.target.value })}
-                    className={CELL_FIELD_CLASS}
-                  />
-                </div>
-                <div className="flex items-center justify-center border-b border-r border-hairline px-2 py-1.5">
-                  <button
-                    type="button"
-                    onClick={() => onChange(items.filter((_, i) => i !== index))}
-                    aria-label="품목 삭제"
-                    className="text-semantic-error hover:opacity-70"
-                  >
-                    ✕
-                  </button>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
+          <Reorder.Group as="div" axis="y" values={items} onReorder={onChange}>
+            <AnimatePresence initial={false}>
+              {items.map((item, index) => (
+                <ItemRow
+                  key={item.id}
+                  item={item}
+                  index={index}
+                  onUpdate={(patch) => update(index, patch)}
+                  onRemove={() => onChange(items.filter((_, i) => i !== index))}
+                />
+              ))}
+            </AnimatePresence>
+          </Reorder.Group>
 
           {items.length === 0 && (
             <p className="border-b border-r border-hairline px-2 py-6 text-center text-xs text-ink-mute">
