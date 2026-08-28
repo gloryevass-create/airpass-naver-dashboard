@@ -183,7 +183,7 @@ export function DashboardSidebar({ latestDate }: { latestDate: string | null }) 
               <NavIcon name="sparkle" className="h-[18px] w-[18px] shrink-0" style={{ color: "var(--sb-accent-700)" }} />
               {showLabels && (
                 <>
-                  <span className="flex-1 text-[15px] font-bold tracking-wide" style={{ color: "var(--sb-text)" }}>
+                  <span className="flex-1 text-[15px] font-bold tracking-wide" style={{ color: "var(--sb-accent-700)" }}>
                     WORKSPACE
                   </span>
                   <NavIcon name="chevron" className="h-3 w-3 rotate-90 shrink-0" style={{ color: "var(--sb-text-mute)" }} />
