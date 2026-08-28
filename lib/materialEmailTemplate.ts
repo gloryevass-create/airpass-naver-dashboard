@@ -22,13 +22,21 @@ export const PRODUCT_MATERIAL_CATALOG: { label: string; keywords: string[] }[] =
   { label: "메타에듀시스 VR·충전보관함 브로셔", keywords: ["메타에듀시스"] },
 ];
 
+// macOS(파인더)에서 올린 한글 파일명은 자모가 분리된 NFD로 저장되는 경우가 많아,
+// 소스 코드의 NFC 문자열(예: "회사소개")과 바이트 단위로 달라 .includes()가 실패할
+// 수 있다 — 양쪽 다 NFC로 정규화한 뒤 비교한다(사용자가 실제로 겪은 매칭 실패,
+// 2026-08-28).
+function normalize(text: string): string {
+  return text.normalize("NFC").toLowerCase();
+}
+
 /** PRODUCT_MATERIAL_CATALOG의 각 항목에 대해, 이름이 일치하는 파일의 id를 찾는다
  * (없으면 null — 호출부가 실제 링크 생성 여부를 판단). */
 export function matchProductMaterialFiles<T extends { id: string; name: string }>(
   files: T[]
 ): { label: string; fileId: string | null }[] {
   return PRODUCT_MATERIAL_CATALOG.map(({ label, keywords }) => {
-    const match = files.find((f) => keywords.every((k) => f.name.toLowerCase().includes(k.toLowerCase())));
+    const match = files.find((f) => keywords.every((k) => normalize(f.name).includes(normalize(k))));
     return { label, fileId: match ? match.id : null };
   });
 }
@@ -85,9 +93,11 @@ function quotationSectionHtml(quotation: MaterialEmailQuotation): string {
   `;
 }
 
+// 원본 템플릿에는 이 제목·설명이 고정으로 있다 — 매칭된 링크가 하나도 없어도
+// (자료 폴더 파일명이 아직 카탈로그와 안 맞을 때) 제목 자체는 그대로 보이게 한다
+// (사용자 확인, 2026-08-28 — 매칭 실패로 제목까지 통째로 사라졌던 문제).
 function productLinksSectionHtml(productLinks: MaterialEmailProductLink[]): string {
   const matched = productLinks.filter((p): p is { label: string; link: string } => p.link != null);
-  if (matched.length === 0) return "";
   return `
       <h2 style="font-size:18px;font-weight:700;color:#111827;margin:0 0 4px;">회사 및 제품소개 자료</h2>
       <div style="width:36px;height:3px;background:#2b6bff;border-radius:2px;margin-bottom:14px;"></div>
