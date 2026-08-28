@@ -9,6 +9,13 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: "2026-08-29",
+    items: [
+      "사이드바 그룹 목록이 부분 스크롤되지 않던 문제 근본 수정 — 대시보드 셸 전체에 뷰포트 높이 제약(h-screen)을 줘서 헤더·사이드바는 고정되고 본문 영역만 스크롤되도록 구조 변경(인쇄 페이지는 인쇄 시 제약을 풂)",
+      "Calendar(/dashboard/events2)를 Claude Design \"Industry\" 테마로 다시 그림 — 월 보기만 있던 화면에 주/일 보기 추가, 기존 일정 데이터·필드(여러 날 걸치는 일정, 담당자·참석자, 태그 등)는 그대로 유지",
+    ],
+  },
+  {
     date: "2026-08-28",
     items: [
       "\"견적서\" 관련 화면 문구를 \"산출내역\"으로 전면 변경 — 사이드바 메뉴명, 목록/작성/인쇄 화면, 알림, SI Business 연결 안내 문구 전체 통일(내부 코드의 quotation 관련 파일명·라우트·테이블명은 그대로 유지)",

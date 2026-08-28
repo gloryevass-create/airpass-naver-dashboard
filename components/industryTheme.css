@@ -1,9 +1,11 @@
-/* SI Business 2 전용 디자인 시스템 — 사용자가 Claude Design으로 만든 "Industry"
- * 테마(철강청사진 와이어프레임: 연한 기술 배경 위 스틸블루 단색 악센트, 모듈형
+/* Industry 디자인 시스템 — 사용자가 Claude Design으로 만든 "Industry" 테마
+ * (철강청사진 와이어프레임: 연한 기술 배경 위 스틸블루 단색 악센트, 모듈형
  * 그리드, 사각 모서리 + "+" 등록마크가 있는 카드/버튼)를 그대로 이식했다
- * (2026-08-28). 원본은 이 앱 전체에 전역으로 적용되는 스타일시트지만, 여기서는
- * 나머지 화면의 Tailwind 테마와 충돌하지 않도록 모든 규칙을 .industry-theme
- * 아래로 스코프했다 — 이 페이지 바깥에는 전혀 영향을 주지 않는다.
+ * (SI Business 2 2026-08-28, Calendar 2026-08-29). 원본은 앱 전체에 전역으로
+ * 적용되는 스타일시트지만, 여기서는 나머지 화면의 Tailwind 테마와 충돌하지
+ * 않도록 모든 규칙을 .industry-theme 아래로 스코프했다 — 이 클래스로 감싼
+ * 페이지 바깥에는 전혀 영향을 주지 않는다. 이 테마를 쓰는 페이지들
+ * (app/dashboard/business3, app/dashboard/events2)이 공용으로 import한다.
  */
 @import url("https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;700&family=Barlow+Condensed:wght@400;600&display=swap");
 

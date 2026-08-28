@@ -1,4 +1,4 @@
-import "./industry-theme.css";
+import "@/components/industryTheme.css";
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { getBusinessProjectsV2 } from "@/lib/queries/businessProjectsV2";
 import { getTeamMemberNames } from "@/lib/queries/teamMembers";

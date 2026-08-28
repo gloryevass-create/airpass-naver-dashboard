@@ -142,16 +142,42 @@ Barlow/Barlow Condensed) 테마를 그대로 이식했다(2026-08-28).
   기존 `BusinessBoardV2.tsx`와 기능은 동일하지만 마크업·클래스는 전부 새로 짰다 —
   두 컴포넌트 사이에 공유 코드가 없다(디자인이 근본적으로 달라 억지로 합치면 둘 다
   지저분해진다고 판단).
-- `app/dashboard/business3/industry-theme.css` — Claude Design이 내보낸
-  `styles.css`(디자인 토큰 + 컴포넌트 클래스)를 그대로 옮기되, 모든 셀렉터를
-  `.industry-theme` 아래로 스코프했다 — 원본은 `body`/`h1`처럼 전역 셀렉터를 쓰는
-  진짜 전역 스타일시트라, 스코프하지 않으면 이 페이지 바깥의 Tailwind 화면까지
-  깨진다. `page.tsx`가 이 CSS를 라우트 단위로 import하고, 최상위 컨테이너에
-  `.industry-theme` 클래스를 건다.
+- `components/industryTheme.css` — Claude Design이 내보낸 `styles.css`(디자인
+  토큰 + 컴포넌트 클래스)를 그대로 옮기되, 모든 셀렉터를 `.industry-theme`
+  아래로 스코프했다 — 원본은 `body`/`h1`처럼 전역 셀렉터를 쓰는 진짜 전역
+  스타일시트라, 스코프하지 않으면 이 페이지 바깥의 Tailwind 화면까지 깨진다.
+  이 테마를 쓰는 각 `page.tsx`가 이 CSS를 라우트 단위로 import하고, 최상위
+  컨테이너에 `.industry-theme` 클래스를 건다 — Calendar(`/dashboard/events2`)도
+  같은 파일을 공유해서 쓴다(아래 참고).
 - 칸반 단계 이동은 마우스 드래그(HTML5 `draggable`)로 컬럼 사이를 옮기는 방식과
   카드 안 `<select>` 두 가지를 모두 지원한다(디자인 원본에 둘 다 있었음).
 - 담당자 다중 선택은 `MemberMultiSelect`(Tailwind 톤) 대신 이 테마 전용
   `ManagerChips`로 새로 짰다 — 색이 섞이면 통일된 룩이 깨지기 때문.
+
+## Calendar
+
+`/dashboard/events2` — 사용자가 Claude Design으로 만든 "Industry" 테마
+캘린더 목업을 그대로 이식했다(2026-08-29, SI Business 2와 같은 디자인
+시스템 — `components/industryTheme.css` 공유). SI Business 2와 달리 이건
+**같은 화면을 그 자리에서 다시 그린 것**이다(새 메뉴를 따로 만들지 않음) —
+기존 `team_events_v2` 데이터·서버 액션(`app/dashboard/actions/eventsV2.ts`)은
+그대로 두고 화면(`components/dashboard/IndustryEventCalendar.tsx`)만 새로
+짰다. 옛 `TeamEventCalendarV2.tsx`/`EventMonthNav.tsx`는 삭제됨.
+
+- 디자인 목업은 월/주/일 세 가지 보기를 지원하는데, 기존 화면은 월 보기만
+  있었다 — 주/일 보기를 새로 추가하면서 월 단위로만 데이터를 불러오는 기존
+  구조(`getTeamEventsV2(supabase, month)`)는 그대로 뒀다. 주/일 보기에서
+  이동하다 달 경계를 넘으면 URL의 `month`뿐 아니라 정확한 날짜를 가리키는
+  `day` 파라미터도 함께 갱신해서, 새로 불러온 달의 데이터에서 그 날짜부터
+  다시 보여준다(`IndustryEventCalendar.tsx`의 `navigateTo`).
+- 디자인 목업은 태그(분류)가 고정 4종(시공/설치·미팅/방문·예정·기타)이지만,
+  실제 데이터는 자유 텍스트 태그가 14종 이상 쓰이고 있어(회식/미팅/행사/휴일 등)
+  4종으로 줄이면 정보가 손실된다 — 목업의 "점 하나로 분류 표시" 방식은 그대로
+  따르되, 점 색은 기존 `TeamEventCalendarV2`의 태그별 Tailwind 색 매핑을 hex
+  값으로 옮긴 `TAG_DOT_COLORS`를 그대로 재사용한다.
+- 일정의 나머지 필드(종료일시로 여러 날 걸치는 일정, 시간 유무, 담당자·참석자,
+  장소·대상·내용)는 목업에 없던 것들이지만 실제 운영에 쓰이고 있어 그대로
+  유지했다 — 다이얼로그에 전부 남아 있다.
 
 ## 폴더 구조
 
