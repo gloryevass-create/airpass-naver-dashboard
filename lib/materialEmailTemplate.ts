@@ -139,8 +139,8 @@ export function buildMaterialEmailHtml(params: {
         </div>
 
         ${quotationSectionHtml(quotation)}
-        ${attachedFilesHtml}
         ${productLinksSectionHtml(productLinks)}
+        ${attachedFilesHtml}
 
         <p style="font-size:14.5px;color:#374151;line-height:1.8;margin:0 0 20px;">
           검토 중 궁금하신 사항이나 추가로 필요하신 자료가 있으시면 편하게 말씀 부탁드립니다.
