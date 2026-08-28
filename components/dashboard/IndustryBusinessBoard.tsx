@@ -764,14 +764,7 @@ function KanbanCard({
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
       className="kanban-card"
-      style={{
-        position: "relative",
-        padding: "var(--space-3)",
-        background: "#ffffff",
-        border: "1px solid var(--color-divider)",
-        borderRadius: 8,
-        boxShadow: "var(--shadow-sm)",
-      }}
+      style={{ position: "relative", paddingBottom: "var(--space-3)", borderBottom: "1px solid var(--color-divider)" }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, fontWeight: 500, marginBottom: 6 }}>
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" strokeWidth="1.5" style={{ flex: "none" }}>
