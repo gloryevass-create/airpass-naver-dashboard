@@ -27,8 +27,7 @@ const ITEMS: MenuEntry[] = [
     icon: "sparkle",
     children: [
       { href: "/dashboard/events2", label: "Calendar", icon: "calendar" },
-      { href: "/dashboard/business2", label: "SI Business", icon: "briefcase" },
-      { href: "/dashboard/business3", label: "SI Business 2", icon: "briefcase" },
+      { href: "/dashboard/business3", label: "Business", icon: "briefcase" },
       { href: "/dashboard/cooperation", label: "Cooperation", icon: "share" },
       { href: "/dashboard/marketing-tasks", label: "Marketing", icon: "list" },
       { href: "/dashboard/memos", label: "Memo Board", icon: "clipboard" },
@@ -75,6 +74,11 @@ const ITEMS: MenuEntry[] = [
       { href: "/dashboard/db/public-institutions", label: "공공기관정보", icon: "tag" },
       { href: "/dashboard/db/senior-welfare-facilities", label: "전국경로당현황", icon: "tag" },
     ],
+  },
+  {
+    label: "menu backup",
+    icon: "history",
+    children: [{ href: "/dashboard/business2", label: "SI Business", icon: "briefcase" }],
   },
 ];
 

@@ -914,9 +914,9 @@ export function IndustryBusinessBoard({
         onViewChange={setView}
       />
       <div style={{ padding: "var(--space-8)", maxWidth: 1400, margin: "0 auto" }}>
-      <h1 style={{ fontSize: 22, margin: "0 0 4px", fontWeight: 600 }}>SI Business 2</h1>
+      <h1 style={{ fontSize: 22, margin: "0 0 4px", fontWeight: 600 }}>Business</h1>
       <p className="text-muted" style={{ margin: "0 0 var(--space-6)", fontSize: 13 }}>
-        SI Business와 같은 사업 목록을 새 디자인으로 봅니다 — 여기서 추가·수정한 내용은 기존 SI Business 화면에도 그대로 반영됩니다.
+        같은 사업 목록을 새 디자인으로 봅니다 — 여기서 추가·수정한 내용은 menu backup의 SI Business 화면에도 그대로 반영됩니다.
       </p>
 
       <div
