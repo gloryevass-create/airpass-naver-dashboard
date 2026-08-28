@@ -120,7 +120,7 @@ function TopSettingsBar({
         gap: "var(--space-4)",
         margin: "calc(var(--space-8) * -1) calc(var(--space-8) * -1) var(--space-6)",
         padding: "var(--space-3) var(--space-8)",
-        background: "var(--color-surface)",
+        background: "#ffffff",
         borderBottom: "1px solid var(--color-divider)",
         fontSize: 13,
       }}
