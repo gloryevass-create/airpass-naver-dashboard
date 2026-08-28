@@ -97,6 +97,80 @@ function ManagerChips({
   );
 }
 
+/** 디자인 목업(Claude Design)의 속성 미리보기 바("showArchivedDefault" 토글 +
+ * "defaultView" 드롭다운)를 실제 페이지 상단에도 그대로 재현한 것 — 아래쪽
+ * "완료·보류 포함"/목록·리스트 버튼과 같은 state를 공유해 항상 서로 일치한다
+ * (사용자가 화면 스크린샷으로 이 바를 직접 요청, 2026-08-28). */
+function TopSettingsBar({
+  showArchived,
+  onShowArchivedChange,
+  view,
+  onViewChange,
+}: {
+  showArchived: boolean;
+  onShowArchivedChange: (v: boolean) => void;
+  view: "kanban" | "list";
+  onViewChange: (v: "kanban" | "list") => void;
+}) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "var(--space-4)",
+        margin: "calc(var(--space-8) * -1) calc(var(--space-8) * -1) var(--space-6)",
+        padding: "var(--space-3) var(--space-8)",
+        background: "var(--color-surface)",
+        borderBottom: "1px solid var(--color-divider)",
+        fontSize: 13,
+      }}
+    >
+      <label style={{ display: "inline-flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+        <span>showArchivedDefault</span>
+        <span
+          role="switch"
+          aria-checked={showArchived}
+          onClick={() => onShowArchivedChange(!showArchived)}
+          style={{
+            position: "relative",
+            width: 36,
+            height: 20,
+            borderRadius: 999,
+            background: showArchived ? "var(--color-accent)" : "var(--color-neutral-400)",
+            transition: "background 0.15s",
+            flex: "none",
+          }}
+        >
+          <span
+            style={{
+              position: "absolute",
+              top: 2,
+              left: showArchived ? 18 : 2,
+              width: 16,
+              height: 16,
+              borderRadius: "50%",
+              background: "#fff",
+              transition: "left 0.15s",
+            }}
+          />
+        </span>
+      </label>
+      <label style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+        <span>defaultView</span>
+        <select
+          className="input"
+          value={view}
+          onChange={(e) => onViewChange(e.target.value as "kanban" | "list")}
+          style={{ minHeight: 30, padding: "2px 8px", fontSize: 13, width: "auto" }}
+        >
+          <option value="kanban">kanban</option>
+          <option value="list">list</option>
+        </select>
+      </label>
+    </div>
+  );
+}
+
 function StatusTag({ status }: { status: string }) {
   const cls = status === "진행 중" ? "tag tag-accent" : TERMINAL_STATUSES.has(status) ? "tag tag-neutral" : "tag tag-outline";
   return <span className={cls}>{status}</span>;
@@ -733,7 +807,13 @@ export function IndustryBusinessBoard({
   }
 
   return (
-    <div className="industry-theme" style={{ padding: "var(--space-8)", maxWidth: 1400, margin: "0 auto" }}>
+    <div className="industry-theme" style={{ padding: "var(--space-8)", maxWidth: 1400, margin: "0 auto", overflow: "hidden" }}>
+      <TopSettingsBar
+        showArchived={showArchived}
+        onShowArchivedChange={setShowArchived}
+        view={view}
+        onViewChange={setView}
+      />
       <h1 style={{ fontSize: 22, margin: "0 0 4px", fontWeight: 600 }}>SI Business 2</h1>
       <p className="text-muted" style={{ margin: "0 0 var(--space-6)", fontSize: 13 }}>
         SI Business와 같은 사업 목록을 새 디자인으로 봅니다 — 여기서 추가·수정한 내용은 기존 SI Business 화면에도 그대로 반영됩니다.
