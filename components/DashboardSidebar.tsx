@@ -174,7 +174,10 @@ export function DashboardSidebar({ latestDate }: { latestDate: string | null }) 
           open ? "translate-x-0" : "-translate-x-full"
         } ${railCollapsed ? "md:w-[72px]" : "md:w-56"}`}
       >
-        <div className="flex flex-1 flex-col gap-1 overflow-y-auto p-2">
+        {/* WORKSPACE(브랜드 박스 + 상단 고정 목록)는 스크롤 없이 항상 그 자리에
+            있고, 그 아래 접이식 그룹 목록만 자체 스크롤한다 — 디자인 원본과
+            동일한 동작(사용자 확인, 2026-08-28). */}
+        <div className="flex shrink-0 flex-col gap-1 p-2 pb-0">
           <div className="px-1 pb-2 pt-1">
             <div className={`ds-sidebar-brand${showLabels ? "" : " collapsed"}`}>
               <NavIcon name="sparkle" className="h-[18px] w-[18px] shrink-0" style={{ color: "var(--sb-accent-700)" }} />
@@ -196,7 +199,9 @@ export function DashboardSidebar({ latestDate }: { latestDate: string | null }) 
           </div>
 
           {showLabels && <div className="ds-sidebar-divider" />}
+        </div>
 
+        <div className="flex flex-1 flex-col gap-1 overflow-y-auto p-2 pt-1">
           <div className="flex flex-col gap-1 px-1">
             {GROUPS.map((group) => {
               const hasActiveChild = group.children.some((child) => isActivePath(pathname, child.href));
