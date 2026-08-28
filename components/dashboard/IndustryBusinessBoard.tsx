@@ -153,16 +153,16 @@ function TopSettingsBar({
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        gap: "var(--space-4)",
-        margin: "calc(var(--space-8) * -1) calc(var(--space-8) * -1) var(--space-6)",
-        padding: "var(--space-3) var(--space-8)",
+        gap: "var(--space-3)",
+        width: "100%",
+        padding: "6px var(--space-8)",
         background: "#ffffff",
         borderBottom: "1px solid var(--color-divider)",
-        fontSize: 13,
+        fontSize: 12,
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: "var(--space-4)" }}>
-        <label style={{ display: "inline-flex", alignItems: "center", gap: 10, cursor: "pointer", color: "#374151" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
+        <label style={{ display: "inline-flex", alignItems: "center", gap: 7, cursor: "pointer", color: "#374151" }}>
           <span>showArchivedDefault</span>
           <span
             role="switch"
@@ -170,8 +170,8 @@ function TopSettingsBar({
             onClick={() => onShowArchivedChange(!showArchived)}
             style={{
               position: "relative",
-              width: 40,
-              height: 22,
+              width: 30,
+              height: 16,
               borderRadius: 999,
               background: showArchived ? "#3b82f6" : "#d1d5db",
               transition: "background 0.15s",
@@ -182,9 +182,9 @@ function TopSettingsBar({
               style={{
                 position: "absolute",
                 top: 2,
-                left: showArchived ? 20 : 2,
-                width: 18,
-                height: 18,
+                left: showArchived ? 16 : 2,
+                width: 12,
+                height: 12,
                 borderRadius: "50%",
                 background: "#fff",
                 boxShadow: "0 1px 2px rgba(0,0,0,0.25)",
@@ -193,19 +193,19 @@ function TopSettingsBar({
             />
           </span>
         </label>
-        <label style={{ display: "inline-flex", alignItems: "center", gap: 10, color: "#374151" }}>
+        <label style={{ display: "inline-flex", alignItems: "center", gap: 7, color: "#374151" }}>
           <span>defaultView</span>
           <select
             value={view}
             onChange={(e) => onViewChange(e.target.value as "kanban" | "list")}
             style={{
-              minHeight: 34,
-              padding: "6px 12px",
-              fontSize: 13,
+              minHeight: 24,
+              padding: "2px 6px",
+              fontSize: 11,
               width: "auto",
               background: "#fff",
               border: "1px solid #d1d5db",
-              borderRadius: 6,
+              borderRadius: 5,
               color: "#1f2937",
             }}
           >
@@ -214,12 +214,12 @@ function TopSettingsBar({
           </select>
         </label>
       </div>
-      <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
-        {savedNotice && <span style={{ color: "#3b82f6", fontSize: 12 }}>저장됨</span>}
+      <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
+        {savedNotice && <span style={{ color: "#3b82f6", fontSize: 11 }}>저장됨</span>}
         <button
           type="button"
           onClick={handleReset}
-          style={{ background: "none", border: 0, padding: 0, color: "#6b7280", cursor: "pointer", font: "inherit", fontSize: 13 }}
+          style={{ background: "none", border: 0, padding: 0, color: "#6b7280", cursor: "pointer", font: "inherit", fontSize: 11 }}
         >
           Reset
         </button>
@@ -227,13 +227,13 @@ function TopSettingsBar({
           type="button"
           onClick={handleSave}
           style={{
-            fontSize: 13,
+            fontSize: 11,
             fontWeight: 500,
-            minHeight: 34,
-            padding: "6px 16px",
+            minHeight: 24,
+            padding: "2px 10px",
             background: "#eef1fb",
             border: "1px solid #c7d0e8",
-            borderRadius: 6,
+            borderRadius: 5,
             color: "#374151",
             cursor: "pointer",
           }}
@@ -894,13 +894,14 @@ export function IndustryBusinessBoard({
   }
 
   return (
-    <div className="industry-theme" style={{ padding: "var(--space-8)", maxWidth: 1400, margin: "0 auto", overflow: "hidden" }}>
+    <div className="industry-theme" style={{ minHeight: "100vh" }}>
       <TopSettingsBar
         showArchived={showArchived}
         onShowArchivedChange={setShowArchived}
         view={view}
         onViewChange={setView}
       />
+      <div style={{ padding: "var(--space-8)", maxWidth: 1400, margin: "0 auto" }}>
       <h1 style={{ fontSize: 22, margin: "0 0 4px", fontWeight: 600 }}>SI Business 2</h1>
       <p className="text-muted" style={{ margin: "0 0 var(--space-6)", fontSize: 13 }}>
         SI Business와 같은 사업 목록을 새 디자인으로 봅니다 — 여기서 추가·수정한 내용은 기존 SI Business 화면에도 그대로 반영됩니다.
@@ -1091,6 +1092,7 @@ export function IndustryBusinessBoard({
       )}
 
       {showAddDialog && <AddProjectDialog members={members} onClose={() => setShowAddDialog(false)} />}
+      </div>
     </div>
   );
 }
