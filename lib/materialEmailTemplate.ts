@@ -7,12 +7,14 @@ export type MaterialEmailFileLink = { name: string; link: string };
 export type MaterialEmailProductLink = { label: string; link: string | null };
 export type MaterialEmailQuotation = { quoteNumber: string; customerName: string; printUrl: string } | null;
 
-// 템플릿의 "회사 및 제품소개 자료" 7개 항목 — 자료메일발송 폴더(구글드라이브)에서
+// 템플릿의 "회사 및 제품소개 자료" 항목 — 자료메일발송 폴더(구글드라이브)에서
 // 이 키워드를 모두 포함하는 파일명을 찾아 연결한다(사용자 확인, 2026-08-28). 못
-// 찾으면 그 항목은 이메일에서 빠진다(가짜 링크를 만들지 않음).
+// 찾으면 그 항목은 이메일에서 빠진다(가짜 링크를 만들지 않음). 회사소개서는 맨
+// 위에 고정 노출한다 — "아이핏" 키워드가 다른 파일과 잘못 매칭돼 엉뚱한 링크로
+// 연결되는 문제가 있어 그 항목은 제거함(사용자 확인, 2026-08-28).
 export const PRODUCT_MATERIAL_CATALOG: { label: string; keywords: string[] }[] = [
+  { label: "에어패스 회사소개서", keywords: ["회사소개"] },
   { label: "에어패스 가상사격 시스템 브로셔", keywords: ["가상사격"] },
-  { label: "에어패스 아이핏·PAPS 제품자료", keywords: ["아이핏"] },
   { label: "마이베네핏 VM2 제품소개서", keywords: ["마이베네핏"] },
   { label: "올댓비전 스마트미러 제품소개서", keywords: ["올댓비전", "스마트미러"] },
   { label: "올댓비전 스마트PAPS 제품소개서", keywords: ["올댓비전", "스마트PAPS"] },
