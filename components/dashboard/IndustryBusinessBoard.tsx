@@ -764,7 +764,14 @@ function KanbanCard({
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
       className="kanban-card"
-      style={{ position: "relative", padding: "var(--space-3) 0", borderBottom: "1px solid var(--color-divider)" }}
+      style={{
+        position: "relative",
+        padding: "var(--space-3)",
+        background: "#ffffff",
+        border: "1px solid var(--color-divider)",
+        borderRadius: 8,
+        boxShadow: "var(--shadow-sm)",
+      }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, fontWeight: 500, marginBottom: 6 }}>
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" strokeWidth="1.5" style={{ flex: "none" }}>
@@ -999,7 +1006,7 @@ export function IndustryBusinessBoard({
               }}
               onDragLeave={() => setDragOverStage((cur) => (cur === col.name ? null : cur))}
               onDrop={(e) => handleDrop(e, col.name)}
-              style={{ display: "flex", flexDirection: "column", minHeight: 80 }}
+              style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)", minHeight: 80 }}
             >
               <div
                 style={{
@@ -1043,7 +1050,16 @@ export function IndustryBusinessBoard({
                 />
               ))}
               {col.items.length === 0 && (
-                <div className="text-muted" style={{ fontSize: 12, padding: "var(--space-3) 0" }}>
+                <div
+                  className="text-muted"
+                  style={{
+                    fontSize: 12,
+                    padding: "var(--space-4) 0",
+                    textAlign: "center",
+                    border: "1px dashed var(--color-divider)",
+                    borderRadius: 8,
+                  }}
+                >
                   없음
                 </div>
               )}
