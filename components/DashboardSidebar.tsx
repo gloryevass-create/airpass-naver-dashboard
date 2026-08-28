@@ -201,7 +201,7 @@ export function DashboardSidebar({ latestDate }: { latestDate: string | null }) 
           {showLabels && <div className="ds-sidebar-divider" />}
         </div>
 
-        <div className="flex flex-1 flex-col gap-1 overflow-y-auto p-2 pt-1">
+        <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto p-2 pt-1">
           <div className="flex flex-col gap-1 px-1">
             {GROUPS.map((group) => {
               const hasActiveChild = group.children.some((child) => isActivePath(pathname, child.href));
