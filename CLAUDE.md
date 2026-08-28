@@ -154,6 +154,27 @@ Barlow/Barlow Condensed) 테마를 그대로 이식했다(2026-08-28).
 - 담당자 다중 선택은 `MemberMultiSelect`(Tailwind 톤) 대신 이 테마 전용
   `ManagerChips`로 새로 짰다 — 색이 섞이면 통일된 룩이 깨지기 때문.
 
+## Cooperation / Marketing
+
+`/dashboard/cooperation`, `/dashboard/marketing-tasks` — SI Business 2와 같은
+Claude Design "Industry" 테마를 그대로 적용했다(2026-08-29). SI Business 2와
+달리 이 두 화면은 **그 자리에서 다시 그린 것**이다(새 메뉴를 따로 만들지
+않음, Calendar와 동일한 방식) — 데이터·서버 액션(`app/dashboard/actions/
+cooperationProjects.ts`, `app/dashboard/actions/marketingTasks.ts`)은 그대로
+두고 컴포넌트만 `IndustryCooperationBoard.tsx`/`IndustryMarketingBoard.tsx`로
+새로 짰다. 옛 `CooperationBoard.tsx`/`MarketingTaskBoard.tsx`는 삭제됨.
+
+- 칸반 컬럼 기준이 Business의 "단계"(순서가 있는 파이프라인)와 달리 각각
+  "관계"(Cooperation)·"분류"(Marketing)라는 태그성 값이라 순서 개념이 없다 —
+  컬럼 배지 문자는 라벨의 첫 글자를 그대로 쓴다(Business의 로마숫자 배지와
+  같은 `codeOf` 방식을 재사용, 값만 다름).
+- Cooperation은 담당자가 메인/서브 두 그룹(`mainAssignees`/`subAssignees`)이라
+  `ManagerChips`를 두 번 렌더링한다. Marketing은 산출내역 연결 같은 기능이
+  없어 `ConnectedQuotations` 상당 컴포넌트를 아예 만들지 않았다.
+- 상단 환경설정 바(`TopSettingsBar`, showArchivedDefault/defaultView/Reset/
+  Save as defaults)도 SI Business 2와 동일하게 구현했다 — 저장 키만 화면별로
+  다르다(`cooperation-board:defaults`, `marketing-board:defaults`).
+
 ## Calendar
 
 `/dashboard/events2` — 사용자가 Claude Design으로 만든 "Industry" 테마
