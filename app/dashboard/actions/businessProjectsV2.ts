@@ -5,6 +5,15 @@ import { requireAuthedClient } from "@/lib/supabase/authed";
 import { formatMember } from "@/lib/formatMember";
 
 const PATH = "/dashboard/business2";
+// SI Business 2(Industry 디자인 시스템 재구현, 2026-08-28)는 같은 business_projects_v2
+// 데이터를 다른 화면으로 보여줄 뿐이라 이 액션들을 그대로 재사용한다 — 두 화면
+// 다 캐시가 갱신되도록 항상 같이 무효화한다.
+const PATH_V2_REDESIGN = "/dashboard/business3";
+
+function revalidateBusinessPaths() {
+  revalidatePath(PATH);
+  revalidatePath(PATH_V2_REDESIGN);
+}
 
 export type BusinessProjectV2FormState = { error?: string } | undefined;
 
@@ -71,7 +80,7 @@ export async function createBusinessProjectV2(
     link: PATH,
   });
 
-  revalidatePath(PATH);
+  revalidateBusinessPaths();
   return undefined;
 }
 
@@ -94,14 +103,14 @@ export async function updateBusinessProjectV2(
 
   if (error) return { error: `저장 실패: ${error.message}` };
 
-  revalidatePath(PATH);
+  revalidateBusinessPaths();
   return undefined;
 }
 
 export async function deleteBusinessProjectV2(id: string): Promise<void> {
   const { supabase } = await requireAuthedClient();
   await supabase.from("business_projects_v2").delete().eq("id", id);
-  revalidatePath(PATH);
+  revalidateBusinessPaths();
 }
 
 /** 카드에서 바로 단계를 옮길 때 쓰는 가벼운 액션(전체 폼을 열지 않아도 됨). */
@@ -111,7 +120,7 @@ export async function moveBusinessProjectV2Stage(id: string, stage: string | nul
     .from("business_projects_v2")
     .update({ stage, updated_at: new Date().toISOString() })
     .eq("id", id);
-  revalidatePath(PATH);
+  revalidateBusinessPaths();
 }
 
 export type BusinessProjectV2CommentState = { error?: string } | undefined;
@@ -135,14 +144,14 @@ export async function createBusinessProjectV2Comment(
 
   if (error) return { error: `댓글 저장 실패: ${error.message}` };
 
-  revalidatePath(PATH);
+  revalidateBusinessPaths();
   return undefined;
 }
 
 export async function deleteBusinessProjectV2Comment(commentId: string): Promise<void> {
   const { supabase } = await requireAuthedClient();
   await supabase.from("business_projects_v2_comments").delete().eq("id", commentId);
-  revalidatePath(PATH);
+  revalidateBusinessPaths();
 }
 
 export type BusinessProjectV2HistoryState = { error?: string } | undefined;
@@ -168,7 +177,7 @@ export async function createBusinessProjectV2HistoryEntry(
 
   if (error) return { error: `히스토리 저장 실패: ${error.message}` };
 
-  revalidatePath(PATH);
+  revalidateBusinessPaths();
   return undefined;
 }
 
@@ -189,6 +198,6 @@ export async function updateBusinessProjectV2HistoryEntry(
 
   if (error) return { error: `히스토리 수정 실패: ${error.message}` };
 
-  revalidatePath(PATH);
+  revalidateBusinessPaths();
   return undefined;
 }

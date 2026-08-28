@@ -126,6 +126,33 @@
   `/dashboard/quotations/[id]/print`(로그인 필요, 인쇄 버튼 하나만)는 그대로 유지 —
   견적서 목록·SI Business 프로젝트 상세의 "인쇄" 링크는 계속 이쪽을 가리킨다.
 
+## SI Business 2
+
+`/dashboard/business3`(사이드바 라벨은 "SI Business 2") — 기존 SI Business
+(`/dashboard/business2`)와 **완전히 같은 `business_projects_v2` 데이터·서버
+액션**(`app/dashboard/actions/businessProjectsV2.ts`)을 쓰는 또 하나의 화면이다.
+별도 사업 목록이 아니다 — 어느 쪽에서 추가·수정·삭제해도 두 화면 모두 갱신된다
+(액션마다 `/dashboard/business2`와 `/dashboard/business3`를 함께
+`revalidatePath`). 사용자가 Claude Design으로 만든 "Industry"(철강청사진
+와이어프레임: 스틸블루 단색 악센트, 사각 모서리 + "+" 등록마크가 있는 카드·버튼,
+Barlow/Barlow Condensed) 테마를 그대로 이식했다(2026-08-28).
+
+- `components/dashboard/IndustryBusinessBoard.tsx` — 새 컴포넌트 트리(칸반 드래그
+  앤드롭, 리스트 뷰, 추가 다이얼로그, 상세/수정 화면, 연결된 산출내역·히스토리·댓글).
+  기존 `BusinessBoardV2.tsx`와 기능은 동일하지만 마크업·클래스는 전부 새로 짰다 —
+  두 컴포넌트 사이에 공유 코드가 없다(디자인이 근본적으로 달라 억지로 합치면 둘 다
+  지저분해진다고 판단).
+- `app/dashboard/business3/industry-theme.css` — Claude Design이 내보낸
+  `styles.css`(디자인 토큰 + 컴포넌트 클래스)를 그대로 옮기되, 모든 셀렉터를
+  `.industry-theme` 아래로 스코프했다 — 원본은 `body`/`h1`처럼 전역 셀렉터를 쓰는
+  진짜 전역 스타일시트라, 스코프하지 않으면 이 페이지 바깥의 Tailwind 화면까지
+  깨진다. `page.tsx`가 이 CSS를 라우트 단위로 import하고, 최상위 컨테이너에
+  `.industry-theme` 클래스를 건다.
+- 칸반 단계 이동은 마우스 드래그(HTML5 `draggable`)로 컬럼 사이를 옮기는 방식과
+  카드 안 `<select>` 두 가지를 모두 지원한다(디자인 원본에 둘 다 있었음).
+- 담당자 다중 선택은 `MemberMultiSelect`(Tailwind 톤) 대신 이 테마 전용
+  `ManagerChips`로 새로 짰다 — 색이 섞이면 통일된 룩이 깨지기 때문.
+
 ## 폴더 구조
 
 ```

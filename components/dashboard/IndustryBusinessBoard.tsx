@@ -1,0 +1,925 @@
+"use client";
+
+import { useActionState, useEffect, useMemo, useRef, useState, useTransition, type DragEvent } from "react";
+import Link from "next/link";
+import type { BusinessProjectV2, BusinessProjectV2HistoryEntry } from "@/lib/queries/businessProjectsV2";
+import type { Quotation } from "@/lib/queries/quotations";
+import {
+  createBusinessProjectV2,
+  updateBusinessProjectV2,
+  deleteBusinessProjectV2,
+  moveBusinessProjectV2Stage,
+  createBusinessProjectV2Comment,
+  deleteBusinessProjectV2Comment,
+  createBusinessProjectV2HistoryEntry,
+  updateBusinessProjectV2HistoryEntry,
+} from "@/app/dashboard/actions/businessProjectsV2";
+
+// SI Business(기존 화면, /dashboard/business2)와 완전히 같은 데이터·서버
+// 액션을 쓴다 — SI Business 2는 Claude Design "Industry" 테마로 다시 그린
+// 같은 사업 목록일 뿐, 별도 데이터가 아니다(사용자 확인, 2026-08-28).
+const STAGES = ["Ⅰ영업진행", "Ⅱ사업제안", "Ⅲ제안서작성", "Ⅳ사업수행", "Ⅴ사업완료"];
+const STATUSES = ["시작 전", "진행 중", "완료", "보류", "실패"];
+const TERMINAL_STATUSES = new Set(["완료", "실패", "보류"]);
+
+function formatDate(value: string | null): string | null {
+  if (!value) return null;
+  return new Date(value).toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" });
+}
+
+function formatDateTime(value: string): string {
+  return new Date(value).toLocaleString("ko-KR", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function toDateInputValue(value: string | null): string {
+  if (!value) return "";
+  return value.slice(0, 10);
+}
+
+function formatCurrency(n: number): string {
+  return Math.round(n).toLocaleString("ko-KR");
+}
+
+function stageIndex(stage: string): number {
+  const i = STAGES.indexOf(stage);
+  return i === -1 ? STAGES.length : i;
+}
+
+/** 담당자 다중 선택 — MemberMultiSelect(Tailwind 톤)와 동일한 역할이지만
+ * Industry 테마의 알약형 태그(.tag-chip)로 새로 그렸다(색이 섞이면 이 페이지만의
+ * 통일된 룩이 깨지기 때문, 2026-08-28). */
+function ManagerChips({
+  name,
+  members,
+  defaultValue,
+}: {
+  name: string;
+  members: string[];
+  defaultValue: string[];
+}) {
+  const [selected, setSelected] = useState<Set<string>>(new Set(defaultValue));
+
+  function toggle(m: string) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(m)) next.delete(m);
+      else next.add(m);
+      return next;
+    });
+  }
+
+  return (
+    <div className="field">
+      <label>담당자</label>
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        {members.length === 0 && <span style={{ fontSize: 12 }}>등록된 팀원이 없습니다.</span>}
+        {members.map((m) => (
+          <label key={m} className={`tag-chip${selected.has(m) ? " active" : ""}`}>
+            <input
+              type="checkbox"
+              name={name}
+              value={m}
+              checked={selected.has(m)}
+              onChange={() => toggle(m)}
+              style={{ position: "absolute", opacity: 0, width: 0, height: 0 }}
+            />
+            {m}
+          </label>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function CornerMarks() {
+  return (
+    <>
+      <i className="corner tl" />
+      <i className="corner tr" />
+      <i className="corner bl" />
+      <i className="corner br" />
+    </>
+  );
+}
+
+function StatusTag({ status }: { status: string }) {
+  const cls = status === "진행 중" ? "tag tag-accent" : TERMINAL_STATUSES.has(status) ? "tag tag-neutral" : "tag tag-outline";
+  return <span className={cls}>{status}</span>;
+}
+
+/* ─────────────────────────── 새 사업 추가 다이얼로그 ─────────────────────────── */
+
+function AddProjectDialog({ members, onClose }: { members: string[]; onClose: () => void }) {
+  const [state, formAction, pending] = useActionState(createBusinessProjectV2, undefined);
+  const wasPendingRef = useRef(false);
+
+  // useActionState의 dispatch는 서버 액션 결과를 그 자리에서 돌려주지 않는다 —
+  // pending이 true→false로 바뀌는 순간 에러가 없을 때만 닫는다(사용자 확인,
+  // 2026-08-28 — 산출내역 저장 폼에서 같은 문제를 먼저 고친 패턴 재사용).
+  useEffect(() => {
+    if (wasPendingRef.current && !pending && !state?.error) onClose();
+    wasPendingRef.current = pending;
+  }, [pending, state, onClose]);
+
+  return (
+    <div className="dialog-backdrop" onClick={onClose}>
+      <div
+        className="dialog"
+        style={{ width: "min(640px,100%)", maxHeight: "88vh", overflowY: "auto" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="dialog-title">새 사업 추가</div>
+        <form action={formAction} style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+          <div className="field">
+            <label>사업명 *</label>
+            <input className="input" name="title" required />
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-3)" }}>
+            <div className="field">
+              <label>단계</label>
+              <select className="input" name="stage" defaultValue="">
+                <option value="">미분류</option>
+                {STAGES.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="field">
+              <label>진행 상태</label>
+              <select className="input" name="status" defaultValue="시작 전">
+                {STATUSES.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="field">
+              <label>발주기관</label>
+              <input className="input" name="orgName" />
+            </div>
+            <div className="field">
+              <label>참여 형태</label>
+              <input className="input" name="participationType" />
+            </div>
+            <div className="field">
+              <label>사업 유형</label>
+              <input className="input" name="workType" />
+            </div>
+            <div className="field">
+              <label>결과</label>
+              <input className="input" name="result" />
+            </div>
+            <div className="field">
+              <label>금액(원)</label>
+              <input className="input" type="number" name="amount" />
+            </div>
+            <div className="field">
+              <label>진행률(%)</label>
+              <input className="input" type="number" name="progressRate" />
+            </div>
+            <div className="field">
+              <label>제출일</label>
+              <input className="input" type="date" name="submissionDate" />
+            </div>
+            <div className="field">
+              <label>제출 방법</label>
+              <input className="input" name="submissionMethod" />
+            </div>
+            <div className="field">
+              <label>발표일</label>
+              <input className="input" type="date" name="presentationDate" />
+            </div>
+            <div className="field">
+              <label>공사 시작일</label>
+              <input className="input" type="date" name="constructionStart" />
+            </div>
+            <div className="field">
+              <label>공사 종료일</label>
+              <input className="input" type="date" name="constructionEnd" />
+            </div>
+          </div>
+          <div className="field">
+            <label>공사 내용</label>
+            <input className="input" name="constructionContent" />
+          </div>
+          <ManagerChips name="assignees" members={members} defaultValue={[]} />
+          <div className="field">
+            <label>참고 사항</label>
+            <textarea className="input" name="notes" rows={3} />
+          </div>
+          {state?.error && <p style={{ color: "var(--color-accent-900)", fontSize: 13 }}>{state.error}</p>}
+          <div className="dialog-actions">
+            <button type="button" className="btn btn-secondary" onClick={onClose}>
+              취소
+            </button>
+            <button type="submit" className="btn btn-primary" disabled={pending}>
+              {pending ? "저장 중..." : "사업 추가"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────── 연결된 산출내역 ─────────────────────────── */
+
+function ConnectedQuotations({ project, quotations }: { project: BusinessProjectV2; quotations: Quotation[] }) {
+  const linked = quotations.filter((q) => q.businessProjectId === project.id);
+  return (
+    <div style={{ borderTop: "1px solid var(--color-divider)", paddingTop: "var(--space-5)", marginBottom: "var(--space-6)" }}>
+      <h4 style={{ margin: "0 0 4px" }}>연결된 산출내역</h4>
+      <p className="text-muted" style={{ margin: "0 0 var(--space-3)", fontSize: 12 }}>
+        산출내역 작성 화면의 &ldquo;연결 사업&rdquo;에서 이 프로젝트를 선택하면 여기 표시됩니다.
+      </p>
+      {linked.length === 0 ? (
+        <p style={{ fontSize: 13 }}>연결된 산출내역이 없습니다.</p>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {linked.map((q) => (
+            <div
+              key={q.id}
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 8,
+                border: "1px solid var(--color-divider)",
+                padding: "var(--space-2) var(--space-3)",
+                fontSize: 13,
+              }}
+            >
+              <span style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+                <span className="tag tag-outline">{q.quoteNumber}</span>
+                <span>{q.customerName}</span>
+              </span>
+              <span style={{ display: "flex", alignItems: "center", gap: 12, flex: "none" }}>
+                <span style={{ fontFamily: "var(--font-heading)", fontWeight: 600 }}>{formatCurrency(q.totalAmount)}원</span>
+                <Link href={`/quote/${q.id}`} target="_blank" className="btn btn-secondary" style={{ padding: "4px 10px", fontSize: 12 }}>
+                  인쇄
+                </Link>
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ─────────────────────────── 히스토리 ─────────────────────────── */
+
+function HistoryRow({ entry }: { entry: BusinessProjectV2HistoryEntry }) {
+  const [expanded, setExpanded] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const action = updateBusinessProjectV2HistoryEntry.bind(null, entry.id);
+  const [state, formAction, pending] = useActionState(action, undefined);
+  const firstLine = entry.content.split("\n")[0];
+  const hasMore = entry.content.includes("\n");
+  const wasEdited = entry.updatedAt !== entry.createdAt;
+
+  if (editing) {
+    return (
+      <form
+        action={async (formData) => {
+          await formAction(formData);
+          setEditing(false);
+        }}
+        style={{ display: "flex", flexDirection: "column", gap: 8, border: "1px solid var(--color-divider)", padding: "var(--space-3)" }}
+      >
+        <textarea className="input" name="content" required defaultValue={entry.content} rows={4} />
+        {state?.error && <p style={{ color: "var(--color-accent-900)", fontSize: 13 }}>{state.error}</p>}
+        <div style={{ display: "flex", gap: 8 }}>
+          <button type="submit" className="btn btn-primary" disabled={pending}>
+            {pending ? "저장 중..." : "저장"}
+          </button>
+          <button type="button" className="btn btn-secondary" onClick={() => setEditing(false)}>
+            취소
+          </button>
+        </div>
+      </form>
+    );
+  }
+
+  return (
+    <div style={{ borderBottom: "1px solid var(--color-divider)", padding: "var(--space-2) 0", fontSize: 13 }}>
+      <button
+        type="button"
+        onClick={() => setExpanded((v) => !v)}
+        style={{
+          display: "flex",
+          width: "100%",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 12,
+          background: "none",
+          border: 0,
+          padding: 0,
+          textAlign: "left",
+          cursor: "pointer",
+          font: "inherit",
+          color: "inherit",
+        }}
+      >
+        <span style={{ minWidth: 0, flex: 1, whiteSpace: expanded ? "pre-wrap" : "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+          {expanded ? entry.content : firstLine}
+          {!expanded && hasMore && <span className="text-muted"> …</span>}
+        </span>
+        <span className="text-muted" style={{ flex: "none", fontSize: 11 }}>
+          {formatDateTime(entry.createdAt)}
+        </span>
+      </button>
+      {expanded && (
+        <div style={{ marginTop: 8, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, fontSize: 11 }} className="text-muted">
+          <span>
+            {entry.authorEmail}
+            {wasEdited && <span style={{ marginLeft: 4 }}>(수정됨)</span>}
+          </span>
+          {entry.isOwn && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setEditing(true);
+              }}
+              className="btn btn-ghost"
+              style={{ fontSize: 11, padding: "2px 6px", minHeight: "auto" }}
+            >
+              수정
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function HistorySection({ project }: { project: BusinessProjectV2 }) {
+  const action = createBusinessProjectV2HistoryEntry.bind(null, project.id);
+  const [state, formAction, pending] = useActionState(action, undefined);
+
+  return (
+    <div style={{ borderTop: "1px solid var(--color-divider)", paddingTop: "var(--space-5)", marginBottom: "var(--space-6)" }}>
+      <h4 style={{ margin: "0 0 4px" }}>히스토리</h4>
+      <p className="text-muted" style={{ margin: "0 0 var(--space-3)", fontSize: 12 }}>
+        진행 상황·변경 사항을 시간순으로 남깁니다. 등록한 기록은 삭제할 수 없지만, 본인이 남긴 기록은 수정할 수 있습니다.
+      </p>
+      {project.history.length === 0 ? (
+        <p style={{ fontSize: 13, marginBottom: "var(--space-3)" }}>아직 등록된 히스토리가 없습니다.</p>
+      ) : (
+        <div style={{ marginBottom: "var(--space-3)" }}>
+          {project.history.map((h) => (
+            <HistoryRow key={h.id} entry={h} />
+          ))}
+        </div>
+      )}
+      <form action={formAction} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <textarea className="input" name="content" required rows={3} placeholder="예: 발주처와 통화, 견적 재작성 요청" />
+        {state?.error && <p style={{ color: "var(--color-accent-900)", fontSize: 13 }}>{state.error}</p>}
+        <button type="submit" className="btn btn-primary" style={{ alignSelf: "flex-start" }} disabled={pending}>
+          {pending ? "등록 중..." : "히스토리 등록"}
+        </button>
+      </form>
+    </div>
+  );
+}
+
+/* ─────────────────────────── 댓글 ─────────────────────────── */
+
+function CommentsSection({ project }: { project: BusinessProjectV2 }) {
+  const action = createBusinessProjectV2Comment.bind(null, project.id);
+  const [state, formAction, pending] = useActionState(action, undefined);
+  const [, startTransition] = useTransition();
+
+  function handleDelete(commentId: string) {
+    if (!window.confirm("이 댓글을 삭제할까요?")) return;
+    startTransition(() => {
+      void deleteBusinessProjectV2Comment(commentId);
+    });
+  }
+
+  return (
+    <div style={{ borderTop: "1px solid var(--color-divider)", paddingTop: "var(--space-5)" }}>
+      <h4 style={{ margin: "0 0 var(--space-3)" }}>댓글 {project.comments.length}개</h4>
+      {project.comments.length === 0 ? (
+        <p style={{ fontSize: 13 }}>아직 댓글이 없습니다. 의견을 남겨보세요.</p>
+      ) : (
+        project.comments.map((c) => (
+          <div key={c.id} style={{ borderBottom: "1px solid var(--color-divider)", padding: "var(--space-3) 0" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 600, marginBottom: 4 }}>
+              <span>{c.authorEmail}</span>
+              <span className="text-muted" style={{ fontWeight: 400, fontSize: 11, display: "flex", alignItems: "center", gap: 8 }}>
+                {formatDateTime(c.createdAt)}
+                {c.isOwn && (
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(c.id)}
+                    style={{ background: "none", border: 0, padding: 0, color: "var(--color-accent-900)", cursor: "pointer", font: "inherit", fontSize: 11 }}
+                  >
+                    삭제
+                  </button>
+                )}
+              </span>
+            </div>
+            <div style={{ fontSize: 13, whiteSpace: "pre-wrap" }}>{c.content}</div>
+          </div>
+        ))
+      )}
+      <form action={formAction} style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: "var(--space-3)" }}>
+        <textarea className="input" name="content" required rows={3} placeholder="의견을 남겨주세요" />
+        {state?.error && <p style={{ color: "var(--color-accent-900)", fontSize: 13 }}>{state.error}</p>}
+        <button type="submit" className="btn btn-primary" style={{ alignSelf: "flex-start" }} disabled={pending}>
+          {pending ? "등록 중..." : "댓글 등록"}
+        </button>
+      </form>
+    </div>
+  );
+}
+
+/* ─────────────────────────── 상세/수정 화면 ─────────────────────────── */
+
+function ProjectDetail({
+  project,
+  members,
+  quotations,
+  onClose,
+}: {
+  project: BusinessProjectV2;
+  members: string[];
+  quotations: Quotation[];
+  onClose: () => void;
+}) {
+  const [state, formAction, pending] = useActionState(updateBusinessProjectV2, undefined);
+  const wasPendingRef = useRef(false);
+  const [, startTransition] = useTransition();
+
+  useEffect(() => {
+    if (wasPendingRef.current && !pending && !state?.error) onClose();
+    wasPendingRef.current = pending;
+  }, [pending, state, onClose]);
+
+  function handleDelete() {
+    if (!window.confirm("이 사업 항목을 삭제할까요?")) return;
+    startTransition(() => {
+      void deleteBusinessProjectV2(project.id);
+    });
+    onClose();
+  }
+
+  return (
+    <div>
+      <button type="button" className="btn btn-ghost" onClick={onClose} style={{ marginBottom: "var(--space-4)", paddingInline: 0 }}>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <path d="M19 12H5M12 19l-7-7 7-7" />
+        </svg>
+        목록으로
+      </button>
+
+      <form action={formAction} style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+        <input type="hidden" name="id" value={project.id} />
+        <div className="field">
+          <label>사업명 *</label>
+          <input className="input" name="title" defaultValue={project.title} required />
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-3)" }}>
+          <div className="field">
+            <label>단계</label>
+            <select className="input" name="stage" defaultValue={project.stage ?? ""}>
+              <option value="">미분류</option>
+              {STAGES.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="field">
+            <label>진행 상태</label>
+            <select className="input" name="status" defaultValue={project.status}>
+              {STATUSES.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="field">
+            <label>발주기관</label>
+            <input className="input" name="orgName" defaultValue={project.orgName ?? ""} />
+          </div>
+          <div className="field">
+            <label>참여 형태</label>
+            <input className="input" name="participationType" defaultValue={project.participationType ?? ""} />
+          </div>
+          <div className="field">
+            <label>사업 유형</label>
+            <input className="input" name="workType" defaultValue={project.workType ?? ""} />
+          </div>
+          <div className="field">
+            <label>결과</label>
+            <input className="input" name="result" defaultValue={project.result ?? ""} />
+          </div>
+          <div className="field">
+            <label>금액(원)</label>
+            <input className="input" type="number" name="amount" defaultValue={project.amount ?? ""} />
+          </div>
+          <div className="field">
+            <label>진행률(%)</label>
+            <input className="input" type="number" name="progressRate" defaultValue={project.progressRate ?? ""} />
+          </div>
+          <div className="field">
+            <label>제출일</label>
+            <input className="input" type="date" name="submissionDate" defaultValue={toDateInputValue(project.submissionDate)} />
+          </div>
+          <div className="field">
+            <label>제출 방법</label>
+            <input className="input" name="submissionMethod" defaultValue={project.submissionMethod ?? ""} />
+          </div>
+          <div className="field">
+            <label>발표일</label>
+            <input className="input" type="date" name="presentationDate" defaultValue={toDateInputValue(project.presentationDate)} />
+          </div>
+          <div className="field">
+            <label>공사 시작일</label>
+            <input className="input" type="date" name="constructionStart" defaultValue={toDateInputValue(project.constructionStart)} />
+          </div>
+          <div className="field">
+            <label>공사 종료일</label>
+            <input className="input" type="date" name="constructionEnd" defaultValue={toDateInputValue(project.constructionEnd)} />
+          </div>
+        </div>
+        <div className="field">
+          <label>공사 내용</label>
+          <input className="input" name="constructionContent" defaultValue={project.constructionContent ?? ""} />
+        </div>
+        <ManagerChips name="assignees" members={members} defaultValue={project.assignees} />
+        <div className="field">
+          <label>참고 사항</label>
+          <textarea className="input" name="notes" defaultValue={project.notes ?? ""} rows={3} />
+        </div>
+
+        {state?.error && <p style={{ color: "var(--color-accent-900)", fontSize: 13 }}>{state.error}</p>}
+        <div style={{ display: "flex", gap: "var(--space-2)", marginBottom: "var(--space-4)" }}>
+          <button type="submit" className="btn btn-primary" disabled={pending}>
+            {pending ? "저장 중..." : "수정 저장"}
+          </button>
+          <button type="button" className="btn btn-secondary" onClick={onClose}>
+            취소
+          </button>
+        </div>
+      </form>
+
+      <button
+        type="button"
+        onClick={handleDelete}
+        className="btn btn-secondary btn-danger"
+        style={{ marginBottom: "var(--space-8)" }}
+      >
+        이 사업 삭제
+      </button>
+
+      <ConnectedQuotations project={project} quotations={quotations} />
+      <HistorySection project={project} />
+      <CommentsSection project={project} />
+    </div>
+  );
+}
+
+/* ─────────────────────────── 칸반 카드 ─────────────────────────── */
+
+function KanbanCard({
+  project,
+  onOpen,
+  onDragStart,
+  onDragEnd,
+}: {
+  project: BusinessProjectV2;
+  onOpen: () => void;
+  onDragStart: (e: DragEvent<HTMLDivElement>) => void;
+  onDragEnd: () => void;
+}) {
+  const [, startTransition] = useTransition();
+
+  function handleStageChange(stage: string) {
+    startTransition(() => {
+      void moveBusinessProjectV2Stage(project.id, stage || null);
+    });
+  }
+
+  return (
+    <div
+      draggable
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+      className="kanban-card"
+      style={{ position: "relative", padding: "var(--space-3) 0", borderBottom: "1px solid var(--color-divider)" }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, fontWeight: 500, marginBottom: 6 }}>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" strokeWidth="1.5" style={{ flex: "none" }}>
+          <path d="M4 7h16v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z" />
+          <path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+        </svg>
+        <span onClick={onOpen} style={{ cursor: "pointer" }} className="detail-link">
+          {project.title}
+        </span>
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
+        <StatusTag status={project.status} />
+        {project.orgName && (
+          <span className="text-muted" style={{ fontSize: 11 }}>
+            {project.orgName}
+          </span>
+        )}
+      </div>
+      <select
+        className="input"
+        value={project.stage ?? ""}
+        onChange={(e) => handleStageChange(e.target.value)}
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          fontSize: 11,
+          minHeight: 26,
+          padding: "2px 6px",
+          marginTop: "var(--space-2)",
+          background: "transparent",
+          borderColor: "transparent",
+          color: "var(--color-accent-700)",
+        }}
+      >
+        <option value="">미분류</option>
+        {STAGES.map((s) => (
+          <option key={s} value={s}>
+            {s}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+/* ─────────────────────────── 메인 보드 ─────────────────────────── */
+
+export function IndustryBusinessBoard({
+  projects,
+  members,
+  quotations,
+}: {
+  projects: BusinessProjectV2[];
+  members: string[];
+  quotations: Quotation[];
+}) {
+  const [showArchived, setShowArchived] = useState(false);
+  const [view, setView] = useState<"kanban" | "list">("kanban");
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [dragOverStage, setDragOverStage] = useState<string | null>(null);
+  const draggingIdRef = useRef<string | null>(null);
+  const [, startTransition] = useTransition();
+
+  const editingProject = editingId ? (projects.find((p) => p.id === editingId) ?? null) : null;
+
+  const visible = useMemo(
+    () => (showArchived ? projects : projects.filter((p) => !TERMINAL_STATUSES.has(p.status))),
+    [projects, showArchived]
+  );
+
+  const counts = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const s of STATUSES) m.set(s, 0);
+    for (const p of projects) m.set(p.status, (m.get(p.status) ?? 0) + 1);
+    return m;
+  }, [projects]);
+
+  const columns = useMemo(() => {
+    const codeOf = (stage: string) => stage.slice(0, 1);
+    const cols = STAGES.map((name) => ({
+      code: codeOf(name),
+      name,
+      items: visible.filter((p) => p.stage === name).sort((a, b) => stageIndex(a.stage ?? "") - stageIndex(b.stage ?? "")),
+    }));
+    const unclassified = visible.filter((p) => !p.stage);
+    if (unclassified.length > 0) cols.push({ code: "-", name: "미분류", items: unclassified });
+    return cols;
+  }, [visible]);
+
+  function handleDragStart(e: DragEvent<HTMLDivElement>, id: string) {
+    draggingIdRef.current = id;
+    e.dataTransfer.effectAllowed = "move";
+  }
+
+  // 드롭 없이 드래그가 취소돼도(예: Esc, 보드 바깥에 놓음) 다음 드래그에 이전
+  // id가 남아있지 않도록 항상 정리한다.
+  function handleDragEnd() {
+    draggingIdRef.current = null;
+    setDragOverStage(null);
+  }
+
+  function handleDrop(e: DragEvent<HTMLDivElement>, stage: string) {
+    e.preventDefault();
+    setDragOverStage(null);
+    const id = draggingIdRef.current;
+    draggingIdRef.current = null;
+    if (!id) return;
+    startTransition(() => {
+      void moveBusinessProjectV2Stage(id, stage === "미분류" ? null : stage);
+    });
+  }
+
+  if (editingProject) {
+    return (
+      <div className="industry-theme" style={{ padding: "var(--space-8)", maxWidth: 1400, margin: "0 auto" }}>
+        <ProjectDetail project={editingProject} members={members} quotations={quotations} onClose={() => setEditingId(null)} />
+      </div>
+    );
+  }
+
+  return (
+    <div className="industry-theme" style={{ padding: "var(--space-8)", maxWidth: 1400, margin: "0 auto" }}>
+      <h1 style={{ fontSize: 22, margin: "0 0 4px", fontWeight: 600 }}>SI Business 2</h1>
+      <p className="text-muted" style={{ margin: "0 0 var(--space-6)", fontSize: 13 }}>
+        SI Business와 같은 사업 목록을 새 디자인으로 봅니다 — 여기서 추가·수정한 내용은 기존 SI Business 화면에도 그대로 반영됩니다.
+      </p>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(6, 1fr)",
+          gap: "var(--space-3)",
+          marginBottom: "var(--space-6)",
+        }}
+      >
+        <div className="blueprint" style={{ padding: "var(--space-3) var(--space-4)", borderColor: "var(--color-accent)" }}>
+          <CornerMarks />
+          <h6 style={{ margin: "0 0 var(--space-2)", color: "var(--color-accent-700)" }}>전체</h6>
+          <div style={{ fontFamily: "var(--font-heading)", fontSize: 30, fontWeight: 600, color: "var(--color-accent-800)" }}>
+            {projects.length}
+          </div>
+        </div>
+        {STATUSES.map((s) => (
+          <div key={s} className="blueprint" style={{ padding: "var(--space-3) var(--space-4)" }}>
+            <CornerMarks />
+            <h6 style={{ margin: "0 0 var(--space-2)" }}>{s}</h6>
+            <div style={{ fontFamily: "var(--font-heading)", fontSize: 30, fontWeight: 600 }}>{counts.get(s) ?? 0}</div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "var(--space-4)", flexWrap: "wrap", gap: "var(--space-3)" }}>
+        <label style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 14, cursor: "pointer" }}>
+          <input
+            type="checkbox"
+            checked={showArchived}
+            onChange={(e) => setShowArchived(e.target.checked)}
+            style={{ width: 16, height: 16, accentColor: "var(--color-accent)" }}
+          />
+          완료·보류 포함
+        </label>
+        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
+          <div className="seg">
+            <button type="button" className={`seg-opt${view === "kanban" ? " active" : ""}`} onClick={() => setView("kanban")} style={{ border: 0 }}>
+              목록
+            </button>
+            <button type="button" className={`seg-opt${view === "list" ? " active" : ""}`} onClick={() => setView("list")} style={{ border: 0 }}>
+              리스트
+            </button>
+          </div>
+          <button type="button" className="btn btn-primary" onClick={() => setShowAddDialog(true)}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            새 사업 추가
+          </button>
+        </div>
+      </div>
+
+      {view === "kanban" ? (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: `repeat(${columns.length}, 1fr)`,
+            columnGap: "var(--space-8)",
+            rowGap: "var(--space-5)",
+            alignItems: "start",
+          }}
+        >
+          {columns.map((col) => (
+            <div
+              key={col.name}
+              className={`col-drop${dragOverStage === col.name ? " drag-over" : ""}`}
+              onDragOver={(e) => {
+                e.preventDefault();
+                setDragOverStage(col.name);
+              }}
+              onDragLeave={() => setDragOverStage((cur) => (cur === col.name ? null : cur))}
+              onDrop={(e) => handleDrop(e, col.name)}
+              style={{ display: "flex", flexDirection: "column", minHeight: 80 }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  paddingBottom: "var(--space-3)",
+                  borderBottom: "1px solid var(--color-divider)",
+                  marginBottom: "var(--space-3)",
+                }}
+              >
+                <span
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: 26,
+                    height: 26,
+                    flex: "none",
+                    background: "var(--color-accent-900)",
+                    color: "var(--color-bg)",
+                    fontFamily: "var(--font-heading)",
+                    fontWeight: 600,
+                    fontSize: 13,
+                  }}
+                >
+                  {col.code}
+                </span>
+                <span style={{ fontFamily: "var(--font-heading)", fontWeight: 600, fontSize: 15, flex: 1 }}>{col.name}</span>
+                <span style={{ fontFamily: "var(--font-heading)", fontWeight: 600, fontSize: 15, color: "var(--color-accent-700)" }}>
+                  {col.items.length}
+                </span>
+              </div>
+              {col.items.map((p) => (
+                <KanbanCard
+                  key={p.id}
+                  project={p}
+                  onOpen={() => setEditingId(p.id)}
+                  onDragStart={(e) => handleDragStart(e, p.id)}
+                  onDragEnd={handleDragEnd}
+                />
+              ))}
+              {col.items.length === 0 && (
+                <div className="text-muted" style={{ fontSize: 12, padding: "var(--space-3) 0" }}>
+                  없음
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div style={{ overflowX: "auto" }}>
+          <table className="table">
+            <thead>
+              <tr>
+                <th>사업명</th>
+                <th>발주기관</th>
+                <th>상태</th>
+                <th>단계</th>
+                <th>제출일</th>
+                <th>담당자</th>
+              </tr>
+            </thead>
+            <tbody>
+              {visible.map((p) => (
+                <tr key={p.id} onClick={() => setEditingId(p.id)} style={{ cursor: "pointer" }}>
+                  <td style={{ fontFamily: "var(--font-heading)", fontWeight: 600 }}>
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }} className="detail-link">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" strokeWidth="1.5" style={{ flex: "none" }}>
+                        <path d="M4 7h16v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z" />
+                        <path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+                      </svg>
+                      {p.title}
+                    </span>
+                  </td>
+                  <td>{p.orgName ?? "-"}</td>
+                  <td>
+                    <StatusTag status={p.status} />
+                  </td>
+                  <td>{p.stage ?? "미분류"}</td>
+                  <td>{formatDate(p.submissionDate) ?? "-"}</td>
+                  <td>{p.assignees.join(", ") || "-"}</td>
+                </tr>
+              ))}
+              {visible.length === 0 && (
+                <tr>
+                  <td colSpan={6} style={{ textAlign: "center", padding: "var(--space-6)" }} className="text-muted">
+                    조건에 맞는 사업이 없습니다.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {showAddDialog && <AddProjectDialog members={members} onClose={() => setShowAddDialog(false)} />}
+    </div>
+  );
+}

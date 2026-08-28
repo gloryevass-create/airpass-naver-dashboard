@@ -1,0 +1,247 @@
+/* SI Business 2 전용 디자인 시스템 — 사용자가 Claude Design으로 만든 "Industry"
+ * 테마(철강청사진 와이어프레임: 연한 기술 배경 위 스틸블루 단색 악센트, 모듈형
+ * 그리드, 사각 모서리 + "+" 등록마크가 있는 카드/버튼)를 그대로 이식했다
+ * (2026-08-28). 원본은 이 앱 전체에 전역으로 적용되는 스타일시트지만, 여기서는
+ * 나머지 화면의 Tailwind 테마와 충돌하지 않도록 모든 규칙을 .industry-theme
+ * 아래로 스코프했다 — 이 페이지 바깥에는 전혀 영향을 주지 않는다.
+ */
+@import url("https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;700&family=Barlow+Condensed:wght@400;600&display=swap");
+
+.industry-theme {
+  --color-bg: #f2f2f3;
+  --color-surface: #e9e9ea;
+  --color-text: #1d1f20;
+  --color-accent: #5980a6;
+  --color-accent-2: #728fab;
+  --color-divider: color-mix(in srgb, #1d1f20 16%, transparent);
+
+  --color-neutral-100: #f5f5f8;
+  --color-neutral-200: #e7e7ea;
+  --color-neutral-300: #d4d4d7;
+  --color-neutral-400: #b7b7ba;
+  --color-neutral-500: #98989b;
+  --color-neutral-600: #7a7a7d;
+  --color-neutral-700: #5d5d60;
+  --color-neutral-800: #424244;
+  --color-neutral-900: #2b2b2d;
+
+  --color-accent-100: #eef6ff;
+  --color-accent-200: #d6ebff;
+  --color-accent-300: #b5d9fd;
+  --color-accent-400: #94bce3;
+  --color-accent-500: #749dc4;
+  --color-accent-600: #597ea3;
+  --color-accent-700: #416180;
+  --color-accent-800: #2c455d;
+  --color-accent-900: #1d2d3d;
+
+  --font-heading: "Barlow Condensed", system-ui, sans-serif;
+  --font-heading-weight: 600;
+  --font-body: "Barlow", system-ui, sans-serif;
+
+  --space-1: 3.4px;
+  --space-2: 6.8px;
+  --space-3: 10.2px;
+  --space-4: 13.6px;
+  --space-6: 20.4px;
+  --space-8: 27.2px;
+
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 7px;
+
+  --shadow-sm: 0 1px 2px color-mix(in srgb, #2b2b2d 14%, transparent);
+  --shadow-md: 0 3px 10px color-mix(in srgb, #2b2b2d 16%, transparent);
+  --shadow-lg: 0 12px 32px color-mix(in srgb, #2b2b2d 22%, transparent);
+
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+  font-weight: 400;
+  min-height: 100vh;
+}
+
+.industry-theme, .industry-theme *, .industry-theme *::before, .industry-theme *::after {
+  box-sizing: border-box;
+}
+
+.industry-theme h1, .industry-theme h2, .industry-theme h3,
+.industry-theme h4, .industry-theme h5, .industry-theme h6 {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  margin: 0 0 var(--space-2);
+}
+.industry-theme h1 { font-size: 30px; }
+.industry-theme h2 { font-size: 24px; }
+.industry-theme h3 { font-size: 20px; }
+.industry-theme h4 { font-size: 17px; }
+.industry-theme h5 { font-size: 15px; }
+.industry-theme h6 { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; }
+.industry-theme p { margin: 0 0 var(--space-3); }
+.industry-theme a { color: var(--color-accent); text-underline-offset: 3px; }
+.industry-theme img { display: block; max-width: 100%; }
+.industry-theme .text-muted { color: color-mix(in srgb, var(--color-text) 55%, transparent); }
+.industry-theme :focus { outline: none; }
+.industry-theme :focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.industry-theme ::selection { background: color-mix(in srgb, var(--color-accent) 30%, transparent); }
+
+.industry-theme .hr {
+  height: 1px; border: 0; margin: var(--space-4) 0;
+  background: var(--color-divider);
+}
+
+/* — blueprint frame: cards, figures and the primary button are wireframe
+     objects — square, hairline-bordered, with "+" registration marks — */
+.industry-theme .blueprint {
+  position: relative;
+  border: 1px solid var(--color-divider);
+  border-radius: 0;
+}
+.industry-theme .blueprint > .corner {
+  position: absolute; width: 11px; height: 11px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+.industry-theme .blueprint > .corner::before,
+.industry-theme .blueprint > .corner::after {
+  content: ""; position: absolute; background: currentColor;
+}
+.industry-theme .blueprint > .corner::before { left: 5px; top: 0; width: 1px; height: 100%; }
+.industry-theme .blueprint > .corner::after  { top: 5px; left: 0; width: 100%; height: 1px; }
+.industry-theme .blueprint > .corner.tl { top: -6px; left: -6px; }
+.industry-theme .blueprint > .corner.tr { top: -6px; right: -6px; }
+.industry-theme .blueprint > .corner.bl { bottom: -6px; left: -6px; }
+.industry-theme .blueprint > .corner.br { bottom: -6px; right: -6px; }
+
+/* — buttons — */
+.industry-theme .btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  cursor: pointer; text-decoration: none;
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 14px; line-height: 1.2; color: var(--color-text);
+  background: transparent; border: 1px solid var(--color-divider);
+  padding: var(--space-2) calc(var(--space-3) * 1.2);
+  border-radius: 0;
+}
+.industry-theme .btn svg { display: block; }
+.industry-theme .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.industry-theme .btn-primary { background: var(--color-accent); color: var(--color-bg); border-color: var(--color-accent); }
+.industry-theme .btn-primary:hover { background: var(--color-accent-600); }
+.industry-theme .btn-primary:active { background: var(--color-accent-700); }
+.industry-theme .btn-secondary { border-color: var(--color-divider); }
+.industry-theme .btn-secondary:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
+.industry-theme .btn-secondary:active { background: color-mix(in srgb, var(--color-text) 14%, transparent); }
+.industry-theme .btn-ghost { color: var(--color-accent); border-color: transparent; padding-inline: var(--space-1); }
+.industry-theme .btn-ghost:hover { background: color-mix(in srgb, var(--color-accent) 10%, transparent); }
+.industry-theme .btn-ghost:active { background: color-mix(in srgb, var(--color-accent) 18%, transparent); }
+.industry-theme .btn-danger { color: var(--color-accent-900); }
+.industry-theme .btn-danger:hover { background: color-mix(in srgb, var(--color-accent-900) 8%, transparent); }
+
+/* — forms — */
+.industry-theme .field > label {
+  display: block; font-size: 12px; margin-bottom: 5px;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+}
+.industry-theme .input {
+  width: 100%; min-height: 36px; padding: 6px 10px; font: inherit;
+  font-size: 14px; color: var(--color-text); caret-color: var(--color-accent);
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider); border-radius: 0;
+}
+.industry-theme .input:hover { border-color: color-mix(in srgb, var(--color-text) 45%, transparent); }
+.industry-theme .input:focus-visible { border-color: var(--color-accent); outline-offset: 0; }
+.industry-theme textarea.input { min-height: 90px; resize: vertical; }
+.industry-theme select.input { appearance: auto; }
+.industry-theme .seg {
+  display: inline-flex; overflow: hidden;
+  border: 1px solid var(--color-divider); border-radius: 0;
+}
+.industry-theme .seg-opt {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 12px; font-size: 13px; cursor: pointer;
+}
+.industry-theme .seg-opt + .seg-opt { border-left: 1px solid var(--color-divider); }
+.industry-theme .seg-opt.active { background: var(--color-accent); color: var(--color-bg); }
+.industry-theme .seg-opt:not(.active):hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
+
+/* — cards — */
+.industry-theme .card {
+  display: flex; flex-direction: column; gap: var(--space-2);
+  padding: var(--space-3); border-radius: 0;
+  background: transparent; border: 1px solid var(--color-divider);
+}
+.industry-theme .card-kicker { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent); }
+.industry-theme .card-title {
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 17px; line-height: 1.2;
+}
+.industry-theme .card-body { margin: 0; font-size: 13px; opacity: 0.8; flex: 1; }
+.industry-theme .card-meta {
+  display: flex; align-items: center; gap: 6px; font-size: 11px;
+  color: color-mix(in srgb, var(--color-text) 50%, transparent);
+}
+.industry-theme .elev-sm { box-shadow: var(--shadow-sm); }
+.industry-theme .elev-md { box-shadow: var(--shadow-md); }
+.industry-theme .elev-lg { box-shadow: var(--shadow-lg); }
+
+/* — tags — */
+.industry-theme .tag {
+  display: inline-flex; align-items: center; font-size: 11px;
+  letter-spacing: 0.02em; padding: 3px 10px;
+  border-radius: calc(var(--radius-md) * 0.75);
+  white-space: nowrap;
+}
+.industry-theme .tag-accent { background: var(--color-accent-100); color: var(--color-accent-800); }
+.industry-theme .tag-neutral { background: var(--color-neutral-100); color: var(--color-neutral-800); }
+.industry-theme .tag-outline { border: 1px solid var(--color-accent); color: var(--color-accent); }
+.industry-theme .tag-chip {
+  cursor: pointer; border-radius: 100px; padding: 5px 14px; font-size: 12px;
+  border: 1px solid var(--color-divider); background: transparent; color: var(--color-text);
+}
+.industry-theme .tag-chip.active { border-color: var(--color-accent); background: var(--color-accent); color: var(--color-bg); }
+
+/* — tables — */
+.industry-theme .table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.industry-theme .table th {
+  text-align: left; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+  padding: var(--space-2); border-bottom: 1px solid var(--color-divider);
+}
+.industry-theme .table td {
+  padding: var(--space-2);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
+}
+.industry-theme .table tbody tr:hover { background: color-mix(in srgb, var(--color-text) 4%, transparent); }
+
+/* — dialog — */
+.industry-theme .dialog-backdrop {
+  position: fixed; inset: 0; display: grid; place-items: center;
+  padding: var(--space-4); z-index: 50;
+  background: color-mix(in srgb, var(--color-neutral-900) 50%, transparent);
+}
+.industry-theme .dialog {
+  display: flex; flex-direction: column; gap: var(--space-3);
+  padding: var(--space-4); border-radius: 0;
+  background: var(--color-surface); border: 1px solid var(--color-divider);
+  box-shadow: var(--shadow-lg);
+}
+.industry-theme .dialog-title {
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 20px;
+}
+.industry-theme .dialog-actions { display: flex; justify-content: flex-end; gap: var(--space-2); margin-top: var(--space-2); }
+
+/* — kanban drag & drop — */
+.industry-theme .col-drop { transition: background 0.15s; }
+.industry-theme .col-drop.drag-over { background: var(--color-accent-100); }
+.industry-theme .kanban-card { cursor: grab; }
+.industry-theme .kanban-card:active { cursor: grabbing; }
+
+/* — clickable titles that open the detail view — */
+.industry-theme .detail-link:hover {
+  text-decoration: underline;
+  color: var(--color-accent-800);
+}
