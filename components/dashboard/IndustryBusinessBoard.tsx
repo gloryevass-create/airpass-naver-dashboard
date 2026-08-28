@@ -627,6 +627,17 @@ function ProjectDetail({
         목록으로
       </button>
 
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "var(--space-4)",
+          background: "#ffffff",
+          border: "1px solid var(--color-divider)",
+          borderRadius: 8,
+          padding: "var(--space-4)",
+        }}
+      >
       <form action={formAction} style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
         <input type="hidden" name="id" value={project.id} />
         <div className="field">
@@ -711,7 +722,7 @@ function ProjectDetail({
         </div>
 
         {state?.error && <p style={{ color: "var(--color-accent-900)", fontSize: 13 }}>{state.error}</p>}
-        <div style={{ display: "flex", gap: "var(--space-2)", marginBottom: "var(--space-4)" }}>
+        <div style={{ display: "flex", gap: "var(--space-2)" }}>
           <button type="submit" className="btn btn-primary" disabled={pending}>
             {pending ? "저장 중..." : "수정 저장"}
           </button>
@@ -721,18 +732,14 @@ function ProjectDetail({
         </div>
       </form>
 
-      <button
-        type="button"
-        onClick={handleDelete}
-        className="btn btn-secondary btn-danger"
-        style={{ marginBottom: "var(--space-8)" }}
-      >
+      <button type="button" onClick={handleDelete} className="btn btn-secondary btn-danger" style={{ alignSelf: "flex-start" }}>
         이 사업 삭제
       </button>
 
       <ConnectedQuotations project={project} quotations={quotations} />
       <HistorySection project={project} />
       <CommentsSection project={project} />
+      </div>
     </div>
   );
 }
