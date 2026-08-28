@@ -1,0 +1,147 @@
+/* 대시보드 사이드바 전용 — 사용자가 Claude Design "Industry" 테마로 만든
+ * "관리자 페이지 메뉴 디자인"을 이식했다(2026-08-28). 이 앱의 나머지 화면은
+ * Tailwind 기본 테마를 그대로 쓰기 때문에, Industry의 색상 값은 CSS 변수가
+ * 아니라 실제 값으로 직접 박아 넣고 .ds-sidebar 아래로만 스코프했다 — 산출내역
+ * 관리 페이지처럼 이 파일 하나로 감싸는 형태가 아니라 앱 전체에 항상 떠 있는
+ * 사이드바라, 전역 변수 오염 없이 이 컴포넌트 안에서만 자기완결적으로 동작해야
+ * 하기 때문이다.
+ */
+.ds-sidebar {
+  --sb-bg: #f2f2f3;
+  --sb-border: color-mix(in srgb, #1d1f20 16%, transparent);
+  --sb-text: #1d1f20;
+  --sb-text-mute: #7a7a7d;
+  --sb-neutral-100: #f5f5f8;
+  --sb-neutral-200: #e7e7ea;
+  --sb-neutral-300: #d4d4d7;
+  --sb-accent-100: #eef6ff;
+  --sb-accent-300: #b5d9fd;
+  --sb-accent-700: #416180;
+  font-family: "Barlow", -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--sb-bg);
+}
+
+.ds-sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--sb-accent-100);
+  border: 1px solid var(--sb-accent-300);
+  border-radius: 4px;
+  padding: 10px 12px;
+  width: 100%;
+}
+.ds-sidebar-brand.collapsed {
+  justify-content: center;
+  padding: 10px;
+}
+
+.ds-sidebar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--sb-text);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.12s;
+}
+.ds-sidebar-row.collapsed {
+  justify-content: center;
+}
+.ds-sidebar-row:hover {
+  background: var(--sb-neutral-200);
+}
+.ds-sidebar-row.active {
+  background: var(--sb-accent-100);
+  color: var(--sb-accent-700);
+  font-weight: 600;
+}
+.ds-sidebar-row.active:hover {
+  background: var(--sb-accent-100);
+}
+
+.ds-sidebar-subrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px 7px 30px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--sb-text);
+  text-decoration: none;
+  font-size: 13px;
+  transition: background 0.12s;
+}
+.ds-sidebar-subrow:hover {
+  background: var(--sb-neutral-200);
+}
+.ds-sidebar-subrow.active {
+  background: var(--sb-accent-100);
+  color: var(--sb-accent-700);
+  font-weight: 600;
+}
+
+.ds-sidebar-group-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  font: inherit;
+  color: var(--sb-text-mute);
+  transition: background 0.12s;
+}
+.ds-sidebar-group-header.collapsed {
+  justify-content: center;
+}
+.ds-sidebar-group-header:hover {
+  background: var(--sb-neutral-200);
+}
+.ds-sidebar-group-header.has-active {
+  color: var(--sb-text);
+}
+
+.ds-sidebar-divider {
+  height: 1px;
+  background: var(--sb-neutral-300);
+  margin: 12px 12px;
+}
+
+.ds-sidebar-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid var(--sb-neutral-300);
+  padding: 12px;
+}
+
+.ds-sidebar-collapse-btn {
+  align-self: flex-end;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--sb-neutral-300);
+  border-radius: 4px;
+  background: var(--sb-neutral-100);
+  color: var(--sb-text-mute);
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+.ds-sidebar-collapse-btn.collapsed {
+  align-self: center;
+}
+.ds-sidebar-collapse-btn:hover {
+  background: var(--sb-accent-100);
+  border-color: var(--sb-accent-300);
+  color: var(--sb-accent-700);
+}
