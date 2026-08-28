@@ -80,7 +80,9 @@ async function performSend(
     const q = await getQuotation(supabase, quotationId);
     if (!q) return { error: "선택한 산출내역을 찾을 수 없습니다." };
     const baseUrl = await resolveBaseUrl();
-    quotation = { id: q.id, quoteNumber: q.quoteNumber, customerName: q.customerName, printUrl: `${baseUrl}/dashboard/quotations/${q.id}/print` };
+    // 고객은 로그인이 안 돼 있으므로 /dashboard 안쪽 인쇄 페이지가 아니라
+    // 로그인 없이 열리는 공개 페이지(app/quote/[id])로 링크를 보낸다.
+    quotation = { id: q.id, quoteNumber: q.quoteNumber, customerName: q.customerName, printUrl: `${baseUrl}/quote/${q.id}` };
   }
 
   let productLinks: MaterialEmailProductLink[];

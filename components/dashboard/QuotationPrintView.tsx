@@ -23,13 +23,33 @@ function InfoRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-export function QuotationPrintView({ quotation }: { quotation: Quotation }) {
+export function QuotationPrintView({
+  quotation,
+  showDownloadButton = false,
+}: {
+  quotation: Quotation;
+  /** 고객 공유용 공개 페이지(app/quote/[id])에서만 "PDF 다운로드" 버튼을 추가로
+   * 보여준다 — 내부 화면(app/dashboard/quotations/[id]/print)은 기존대로 인쇄
+   * 버튼 하나만 유지한다(사용자 확인, 2026-08-28). 서버측 PDF 생성 없이 둘 다
+   * 브라우저 인쇄 대화상자(window.print())를 열며, 그 대화상자에서 "PDF로 저장"을
+   * 고르면 실제 다운로드가 된다. */
+  showDownloadButton?: boolean;
+}) {
   // 공급가액+부가세를 더하면 조달수수료를 뺀 품목금액(VAT 포함)이 나온다
   // (서버 computeTotals와 동일한 역산 관계).
   const adjustedAmount = quotation.supplyAmount + quotation.taxAmount;
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-4 p-6">
-      <div className="flex justify-end print:hidden">
+      <div className="flex justify-end gap-2 print:hidden">
+        {showDownloadButton && (
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="rounded-lg border border-hairline px-4 py-1.5 text-xs font-bold text-ink hover:bg-[#f7f7f8]"
+          >
+            PDF 다운로드
+          </button>
+        )}
         <button
           type="button"
           onClick={() => window.print()}

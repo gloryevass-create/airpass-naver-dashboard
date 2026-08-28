@@ -117,6 +117,14 @@
 - SI Business(`business_projects_v2`) 프로젝트와 `business_project_id`(0046)로 연결할 수
   있다 — 산출내역 작성 화면에서 프로젝트를 검색해 고르면, 그 프로젝트 상세 화면의
   "연결된 산출내역" 섹션에서도 조회된다.
+- **고객 공유용 공개 인쇄 페이지**: `app/quote/[id]`(`/dashboard` 바깥, `proxy.ts`
+  PUBLIC_PATHS에 `/quote` 등록) — 자료메일발송이 보내는 링크는 로그인 안 된 고객이
+  여는 것이라 사이드바·헤더 없이 문서만 보이고, "인쇄"/"PDF 다운로드"(둘 다
+  `window.print()`) 버튼만 뜬다. RLS를 anon까지 열어주는 대신 이 서버 컴포넌트에서만
+  `createAdminClient()`(service_role)로 id 하나만 조회한다 — 구글드라이브 공유
+  링크와 같은 "UUID를 아는 사람만 접근" 모델(사용자 확인, 2026-08-28). 내부 직원용
+  `/dashboard/quotations/[id]/print`(로그인 필요, 인쇄 버튼 하나만)는 그대로 유지 —
+  견적서 목록·SI Business 프로젝트 상세의 "인쇄" 링크는 계속 이쪽을 가리킨다.
 
 ## 폴더 구조
 

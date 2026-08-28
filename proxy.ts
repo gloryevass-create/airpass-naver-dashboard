@@ -7,6 +7,9 @@ const PUBLIC_PATHS = [
   "/auth/callback",
   "/auth/set-password",
   "/auth/forgot-password",
+  // 산출내역(견적) 고객 공유용 인쇄 페이지 — 자료메일발송으로 받은 링크를 로그인
+  // 없이 열 수 있어야 한다(UUID를 아는 사람만 접근 가능, 사용자 확인 2026-08-28).
+  "/quote",
 ];
 
 function isPublicPath(pathname: string) {
