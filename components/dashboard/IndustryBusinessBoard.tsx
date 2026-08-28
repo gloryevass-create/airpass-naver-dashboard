@@ -97,10 +97,31 @@ function ManagerChips({
   );
 }
 
+// 기본값을 브라우저에 저장해두는 키 — 팀 전체가 아니라 이 브라우저를 쓰는
+// 사람 개인의 취향이라 DB가 아니라 localStorage면 충분하다(사용자 확인,
+// 2026-08-28 — "이 폴트를 저장할 수 있게 하는 기능"으로 명시적으로 요청받음).
+const DEFAULTS_STORAGE_KEY = "si-business-2:defaults";
+const HARD_DEFAULTS = { showArchived: false, view: "kanban" as const };
+
+function loadSavedDefaults(): { showArchived: boolean; view: "kanban" | "list" } | null {
+  try {
+    const raw = window.localStorage.getItem(DEFAULTS_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (typeof parsed.showArchived !== "boolean") return null;
+    if (parsed.view !== "kanban" && parsed.view !== "list") return null;
+    return { showArchived: parsed.showArchived, view: parsed.view };
+  } catch {
+    return null;
+  }
+}
+
 /** 디자인 목업(Claude Design)의 속성 미리보기 바("showArchivedDefault" 토글 +
- * "defaultView" 드롭다운)를 실제 페이지 상단에도 그대로 재현한 것 — 아래쪽
- * "완료·보류 포함"/목록·리스트 버튼과 같은 state를 공유해 항상 서로 일치한다
- * (사용자가 화면 스크린샷으로 이 바를 직접 요청, 2026-08-28). */
+ * "defaultView" 드롭다운 + Reset/Save as defaults 버튼)를 실제 페이지 상단에도
+ * 그대로 재현한 것 — 아래쪽 "완료·보류 포함"/목록·리스트 버튼과 같은 state를
+ * 공유해 항상 서로 일치한다. "Save as defaults"는 지금 값을 이 브라우저에 저장해
+ * 다음에 이 페이지를 열 때도 그대로 적용되게 하고, "Reset"은 저장된 값을 지우고
+ * 원래 기본값(완료·보류 미포함, 칸반)으로 되돌린다(사용자 확인, 2026-08-28). */
 function TopSettingsBar({
   showArchived,
   onShowArchivedChange,
@@ -112,11 +133,26 @@ function TopSettingsBar({
   view: "kanban" | "list";
   onViewChange: (v: "kanban" | "list") => void;
 }) {
+  const [savedNotice, setSavedNotice] = useState(false);
+
+  function handleSave() {
+    window.localStorage.setItem(DEFAULTS_STORAGE_KEY, JSON.stringify({ showArchived, view }));
+    setSavedNotice(true);
+    window.setTimeout(() => setSavedNotice(false), 1500);
+  }
+
+  function handleReset() {
+    window.localStorage.removeItem(DEFAULTS_STORAGE_KEY);
+    onShowArchivedChange(HARD_DEFAULTS.showArchived);
+    onViewChange(HARD_DEFAULTS.view);
+  }
+
   return (
     <div
       style={{
         display: "flex",
         alignItems: "center",
+        justifyContent: "space-between",
         gap: "var(--space-4)",
         margin: "calc(var(--space-8) * -1) calc(var(--space-8) * -1) var(--space-6)",
         padding: "var(--space-3) var(--space-8)",
@@ -125,48 +161,65 @@ function TopSettingsBar({
         fontSize: 13,
       }}
     >
-      <label style={{ display: "inline-flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
-        <span>showArchivedDefault</span>
-        <span
-          role="switch"
-          aria-checked={showArchived}
-          onClick={() => onShowArchivedChange(!showArchived)}
-          style={{
-            position: "relative",
-            width: 36,
-            height: 20,
-            borderRadius: 999,
-            background: showArchived ? "var(--color-accent)" : "var(--color-neutral-400)",
-            transition: "background 0.15s",
-            flex: "none",
-          }}
-        >
+      <div style={{ display: "flex", alignItems: "center", gap: "var(--space-4)" }}>
+        <label style={{ display: "inline-flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+          <span>showArchivedDefault</span>
           <span
+            role="switch"
+            aria-checked={showArchived}
+            onClick={() => onShowArchivedChange(!showArchived)}
             style={{
-              position: "absolute",
-              top: 2,
-              left: showArchived ? 18 : 2,
-              width: 16,
-              height: 16,
-              borderRadius: "50%",
-              background: "#fff",
-              transition: "left 0.15s",
+              position: "relative",
+              width: 36,
+              height: 20,
+              borderRadius: 999,
+              background: showArchived ? "var(--color-accent)" : "var(--color-neutral-400)",
+              transition: "background 0.15s",
+              flex: "none",
             }}
-          />
-        </span>
-      </label>
-      <label style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-        <span>defaultView</span>
-        <select
-          className="input"
-          value={view}
-          onChange={(e) => onViewChange(e.target.value as "kanban" | "list")}
-          style={{ minHeight: 30, padding: "2px 8px", fontSize: 13, width: "auto" }}
+          >
+            <span
+              style={{
+                position: "absolute",
+                top: 2,
+                left: showArchived ? 18 : 2,
+                width: 16,
+                height: 16,
+                borderRadius: "50%",
+                background: "#fff",
+                transition: "left 0.15s",
+              }}
+            />
+          </span>
+        </label>
+        <label style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+          <span>defaultView</span>
+          <select
+            className="input"
+            value={view}
+            onChange={(e) => onViewChange(e.target.value as "kanban" | "list")}
+            style={{ minHeight: 30, padding: "2px 8px", fontSize: 13, width: "auto" }}
+          >
+            <option value="kanban">kanban</option>
+            <option value="list">list</option>
+          </select>
+        </label>
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
+        {savedNotice && (
+          <span style={{ color: "var(--color-accent-700)", fontSize: 12 }}>저장됨</span>
+        )}
+        <button
+          type="button"
+          onClick={handleReset}
+          style={{ background: "none", border: 0, padding: 0, color: "color-mix(in srgb, var(--color-text) 55%, transparent)", cursor: "pointer", font: "inherit", fontSize: 13 }}
         >
-          <option value="kanban">kanban</option>
-          <option value="list">list</option>
-        </select>
-      </label>
+          Reset
+        </button>
+        <button type="button" className="btn btn-secondary" onClick={handleSave} style={{ fontSize: 13, minHeight: 30, padding: "4px 12px" }}>
+          Save as defaults
+        </button>
+      </div>
     </div>
   );
 }
@@ -741,13 +794,26 @@ export function IndustryBusinessBoard({
   members: string[];
   quotations: Quotation[];
 }) {
-  const [showArchived, setShowArchived] = useState(false);
-  const [view, setView] = useState<"kanban" | "list">("kanban");
+  const [showArchived, setShowArchived] = useState(HARD_DEFAULTS.showArchived);
+  const [view, setView] = useState<"kanban" | "list">(HARD_DEFAULTS.view);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [dragOverStage, setDragOverStage] = useState<string | null>(null);
   const draggingIdRef = useRef<string | null>(null);
   const [, startTransition] = useTransition();
+
+  // 저장된 기본값은 브라우저에서만 읽을 수 있어(localStorage) 마운트 후에
+  // 반영한다 — 처음부터 읽어서 초기 state로 쓰면 서버가 렌더링한 HTML(항상
+  // 하드코딩된 기본값)과 클라이언트가 달라져 하이드레이션 경고가 난다.
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    const saved = loadSavedDefaults();
+    if (saved) {
+      setShowArchived(saved.showArchived);
+      setView(saved.view);
+    }
+  }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const editingProject = editingId ? (projects.find((p) => p.id === editingId) ?? null) : null;
 
