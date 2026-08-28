@@ -268,10 +268,15 @@ function AddProjectDialog({ members, onClose }: { members: string[]; onClose: ()
     <div className="dialog-backdrop" onClick={onClose}>
       <div
         className="dialog"
-        style={{ width: "min(640px,100%)", maxHeight: "88vh", overflowY: "auto" }}
+        style={{ width: "min(640px,100%)", maxHeight: "88vh", overflowY: "auto", background: "#ffffff" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="dialog-title">새 사업 추가</div>
+        <div className="dialog-title" style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          새 사업 추가
+        </div>
         <form action={formAction} style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
           <div className="field">
             <label>사업명 *</label>

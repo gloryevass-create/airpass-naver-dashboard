@@ -236,6 +236,10 @@
   font-size: 20px;
 }
 .industry-theme .dialog-actions { display: flex; justify-content: flex-end; gap: var(--space-2); margin-top: var(--space-2); }
+/* 다이얼로그 배경을 흰색으로 바꾸면서, 안의 입력칸도 회색(--color-surface)
+   그대로 두면 배경과 구분이 안 가 보인다 — 다이얼로그 안의 입력칸만 흰색으로
+   맞춘다(사용자 확인, 2026-08-28). */
+.industry-theme .dialog .input { background: #ffffff; }
 
 /* — kanban drag & drop — */
 .industry-theme .col-drop { transition: background 0.15s; }
