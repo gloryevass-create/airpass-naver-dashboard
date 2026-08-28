@@ -872,10 +872,11 @@ export function IndustryBusinessBoard({
     const cols = STAGES.map((name) => ({
       code: codeOf(name),
       name,
+      label: name.slice(1),
       items: visible.filter((p) => p.stage === name).sort((a, b) => stageIndex(a.stage ?? "") - stageIndex(b.stage ?? "")),
     }));
     const unclassified = visible.filter((p) => !p.stage);
-    if (unclassified.length > 0) cols.push({ code: "-", name: "미분류", items: unclassified });
+    if (unclassified.length > 0) cols.push({ code: "-", name: "미분류", label: "미분류", items: unclassified });
     return cols;
   }, [visible]);
 
@@ -1051,7 +1052,7 @@ export function IndustryBusinessBoard({
                 >
                   {col.code}
                 </span>
-                <span style={{ fontFamily: "var(--font-heading)", fontWeight: 600, fontSize: 15, flex: 1 }}>{col.name}</span>
+                <span style={{ fontFamily: "var(--font-heading)", fontWeight: 600, fontSize: 15, flex: 1 }}>{col.label}</span>
                 <span style={{ fontFamily: "var(--font-heading)", fontWeight: 600, fontSize: 15, color: "var(--color-accent-700)" }}>
                   {col.items.length}
                 </span>
