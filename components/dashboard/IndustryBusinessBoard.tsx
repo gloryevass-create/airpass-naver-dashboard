@@ -97,17 +97,6 @@ function ManagerChips({
   );
 }
 
-function CornerMarks() {
-  return (
-    <>
-      <i className="corner tl" />
-      <i className="corner tr" />
-      <i className="corner bl" />
-      <i className="corner br" />
-    </>
-  );
-}
-
 function StatusTag({ status }: { status: string }) {
   const cls = status === "진행 중" ? "tag tag-accent" : TERMINAL_STATUSES.has(status) ? "tag tag-neutral" : "tag tag-outline";
   return <span className={cls}>{status}</span>;
@@ -752,24 +741,39 @@ export function IndustryBusinessBoard({
 
       <div
         style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(6, 1fr)",
-          gap: "var(--space-3)",
+          display: "flex",
+          alignItems: "baseline",
+          gap: "var(--space-6)",
+          paddingBottom: "var(--space-4)",
+          borderBottom: "1px solid var(--color-divider)",
           marginBottom: "var(--space-6)",
+          flexWrap: "wrap",
         }}
       >
-        <div className="blueprint" style={{ padding: "var(--space-3) var(--space-4)", borderColor: "var(--color-accent)" }}>
-          <CornerMarks />
-          <h6 style={{ margin: "0 0 var(--space-2)", color: "var(--color-accent-700)" }}>전체</h6>
-          <div style={{ fontFamily: "var(--font-heading)", fontSize: 30, fontWeight: 600, color: "var(--color-accent-800)" }}>
+        <div>
+          <span style={{ fontFamily: "var(--font-heading)", fontSize: 28, fontWeight: 600, color: "var(--color-accent-800)" }}>
             {projects.length}
-          </div>
+          </span>
+          <span className="text-muted" style={{ fontSize: 13, marginLeft: 6 }}>
+            전체
+          </span>
         </div>
+        <div style={{ width: 1, height: 20, background: "var(--color-divider)" }} />
         {STATUSES.map((s) => (
-          <div key={s} className="blueprint" style={{ padding: "var(--space-3) var(--space-4)" }}>
-            <CornerMarks />
-            <h6 style={{ margin: "0 0 var(--space-2)" }}>{s}</h6>
-            <div style={{ fontFamily: "var(--font-heading)", fontSize: 30, fontWeight: 600 }}>{counts.get(s) ?? 0}</div>
+          <div key={s}>
+            <span
+              style={{
+                fontFamily: "var(--font-heading)",
+                fontSize: 20,
+                fontWeight: 600,
+                color: s === "진행 중" ? "var(--color-accent-700)" : undefined,
+              }}
+            >
+              {counts.get(s) ?? 0}
+            </span>
+            <span className="text-muted" style={{ fontSize: 13, marginLeft: 6 }}>
+              {s}
+            </span>
           </div>
         ))}
       </div>
