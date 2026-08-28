@@ -360,16 +360,16 @@ export function IndustryEventCalendar({
 
   return (
     <div className="industry-theme" style={{ padding: "var(--space-8)", maxWidth: 1400, margin: "0 auto" }}>
-      <h1 style={{ display: "flex", alignItems: "center", gap: 10, margin: "0 0 var(--space-2)", fontFamily: "var(--font-heading)", fontSize: 24 }}>
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5">
+      <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <rect x="3" y="4" width="18" height="17" rx="0" />
           <line x1="3" y1="9" x2="21" y2="9" />
           <line x1="7" y1="2" x2="7" y2="5" />
           <line x1="17" y1="2" x2="17" y2="5" />
         </svg>
-        Calendar
-      </h1>
-      <p className="text-muted" style={{ marginBottom: "var(--space-6)", fontSize: 14 }}>
+        <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 28, margin: 0, color: "var(--color-accent-700)" }}>Calendar</h1>
+      </div>
+      <p className="text-muted" style={{ margin: "var(--space-2) 0 var(--space-6)", fontSize: 14 }}>
         이 화면에서 직접 일정을 추가·수정·삭제합니다(Notion 연동 없음 — 이 시스템이 원본입니다).
       </p>
 

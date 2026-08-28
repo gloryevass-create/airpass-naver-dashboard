@@ -788,8 +788,14 @@ export function IndustryMarketingBoard({ tasks, members }: { tasks: MarketingTas
     <div className="industry-theme" style={{ minHeight: "100vh" }}>
       <TopSettingsBar showArchived={showArchived} onShowArchivedChange={setShowArchived} view={view} onViewChange={setView} />
       <div style={{ padding: "var(--space-8)", maxWidth: 1400, margin: "0 auto" }}>
-      <h1 style={{ fontSize: 22, margin: "0 0 4px", fontWeight: 600 }}>Marketing</h1>
-      <p className="text-muted" style={{ margin: "0 0 var(--space-6)", fontSize: 13 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="m3 11 18-5v12L3 14v-3z" />
+          <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" />
+        </svg>
+        <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 28, margin: 0, color: "var(--color-accent-700)" }}>Marketing</h1>
+      </div>
+      <p className="text-muted" style={{ margin: "var(--space-2) 0 var(--space-6)", fontSize: 13 }}>
         이 화면에서 직접 마케팅 업무를 추가·수정·삭제합니다(Notion 연동 없음 — 이 시스템이 원본입니다).
       </p>
 

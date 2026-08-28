@@ -920,8 +920,14 @@ export function IndustryBusinessBoard({
         onViewChange={setView}
       />
       <div style={{ padding: "var(--space-8)", maxWidth: 1400, margin: "0 auto" }}>
-      <h1 style={{ fontSize: 22, margin: "0 0 4px", fontWeight: 600 }}>Business</h1>
-      <p className="text-muted" style={{ margin: "0 0 var(--space-6)", fontSize: 13 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4 7h16v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z" />
+          <path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+        </svg>
+        <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 28, margin: 0, color: "var(--color-accent-700)" }}>Business</h1>
+      </div>
+      <p className="text-muted" style={{ margin: "var(--space-2) 0 var(--space-6)", fontSize: 13 }}>
         같은 사업 목록을 새 디자인으로 봅니다 — 여기서 추가·수정한 내용은 menu backup의 SI Business 화면에도 그대로 반영됩니다.
       </p>
 
