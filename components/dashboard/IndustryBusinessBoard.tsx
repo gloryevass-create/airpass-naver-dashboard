@@ -162,7 +162,7 @@ function TopSettingsBar({
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: "var(--space-4)" }}>
-        <label style={{ display: "inline-flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+        <label style={{ display: "inline-flex", alignItems: "center", gap: 10, cursor: "pointer", color: "#374151" }}>
           <span>showArchivedDefault</span>
           <span
             role="switch"
@@ -170,10 +170,10 @@ function TopSettingsBar({
             onClick={() => onShowArchivedChange(!showArchived)}
             style={{
               position: "relative",
-              width: 36,
-              height: 20,
+              width: 40,
+              height: 22,
               borderRadius: 999,
-              background: showArchived ? "var(--color-accent)" : "var(--color-neutral-400)",
+              background: showArchived ? "#3b82f6" : "#d1d5db",
               transition: "background 0.15s",
               flex: "none",
             }}
@@ -182,23 +182,32 @@ function TopSettingsBar({
               style={{
                 position: "absolute",
                 top: 2,
-                left: showArchived ? 18 : 2,
-                width: 16,
-                height: 16,
+                left: showArchived ? 20 : 2,
+                width: 18,
+                height: 18,
                 borderRadius: "50%",
                 background: "#fff",
+                boxShadow: "0 1px 2px rgba(0,0,0,0.25)",
                 transition: "left 0.15s",
               }}
             />
           </span>
         </label>
-        <label style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+        <label style={{ display: "inline-flex", alignItems: "center", gap: 10, color: "#374151" }}>
           <span>defaultView</span>
           <select
-            className="input"
             value={view}
             onChange={(e) => onViewChange(e.target.value as "kanban" | "list")}
-            style={{ minHeight: 30, padding: "2px 8px", fontSize: 13, width: "auto" }}
+            style={{
+              minHeight: 34,
+              padding: "6px 12px",
+              fontSize: 13,
+              width: "auto",
+              background: "#fff",
+              border: "1px solid #d1d5db",
+              borderRadius: 6,
+              color: "#1f2937",
+            }}
           >
             <option value="kanban">kanban</option>
             <option value="list">list</option>
@@ -206,17 +215,29 @@ function TopSettingsBar({
         </label>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
-        {savedNotice && (
-          <span style={{ color: "var(--color-accent-700)", fontSize: 12 }}>저장됨</span>
-        )}
+        {savedNotice && <span style={{ color: "#3b82f6", fontSize: 12 }}>저장됨</span>}
         <button
           type="button"
           onClick={handleReset}
-          style={{ background: "none", border: 0, padding: 0, color: "color-mix(in srgb, var(--color-text) 55%, transparent)", cursor: "pointer", font: "inherit", fontSize: 13 }}
+          style={{ background: "none", border: 0, padding: 0, color: "#6b7280", cursor: "pointer", font: "inherit", fontSize: 13 }}
         >
           Reset
         </button>
-        <button type="button" className="btn btn-secondary" onClick={handleSave} style={{ fontSize: 13, minHeight: 30, padding: "4px 12px" }}>
+        <button
+          type="button"
+          onClick={handleSave}
+          style={{
+            fontSize: 13,
+            fontWeight: 500,
+            minHeight: 34,
+            padding: "6px 16px",
+            background: "#eef1fb",
+            border: "1px solid #c7d0e8",
+            borderRadius: 6,
+            color: "#374151",
+            cursor: "pointer",
+          }}
+        >
           Save as defaults
         </button>
       </div>
