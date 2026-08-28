@@ -958,7 +958,18 @@ export function IndustryBusinessBoard({
         ))}
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "var(--space-4)", flexWrap: "wrap", gap: "var(--space-3)" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "var(--space-4)",
+          background: "#ffffff",
+          border: "1px solid var(--color-divider)",
+          borderRadius: 8,
+          padding: "var(--space-4)",
+        }}
+      >
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "var(--space-3)" }}>
         <label style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 14, cursor: "pointer" }}>
           <input
             type="checkbox"
@@ -1111,6 +1122,7 @@ export function IndustryBusinessBoard({
           </table>
         </div>
       )}
+      </div>
 
       {showAddDialog && <AddProjectDialog members={members} onClose={() => setShowAddDialog(false)} />}
       </div>
