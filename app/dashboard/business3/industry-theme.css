@@ -8,7 +8,10 @@
 @import url("https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;700&family=Barlow+Condensed:wght@400;600&display=swap");
 
 .industry-theme {
-  --color-bg: #f2f2f3;
+  /* 이 페이지만 다른 회색 톤(#f2f2f3)을 쓰면 나머지 대시보드 배경(app/globals.css의
+     --background, #f5f5f7)과 미묘하게 어긋나 보인다 — 앱 전체 배경색과 통일한다
+     (사용자 확인, 2026-08-28). */
+  --color-bg: #f5f5f7;
   --color-surface: #e9e9ea;
   --color-text: #1d1f20;
   --color-accent: #5980a6;
@@ -189,8 +192,8 @@
 
 /* — tags — */
 .industry-theme .tag {
-  display: inline-flex; align-items: center; font-size: 11px;
-  letter-spacing: 0.02em; padding: 3px 10px;
+  display: inline-flex; align-items: center; font-size: 10px;
+  letter-spacing: 0.02em; padding: 2px 7px;
   border-radius: calc(var(--radius-md) * 0.75);
   white-space: nowrap;
 }

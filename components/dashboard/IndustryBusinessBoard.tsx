@@ -784,9 +784,9 @@ function KanbanCard({
         onChange={(e) => handleStageChange(e.target.value)}
         onClick={(e) => e.stopPropagation()}
         style={{
-          fontSize: 11,
-          minHeight: 26,
-          padding: "2px 6px",
+          fontSize: 10,
+          minHeight: 20,
+          padding: "1px 4px",
           marginTop: "var(--space-2)",
           background: "transparent",
           borderColor: "transparent",
