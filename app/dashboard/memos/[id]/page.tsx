@@ -1,3 +1,4 @@
+import "@/components/industryTheme.css";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireAuthedClient } from "@/lib/supabase/authed";
@@ -5,7 +6,6 @@ import { getMemoDetail } from "@/lib/queries/memos";
 import { MemoCommentForm } from "@/components/MemoCommentForm";
 import { DeleteMemoButton } from "@/components/DeleteMemoButton";
 import { deleteMemo } from "@/app/dashboard/memos/actions";
-import { NavIcon } from "@/components/icons/NavIcon";
 
 const CATEGORY_LABEL: Record<string, string> = {
   business: "SI Business",
@@ -61,30 +61,29 @@ export default async function MemoDetailPage({
   );
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-6">
-      <Link
-        href="/dashboard/memos"
-        className="flex w-fit items-center gap-1 text-sm text-ink-mute hover:text-ink"
-      >
-        ← 목록으로
-      </Link>
-
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <span className="inline-block rounded-full bg-canvas-lavender px-3 py-1 text-xs font-medium text-primary">
-            {CATEGORY_LABEL[memo.category] ?? memo.category}
-          </span>
-          <h1 className="mt-2 text-xl font-bold tracking-tight text-primary">{memo.title}</h1>
-          <p className="mt-1 text-sm text-ink-mute">
-            {memo.authorEmail} · {formatDate(memo.createdAt)}
-          </p>
-        </div>
+    <div className="industry-theme" style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 800, margin: "0 auto" }}>
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
+        <Link
+          href="/dashboard/memos"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
+            color: "var(--color-accent-700)",
+            fontSize: 13,
+            textDecoration: "none",
+            marginBottom: "var(--space-5)",
+          }}
+        >
+          ← 목록으로
+        </Link>
         {canModify && (
-          <div className="flex shrink-0 gap-2">
-            <Link
-              href={`/dashboard/memos/${memo.id}/edit`}
-              className="rounded-lg border border-hairline px-4 py-1.5 text-sm font-medium text-ink hover:bg-canvas-cream"
-            >
+          <div style={{ display: "flex", gap: "var(--space-2)" }}>
+            <Link href={`/dashboard/memos/${memo.id}/edit`} className="btn btn-secondary blueprint">
+              <i className="corner tl" />
+              <i className="corner tr" />
+              <i className="corner bl" />
+              <i className="corner br" />
               수정
             </Link>
             <DeleteMemoButton action={deleteMemo.bind(null, memo.id)} />
@@ -93,58 +92,86 @@ export default async function MemoDetailPage({
       </div>
 
       {attachmentError === "1" && (
-        <p className="rounded-sm border border-semantic-error/30 bg-semantic-error/5 px-4 py-2 text-sm text-semantic-error">
+        <p
+          style={{
+            marginBottom: "var(--space-4)",
+            borderRadius: "var(--radius-sm)",
+            border: "1px solid color-mix(in srgb, var(--color-accent-900) 40%, transparent)",
+            background: "color-mix(in srgb, var(--color-accent-900) 6%, transparent)",
+            padding: "var(--space-2) var(--space-4)",
+            fontSize: 13,
+            color: "var(--color-accent-900)",
+          }}
+        >
           일부 첨부파일 업로드에 실패했습니다. 저장은 됐지만 해당 파일은 빠졌습니다 — 수정 화면에서 다시 첨부해주세요.
         </p>
       )}
 
-      <div className="whitespace-pre-wrap rounded-sm border border-hairline bg-canvas-cream p-4 text-sm text-ink">
+      <span className="tag tag-outline">{CATEGORY_LABEL[memo.category] ?? memo.category}</span>
+      <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 26, margin: "var(--space-3) 0 var(--space-1)" }}>
+        {memo.title}
+      </h1>
+      <p style={{ margin: "0 0 var(--space-5)", opacity: 0.6, fontSize: 13 }}>
+        {memo.authorEmail} · {formatDate(memo.createdAt)}
+      </p>
+
+      <div className="card blueprint elev-sm" style={{ whiteSpace: "pre-wrap", fontSize: 14, lineHeight: 1.7 }}>
+        <i className="corner tl" />
+        <i className="corner tr" />
+        <i className="corner bl" />
+        <i className="corner br" />
         {memo.content}
       </div>
 
       {attachmentsWithUrl.length > 0 && (
-        <div>
-          <h2 className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-ink-mute">
-            <NavIcon name="paperclip" className="h-4 w-4" />
+        <div style={{ marginTop: "var(--space-6)" }}>
+          <h2 style={{ fontFamily: "var(--font-heading)", fontSize: 16, margin: "0 0 var(--space-3)", display: "flex", alignItems: "center", gap: 6 }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+            </svg>
             첨부파일
           </h2>
-          <ul className="flex flex-col gap-1">
+          <ul style={{ display: "flex", flexDirection: "column", gap: "var(--space-1)", listStyle: "none", margin: 0, padding: 0 }}>
             {attachmentsWithUrl.map((a) => (
-              <li key={a.id} className="text-sm">
+              <li key={a.id} style={{ fontSize: 13 }}>
                 {a.url ? (
-                  <a href={a.url} className="text-link-blue hover:underline">
-                    📎 {a.fileName}
-                  </a>
+                  <a href={a.url}>📎 {a.fileName}</a>
                 ) : (
-                  <span className="text-ink-mute">📎 {a.fileName}</span>
+                  <span className="text-muted">📎 {a.fileName}</span>
                 )}
-                <span className="ml-2 text-xs text-ink-mute">{formatFileSize(a.fileSize)}</span>
+                <span className="text-muted" style={{ marginLeft: 8, fontSize: 12 }}>
+                  {formatFileSize(a.fileSize)}
+                </span>
               </li>
             ))}
           </ul>
         </div>
       )}
 
-      <div>
-        <h2 className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-ink-mute">
-          <NavIcon name="chat" className="h-4 w-4" />
+      <div style={{ marginTop: "var(--space-8)" }}>
+        <h2 style={{ fontFamily: "var(--font-heading)", fontSize: 16, margin: "0 0 var(--space-4)", display: "flex", alignItems: "center", gap: 6 }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+          </svg>
           댓글 {memo.comments.length > 0 && `(${memo.comments.length})`}
         </h2>
-        <ul className="mb-4 flex flex-col gap-3">
+        <div style={{ display: "grid", gap: "var(--space-3)", marginBottom: "var(--space-5)" }}>
           {memo.comments.map((c) => (
-            <li key={c.id} className="rounded-lg border border-hairline p-3 text-sm">
-              <p className="mb-1 text-xs text-ink-mute">
+            <div key={c.id} className="card blueprint" style={{ fontSize: 13 }}>
+              <i className="corner tl" />
+              <i className="corner tr" />
+              <i className="corner bl" />
+              <i className="corner br" />
+              <div className="text-muted" style={{ marginBottom: 6 }}>
                 {c.authorEmail} · {formatDate(c.createdAt)}
-              </p>
-              <p className="whitespace-pre-wrap text-ink">{c.content}</p>
-            </li>
+              </div>
+              <div style={{ whiteSpace: "pre-wrap" }}>{c.content}</div>
+            </div>
           ))}
-          {memo.comments.length === 0 && (
-            <li className="text-sm text-ink-mute">아직 댓글이 없습니다.</li>
-          )}
-        </ul>
+          {memo.comments.length === 0 && <p className="text-muted" style={{ fontSize: 13, margin: 0 }}>아직 댓글이 없습니다.</p>}
+        </div>
         <MemoCommentForm memoId={memo.id} />
       </div>
-    </main>
+    </div>
   );
 }

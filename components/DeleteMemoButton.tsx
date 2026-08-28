@@ -10,10 +10,7 @@ export function DeleteMemoButton({ action }: { action: (formData: FormData) => v
         }
       }}
     >
-      <button
-        type="submit"
-        className="rounded-full border border-semantic-error px-4 py-1.5 text-sm font-medium text-semantic-error hover:bg-semantic-error/10"
-      >
+      <button type="submit" className="btn btn-ghost" style={{ color: "var(--color-accent-700)" }}>
         삭제
       </button>
     </form>

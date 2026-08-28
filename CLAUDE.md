@@ -179,6 +179,27 @@ Barlow/Barlow Condensed) 테마를 그대로 이식했다(2026-08-28).
   장소·대상·내용)는 목업에 없던 것들이지만 실제 운영에 쓰이고 있어 그대로
   유지했다 — 다이얼로그에 전부 남아 있다.
 
+## Memo Board
+
+`/dashboard/memos` — Claude Design "Industry" 테마 목업("게시판 디자인
+요청.zip")을 이식했다(2026-08-29, 같은 디자인 시스템 —
+`components/industryTheme.css` 공유). Business3/Calendar와 달리 이 화면은
+**단일 컴포넌트로 뷰를 전환하는 SPA 구조가 아니라 원래부터 라우트가 나뉜
+구조**(`/dashboard/memos`, `/new`, `/[id]`, `/[id]/edit`)를 그대로 유지했다 —
+목업은 리스트/작성/상세를 한 컴포넌트의 `view` 상태로 전환하지만, 실제 앱은
+`notifications` 테이블의 `link`가 `/dashboard/memos/${id}`를 직접 가리키고
+(알림 벨 딥링크), `AiCommandBar.tsx`가 `createMemo` 서버 액션의
+`redirect()` 동작에 의존하고 있어 라우트 구조를 바꾸면 이 둘이 깨진다.
+그래서 각 페이지의 JSX만 Industry 스타일로 새로 그리고, 서버 액션·데이터
+쿼리(`app/dashboard/memos/actions.ts`, `lib/queries/memos.ts`)는 전혀
+건드리지 않았다.
+
+- 구분(`business`/`cooperation`/`marketing`/`etc`)은 목업의
+  Business/Cooperation/Marketing/General과 값만 다르고 개념은 동일 —
+  기존 `CATEGORY_LABEL` 매핑을 그대로 썼다.
+- 첨부파일(이미지·PDF·Office 문서·ZIP, 최대 5개)은 목업에 없던 기능이지만
+  실제 운영에 쓰이고 있어 작성/수정/상세 화면에 그대로 유지했다.
+
 ## 폴더 구조
 
 ```

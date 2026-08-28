@@ -13,6 +13,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     items: [
       "사이드바 그룹 목록이 부분 스크롤되지 않던 문제 근본 수정 — 대시보드 셸 전체에 뷰포트 높이 제약(h-screen)을 줘서 헤더·사이드바는 고정되고 본문 영역만 스크롤되도록 구조 변경(인쇄 페이지는 인쇄 시 제약을 풂)",
       "Calendar(/dashboard/events2)를 Claude Design \"Industry\" 테마로 다시 그림 — 월 보기만 있던 화면에 주/일 보기 추가, 기존 일정 데이터·필드(여러 날 걸치는 일정, 담당자·참석자, 태그 등)는 그대로 유지",
+      "Memo Board를 Claude Design \"Industry\" 테마로 다시 그림 — 목록/작성/상세/수정 화면 스타일만 교체하고, 기존 URL 구조(/dashboard/memos, /new, /[id], /[id]/edit)·첨부파일·댓글·알림 딥링크는 그대로 유지",
     ],
   },
   {

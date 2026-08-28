@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import Link from "next/link";
 import { updateMemo, type UpdateMemoState } from "@/app/dashboard/memos/actions";
 import type { MemoDetail } from "@/lib/queries/memos";
 
@@ -28,18 +29,10 @@ export function MemoEditForm({ memo }: { memo: MemoDetail }) {
   }
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
-      <div className="flex flex-col gap-1">
-        <label htmlFor="category" className="text-sm font-medium text-ink">
-          구분
-        </label>
-        <select
-          id="category"
-          name="category"
-          required
-          defaultValue={memo.category}
-          className="w-40 rounded border border-hairline bg-canvas-cream px-3 py-2 text-sm text-ink outline-none focus:border-primary"
-        >
+    <form action={formAction} style={{ display: "flex", flexDirection: "column", gap: "var(--space-5)" }}>
+      <div className="field">
+        <label htmlFor="category">구분</label>
+        <select id="category" name="category" required defaultValue={memo.category} className="input" style={{ maxWidth: 240 }}>
           {CATEGORY_OPTIONS.map((c) => (
             <option key={c.value} value={c.value}>
               {c.label}
@@ -48,41 +41,22 @@ export function MemoEditForm({ memo }: { memo: MemoDetail }) {
         </select>
       </div>
 
-      <div className="flex flex-col gap-1">
-        <label htmlFor="title" className="text-sm font-medium text-ink">
-          제목
-        </label>
-        <input
-          id="title"
-          name="title"
-          type="text"
-          required
-          maxLength={200}
-          defaultValue={memo.title}
-          className="rounded border border-hairline bg-canvas-cream px-3 py-2 text-sm text-ink outline-none focus:border-primary"
-        />
+      <div className="field">
+        <label htmlFor="title">제목</label>
+        <input id="title" name="title" type="text" required maxLength={200} defaultValue={memo.title} className="input" />
       </div>
 
-      <div className="flex flex-col gap-1">
-        <label htmlFor="content" className="text-sm font-medium text-ink">
-          내용
-        </label>
-        <textarea
-          id="content"
-          name="content"
-          required
-          rows={10}
-          defaultValue={memo.content}
-          className="rounded border border-hairline bg-canvas-cream px-3 py-2 text-sm text-ink outline-none focus:border-primary"
-        />
+      <div className="field">
+        <label htmlFor="content">내용</label>
+        <textarea id="content" name="content" required rows={10} defaultValue={memo.content} className="input" />
       </div>
 
       {memo.attachments.length > 0 && (
-        <div className="flex flex-col gap-1">
-          <p className="text-sm font-medium text-ink">기존 첨부파일</p>
-          <ul className="flex flex-col gap-1">
+        <div className="field">
+          <label>기존 첨부파일</label>
+          <ul style={{ display: "flex", flexDirection: "column", gap: "var(--space-1)", listStyle: "none", margin: 0, padding: 0 }}>
             {memo.attachments.map((a) => (
-              <li key={a.id} className="flex items-center gap-2 text-sm">
+              <li key={a.id} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13 }}>
                 <input
                   type="checkbox"
                   name="removeAttachments"
@@ -93,41 +67,51 @@ export function MemoEditForm({ memo }: { memo: MemoDetail }) {
                 />
                 <label
                   htmlFor={`remove-${a.id}`}
-                  className={removedIds.has(a.id) ? "text-ink-mute line-through" : "text-ink"}
+                  className={removedIds.has(a.id) ? "text-muted" : undefined}
+                  style={removedIds.has(a.id) ? { textDecoration: "line-through" } : undefined}
                 >
                   📎 {a.fileName}
                 </label>
               </li>
             ))}
           </ul>
-          <p className="text-xs text-ink-mute">체크한 파일은 저장 시 삭제됩니다.</p>
+          <p className="text-muted" style={{ fontSize: 12, margin: "var(--space-1) 0 0" }}>
+            체크한 파일은 저장 시 삭제됩니다.
+          </p>
         </div>
       )}
 
-      <div className="flex flex-col gap-1">
-        <label htmlFor="files" className="text-sm font-medium text-ink">
-          새 파일첨부
-        </label>
+      <div className="field">
+        <label htmlFor="files">새 파일첨부</label>
         <input
           id="files"
           name="files"
           type="file"
           multiple
           accept="image/jpeg,image/png,image/webp,image/gif,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip"
-          className="rounded border border-hairline bg-canvas-cream px-3 py-2 text-sm text-ink outline-none file:mr-3 file:rounded file:border-0 file:bg-canvas-cream file:px-3 file:py-1 file:text-sm"
+          className="input"
         />
-        <p className="text-xs text-ink-mute">이미지·PDF·Office 문서·ZIP, 파일당 12MB 이하, 최대 5개</p>
+        <p className="text-muted" style={{ fontSize: 12, margin: "var(--space-1) 0 0" }}>
+          이미지·PDF·Office 문서·ZIP, 파일당 12MB 이하, 최대 5개
+        </p>
       </div>
 
-      {state?.error && <p className="text-sm text-semantic-error">{state.error}</p>}
+      {state?.error && (
+        <p style={{ fontSize: 13, color: "var(--color-accent-900)" }}>{state.error}</p>
+      )}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="w-fit rounded-full bg-primary px-6 py-2 text-sm font-bold text-white hover:bg-primary-press disabled:opacity-50"
-      >
-        {pending ? "저장 중..." : "저장"}
-      </button>
+      <div style={{ display: "flex", gap: "var(--space-3)" }}>
+        <button type="submit" disabled={pending} className="btn btn-primary blueprint">
+          <i className="corner tl" />
+          <i className="corner tr" />
+          <i className="corner bl" />
+          <i className="corner br" />
+          {pending ? "저장 중..." : "저장"}
+        </button>
+        <Link href={`/dashboard/memos/${memo.id}`} className="btn btn-ghost">
+          취소
+        </Link>
+      </div>
     </form>
   );
 }
