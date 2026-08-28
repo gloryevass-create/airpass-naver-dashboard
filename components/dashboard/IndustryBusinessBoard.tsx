@@ -556,26 +556,32 @@ function CommentsSection({ project }: { project: BusinessProjectV2 }) {
       {project.comments.length === 0 ? (
         <p style={{ fontSize: 13 }}>아직 댓글이 없습니다. 의견을 남겨보세요.</p>
       ) : (
-        project.comments.map((c) => (
-          <div key={c.id} style={{ borderBottom: "1px solid var(--color-divider)", padding: "var(--space-3) 0" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 600, marginBottom: 4 }}>
-              <span>{c.authorEmail}</span>
-              <span className="text-muted" style={{ fontWeight: 400, fontSize: 11, display: "flex", alignItems: "center", gap: 8 }}>
-                {formatDateTime(c.createdAt)}
-                {c.isOwn && (
-                  <button
-                    type="button"
-                    onClick={() => handleDelete(c.id)}
-                    style={{ background: "none", border: 0, padding: 0, color: "var(--color-accent-900)", cursor: "pointer", font: "inherit", fontSize: 11 }}
-                  >
-                    삭제
-                  </button>
-                )}
-              </span>
+        <div style={{ display: "grid", gap: "var(--space-3)", marginBottom: "var(--space-3)" }}>
+          {project.comments.map((c) => (
+            <div key={c.id} className="card blueprint" style={{ fontSize: 13 }}>
+              <i className="corner tl" />
+              <i className="corner tr" />
+              <i className="corner bl" />
+              <i className="corner br" />
+              <div className="text-muted" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span>{c.authorEmail}</span>
+                <span style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 11 }}>
+                  {formatDateTime(c.createdAt)}
+                  {c.isOwn && (
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(c.id)}
+                      style={{ background: "none", border: 0, padding: 0, color: "var(--color-accent-900)", cursor: "pointer", font: "inherit", fontSize: 11 }}
+                    >
+                      삭제
+                    </button>
+                  )}
+                </span>
+              </div>
+              <div style={{ whiteSpace: "pre-wrap" }}>{c.content}</div>
             </div>
-            <div style={{ fontSize: 13, whiteSpace: "pre-wrap" }}>{c.content}</div>
-          </div>
-        ))
+          ))}
+        </div>
       )}
       <form action={formAction} style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: "var(--space-3)" }}>
         <textarea className="input" name="content" required rows={3} placeholder="의견을 남겨주세요" />
