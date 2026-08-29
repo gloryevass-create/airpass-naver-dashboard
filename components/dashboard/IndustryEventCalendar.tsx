@@ -55,7 +55,7 @@ function addDaysToDateStr(day: string, n: number): string {
 
 function startOfWeek(day: string): string {
   const [y, m, d] = day.split("-").map(Number);
-  const wd = (new Date(Date.UTC(y, m - 1, d)).getUTCDay() + 6) % 7; // 0=월
+  const wd = new Date(Date.UTC(y, m - 1, d)).getUTCDay(); // 0=일(getUTCDay 그대로, 주 시작을 일요일로)
   return addDaysToDateStr(day, -wd);
 }
 
@@ -78,7 +78,7 @@ function shiftMonthKeepDay(day: string, delta: number): string {
 function buildMonthGrid(month: string): string[][] {
   const [y, m] = month.split("-").map(Number);
   const firstOfMonth = new Date(Date.UTC(y, m - 1, 1));
-  const firstWeekday = (firstOfMonth.getUTCDay() + 6) % 7;
+  const firstWeekday = firstOfMonth.getUTCDay(); // 0=일(주 시작을 일요일로)
   const gridStart = new Date(Date.UTC(y, m - 1, 1 - firstWeekday));
 
   const weeks: string[][] = [];
@@ -122,7 +122,7 @@ function dayItems(day: string, events: TeamEventV2[], googleEvents: GoogleCalend
   return [...team, ...google].sort((a, b) => a.event.dateStart.localeCompare(b.event.dateStart));
 }
 
-const WEEKDAYS = ["월", "화", "수", "목", "금", "토", "일"];
+const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
 // SI Business 2/Cooperation/Marketing/Work Journal 상단의 "환경설정 바"(기본값
 // 저장/초기화)와 같은 패턴을 캘린더에도 적용했다 — "기본 보기(월/주/일)"에 더해
@@ -644,7 +644,7 @@ export function IndustryEventCalendar({
     const [, em, ed] = end.split("-").map(Number);
     periodLabel = `${sm}월 ${sd}일 - ${em}월 ${ed}일`;
   } else {
-    periodLabel = `${cy}년 ${cm}월 ${cd}일 (${WEEKDAYS[(cursorDate.getUTCDay() + 6) % 7]})`;
+    periodLabel = `${cy}년 ${cm}월 ${cd}일 (${WEEKDAYS[cursorDate.getUTCDay()]})`;
   }
 
   const weeks = view === "month" ? buildMonthGrid(month) : [];
@@ -728,7 +728,7 @@ export function IndustryEventCalendar({
                   fontSize: 12,
                   letterSpacing: "0.05em",
                   textTransform: "uppercase",
-                  color: i === 6 ? "var(--color-accent-700)" : "color-mix(in srgb, var(--color-text) 60%, transparent)",
+                  color: i === 0 ? "#ef4444" : "color-mix(in srgb, var(--color-text) 60%, transparent)",
                   textAlign: "center",
                 }}
               >
@@ -837,7 +837,7 @@ export function IndustryEventCalendar({
                       fontSize: 11,
                       textTransform: "uppercase",
                       fontFamily: "var(--font-heading)",
-                      color: i === 6 ? "var(--color-accent-700)" : "color-mix(in srgb, var(--color-text) 60%, transparent)",
+                      color: i === 0 ? "#ef4444" : "color-mix(in srgb, var(--color-text) 60%, transparent)",
                     }}
                   >
                     {WEEKDAYS[i]}
