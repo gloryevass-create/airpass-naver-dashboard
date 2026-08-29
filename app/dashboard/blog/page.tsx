@@ -29,7 +29,7 @@ async function KeywordStrategySection({
 
 function KeywordStrategySkeleton() {
   return (
-    <div className="card">
+    <div className="card" style={{ background: "#ffffff", borderRadius: 8, boxShadow: "var(--shadow-sm)" }}>
       <h2 style={{ margin: "0 0 var(--space-2)", display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600 }} className="text-muted">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M12 3l1.6 4.9L18.5 9l-4.9 1.6L12 15.5l-1.6-4.9L5.5 9l4.9-1.6L12 3z" />
@@ -70,7 +70,7 @@ export default async function BlogPage() {
       <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
         <CompetitorBlogManager competitors={competitors} path="/dashboard/blog" />
         {!dashboard.latestDate && (
-          <div className="card">
+          <div className="card" style={{ background: "#ffffff", borderRadius: 8, boxShadow: "var(--shadow-sm)" }}>
             <p style={{ margin: 0, fontSize: 13 }} className="text-muted">
               아직 모니터링 에이전트가 수집한 데이터가 없습니다. 파이프라인이 최소 1회 실행되면 여기에
               결과가 표시됩니다.
@@ -79,7 +79,7 @@ export default async function BlogPage() {
         )}
 
         <section style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-6)" }}>
-          <div className="card">
+          <div className="card" style={{ background: "#ffffff", borderRadius: 8, boxShadow: "var(--shadow-sm)" }}>
             <h2 style={{ margin: "0 0 var(--space-3)", display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600 }} className="text-muted">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
@@ -89,7 +89,7 @@ export default async function BlogPage() {
             </h2>
             <SovTrendChart data={dashboard.sovTrend} />
           </div>
-          <div className="card">
+          <div className="card" style={{ background: "#ffffff", borderRadius: 8, boxShadow: "var(--shadow-sm)" }}>
             <h2 style={{ margin: "0 0 var(--space-3)", display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600 }} className="text-muted">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="4" width="18" height="17" rx="0" />

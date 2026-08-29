@@ -11,7 +11,7 @@ export function YoutubeChannelStats({ data }: { data: ChannelStatsResult }) {
   }));
 
   return (
-    <div className="card">
+    <div className="card" style={{ background: "#ffffff", borderRadius: 8, boxShadow: "var(--shadow-sm)" }}>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "var(--space-4)" }}>
         <div style={{ border: "1px solid var(--color-divider)", padding: "var(--space-3)" }}>
           <p style={{ margin: 0, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#d9342b" }}>구독자 수</p>

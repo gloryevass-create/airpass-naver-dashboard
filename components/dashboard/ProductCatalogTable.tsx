@@ -87,7 +87,7 @@ function ProductForm({
         await formAction(formData);
         onDone();
       }}
-      style={{ border: "1px solid var(--color-divider)", background: "#ffffff", padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}
+      style={{ border: "1px solid var(--color-divider)", borderRadius: 8, boxShadow: "var(--shadow-sm)", background: "#ffffff", padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}
     >
       {product && <input type="hidden" name="id" value={product.id} />}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-3)" }}>
@@ -187,7 +187,7 @@ function ImportPreview({
   }
 
   return (
-    <div style={{ border: "1px solid var(--color-divider)", background: "#ffffff", padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+    <div style={{ border: "1px solid var(--color-divider)", borderRadius: 8, boxShadow: "var(--shadow-sm)", background: "#ffffff", padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
       <p style={{ fontSize: 13, margin: 0 }}>
         총 {rows.length}행 중 <strong style={{ color: "var(--color-accent-700)" }}>{valid.length}건 가져오기 가능</strong>
         {invalid.length > 0 && <span style={{ color: "var(--color-accent-900)" }}> · {invalid.length}건 오류(제외됨)</span>}
@@ -365,7 +365,7 @@ export function ProductCatalogTable({
       {editing === "new" && <ProductForm product={null} onDone={() => setEditing(null)} />}
       {editing && editing !== "new" && <ProductForm product={editing} onDone={() => setEditing(null)} />}
 
-      <div style={{ display: "flex", flexDirection: "column", border: "1px solid var(--color-divider)", background: "#ffffff" }}>
+      <div style={{ display: "flex", flexDirection: "column", border: "1px solid var(--color-divider)", borderRadius: 8, boxShadow: "var(--shadow-sm)", background: "#ffffff", overflow: "hidden" }}>
         <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "var(--space-3)", padding: "var(--space-4)", fontSize: 13 }}>
           <input
             type="text"

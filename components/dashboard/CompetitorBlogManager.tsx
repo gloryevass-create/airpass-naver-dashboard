@@ -34,7 +34,7 @@ export function CompetitorBlogManager({ competitors, path }: { competitors: Comp
   const [state, formAction, pending] = useActionState(action, initialState);
 
   return (
-    <details className="card">
+    <details className="card" style={{ background: "#ffffff", borderRadius: 8, boxShadow: "var(--shadow-sm)" }}>
       <summary style={{ display: "flex", cursor: "pointer", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600 }} className="text-muted">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M20.59 13.41 13.42 20.6a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />

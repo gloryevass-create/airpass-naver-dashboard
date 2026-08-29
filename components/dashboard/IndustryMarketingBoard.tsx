@@ -551,6 +551,7 @@ function TaskDetail({
           background: "#ffffff",
           border: "1px solid var(--color-divider)",
           borderRadius: 8,
+          boxShadow: "var(--shadow-sm)",
           padding: "var(--space-4)",
         }}
       >
@@ -846,6 +847,7 @@ export function IndustryMarketingBoard({ tasks, members }: { tasks: MarketingTas
           background: "#ffffff",
           border: "1px solid var(--color-divider)",
           borderRadius: 8,
+          boxShadow: "var(--shadow-sm)",
           padding: "var(--space-4)",
         }}
       >

@@ -205,7 +205,7 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
 
   return (
     <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-4)" }}>
-      <aside style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)", border: "1px solid var(--color-divider)", background: "#ffffff", padding: "var(--space-4)", flex: "1 1 288px", maxWidth: 320 }}>
+      <aside style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)", border: "1px solid var(--color-divider)", borderRadius: 8, boxShadow: "var(--shadow-sm)", background: "#ffffff", padding: "var(--space-4)", flex: "1 1 288px", maxWidth: 320 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14 }}>
             <strong>등록 업체</strong>
@@ -266,7 +266,7 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
       </aside>
 
       <div style={{ display: "flex", flex: "3 1 480px", flexDirection: "column", gap: "var(--space-4)", minWidth: 0 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "var(--space-3)", border: "1px solid var(--color-divider)", background: "#ffffff", padding: "var(--space-4)" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "var(--space-3)", border: "1px solid var(--color-divider)", borderRadius: 8, boxShadow: "var(--shadow-sm)", background: "#ffffff", padding: "var(--space-4)" }}>
           <div>
             <span style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }} className="text-muted">
               Partner Vendor
@@ -296,7 +296,7 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
           </p>
         )}
 
-        <section style={{ border: "1px solid var(--color-divider)", background: "#ffffff", padding: "var(--space-4)" }}>
+        <section style={{ border: "1px solid var(--color-divider)", borderRadius: 8, boxShadow: "var(--shadow-sm)", background: "#ffffff", padding: "var(--space-4)" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "var(--space-4)" }}>
             <strong style={{ fontSize: 14 }}>업체 문서</strong>
             <span className="text-muted" style={{ fontSize: 11 }}>
@@ -366,7 +366,7 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
           </div>
         </section>
 
-        <section style={{ border: "1px solid var(--color-divider)", background: "#ffffff", padding: "var(--space-4)" }}>
+        <section style={{ border: "1px solid var(--color-divider)", borderRadius: 8, boxShadow: "var(--shadow-sm)", background: "#ffffff", padding: "var(--space-4)" }}>
           <div style={{ marginBottom: "var(--space-3)" }}>
             <strong style={{ fontSize: 14 }}>사업자 정보</strong>
             <span className="text-muted" style={{ marginLeft: 8, fontSize: 11 }}>
@@ -385,7 +385,7 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
           </div>
         </section>
 
-        <section style={{ border: "1px solid var(--color-divider)", background: "#ffffff", padding: "var(--space-4)" }}>
+        <section style={{ border: "1px solid var(--color-divider)", borderRadius: 8, boxShadow: "var(--shadow-sm)", background: "#ffffff", padding: "var(--space-4)" }}>
           <div style={{ marginBottom: "var(--space-3)" }}>
             <strong style={{ fontSize: 14 }}>정산 계좌</strong>
             <span className="text-muted" style={{ marginLeft: 8, fontSize: 11 }}>
@@ -399,7 +399,7 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
           </div>
         </section>
 
-        <section style={{ border: "1px solid var(--color-divider)", background: "#ffffff", padding: "var(--space-4)" }}>
+        <section style={{ border: "1px solid var(--color-divider)", borderRadius: 8, boxShadow: "var(--shadow-sm)", background: "#ffffff", padding: "var(--space-4)" }}>
           <div style={{ marginBottom: "var(--space-3)" }}>
             <strong style={{ fontSize: 14 }}>담당자 정보</strong>
             <span className="text-muted" style={{ marginLeft: 8, fontSize: 11 }}>
@@ -414,7 +414,7 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
           </div>
         </section>
 
-        <section style={{ border: "1px solid var(--color-divider)", background: "#ffffff", padding: "var(--space-4)" }}>
+        <section style={{ border: "1px solid var(--color-divider)", borderRadius: 8, boxShadow: "var(--shadow-sm)", background: "#ffffff", padding: "var(--space-4)" }}>
           <strong style={{ display: "block", marginBottom: 8, fontSize: 14 }}>참고 사항</strong>
           <textarea
             value={draft.notes}

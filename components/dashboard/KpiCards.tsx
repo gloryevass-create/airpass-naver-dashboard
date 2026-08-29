@@ -10,7 +10,7 @@ export function KpiCards({ kpi }: { kpi: DashboardData["kpi"] }) {
   return (
     <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "var(--space-4)" }}>
       {cards.map((c) => (
-        <div key={c.label} className="card">
+        <div key={c.label} className="card" style={{ background: "#ffffff", borderRadius: 8, boxShadow: "var(--shadow-sm)" }}>
           <p style={{ margin: 0, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }} className="text-muted">
             {c.label}
           </p>

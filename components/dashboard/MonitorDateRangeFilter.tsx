@@ -63,7 +63,7 @@ export function MonitorDateRangeFilter({
   }
 
   return (
-    <div className="card">
+    <div className="card" style={{ background: "#ffffff", borderRadius: 8, boxShadow: "var(--shadow-sm)" }}>
       <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8, fontSize: 13 }}>
         <button type="button" onClick={() => shift(-1)} disabled={isPending} aria-label="이전 기간" className="btn btn-secondary btn-icon">
           {isPending && pendingAction === "prev" ? <Spinner dark /> : "◀"}

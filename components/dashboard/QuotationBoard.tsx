@@ -654,7 +654,7 @@ function QuotationForm({
     >
       {quotation && <input type="hidden" name="id" value={quotation.id} />}
 
-      <div style={{ minWidth: 0, flex: "3 1 480px", overflow: "hidden", border: "1px solid var(--color-divider)", background: "#ffffff" }}>
+      <div style={{ minWidth: 0, flex: "3 1 480px", overflow: "hidden", border: "1px solid var(--color-divider)", borderRadius: 8, boxShadow: "var(--shadow-sm)", background: "#ffffff" }}>
       {/* 산출내역 상단 레터헤드 바 — 인쇄용 화면과 톤을 맞춰 미리보기처럼 보이게 한다
           (고정 색상 — Industry 테마 색과 무관하게 실제 인쇄 문서 배색을 그대로 유지). */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "#262b3a", padding: "var(--space-4) var(--space-6)" }}>
@@ -843,7 +843,7 @@ function QuotationForm({
 
       {/* 영업 정보 — WHIZZUP 레퍼런스의 SALES INFO 패널. 협업 구분·내부 수익 분석은
           이 폼(화면)에만 보이고 인쇄용 화면에는 애초에 전달되지 않는다. */}
-      <div style={{ display: "flex", width: "100%", flexDirection: "column", gap: "var(--space-3)", border: "1px solid var(--color-divider)", background: "#ffffff", padding: "var(--space-4)", flex: "0 0 288px" }}>
+      <div style={{ display: "flex", width: "100%", flexDirection: "column", gap: "var(--space-3)", border: "1px solid var(--color-divider)", borderRadius: 8, boxShadow: "var(--shadow-sm)", background: "#ffffff", padding: "var(--space-4)", flex: "0 0 288px" }}>
         <div>
           <p style={{ margin: 0, fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.2em", color: "var(--color-accent)" }}>Sales Info</p>
           <p style={{ margin: "2px 0 0", fontSize: 14, fontWeight: 700 }}>영업 정보</p>
@@ -962,7 +962,7 @@ function QuotationCard({
     <div
       onClick={onEdit}
       className="card"
-      style={{ cursor: "pointer", display: "flex", flexDirection: "column", gap: "var(--space-3)", background: "#ffffff" }}
+      style={{ cursor: "pointer", display: "flex", flexDirection: "column", gap: "var(--space-3)", background: "#ffffff", borderRadius: 8, boxShadow: "var(--shadow-sm)" }}
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-3)", flexWrap: "wrap" }}>
         <div style={{ minWidth: 0, flex: 1 }}>
@@ -1056,7 +1056,7 @@ export function QuotationBoard({
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", border: "1px solid var(--color-divider)", background: "#ffffff", padding: "var(--space-2) var(--space-4)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", border: "1px solid var(--color-divider)", borderRadius: 8, boxShadow: "var(--shadow-sm)", background: "#ffffff", padding: "var(--space-2) var(--space-4)" }}>
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -1074,7 +1074,7 @@ export function QuotationBoard({
               <QuotationCard key={q.id} quotation={q} onEdit={() => setEditingId(q.id)} onPrintClick={(e) => e.stopPropagation()} />
             ))}
             {filtered.length === 0 && (
-              <p className="text-muted" style={{ border: "1px solid var(--color-divider)", background: "#ffffff", padding: "var(--space-6)", textAlign: "center", fontSize: 13 }}>
+              <p className="text-muted" style={{ border: "1px solid var(--color-divider)", borderRadius: 8, boxShadow: "var(--shadow-sm)", background: "#ffffff", padding: "var(--space-6)", textAlign: "center", fontSize: 13 }}>
                 {quotations.length === 0 ? "등록된 산출내역이 없습니다." : "검색 결과가 없습니다."}
               </p>
             )}

@@ -36,7 +36,7 @@ export default async function KeywordsPage({ searchParams }: { searchParams: Sea
 
       <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
         {!dashboard.latestDate && (
-          <div className="card">
+          <div className="card" style={{ background: "#ffffff", borderRadius: 8, boxShadow: "var(--shadow-sm)" }}>
             <p style={{ margin: 0, fontSize: 13 }} className="text-muted">
               아직 모니터링 에이전트가 수집한 데이터가 없습니다. 파이프라인이 최소 1회 실행되면 여기에
               결과가 표시됩니다.
@@ -49,7 +49,7 @@ export default async function KeywordsPage({ searchParams }: { searchParams: Sea
         <KpiCards kpi={dashboard.kpi} />
 
         <section style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-6)" }}>
-          <div className="card">
+          <div className="card" style={{ background: "#ffffff", borderRadius: 8, boxShadow: "var(--shadow-sm)" }}>
             <h2 style={{ margin: "0 0 var(--space-3)", display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600 }} className="text-muted">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M3 3v18h18" />
@@ -59,7 +59,7 @@ export default async function KeywordsPage({ searchParams }: { searchParams: Sea
             </h2>
             <RankTrendChart data={dashboard.rankTrend} />
           </div>
-          <div className="card">
+          <div className="card" style={{ background: "#ffffff", borderRadius: 8, boxShadow: "var(--shadow-sm)" }}>
             <HotKeywordTreemap keywordTable={dashboard.keywordTable} />
           </div>
         </section>
