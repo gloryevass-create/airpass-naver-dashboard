@@ -87,51 +87,38 @@ function ProductForm({
         await formAction(formData);
         onDone();
       }}
-      className="flex flex-col gap-3 rounded-sm border border-hairline bg-canvas-cream p-4"
+      style={{ border: "1px solid var(--color-divider)", background: "#ffffff", padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}
     >
       {product && <input type="hidden" name="id" value={product.id} />}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <label className="flex flex-col gap-1 text-xs text-ink-mute">
-          제품명 *
-          <input
-            name="name"
-            defaultValue={product?.name ?? ""}
-            required
-            className="rounded-md border border-hairline px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
-          />
-        </label>
-        <label className="flex flex-col gap-1 text-xs text-ink-mute">
-          규격
-          <input
-            name="specification"
-            defaultValue={product?.specification ?? ""}
-            className="rounded-md border border-hairline px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
-          />
-        </label>
-        <label className="flex flex-col gap-1 text-xs text-ink-mute">
-          단가(원)
-          <input
-            name="unitPrice"
-            type="number"
-            defaultValue={product?.unitPrice ?? ""}
-            className="rounded-md border border-hairline px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
-          />
-        </label>
-        <label className="flex flex-col gap-1 text-xs text-ink-mute">
-          공급방식
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-3)" }}>
+        <div className="field">
+          <label>제품명 *</label>
+          <input className="input" name="name" defaultValue={product?.name ?? ""} required />
+        </div>
+        <div className="field">
+          <label>규격</label>
+          <input className="input" name="specification" defaultValue={product?.specification ?? ""} />
+        </div>
+        <div className="field">
+          <label>단가(원)</label>
+          <input className="input" name="unitPrice" type="number" defaultValue={product?.unitPrice ?? ""} />
+        </div>
+        <div className="field">
+          <label>공급방식</label>
           <select
+            className="input"
             name="supplyType"
             value={supplyType}
             onChange={(e) => setSupplyType(e.target.value as "partner" | "direct")}
-            className="rounded-md border border-hairline bg-background px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
           >
             <option value="partner">협력사 공급 (수수료율)</option>
             <option value="direct">직공급 (마진율)</option>
           </select>
-        </label>
-        <label className="flex flex-col gap-1 text-xs text-ink-mute">
-          {supplyType === "partner" ? "수수료율(%)" : "마진율(%)"}
+        </div>
+        <div className="field">
+          <label>{supplyType === "partner" ? "수수료율(%)" : "마진율(%)"}</label>
           <input
+            className="input"
             name="rate"
             type="number"
             step="0.1"
@@ -140,41 +127,23 @@ function ProductForm({
                 ? ((supplyType === "partner" ? product.commissionRate : product.marginRate) ?? 0) * 100 || ""
                 : ""
             }
-            className="rounded-md border border-hairline px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
           />
-        </label>
-        <label className="flex flex-col gap-1 text-xs text-ink-mute">
-          참고 링크
-          <input
-            name="reference"
-            defaultValue={product?.reference ?? ""}
-            className="rounded-md border border-hairline px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
-          />
-        </label>
-        <label className="flex flex-col gap-1 text-xs text-ink-mute sm:col-span-2">
-          비고 (G2B/S2B 등 조달 식별번호가 포함돼 있으면 자동으로 채널·번호를 인식합니다)
-          <input
-            name="note"
-            defaultValue={product?.note ?? ""}
-            placeholder="예: ㈜에어패스 G2B : 24563902"
-            className="rounded-md border border-hairline px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
-          />
-        </label>
+        </div>
+        <div className="field">
+          <label>참고 링크</label>
+          <input className="input" name="reference" defaultValue={product?.reference ?? ""} />
+        </div>
+        <div className="field" style={{ gridColumn: "1 / -1" }}>
+          <label>비고 (G2B/S2B 등 조달 식별번호가 포함돼 있으면 자동으로 채널·번호를 인식합니다)</label>
+          <input className="input" name="note" defaultValue={product?.note ?? ""} placeholder="예: ㈜에어패스 G2B : 24563902" />
+        </div>
       </div>
-      {state?.error && <p className="text-sm text-semantic-error">{state.error}</p>}
-      <div className="flex gap-2">
-        <button
-          type="submit"
-          disabled={pending}
-          className="rounded-lg bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press disabled:opacity-50"
-        >
+      {state?.error && <p style={{ color: "var(--color-accent-900)", fontSize: 13 }}>{state.error}</p>}
+      <div style={{ display: "flex", gap: "var(--space-2)" }}>
+        <button type="submit" disabled={pending} className="btn btn-primary">
           {pending ? "저장 중..." : product ? "수정 저장" : "제품 추가"}
         </button>
-        <button
-          type="button"
-          onClick={onDone}
-          className="rounded-lg border border-hairline px-4 py-1.5 text-xs font-medium text-ink hover:bg-[#f7f7f8]"
-        >
+        <button type="button" onClick={onDone} className="btn btn-secondary">
           취소
         </button>
       </div>
@@ -218,35 +187,26 @@ function ImportPreview({
   }
 
   return (
-    <div className="flex flex-col gap-3 rounded-sm border border-hairline bg-canvas-cream p-4">
-      <p className="text-sm text-ink">
-        총 {rows.length}행 중 <strong className="text-primary">{valid.length}건 가져오기 가능</strong>
-        {invalid.length > 0 && <span className="text-semantic-error"> · {invalid.length}건 오류(제외됨)</span>}
+    <div style={{ border: "1px solid var(--color-divider)", background: "#ffffff", padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+      <p style={{ fontSize: 13, margin: 0 }}>
+        총 {rows.length}행 중 <strong style={{ color: "var(--color-accent-700)" }}>{valid.length}건 가져오기 가능</strong>
+        {invalid.length > 0 && <span style={{ color: "var(--color-accent-900)" }}> · {invalid.length}건 오류(제외됨)</span>}
       </p>
       {invalid.length > 0 && (
-        <div className="max-h-40 overflow-y-auto rounded-md border border-hairline bg-background p-2 text-xs text-semantic-error">
+        <div style={{ maxHeight: 160, overflowY: "auto", border: "1px solid var(--color-divider)", padding: "var(--space-2)", fontSize: 12, color: "var(--color-accent-900)" }}>
           {invalid.map((r) => (
-            <p key={r.rowNumber}>
+            <p key={r.rowNumber} style={{ margin: "2px 0" }}>
               {r.rowNumber}행 ({r.name || "이름 없음"}): {r.errors.join(", ")}
             </p>
           ))}
         </div>
       )}
-      {message && <p className="text-sm text-semantic-error">{message}</p>}
-      <div className="flex gap-2">
-        <button
-          type="button"
-          onClick={handleImport}
-          disabled={pending || valid.length === 0}
-          className="rounded-lg bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press disabled:opacity-50"
-        >
+      {message && <p style={{ color: "var(--color-accent-900)", fontSize: 13 }}>{message}</p>}
+      <div style={{ display: "flex", gap: "var(--space-2)" }}>
+        <button type="button" onClick={handleImport} disabled={pending || valid.length === 0} className="btn btn-primary">
           {pending ? "가져오는 중..." : `${valid.length}건 가져오기`}
         </button>
-        <button
-          type="button"
-          onClick={onCancel}
-          className="rounded-lg border border-hairline px-4 py-1.5 text-xs font-medium text-ink hover:bg-[#f7f7f8]"
-        >
+        <button type="button" onClick={onCancel} className="btn btn-secondary">
           취소
         </button>
       </div>
@@ -398,57 +358,42 @@ export function ProductCatalogTable({
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
       {importRows && (
-        <ImportPreview
-          rows={importRows}
-          onCancel={() => setImportRows(null)}
-          onImported={() => setImportRows(null)}
-        />
+        <ImportPreview rows={importRows} onCancel={() => setImportRows(null)} onImported={() => setImportRows(null)} />
       )}
       {editing === "new" && <ProductForm product={null} onDone={() => setEditing(null)} />}
       {editing && editing !== "new" && <ProductForm product={editing} onDone={() => setEditing(null)} />}
 
-      <div className="flex flex-col overflow-hidden rounded-sm border border-hairline bg-canvas-cream">
-        <div className="flex flex-wrap items-center gap-3 p-4 text-sm">
+      <div style={{ display: "flex", flexDirection: "column", border: "1px solid var(--color-divider)", background: "#ffffff" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "var(--space-3)", padding: "var(--space-4)", fontSize: 13 }}>
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="제품명·규격·비고 검색"
-            className="rounded-sm border border-hairline bg-background px-3 py-1.5 text-ink outline-none focus:border-primary"
+            className="input"
+            style={{ width: 220 }}
           />
-          <span className="text-xs text-ink-mute">
-            전체 <strong className="text-ink">{products.length.toLocaleString("ko-KR")}</strong>건 중{" "}
-            <strong className="text-ink">{filtered.length.toLocaleString("ko-KR")}</strong>건 표시 중입니다.
+          <span className="text-muted" style={{ fontSize: 12 }}>
+            전체 <strong style={{ color: "var(--color-text)" }}>{products.length.toLocaleString("ko-KR")}</strong>건 중{" "}
+            <strong style={{ color: "var(--color-text)" }}>{filtered.length.toLocaleString("ko-KR")}</strong>건 표시 중입니다.
           </span>
-          <div className="ml-auto flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => downloadCsv(products)}
-              className="flex items-center gap-1.5 rounded-lg border border-hairline bg-background px-4 py-1.5 text-xs font-bold text-ink hover:bg-[#f7f7f8]"
-            >
+          <div style={{ marginLeft: "auto", display: "flex", flexWrap: "wrap", gap: "var(--space-2)" }}>
+            <button type="button" onClick={() => downloadCsv(products)} className="btn btn-secondary">
               CSV 다운로드
             </button>
-            <button
-              type="button"
-              onClick={() => downloadWorkbook([], "제품카탈로그_양식.xlsx")}
-              className="flex items-center gap-1.5 rounded-lg border border-hairline bg-background px-4 py-1.5 text-xs font-bold text-ink hover:bg-[#f7f7f8]"
-            >
+            <button type="button" onClick={() => downloadWorkbook([], "제품카탈로그_양식.xlsx")} className="btn btn-secondary">
               엑셀 양식 다운로드
             </button>
             <button
               type="button"
               onClick={() => downloadWorkbook(products, `제품카탈로그_${new Date().toISOString().slice(0, 10)}.xlsx`)}
-              className="flex items-center gap-1.5 rounded-lg border border-hairline bg-background px-4 py-1.5 text-xs font-bold text-ink hover:bg-[#f7f7f8]"
+              className="btn btn-secondary"
             >
               엑셀 내보내기
             </button>
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="flex items-center gap-1.5 rounded-lg border border-hairline bg-background px-4 py-1.5 text-xs font-bold text-ink hover:bg-[#f7f7f8]"
-            >
+            <button type="button" onClick={() => fileInputRef.current?.click()} className="btn btn-secondary">
               엑셀로 가져오기
             </button>
             <input
@@ -458,59 +403,55 @@ export function ProductCatalogTable({
               onChange={(e) => void handleFileSelected(e.target.files)}
               hidden
             />
-            <button
-              type="button"
-              onClick={() => setEditing("new")}
-              className="flex items-center gap-1.5 rounded-lg bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press"
-            >
+            <button type="button" onClick={() => setEditing("new")} className="btn btn-primary">
               + 새 제품 추가
             </button>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 border-t border-hairline px-4 py-2 text-xs">
-          <button
-            type="button"
-            onClick={() => setFavoritesOnly(false)}
-            className={`rounded-lg px-3 py-1 font-bold transition-colors ${
-              !favoritesOnly ? "bg-primary text-white" : "bg-background text-ink-mute hover:text-ink"
-            }`}
-          >
+        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "var(--space-2)", borderTop: "1px solid var(--color-divider)", padding: "var(--space-2) var(--space-4)" }}>
+          <button type="button" onClick={() => setFavoritesOnly(false)} className={`seg-opt${!favoritesOnly ? " active" : ""}`} style={{ border: "1px solid var(--color-divider)" }}>
             전체
           </button>
           <button
             type="button"
             onClick={() => setFavoritesOnly((v) => !v)}
-            className={`rounded-lg px-3 py-1 font-bold transition-colors ${
-              favoritesOnly ? "bg-primary text-white" : "bg-background text-ink-mute hover:text-ink"
-            }`}
+            className={`seg-opt${favoritesOnly ? " active" : ""}`}
+            style={{ border: "1px solid var(--color-divider)" }}
           >
             ★ 즐겨찾기 {favoriteCount.toLocaleString("ko-KR")}
           </button>
         </div>
 
         <div
-          className={`flex flex-wrap items-center gap-3 border-t p-3 text-xs transition-colors ${
-            selected.size > 0 ? "border-primary/30 bg-canvas-lavender/30" : "border-hairline"
-          }`}
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            gap: "var(--space-3)",
+            borderTop: "1px solid var(--color-divider)",
+            padding: "var(--space-3)",
+            fontSize: 12,
+            background: selected.size > 0 ? "var(--color-accent-100)" : undefined,
+          }}
         >
-          <label className="flex items-center gap-1.5 text-ink-mute">
+          <label style={{ display: "inline-flex", alignItems: "center", gap: 6 }} className="text-muted">
             <input
               type="checkbox"
               checked={filtered.length > 0 && selected.size === filtered.length}
               onChange={toggleSelectAll}
+              style={{ accentColor: "var(--color-accent)" }}
             />
             현재 목록 전체 선택
           </label>
-          <span className="rounded-full bg-background px-2.5 py-1 font-semibold text-ink">
-            {selected.size.toLocaleString("ko-KR")}개 선택됨
-          </span>
-          <div className="ml-auto flex items-center gap-2">
+          <span className="tag tag-neutral">{selected.size.toLocaleString("ko-KR")}개 선택됨</span>
+          <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
             <select
               value={bulkVendorId}
               onChange={(e) => setBulkVendorId(e.target.value)}
               disabled={selected.size === 0}
-              className="rounded-sm border border-hairline bg-background px-2 py-1.5 text-ink disabled:opacity-50"
+              className="input"
+              style={{ minHeight: 30, fontSize: 12 }}
             >
               <option value="__choose__">공급 협력사 선택</option>
               <option value="__none__">협력사 연결 해제</option>
@@ -524,146 +465,129 @@ export function ProductCatalogTable({
               type="button"
               onClick={handleBulkAssign}
               disabled={selected.size === 0 || bulkVendorId === "__choose__"}
-              className="rounded-lg bg-primary px-4 py-1.5 font-bold text-white hover:bg-primary-press disabled:opacity-50"
+              className="btn btn-primary"
             >
               선택 제품 일괄 적용
             </button>
           </div>
         </div>
 
-        <div className="max-h-[70vh] overflow-auto border-t border-hairline">
-          <table className="w-full border-collapse text-xs">
-          <thead className="sticky top-0 z-10 bg-[#f7f8fb] text-center text-[#778299]">
-            <tr>
-              <th className="whitespace-nowrap border border-hairline px-3 py-2.5 font-bold">선택·품명</th>
-              <th className="whitespace-nowrap border border-hairline px-3 py-2.5 font-bold">규격</th>
-              <th className="whitespace-nowrap border border-hairline px-3 py-2.5 font-bold">단가</th>
-              <th className="whitespace-nowrap border border-hairline px-3 py-2.5 font-bold">공급방식</th>
-              <th className="whitespace-nowrap border border-hairline px-3 py-2.5 font-bold">협력사</th>
-              <th className="whitespace-nowrap border border-hairline px-3 py-2.5 font-bold">수수료/마진율</th>
-              <th className="whitespace-nowrap border border-hairline px-3 py-2.5 font-bold">조달정보</th>
-              <th className="whitespace-nowrap border border-hairline px-3 py-2.5 font-bold">비고</th>
-              <th className="whitespace-nowrap border border-hairline px-3 py-2.5 font-bold">관리</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((p, index) => {
-              const reorderDisabledReason = !canReorder
-                ? "정렬 순서 변경은 검색어·즐겨찾기 필터 없이 전체 보기에서만 가능합니다."
-                : null;
-              // 즐겨찾기는 항상 맨 위 그룹으로 묶여 보이므로, 그 그룹 경계를 넘는 이동은 막는다
-              // (참고 사이트와 동일 — 일반 항목 자리로 즐겨찾기가 섞여 들어가지 않게).
-              const prev = filtered[index - 1];
-              const next = filtered[index + 1];
-              const canMoveUp = canReorder && index > 0 && prev.isFavorite === p.isFavorite;
-              const canMoveDown = canReorder && index < filtered.length - 1 && next.isFavorite === p.isFavorite;
-              return (
-              <tr
-                key={p.id}
-                className={`hover:bg-canvas-lavender/20 ${p.isFavorite ? "bg-[#fffdf5]" : "bg-canvas-cream"}`}
-              >
-                <td className="whitespace-nowrap border border-hairline px-3 py-2 font-medium text-ink">
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={selected.has(p.id)}
-                      onChange={() => toggleSelect(p.id)}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => handleToggleFavorite(p.id)}
-                      title={p.isFavorite ? "즐겨찾기 해제" : "즐겨찾기 추가"}
-                      className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-[7px] border text-lg leading-none ${
-                        p.isFavorite
-                          ? "border-[#e8c56f] bg-[#fff9e8] text-[#e3a51b]"
-                          : "border-hairline bg-canvas-cream text-[#a7afbe] hover:border-[#e8c56f] hover:bg-[#fff9e8] hover:text-[#e3a51b]"
-                      }`}
-                    >
-                      {p.isFavorite ? "★" : "☆"}
-                    </button>
-                    <div className="flex shrink-0 gap-[3px]">
-                      <button
-                        type="button"
-                        onClick={() => handleMove(p.id, "up")}
-                        disabled={!canMoveUp}
-                        title={reorderDisabledReason ?? "위로"}
-                        className="flex h-[25px] w-6 items-center justify-center rounded-[5px] border border-hairline bg-canvas-cream text-xs font-extrabold text-[#526887] hover:border-[#9eaded] hover:bg-[#f5f7ff] hover:text-[#3652a4] disabled:cursor-not-allowed disabled:opacity-35"
-                      >
-                        ↑
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleMove(p.id, "down")}
-                        disabled={!canMoveDown}
-                        title={reorderDisabledReason ?? "아래로"}
-                        className="flex h-[25px] w-6 items-center justify-center rounded-[5px] border border-hairline bg-canvas-cream text-xs font-extrabold text-[#526887] hover:border-[#9eaded] hover:bg-[#f5f7ff] hover:text-[#3652a4] disabled:cursor-not-allowed disabled:opacity-35"
-                      >
-                        ↓
-                      </button>
-                    </div>
-                    {p.needsReview && <span className="text-semantic-error">!</span>}
-                    <span>{p.name}</span>
-                  </div>
-                </td>
-                <td className="border border-hairline px-3 py-2 text-ink-mute">{p.specification ?? "-"}</td>
-                <td className="whitespace-nowrap border border-hairline px-3 py-2 text-center font-medium text-ink">
-                  {formatWon(p.unitPrice)}
-                </td>
-                <td className="whitespace-nowrap border border-hairline px-3 py-2 text-center text-ink-mute">
-                  {p.supplyType === "partner" ? "협력사" : "직공급"}
-                </td>
-                <td className="whitespace-nowrap border border-hairline px-3 py-2 text-center text-ink-mute">
-                  {p.supplyType === "partner" ? (p.supplierVendorName ?? "-") : "-"}
-                </td>
-                <td className="whitespace-nowrap border border-hairline px-3 py-2 text-center">
-                  {(p.supplyType === "partner" ? p.commissionRate : p.marginRate) != null ? (
-                    <span className="rounded-full bg-canvas-lavender px-2 py-0.5 text-[11px] font-semibold text-primary">
-                      {formatRate(p.supplyType === "partner" ? p.commissionRate : p.marginRate)}
-                    </span>
-                  ) : (
-                    <span className="text-ink-mute">-</span>
-                  )}
-                </td>
-                <td className="whitespace-nowrap border border-hairline px-3 py-2 text-center">
-                  {p.procurement ? (
-                    <span className="rounded-full bg-background px-2 py-0.5 text-[11px] font-medium text-ink-mute">
-                      {`${p.procurementChannel ?? ""} ${p.procurementNumber ?? ""}`.trim()}
-                    </span>
-                  ) : (
-                    <span className="text-ink-mute">-</span>
-                  )}
-                </td>
-                <td className="border border-hairline px-3 py-2 text-ink-mute">{p.note ?? "-"}</td>
-                <td className="whitespace-nowrap border border-hairline px-3 py-2">
-                  <div className="flex justify-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setEditing(p)}
-                      className="text-link-blue hover:underline"
-                    >
-                      수정
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleDelete(p.id)}
-                      className="text-semantic-error hover:underline"
-                    >
-                      삭제
-                    </button>
-                  </div>
-                </td>
-              </tr>
-              );
-            })}
-            {filtered.length === 0 && (
+        <div style={{ maxHeight: "70vh", overflow: "auto", borderTop: "1px solid var(--color-divider)" }}>
+          <table className="table">
+            <thead>
               <tr>
-                <td colSpan={9} className="border border-hairline px-4 py-6 text-center text-ink-mute">
-                  조건에 맞는 제품이 없습니다.
-                </td>
+                <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>선택·품명</th>
+                <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>규격</th>
+                <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>단가</th>
+                <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>공급방식</th>
+                <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>협력사</th>
+                <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>수수료/마진율</th>
+                <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>조달정보</th>
+                <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>비고</th>
+                <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>관리</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filtered.map((p, index) => {
+                const reorderDisabledReason = !canReorder
+                  ? "정렬 순서 변경은 검색어·즐겨찾기 필터 없이 전체 보기에서만 가능합니다."
+                  : null;
+                // 즐겨찾기는 항상 맨 위 그룹으로 묶여 보이므로, 그 그룹 경계를 넘는 이동은 막는다
+                // (참고 사이트와 동일 — 일반 항목 자리로 즐겨찾기가 섞여 들어가지 않게).
+                const prev = filtered[index - 1];
+                const next = filtered[index + 1];
+                const canMoveUp = canReorder && index > 0 && prev.isFavorite === p.isFavorite;
+                const canMoveDown = canReorder && index < filtered.length - 1 && next.isFavorite === p.isFavorite;
+                return (
+                  <tr key={p.id} style={{ background: p.isFavorite ? "var(--color-accent-100)" : undefined }}>
+                    <td>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <input type="checkbox" checked={selected.has(p.id)} onChange={() => toggleSelect(p.id)} style={{ accentColor: "var(--color-accent)" }} />
+                        <button
+                          type="button"
+                          onClick={() => handleToggleFavorite(p.id)}
+                          title={p.isFavorite ? "즐겨찾기 해제" : "즐겨찾기 추가"}
+                          className="btn btn-ghost btn-icon"
+                          style={{ color: p.isFavorite ? "#e3a51b" : undefined, fontSize: 15 }}
+                        >
+                          {p.isFavorite ? "★" : "☆"}
+                        </button>
+                        <div style={{ display: "flex", flex: "none", gap: 2 }}>
+                          <button
+                            type="button"
+                            onClick={() => handleMove(p.id, "up")}
+                            disabled={!canMoveUp}
+                            title={reorderDisabledReason ?? "위로"}
+                            className="btn btn-secondary btn-icon"
+                            style={{ width: 22, height: 22, fontSize: 11, minHeight: "auto" }}
+                          >
+                            ↑
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleMove(p.id, "down")}
+                            disabled={!canMoveDown}
+                            title={reorderDisabledReason ?? "아래로"}
+                            className="btn btn-secondary btn-icon"
+                            style={{ width: 22, height: 22, fontSize: 11, minHeight: "auto" }}
+                          >
+                            ↓
+                          </button>
+                        </div>
+                        {p.needsReview && <span style={{ color: "var(--color-accent-900)" }}>!</span>}
+                        <span style={{ whiteSpace: "normal" }}>{p.name}</span>
+                      </div>
+                    </td>
+                    <td className="text-muted" style={{ whiteSpace: "normal" }}>
+                      {p.specification ?? "-"}
+                    </td>
+                    <td style={{ fontWeight: 600 }}>{formatWon(p.unitPrice)}</td>
+                    <td className="text-muted">{p.supplyType === "partner" ? "협력사" : "직공급"}</td>
+                    <td className="text-muted">{p.supplyType === "partner" ? (p.supplierVendorName ?? "-") : "-"}</td>
+                    <td>
+                      {(p.supplyType === "partner" ? p.commissionRate : p.marginRate) != null ? (
+                        <span className="tag tag-accent">{formatRate(p.supplyType === "partner" ? p.commissionRate : p.marginRate)}</span>
+                      ) : (
+                        <span className="text-muted">-</span>
+                      )}
+                    </td>
+                    <td>
+                      {p.procurement ? (
+                        <span className="tag tag-outline">{`${p.procurementChannel ?? ""} ${p.procurementNumber ?? ""}`.trim()}</span>
+                      ) : (
+                        <span className="text-muted">-</span>
+                      )}
+                    </td>
+                    <td className="text-muted" style={{ whiteSpace: "normal" }}>
+                      {p.note ?? "-"}
+                    </td>
+                    <td>
+                      <div style={{ display: "flex", justifyContent: "center", gap: 8 }}>
+                        <button type="button" onClick={() => setEditing(p)} className="btn btn-ghost" style={{ fontSize: 12 }}>
+                          수정
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(p.id)}
+                          className="btn btn-ghost"
+                          style={{ fontSize: 12, color: "var(--color-accent-900)" }}
+                        >
+                          삭제
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+              {filtered.length === 0 && (
+                <tr>
+                  <td colSpan={9} className="text-muted" style={{ textAlign: "center", padding: "var(--space-6)" }}>
+                    조건에 맞는 제품이 없습니다.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

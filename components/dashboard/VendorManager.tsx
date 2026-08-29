@@ -196,32 +196,22 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
 
   function inputField(key: keyof VendorDraft, label: string, wide?: boolean) {
     return (
-      <label className={`flex flex-col gap-1 text-xs text-ink-mute ${wide ? "sm:col-span-2" : ""}`}>
-        {label}
-        <input
-          value={draft[key]}
-          onChange={(e) => updateDraft(key, e.target.value)}
-          className="rounded-sm border border-hairline px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
-        />
-      </label>
+      <div className="field" style={wide ? { gridColumn: "1 / -1" } : undefined}>
+        <label>{label}</label>
+        <input className="input" value={draft[key]} onChange={(e) => updateDraft(key, e.target.value)} />
+      </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-4 lg:flex-row">
-      <aside className="flex w-full flex-col gap-3 rounded-lg border border-hairline bg-canvas-cream p-4 lg:w-72 lg:shrink-0">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-sm">
-            <strong className="text-ink">등록 업체</strong>
-            <span className="rounded-md bg-background px-2 py-0.5 text-xs font-semibold text-ink-mute">
-              {vendors.length}곳
-            </span>
+    <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-4)" }}>
+      <aside style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)", border: "1px solid var(--color-divider)", background: "#ffffff", padding: "var(--space-4)", flex: "1 1 288px", maxWidth: 320 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14 }}>
+            <strong>등록 업체</strong>
+            <span className="tag tag-neutral">{vendors.length}곳</span>
           </div>
-          <button
-            type="button"
-            onClick={newVendor}
-            className="rounded-lg border border-primary px-3 py-1 text-xs font-bold text-primary hover:bg-canvas-lavender"
-          >
+          <button type="button" onClick={newVendor} className="btn btn-secondary" style={{ fontSize: 12 }}>
             + 새 업체
           </button>
         </div>
@@ -230,105 +220,134 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="업체명·사업자번호·담당자 검색"
-          className="rounded-sm border border-hairline bg-background px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
+          className="input"
         />
-        <div className="-mx-4 flex max-h-[32rem] flex-col gap-1 overflow-y-auto">
+        <div style={{ margin: "0 calc(var(--space-4) * -1)", display: "flex", maxHeight: "32rem", flexDirection: "column", gap: 2, overflowY: "auto" }}>
           {filtered.map((v) => (
             <button
               key={v.id}
               type="button"
               onClick={() => choose(v)}
-              className={`flex w-full flex-col gap-0.5 border-l-2 px-4 py-2 text-left text-sm transition-colors ${
-                selected?.id === v.id
-                  ? "border-l-primary bg-canvas-lavender/60"
-                  : "border-l-transparent hover:bg-[#f7f7f8]"
-              }`}
+              style={{
+                display: "flex",
+                width: "100%",
+                flexDirection: "column",
+                gap: 2,
+                borderLeft: `2px solid ${selected?.id === v.id ? "var(--color-accent)" : "transparent"}`,
+                padding: "var(--space-2) var(--space-4)",
+                textAlign: "left",
+                fontSize: 13,
+                background: selected?.id === v.id ? "var(--color-accent-100)" : "transparent",
+                border: 0,
+                borderLeftWidth: 2,
+                borderLeftStyle: "solid",
+                borderLeftColor: selected?.id === v.id ? "var(--color-accent)" : "transparent",
+                cursor: "pointer",
+                font: "inherit",
+              }}
             >
-              <span className={`font-medium ${selected?.id === v.id ? "text-primary" : "text-ink"}`}>
+              <span style={{ fontWeight: 600, color: selected?.id === v.id ? "var(--color-accent-700)" : "var(--color-text)" }}>
                 {v.companyName}
               </span>
-              <span className="text-xs text-ink-mute">{v.businessNumber || "사업자번호 미등록"}</span>
-              <span className="text-xs text-ink-mute">
+              <span className="text-muted" style={{ fontSize: 11 }}>
+                {v.businessNumber || "사업자번호 미등록"}
+              </span>
+              <span className="text-muted" style={{ fontSize: 11 }}>
                 {v.contactName || v.phone || "담당자 정보 미등록"}
               </span>
             </button>
           ))}
-          {filtered.length === 0 && <p className="px-4 py-6 text-center text-sm text-ink-mute">등록된 업체가 없습니다.</p>}
+          {filtered.length === 0 && (
+            <p className="text-muted" style={{ padding: "var(--space-6) var(--space-4)", textAlign: "center", fontSize: 13 }}>
+              등록된 업체가 없습니다.
+            </p>
+          )}
         </div>
       </aside>
 
-      <div className="flex flex-1 flex-col gap-4">
-        <div className="flex items-center justify-between rounded-sm border border-hairline bg-canvas-cream p-4">
+      <div style={{ display: "flex", flex: "3 1 480px", flexDirection: "column", gap: "var(--space-4)", minWidth: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "var(--space-3)", border: "1px solid var(--color-divider)", background: "#ffffff", padding: "var(--space-4)" }}>
           <div>
-            <span className="text-xs font-semibold uppercase tracking-wide text-ink-mute">Partner Vendor</span>
-            <h2 className="mt-0.5 text-lg font-bold text-ink">
+            <span style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }} className="text-muted">
+              Partner Vendor
+            </span>
+            <h2 style={{ margin: "2px 0 0", fontFamily: "var(--font-heading)", fontSize: 20, fontWeight: 600 }}>
               {selected ? selected.companyName || "업체 정보" : "새 협력사 등록"}
             </h2>
-            <p className="mt-0.5 text-xs text-ink-mute">문서를 올리면 내용을 자동 입력하며, 모든 항목은 직접 수정할 수 있습니다.</p>
+            <p className="text-muted" style={{ margin: "2px 0 0", fontSize: 12 }}>
+              문서를 올리면 내용을 자동 입력하며, 모든 항목은 직접 수정할 수 있습니다.
+            </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
             {selected && (
-              <button
-                type="button"
-                onClick={() => handleDeleteVendor(selected.id)}
-                className="rounded-sm border border-hairline bg-background px-4 py-1.5 text-xs font-medium text-semantic-error hover:bg-[#f7f7f8]"
-              >
+              <button type="button" onClick={() => handleDeleteVendor(selected.id)} className="btn btn-secondary btn-danger">
                 삭제
               </button>
             )}
-            <button
-              type="button"
-              onClick={handleSave}
-              disabled={saving}
-              className="rounded-sm bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press disabled:opacity-50"
-            >
+            <button type="button" onClick={handleSave} disabled={saving} className="btn btn-primary">
               {saving ? "저장 중..." : "업체 정보 저장"}
             </button>
           </div>
         </div>
 
         {(message || error) && (
-          <p className={`text-sm ${error ? "text-semantic-error" : "text-ink-mute"}`}>{error || message}</p>
+          <p style={{ fontSize: 13, color: error ? "var(--color-accent-900)" : undefined }} className={error ? undefined : "text-muted"}>
+            {error || message}
+          </p>
         )}
 
-        <section className="rounded-sm border border-hairline bg-canvas-cream p-4">
-          <div className="mb-4 flex items-center justify-between">
-            <strong className="text-sm font-bold text-ink">업체 문서</strong>
-            <span className="text-xs text-ink-mute">JPG·PNG·WebP·PDF, 파일당 12MB 이하</span>
+        <section style={{ border: "1px solid var(--color-divider)", background: "#ffffff", padding: "var(--space-4)" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "var(--space-4)" }}>
+            <strong style={{ fontSize: 14 }}>업체 문서</strong>
+            <span className="text-muted" style={{ fontSize: 11 }}>
+              JPG·PNG·WebP·PDF, 파일당 12MB 이하
+            </span>
           </div>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "var(--space-3)" }}>
             {DOCUMENT_TYPES.map((type) => {
               const docs = selected?.documents.filter((d) => d.documentType === type) ?? [];
               return (
-                <div key={type} className="flex flex-col gap-2 rounded-sm border border-hairline bg-[#f7f7f8] p-3">
+                <div key={type} style={{ display: "flex", flexDirection: "column", gap: 8, border: "1px solid var(--color-divider)", background: "var(--color-surface)", padding: "var(--space-3)" }}>
                   <div>
-                    <b className="text-sm text-ink">{DOCUMENT_LABELS[type]}</b>
-                    <p className="text-xs text-ink-mute">{DOCUMENT_HINTS[type]}</p>
+                    <b style={{ fontSize: 13 }}>{DOCUMENT_LABELS[type]}</b>
+                    <p className="text-muted" style={{ margin: "2px 0 0", fontSize: 11 }}>
+                      {DOCUMENT_HINTS[type]}
+                    </p>
                   </div>
                   {docs.map((doc) => (
-                    <div key={doc.id} className="flex items-center justify-between gap-2 text-xs">
+                    <div key={doc.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, fontSize: 11 }}>
                       {doc.signedUrl ? (
-                        <a
-                          href={doc.signedUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="truncate text-link-blue hover:underline"
-                        >
+                        <a href={doc.signedUrl} target="_blank" rel="noopener noreferrer" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                           {doc.originalName}
                         </a>
                       ) : (
-                        <span className="truncate text-ink-mute">{doc.originalName}</span>
+                        <span className="text-muted" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {doc.originalName}
+                        </span>
                       )}
                       <button
                         type="button"
                         onClick={() => handleDeleteDocument(doc.id, doc.storagePath)}
-                        className="shrink-0 text-semantic-error hover:underline"
+                        style={{ flex: "none", background: "none", border: 0, padding: 0, color: "var(--color-accent-900)", cursor: "pointer", font: "inherit", fontSize: 11 }}
                       >
                         삭제
                       </button>
                     </div>
                   ))}
-                  <label className="flex cursor-pointer items-center justify-center rounded-sm border border-dashed border-primary/40 bg-background px-3 py-2 text-xs font-medium text-ink-mute transition-colors hover:border-primary hover:text-primary">
+                  <label
+                    style={{
+                      display: "flex",
+                      cursor: "pointer",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      border: "1px dashed var(--color-accent)",
+                      background: "#ffffff",
+                      padding: "var(--space-2) var(--space-3)",
+                      fontSize: 11,
+                      fontWeight: 500,
+                    }}
+                    className="text-muted"
+                  >
                     <input
                       ref={(el) => {
                         fileInputRefs.current[type] = el;
@@ -337,7 +356,7 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
                       accept="image/jpeg,image/png,image/webp,application/pdf"
                       disabled={uploading !== null}
                       onChange={(e) => void handleUpload(type, e.target.files)}
-                      className="hidden"
+                      hidden
                     />
                     {uploading === type ? "정보 읽는 중..." : docs.length ? "파일 추가·교체" : "파일 선택"}
                   </label>
@@ -347,12 +366,14 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
           </div>
         </section>
 
-        <section className="rounded-sm border border-hairline bg-canvas-cream p-4">
-          <div className="mb-3">
-            <strong className="text-sm text-ink">사업자 정보</strong>
-            <span className="ml-2 text-xs text-ink-mute">사업자등록증에서 자동 입력</span>
+        <section style={{ border: "1px solid var(--color-divider)", background: "#ffffff", padding: "var(--space-4)" }}>
+          <div style={{ marginBottom: "var(--space-3)" }}>
+            <strong style={{ fontSize: 14 }}>사업자 정보</strong>
+            <span className="text-muted" style={{ marginLeft: 8, fontSize: 11 }}>
+              사업자등록증에서 자동 입력
+            </span>
           </div>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-3)" }}>
             {inputField("companyName", "업체명 *")}
             {inputField("businessNumber", "사업자등록번호")}
             {inputField("representativeName", "대표자")}
@@ -364,24 +385,28 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
           </div>
         </section>
 
-        <section className="rounded-sm border border-hairline bg-canvas-cream p-4">
-          <div className="mb-3">
-            <strong className="text-sm text-ink">정산 계좌</strong>
-            <span className="ml-2 text-xs text-ink-mute">통장 사본에서 자동 입력</span>
+        <section style={{ border: "1px solid var(--color-divider)", background: "#ffffff", padding: "var(--space-4)" }}>
+          <div style={{ marginBottom: "var(--space-3)" }}>
+            <strong style={{ fontSize: 14 }}>정산 계좌</strong>
+            <span className="text-muted" style={{ marginLeft: 8, fontSize: 11 }}>
+              통장 사본에서 자동 입력
+            </span>
           </div>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "var(--space-3)" }}>
             {inputField("bankName", "은행")}
             {inputField("accountNumber", "계좌번호")}
             {inputField("accountHolder", "예금주")}
           </div>
         </section>
 
-        <section className="rounded-sm border border-hairline bg-canvas-cream p-4">
-          <div className="mb-3">
-            <strong className="text-sm text-ink">담당자 정보</strong>
-            <span className="ml-2 text-xs text-ink-mute">명함에서 자동 입력</span>
+        <section style={{ border: "1px solid var(--color-divider)", background: "#ffffff", padding: "var(--space-4)" }}>
+          <div style={{ marginBottom: "var(--space-3)" }}>
+            <strong style={{ fontSize: 14 }}>담당자 정보</strong>
+            <span className="text-muted" style={{ marginLeft: 8, fontSize: 11 }}>
+              명함에서 자동 입력
+            </span>
           </div>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-3)" }}>
             {inputField("contactName", "담당자")}
             {inputField("contactTitle", "직함")}
             {inputField("contactPhone", "연락처")}
@@ -389,14 +414,15 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
           </div>
         </section>
 
-        <section className="rounded-sm border border-hairline bg-canvas-cream p-4">
-          <strong className="mb-2 block text-sm text-ink">참고 사항</strong>
+        <section style={{ border: "1px solid var(--color-divider)", background: "#ffffff", padding: "var(--space-4)" }}>
+          <strong style={{ display: "block", marginBottom: 8, fontSize: 14 }}>참고 사항</strong>
           <textarea
             value={draft.notes}
             onChange={(e) => updateDraft("notes", e.target.value)}
             placeholder="계약·정산·연락 시 참고할 내용을 입력하세요."
             rows={3}
-            className="w-full rounded-sm border border-hairline bg-background px-3 py-1.5 text-sm text-ink outline-none focus:border-primary"
+            className="input"
+            style={{ width: "100%" }}
           />
         </section>
       </div>
