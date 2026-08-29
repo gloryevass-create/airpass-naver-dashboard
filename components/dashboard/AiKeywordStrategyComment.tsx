@@ -1,15 +1,16 @@
-import { NavIcon } from "@/components/icons/NavIcon";
-
 export function AiKeywordStrategyComment({ comment }: { comment: string | null }) {
   if (!comment) return null;
 
   return (
-    <div className="rounded-sm border border-hairline bg-canvas-cream p-4">
-      <h2 className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-ink-mute">
-        <NavIcon name="sparkle" className="h-4 w-4" />
+    <div className="card">
+      <h2 style={{ margin: "0 0 var(--space-2)", display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600 }} className="text-muted">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 3l1.6 4.9L18.5 9l-4.9 1.6L12 15.5l-1.6-4.9L5.5 9l4.9-1.6L12 3z" />
+          <path d="M19 15.5l.6 1.9 1.9.6-1.9.6-.6 1.9-.6-1.9-1.9-.6 1.9-.6.6-1.9z" />
+        </svg>
         AI 키워드 전략 코멘트
       </h2>
-      <p className="text-sm leading-relaxed text-ink">{comment}</p>
+      <p style={{ margin: 0, fontSize: 13, lineHeight: 1.6 }}>{comment}</p>
     </div>
   );
 }

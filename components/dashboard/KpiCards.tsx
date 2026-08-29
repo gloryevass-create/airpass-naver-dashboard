@@ -8,11 +8,13 @@ export function KpiCards({ kpi }: { kpi: DashboardData["kpi"] }) {
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "var(--space-4)" }}>
       {cards.map((c) => (
-        <div key={c.label} className="rounded-sm border border-hairline bg-canvas-cream p-4">
-          <p className="text-xs font-bold uppercase tracking-wide text-ink-mute">{c.label}</p>
-          <p className="mt-1 text-3xl font-bold tracking-tight text-primary">{c.value}</p>
+        <div key={c.label} className="card">
+          <p style={{ margin: 0, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }} className="text-muted">
+            {c.label}
+          </p>
+          <p style={{ margin: "4px 0 0", fontSize: 26, fontWeight: 700, fontFamily: "var(--font-heading)", color: "var(--color-accent-700)" }}>{c.value}</p>
         </div>
       ))}
     </div>

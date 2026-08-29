@@ -64,11 +64,11 @@ export function KeywordTable({ data }: { data: Row[] }) {
 
   return (
     <div>
-      <div className="mb-2 flex items-center justify-between gap-3 text-xs text-ink-mute">
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-3)", marginBottom: "var(--space-2)", fontSize: 12 }} className="text-muted">
         <span>
           전체 {sorted.length.toLocaleString("ko-KR")}개 중 {visible.length.toLocaleString("ko-KR")}개 표시
         </span>
-        <label className="flex items-center gap-2">
+        <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
           표시 개수
           <select
             value={count}
@@ -76,7 +76,8 @@ export function KeywordTable({ data }: { data: Row[] }) {
               const v = e.target.value;
               setCount(v === "전체" ? "전체" : (Number(v) as CountOption));
             }}
-            className="rounded-sm border border-hairline bg-canvas-cream px-2 py-1 text-ink"
+            className="input"
+            style={{ minHeight: 28, fontSize: 12, width: "auto" }}
           >
             {COUNT_OPTIONS.map((opt) => (
               <option key={opt} value={opt}>
@@ -86,17 +87,17 @@ export function KeywordTable({ data }: { data: Row[] }) {
           </select>
         </label>
       </div>
-      <div className="overflow-x-auto rounded-sm border border-hairline bg-canvas-cream">
-        <table className="w-full text-sm">
-          <thead className="bg-[#f7f7f8] text-left text-ink-mute">
+      <div style={{ overflowX: "auto", border: "1px solid var(--color-divider)" }}>
+        <table className="table">
+          <thead>
             <tr>
-              <th className="px-4 py-2 font-medium">#</th>
+              <th>#</th>
               {COLUMNS.map((col) => (
-                <th key={col.key} className="px-4 py-2 font-medium">
+                <th key={col.key}>
                   <button
                     type="button"
                     onClick={() => handleSort(col.key)}
-                    className="flex items-center gap-1 hover:text-ink"
+                    style={{ display: "flex", alignItems: "center", gap: 4, background: "none", border: 0, padding: 0, font: "inherit", color: "inherit", cursor: "pointer" }}
                   >
                     {col.label}
                     {sortKey === col.key && <span>{sortAsc ? "▲" : "▼"}</span>}
@@ -107,35 +108,28 @@ export function KeywordTable({ data }: { data: Row[] }) {
           </thead>
           <tbody>
             {visible.map((row, i) => (
-              <tr key={row.keywordId} className="border-t border-hairline odd:bg-white even:bg-[#f7f7f8]">
-                <td className="px-4 py-2 text-ink-mute">{i + 1}</td>
-                <td className="px-4 py-2">
-                  <a
-                    href={naverSearchUrl(row.keyword)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-link-blue hover:underline"
-                  >
+              <tr key={row.keywordId}>
+                <td className="text-muted">{i + 1}</td>
+                <td>
+                  <a href={naverSearchUrl(row.keyword)} target="_blank" rel="noopener noreferrer">
                     {row.keyword}
                   </a>
                 </td>
-                <td className="px-4 py-2">{row.ourRank ?? "-"}</td>
-                <td className="px-4 py-2">
-                  {row.avgCpc != null ? `${row.avgCpc.toLocaleString("ko-KR")}원` : "-"}
-                </td>
-                <td className="px-4 py-2">
+                <td>{row.ourRank ?? "-"}</td>
+                <td>{row.avgCpc != null ? `${row.avgCpc.toLocaleString("ko-KR")}원` : "-"}</td>
+                <td style={{ whiteSpace: "normal" }}>
                   {((row.monthlySearchPc ?? 0) + (row.monthlySearchMobile ?? 0)).toLocaleString("ko-KR")}
-                  <span className="ml-1 text-xs text-ink-mute">
+                  <span className="text-muted" style={{ marginLeft: 4, fontSize: 11 }}>
                     (PC {row.monthlySearchPc?.toLocaleString("ko-KR") ?? "-"} · 모바일{" "}
                     {row.monthlySearchMobile?.toLocaleString("ko-KR") ?? "-"})
                   </span>
                 </td>
-                <td className="px-4 py-2">{row.competitionLevel ?? "-"}</td>
+                <td>{row.competitionLevel ?? "-"}</td>
               </tr>
             ))}
             {visible.length === 0 && (
               <tr>
-                <td colSpan={COLUMNS.length + 1} className="px-4 py-6 text-center text-ink-mute">
+                <td colSpan={COLUMNS.length + 1} className="text-muted" style={{ textAlign: "center", padding: "var(--space-6)" }}>
                   데이터가 없습니다.
                 </td>
               </tr>

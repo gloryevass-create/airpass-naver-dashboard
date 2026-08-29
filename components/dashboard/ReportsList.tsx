@@ -14,19 +14,21 @@ const TRACK_LABEL: Record<string, string> = {
 
 export function ReportsList({ data }: { data: DashboardData["reports"] }) {
   if (data.length === 0) {
-    return <p className="py-6 text-center text-sm text-ink-mute">아직 생성된 리포트가 없습니다.</p>;
+    return (
+      <p className="text-muted" style={{ padding: "var(--space-6) 0", textAlign: "center", fontSize: 13 }}>
+        아직 생성된 리포트가 없습니다.
+      </p>
+    );
   }
 
   return (
-    <ul className="flex flex-col divide-y divide-hairline rounded-sm border border-hairline bg-canvas-cream">
+    <ul style={{ display: "flex", flexDirection: "column", margin: 0, padding: 0, listStyle: "none", border: "1px solid var(--color-divider)" }}>
       {data.map((r) => (
-        <li key={r.id} className="flex items-center justify-between gap-4 px-4 py-3 text-sm">
-          <div>
-            <p className="font-medium">{r.title}</p>
-            <p className="mt-0.5 text-xs text-ink-mute">
-              {r.date} · {REPORT_TYPE_LABEL[r.reportType]} · {TRACK_LABEL[r.track]}
-            </p>
-          </div>
+        <li key={r.id} style={{ borderBottom: "1px solid var(--color-divider)", padding: "var(--space-3) var(--space-4)", fontSize: 13 }}>
+          <p style={{ margin: 0, fontWeight: 500 }}>{r.title}</p>
+          <p className="text-muted" style={{ margin: "2px 0 0", fontSize: 11 }}>
+            {r.date} · {REPORT_TYPE_LABEL[r.reportType]} · {TRACK_LABEL[r.track]}
+          </p>
         </li>
       ))}
     </ul>

@@ -4,6 +4,9 @@ import { useState } from "react";
 import { ResponsiveContainer, Tooltip, Treemap } from "recharts";
 import type { DashboardData } from "@/lib/queries/dashboard";
 
+// 트리맵 사각형 10개를 구분하기 위한 색상표 — 카테고리 구분용이라 Industry
+// 테마의 단색 accent로 바꾸지 않고 그대로 유지한다(Calendar TAG_DOT_COLORS와
+// 같은 이유, 2026-08-29).
 const COLORS = ["#0066cc", "#34c759", "#ff9500", "#ff3b30", "#af52de", "#30b0c7", "#ff2d55", "#5856d6", "#8bb4f0", "#7a7a7a"];
 
 type Mode = "search" | "spend" | "cpc";
@@ -115,22 +118,22 @@ function CustomTooltip({
   if (!active || !payload?.length) return null;
   const node = payload[0].payload;
   return (
-    <div className="rounded-sm border border-hairline bg-canvas-cream p-3 text-xs shadow-md">
-      <p className="mb-1 font-semibold">
+    <div style={{ border: "1px solid var(--color-divider)", background: "#ffffff", padding: "var(--space-3)", fontSize: 12, boxShadow: "var(--shadow-md)" }}>
+      <p style={{ margin: "0 0 4px", fontWeight: 600 }}>
         {node.rank ?? "-"}위 · {node.name ?? ""}
       </p>
       {mode === "search" && (
         <>
-          <p className="text-ink-mute">월간검색수 합계: {(node.size ?? 0).toLocaleString("ko-KR")}</p>
-          <p className="text-ink-mute">
+          <p className="text-muted" style={{ margin: 0 }}>월간검색수 합계: {(node.size ?? 0).toLocaleString("ko-KR")}</p>
+          <p className="text-muted" style={{ margin: 0 }}>
             PC {(node.sub1 ?? 0).toLocaleString("ko-KR")} · 모바일 {(node.sub2 ?? 0).toLocaleString("ko-KR")}
           </p>
         </>
       )}
       {mode === "spend" && (
         <>
-          <p className="text-ink-mute">최근 7일 지출액: {(node.size ?? 0).toLocaleString("ko-KR")}원</p>
-          <p className="text-ink-mute">
+          <p className="text-muted" style={{ margin: 0 }}>최근 7일 지출액: {(node.size ?? 0).toLocaleString("ko-KR")}원</p>
+          <p className="text-muted" style={{ margin: 0 }}>
             평균 CPC {(node.sub1 ?? 0).toLocaleString("ko-KR")}원 · 월간클릭수(PC+모바일){" "}
             {(node.sub2 ?? 0).toLocaleString("ko-KR")}
           </p>
@@ -138,8 +141,8 @@ function CustomTooltip({
       )}
       {mode === "cpc" && (
         <>
-          <p className="text-ink-mute">평균 CPC: {(node.size ?? 0).toLocaleString("ko-KR")}원</p>
-          <p className="text-ink-mute">
+          <p className="text-muted" style={{ margin: 0 }}>평균 CPC: {(node.size ?? 0).toLocaleString("ko-KR")}원</p>
+          <p className="text-muted" style={{ margin: 0 }}>
             최근 7일 지출액 {(node.sub1 ?? 0).toLocaleString("ko-KR")}원 · 월간클릭수(PC+모바일){" "}
             {(node.sub2 ?? 0).toLocaleString("ko-KR")}
           </p>
@@ -162,18 +165,23 @@ export function HotKeywordTreemap({ keywordTable }: { keywordTable: DashboardDat
     mode === "search" ? n.toLocaleString("ko-KR") : `${n.toLocaleString("ko-KR")}원`;
 
   return (
-    <div className="w-full">
-      <div className="mb-3 flex gap-1 border-b border-hairline">
+    <div style={{ width: "100%" }}>
+      <div style={{ display: "flex", gap: 4, borderBottom: "1px solid var(--color-divider)", marginBottom: "var(--space-3)" }}>
         {TABS.map((tab) => (
           <button
             key={tab.key}
             type="button"
             onClick={() => setMode(tab.key)}
-            className={`-mb-px border-b-2 px-3 py-1.5 text-sm font-medium transition-colors ${
-              mode === tab.key
-                ? "border-primary text-primary"
-                : "border-transparent text-ink-mute hover:text-ink"
-            }`}
+            style={{
+              marginBottom: -1,
+              borderBottom: `2px solid ${mode === tab.key ? "var(--color-accent)" : "transparent"}`,
+              padding: "6px 12px",
+              fontSize: 13,
+              fontWeight: 500,
+              background: "none",
+              color: mode === tab.key ? "var(--color-accent-700)" : "color-mix(in srgb, var(--color-text) 55%, transparent)",
+              cursor: "pointer",
+            }}
           >
             {tab.label}
           </button>
@@ -181,10 +189,10 @@ export function HotKeywordTreemap({ keywordTable }: { keywordTable: DashboardDat
       </div>
 
       {data.length === 0 ? (
-        <p className="py-10 text-center text-sm text-ink-mute">데이터가 없습니다.</p>
+        <p className="text-muted" style={{ padding: "var(--space-6) 0", textAlign: "center", fontSize: 13 }}>데이터가 없습니다.</p>
       ) : (
         <>
-          <div className="h-72 w-full">
+          <div style={{ height: 288, width: "100%" }}>
             <ResponsiveContainer width="100%" height="100%">
               <Treemap
                 data={data}
@@ -196,7 +204,7 @@ export function HotKeywordTreemap({ keywordTable }: { keywordTable: DashboardDat
               </Treemap>
             </ResponsiveContainer>
           </div>
-          <p className="mt-2 text-[11px] text-ink-mute">
+          <p className="text-muted" style={{ margin: "var(--space-2) 0 0", fontSize: 11 }}>
             {mode === "search" &&
               "* 월간검색수(PC+모바일) 기준 상위 10개 키워드 — 사각형 크기가 검색량에 비례합니다."}
             {mode === "spend" &&

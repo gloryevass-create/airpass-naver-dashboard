@@ -64,59 +64,54 @@ export function YoutubeVideoTable({ videos }: { videos: YoutubeVideo[] }) {
 
   if (videos.length === 0) {
     return (
-      <div className="rounded-sm border border-hairline bg-canvas-cream p-6 text-center text-sm text-ink-mute">
+      <div className="text-muted" style={{ border: "1px solid var(--color-divider)", padding: "var(--space-6)", textAlign: "center", fontSize: 13 }}>
         아직 수집된 영상이 없습니다.
       </div>
     );
   }
 
   return (
-    <div className="overflow-x-auto rounded-sm border border-hairline bg-canvas-cream">
-      <table className="w-full whitespace-nowrap text-sm">
-        <thead className="bg-[#f7f7f8] text-left text-ink-mute">
+    <div style={{ overflowX: "auto", border: "1px solid var(--color-divider)" }}>
+      <table className="table" style={{ whiteSpace: "nowrap" }}>
+        <thead>
           <tr>
-            <th className="px-4 py-2 font-medium">#</th>
-            <th className="px-4 py-2 font-medium">썸네일</th>
+            <th>#</th>
+            <th>썸네일</th>
             {COLUMNS.map((col) => (
-              <th key={col.key} className="px-4 py-2 font-medium">
+              <th key={col.key}>
                 <button
                   type="button"
                   onClick={() => handleSort(col.key)}
-                  className="flex items-center gap-1 hover:text-ink"
+                  style={{ display: "flex", alignItems: "center", gap: 4, background: "none", border: 0, padding: 0, font: "inherit", color: "inherit", cursor: "pointer" }}
                 >
                   {col.label}
                   {sortKey === col.key && <span>{sortAsc ? "▲" : "▼"}</span>}
                 </button>
               </th>
             ))}
-            <th className="px-4 py-2 font-medium">길이</th>
+            <th>길이</th>
           </tr>
         </thead>
         <tbody>
           {sorted.map((v, i) => (
-            <tr key={v.id} className="border-t border-hairline odd:bg-white even:bg-[#f7f7f8]">
-              <td className="px-4 py-2 text-ink-mute">{i + 1}</td>
-              <td className="px-4 py-2">
+            <tr key={v.id}>
+              <td className="text-muted">{i + 1}</td>
+              <td>
                 {v.thumbnailUrl && (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={v.thumbnailUrl} alt="" className="h-10 w-16 rounded object-cover" />
+                  <img src={v.thumbnailUrl} alt="" style={{ height: 40, width: 64, objectFit: "cover" }} />
                 )}
               </td>
-              <td className="max-w-xs px-4 py-2 whitespace-normal">
-                <a
-                  href={`https://www.youtube.com/watch?v=${v.videoId}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-link-blue hover:underline"
-                >
+              <td style={{ maxWidth: 320, whiteSpace: "normal" }}>
+                <a href={`https://www.youtube.com/watch?v=${v.videoId}`} target="_blank" rel="noopener noreferrer">
                   {v.title}
                 </a>
               </td>
-              <td className="px-4 py-2 text-ink-mute">{formatDate(v.publishedAt)}</td>
-              <td className="px-4 py-2">{v.viewCount.toLocaleString("ko-KR")}</td>
-              <td className="px-4 py-2">{v.likeCount.toLocaleString("ko-KR")}</td>
-              <td className="px-4 py-2">{v.commentCount.toLocaleString("ko-KR")}</td>
-              <td className="px-4 py-2 text-ink-mute">{formatDuration(v.durationSeconds)}</td>
+              <td className="text-muted">{formatDate(v.publishedAt)}</td>
+              <td>{v.viewCount.toLocaleString("ko-KR")}</td>
+              <td>{v.likeCount.toLocaleString("ko-KR")}</td>
+              <td>{v.commentCount.toLocaleString("ko-KR")}</td>
+              <td className="text-muted">{formatDuration(v.durationSeconds)}</td>
             </tr>
           ))}
         </tbody>

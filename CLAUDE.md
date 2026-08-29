@@ -153,6 +153,20 @@ HTML 템플릿(`buildMaterialEmailHtml`)과는 완전히 별개다(그건 안 �
   `/dashboard/quotations/[id]/print`(로그인 필요, 인쇄 버튼 하나만)는 그대로 유지 —
   견적서 목록·SI Business 프로젝트 상세의 "인쇄" 링크는 계속 이쪽을 가리킨다.
 
+## 마케팅분석 (네이버키워드/네이버블로그/유튜브채널분석)
+
+`/dashboard/keywords`, `/dashboard/blog`, `/dashboard/youtube` — Business 등과 같은
+Claude Design "Industry" 테마로 그 자리에서 다시 그렸다(2026-08-29). 다른 화면과
+달리 차트(recharts)가 많은 데이터 분석 화면이라 색상 처리에 원칙을 하나 더
+뒀다: **카테고리·지표를 구분하는 게 목적인 다색 배색은 그대로 유지**하고
+(`HotKeywordTreemap.tsx`의 트리맵 10색, `SovTrendChart.tsx`의 채널별 선 색,
+`AdAccountStatsPanel.tsx`/`YoutubeChannelStats.tsx`의 지표별 KPI 카드·라인 색),
+카드·표·버튼·탭 같은 화면 크롬만 Industry 스타일(`.card`/`.table`/`.btn`/
+`color-mix(...)` 텍스트 톤)로 통일했다 — 전부 단색 accent로 바꾸면 여러 선·구간을
+구분할 수 없게 되기 때문(Calendar의 `TAG_DOT_COLORS`를 그대로 유지한 것과 같은
+이유). 단일 계열 차트(`RankTrendChart.tsx`)는 accent 색으로 바꿨다.
+데이터·서버 액션·recharts 차트 로직은 전부 그대로 유지.
+
 ## SI Business 2
 
 `/dashboard/business3`(사이드바 라벨은 "SI Business 2") — 기존 SI Business
