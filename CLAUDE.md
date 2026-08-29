@@ -117,6 +117,14 @@ HTML 템플릿(`buildMaterialEmailHtml`)과는 완전히 별개다(그건 안 �
 리비전 이력·정산조정·컨소시엄·내부원가·마진 추적·조달채널·구글드라이브 동기화 등 WHIZZUP
 고유 영업 프로세스는 전부 제외 — 품목·금액 자동계산·인쇄용 출력만 다룬다.
 
+작성·관리 화면(`components/dashboard/QuotationBoard.tsx`)은 Business 등과 같은 Claude Design
+"Industry" 테마로 재구성했다(2026-08-29, 드래그 정렬·연결 사업 검색 등 기존 기능은 전부
+그대로). **`/dashboard/quotations/[id]/print`(인쇄용 화면)와 `app/quote/[id]`(고객 공개
+페이지)는 이 대상에서 제외** — 고객에게 실제로 나가는 문서라 내부 도구용 테마를 입히지
+않고 원래 배색(레터헤드 등)을 그대로 유지한다. `QuotationBoard.tsx` 안의 산출내역 편집
+폼 상단 레터헤드 바(`#262b3a`)도 같은 이유로 Industry 색이 아니라 인쇄본과 같은 고정
+색을 그대로 쓴다(인쇄 미리보기 역할).
+
 - `quotations`(0043) 테이블 하나로 관리한다. 품목(`items`)은 산출내역과 항상 통째로 함께
   편집되는 종속 데이터라 별도 테이블 대신 jsonb 배열로 저장한다(WHIZZUP의 `items_json`과
   동일한 접근 — `lib/queries/quotations.ts`가 파싱/직렬화).
