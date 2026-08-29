@@ -18,6 +18,9 @@ export const CHANGELOG: ChangelogEntry[] = [
       "Cooperation·Marketing을 Business와 같은 Claude Design \"Industry\" 테마로 재구성 — 칸반 드래그앤드롭, 리스트뷰, 히스토리·댓글, 상단 환경설정 바(기본값 저장/초기화)까지 동일한 틀 적용. 데이터·서버 액션은 그대로 유지",
       "Business/Cooperation/Marketing/Calendar 상단 제목의 아이콘·색을 통일(주제에 맞는 아이콘 + 공통 accent 색), 사이드바 WORKSPACE 글자색도 동일하게 맞춤",
       "Work Journal을 같은 \"Industry\" 테마로 재구성 — 굵게/취소선/체크박스 표시(렌더링 단계에서만 해석), 첨부파일 지연 로딩·이미지 미리보기 유지. 저장 실패 시에도 폼이 무조건 닫히던 기존 버그도 함께 수정",
+      "Work Journal 접힌 미리보기가 빈 줄로 시작하는 항목에서 통째로 비어 보이던 문제 수정, 새 일지 작성자 로그인 사용자 자동 선택·주차 라벨 날짜 기준 자동 채움",
+      "관리자 가입자 목록의 \"이름(직함)\" 컬럼을 이름/직함으로 분리, \"이메일\"을 \"회사메일\"로 명칭 변경, 구글메일 컬럼 추가",
+      "profiles에 google_email 필드 추가, 헤더 개인 메뉴에 \"회원정보 수정\"(/dashboard/account/profile) 신설 — 본인이 직급·구글메일을 직접 수정 가능(이름·회사메일·역할은 관리자만 변경)",
     ],
   },
   {

@@ -1,6 +1,5 @@
 import { requireAdminClient } from "@/lib/supabase/authed";
 import { InviteUserForm } from "@/components/InviteUserForm";
-import { formatMember } from "@/lib/formatMember";
 
 export default async function AdminPage() {
   const { supabase } = await requireAdminClient();
@@ -29,8 +28,10 @@ export default async function AdminPage() {
           <table className="w-full text-sm">
             <thead className="bg-canvas-cream text-left text-ink-mute">
               <tr>
-                <th className="whitespace-nowrap px-4 py-2 font-medium">이름(직함)</th>
-                <th className="whitespace-nowrap px-4 py-2 font-medium">이메일</th>
+                <th className="whitespace-nowrap px-4 py-2 font-medium">이름</th>
+                <th className="whitespace-nowrap px-4 py-2 font-medium">직함</th>
+                <th className="whitespace-nowrap px-4 py-2 font-medium">회사메일</th>
+                <th className="whitespace-nowrap px-4 py-2 font-medium">구글메일</th>
                 <th className="whitespace-nowrap px-4 py-2 font-medium">역할</th>
                 <th className="whitespace-nowrap px-4 py-2 font-medium">가입일</th>
                 <th className="whitespace-nowrap px-4 py-2 font-medium">최근 로그인</th>
@@ -40,8 +41,10 @@ export default async function AdminPage() {
             <tbody>
               {(profiles ?? []).map((p) => (
                 <tr key={p.id} className="border-t border-hairline">
-                  <td className="whitespace-nowrap px-4 py-2">{formatMember(p.name, p.title, p.email)}</td>
+                  <td className="whitespace-nowrap px-4 py-2">{p.name ?? "-"}</td>
+                  <td className="whitespace-nowrap px-4 py-2 text-ink-mute">{p.title ?? "-"}</td>
                   <td className="whitespace-nowrap px-4 py-2 text-ink-mute">{p.email}</td>
+                  <td className="whitespace-nowrap px-4 py-2 text-ink-mute">{p.google_email ?? "-"}</td>
                   <td className="whitespace-nowrap px-4 py-2">{p.role}</td>
                   <td className="whitespace-nowrap px-4 py-2 text-ink-mute">
                     {new Date(p.created_at).toLocaleDateString("ko-KR")}
@@ -54,7 +57,7 @@ export default async function AdminPage() {
               ))}
               {(!profiles || profiles.length === 0) && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-6 text-center text-ink-mute">
+                  <td colSpan={8} className="px-4 py-6 text-center text-ink-mute">
                     아직 가입자가 없습니다.
                   </td>
                 </tr>

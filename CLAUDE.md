@@ -53,6 +53,15 @@
   삽입한다. 클라이언트는 `components/NotificationBell.tsx`에서 Supabase Realtime으로
   새 알림을 실시간 수신한다(0026 마이그레이션에서 `supabase_realtime` publication에 추가).
 
+- `profiles`에는 authenticated용 self-update RLS 정책이 의도적으로 없다 — 같은 행의 `role`
+  컬럼을 사용자가 스스로 admin으로 바꿔치기하지 못하게 막기 위함(`app/login/actions.ts`의
+  `recordLogin` 주석 참고). 그래서 로그인 기록 갱신, 회원정보 수정
+  (`app/dashboard/actions/profile.ts::updateOwnProfile`) 모두 세션 클라이언트로 "본인이 맞는지"만
+  확인한 뒤 `createAdminClient()`(service_role)로 필요한 컬럼만 골라 갱신한다. 회원정보 수정은
+  `title`/`google_email` 두 컬럼만 건드리고 `role`/`email`/`name`은 절대 쓰지 않는다.
+- `profiles.google_email`(2026-08-29 추가) — 로그인/회사 이메일(`email`)과 별개로, 회원정보
+  수정 화면(`/dashboard/account/profile`)에서 본인이 참고용으로 입력하는 개인 구글 이메일.
+
 ## 자료메일발송
 
 `/dashboard/material-email` — 구글드라이브 공유 자료 폴더에서 파일을 골라 안내 문구와 함께

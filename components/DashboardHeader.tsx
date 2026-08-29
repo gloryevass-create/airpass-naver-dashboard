@@ -85,6 +85,14 @@ export function DashboardHeader({
           {menuOpen && (
             <div className="absolute right-0 top-full z-10 mt-1 min-w-[10rem] rounded-md border border-hairline bg-background py-1 shadow-lg">
               <Link
+                href="/dashboard/account/profile"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-2 px-3 py-2 text-sm text-ink hover:bg-canvas-cream"
+              >
+                <NavIcon name="user" className="h-3.5 w-3.5" />
+                회원정보 수정
+              </Link>
+              <Link
                 href="/dashboard/account/password"
                 onClick={() => setMenuOpen(false)}
                 className="flex items-center gap-2 px-3 py-2 text-sm text-ink hover:bg-canvas-cream"
