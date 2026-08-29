@@ -36,8 +36,8 @@ const GROUPS: GroupItem[] = [
     children: [
       { href: "/dashboard/product-catalog", label: "제품 카탈로그", icon: "tag" },
       { href: "/dashboard/vendors", label: "협력사 관리", icon: "wallet" },
-      { href: "/dashboard/material-email", label: "자료메일발송", icon: "paperclip" },
       { href: "/dashboard/quotations", label: "산출내역 관리", icon: "receipt" },
+      { href: "/dashboard/material-email", label: "자료메일발송", icon: "paperclip" },
     ],
   },
   {
