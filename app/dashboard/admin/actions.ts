@@ -23,6 +23,7 @@ export async function registerUser(
   const name = String(formData.get("name") ?? "").trim();
   const title = String(formData.get("title") ?? "").trim();
   const googleEmail = String(formData.get("googleEmail") ?? "").trim();
+  const role = formData.get("role") === "admin" ? "admin" : "member";
 
   if (!email || !email.includes("@")) {
     return { error: "올바른 회사메일 주소를 입력하세요." };
@@ -35,7 +36,8 @@ export async function registerUser(
 
   // email_confirm: true — 초대 메일 클릭 없이 관리자가 등록한 즉시 로그인 가능하게 한다.
   // user_metadata의 name/title은 handle_new_user() 트리거가 profiles로 그대로 옮겨 담는다
-  // (기존 초대 방식과 동일한 트리거 재사용, 마이그레이션 0019 참고).
+  // (기존 초대 방식과 동일한 트리거 재사용, 마이그레이션 0019 참고). role은 트리거가 다루지
+  // 않고 항상 기본값 'member'로 들어오므로, admin으로 등록할 땐 뒤이어 한 번 더 갱신한다.
   const { data, error } = await admin.auth.admin.createUser({
     email,
     password: DEFAULT_PASSWORD,
@@ -47,8 +49,11 @@ export async function registerUser(
     return { error: `등록 실패: ${error.message}` };
   }
 
-  if (googleEmail && data.user) {
-    await admin.from("profiles").update({ google_email: googleEmail }).eq("id", data.user.id);
+  if (data.user && (googleEmail || role === "admin")) {
+    const updates: { google_email?: string; role?: "admin" | "member" } = {};
+    if (googleEmail) updates.google_email = googleEmail;
+    if (role === "admin") updates.role = role;
+    await admin.from("profiles").update(updates).eq("id", data.user.id);
   }
 
   revalidatePath("/dashboard/admin");

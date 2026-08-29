@@ -44,12 +44,20 @@
   --font-heading-weight: 600;
   --font-body: "Barlow", system-ui, sans-serif;
 
+  /* 원본 디자인 시스템 CSS는 1/2/3/4/6/8만 정의했지만(3.4px 단위 배수), 여러
+     목업 HTML은 5/7/9도 그대로 참조한다 — 정의되지 않은 CSS 변수는 조용히
+     무시돼(margin/padding이 0으로 계산) 관리자 페이지 등록 버튼이 필드 바로
+     아래 딱 붙어 보이는 버그로 나타났다(2026-08-29). 같은 3.4px 배수 규칙을
+     이어서 나머지 칸도 채운다. */
   --space-1: 3.4px;
   --space-2: 6.8px;
   --space-3: 10.2px;
   --space-4: 13.6px;
+  --space-5: 17px;
   --space-6: 20.4px;
+  --space-7: 23.8px;
   --space-8: 27.2px;
+  --space-9: 30.6px;
 
   --radius-sm: 2px;
   --radius-md: 4px;

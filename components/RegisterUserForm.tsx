@@ -1,12 +1,13 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { registerUser, type RegisterState } from "@/app/dashboard/admin/actions";
 
 const initialState: RegisterState = undefined;
 
 export function RegisterUserForm() {
   const [state, formAction, pending] = useActionState(registerUser, initialState);
+  const [role, setRole] = useState<"member" | "admin">("member");
 
   return (
     <form action={formAction} style={{ maxWidth: 640 }}>
@@ -29,6 +30,33 @@ export function RegisterUserForm() {
         <div className="field">
           <label htmlFor="reg-google-email">구글메일</label>
           <input className="input" id="reg-google-email" name="googleEmail" type="email" placeholder="teammate@gmail.com" />
+        </div>
+        <div className="field">
+          <label id="reg-role-label">역할</label>
+          <div className="seg" role="radiogroup" aria-labelledby="reg-role-label">
+            <label className={`seg-opt${role === "member" ? " active" : ""}`}>
+              <input
+                type="radio"
+                name="role"
+                value="member"
+                checked={role === "member"}
+                onChange={() => setRole("member")}
+                style={{ position: "absolute", opacity: 0, width: 0, height: 0 }}
+              />
+              member
+            </label>
+            <label className={`seg-opt${role === "admin" ? " active" : ""}`}>
+              <input
+                type="radio"
+                name="role"
+                value="admin"
+                checked={role === "admin"}
+                onChange={() => setRole("admin")}
+                style={{ position: "absolute", opacity: 0, width: 0, height: 0 }}
+              />
+              admin
+            </label>
+          </div>
         </div>
       </div>
       {state?.error && (
