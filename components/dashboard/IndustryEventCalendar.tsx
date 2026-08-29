@@ -125,20 +125,21 @@ function dayItems(day: string, events: TeamEventV2[], googleEvents: GoogleCalend
 const WEEKDAYS = ["월", "화", "수", "목", "금", "토", "일"];
 
 // SI Business 2/Cooperation/Marketing/Work Journal 상단의 "환경설정 바"(기본값
-// 저장/초기화)와 같은 패턴을 캘린더에도 적용했다 — 다만 여긴 완료·보류 같은
-// 토글이 없어 "기본 보기(월/주/일)"만 저장한다(사용자 확인, 2026-08-29).
+// 저장/초기화)와 같은 패턴을 캘린더에도 적용했다 — "기본 보기(월/주/일)"에 더해
+// "구글캘린더 노출" 토글(showGoogleEventsDefault)도 같이 저장한다(사용자 확인,
+// 2026-08-29 — Business/Cooperation의 showArchivedDefault 토글과 같은 자리).
 const CALENDAR_DEFAULTS_STORAGE_KEY = "calendar:defaults";
 const HARD_DEFAULT_VIEW: "month" | "week" | "day" = "month";
+const HARD_DEFAULT_SHOW_GOOGLE_EVENTS = true;
 
-function loadSavedDefaultView(): "month" | "week" | "day" | null {
+function loadSavedCalendarDefaults(): { defaultView: "month" | "week" | "day"; showGoogleEvents: boolean } | null {
   try {
     const raw = window.localStorage.getItem(CALENDAR_DEFAULTS_STORAGE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
-    if (parsed.defaultView === "month" || parsed.defaultView === "week" || parsed.defaultView === "day") {
-      return parsed.defaultView;
-    }
-    return null;
+    if (parsed.defaultView !== "month" && parsed.defaultView !== "week" && parsed.defaultView !== "day") return null;
+    if (typeof parsed.showGoogleEvents !== "boolean") return null;
+    return { defaultView: parsed.defaultView, showGoogleEvents: parsed.showGoogleEvents };
   } catch {
     return null;
   }
@@ -147,14 +148,18 @@ function loadSavedDefaultView(): "month" | "week" | "day" | null {
 function TopSettingsBar({
   view,
   onViewChange,
+  showGoogleEvents,
+  onShowGoogleEventsChange,
 }: {
   view: "month" | "week" | "day";
   onViewChange: (v: "month" | "week" | "day") => void;
+  showGoogleEvents: boolean;
+  onShowGoogleEventsChange: (v: boolean) => void;
 }) {
   const [savedNotice, setSavedNotice] = useState(false);
 
   function handleSave() {
-    window.localStorage.setItem(CALENDAR_DEFAULTS_STORAGE_KEY, JSON.stringify({ defaultView: view }));
+    window.localStorage.setItem(CALENDAR_DEFAULTS_STORAGE_KEY, JSON.stringify({ defaultView: view, showGoogleEvents }));
     setSavedNotice(true);
     window.setTimeout(() => setSavedNotice(false), 1500);
   }
@@ -162,6 +167,7 @@ function TopSettingsBar({
   function handleReset() {
     window.localStorage.removeItem(CALENDAR_DEFAULTS_STORAGE_KEY);
     onViewChange(HARD_DEFAULT_VIEW);
+    onShowGoogleEventsChange(HARD_DEFAULT_SHOW_GOOGLE_EVENTS);
   }
 
   return (
@@ -179,6 +185,37 @@ function TopSettingsBar({
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
+        <label style={{ display: "inline-flex", alignItems: "center", gap: 7, cursor: "pointer", color: "#374151" }}>
+          <span>showGoogleEventsDefault</span>
+          <span
+            role="switch"
+            aria-checked={showGoogleEvents}
+            onClick={() => onShowGoogleEventsChange(!showGoogleEvents)}
+            style={{
+              position: "relative",
+              width: 30,
+              height: 16,
+              borderRadius: 999,
+              background: showGoogleEvents ? "#3b82f6" : "#d1d5db",
+              transition: "background 0.15s",
+              flex: "none",
+            }}
+          >
+            <span
+              style={{
+                position: "absolute",
+                top: 2,
+                left: showGoogleEvents ? 16 : 2,
+                width: 12,
+                height: 12,
+                borderRadius: "50%",
+                background: "#fff",
+                boxShadow: "0 1px 2px rgba(0,0,0,0.25)",
+                transition: "left 0.15s",
+              }}
+            />
+          </span>
+        </label>
         <label style={{ display: "inline-flex", alignItems: "center", gap: 7, color: "#374151" }}>
           <span>defaultView</span>
           <select
@@ -513,6 +550,7 @@ export function IndustryEventCalendar({
 }) {
   const router = useRouter();
   const [view, setView] = useState<"month" | "week" | "day">(HARD_DEFAULT_VIEW);
+  const [showGoogleEvents, setShowGoogleEvents] = useState(HARD_DEFAULT_SHOW_GOOGLE_EVENTS);
   const [cursor, setCursor] = useState(initialCursor);
   const [editing, setEditing] = useState<TeamEventV2 | "new" | null>(null);
   const [newEventDate, setNewEventDate] = useState<string | null>(null);
@@ -550,10 +588,17 @@ export function IndustryEventCalendar({
   // 동일한 패턴).
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
-    const saved = loadSavedDefaultView();
-    if (saved) setView(saved);
+    const saved = loadSavedCalendarDefaults();
+    if (saved) {
+      setView(saved.defaultView);
+      setShowGoogleEvents(saved.showGoogleEvents);
+    }
   }, []);
   /* eslint-enable react-hooks/set-state-in-effect */
+
+  // 토글이 꺼져 있으면 구글 일정을 아예 안 섞는다 — dayItems() 호출부를 매번
+  // 고치는 대신 여기서 한 번만 걸러 둔다.
+  const visibleGoogleEvents = showGoogleEvents ? googleEvents : [];
 
   // 커서가 현재 서버에서 불러온 달(month)을 벗어나면(주/일 보기에서 달 경계를
   // 넘어가는 경우 포함) 그 달의 데이터를 새로 불러와야 한다 — URL의 month·day를
@@ -604,11 +649,11 @@ export function IndustryEventCalendar({
 
   const weeks = view === "month" ? buildMonthGrid(month) : [];
   const weekDays = view === "week" ? Array.from({ length: 7 }, (_, i) => addDaysToDateStr(startOfWeek(cursor), i)) : [];
-  const dayEventItems = view === "day" ? dayItems(cursor, events, googleEvents) : [];
+  const dayEventItems = view === "day" ? dayItems(cursor, events, visibleGoogleEvents) : [];
 
   return (
     <div className="industry-theme" style={{ minHeight: "100vh" }}>
-      <TopSettingsBar view={view} onViewChange={setView} />
+      <TopSettingsBar view={view} onViewChange={setView} showGoogleEvents={showGoogleEvents} onShowGoogleEventsChange={setShowGoogleEvents} />
       <div style={{ padding: "var(--space-8)", maxWidth: 1400, margin: "0 auto" }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "var(--space-4)", flexWrap: "wrap" }}>
         <div>
@@ -695,7 +740,7 @@ export function IndustryEventCalendar({
             <div key={wi} style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 1, marginBottom: 1 }}>
               {week.map((day) => {
                 const inMonth = day.slice(0, 7) === month;
-                const dayEvts = dayItems(day, events, googleEvents);
+                const dayEvts = dayItems(day, events, visibleGoogleEvents);
                 const isToday = day === todayStr;
                 const MAX = 3;
                 return (
@@ -762,7 +807,7 @@ export function IndustryEventCalendar({
       {view === "week" && (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 1 }}>
           {weekDays.map((day, i) => {
-            const dayEvts = dayItems(day, events, googleEvents);
+            const dayEvts = dayItems(day, events, visibleGoogleEvents);
             const isToday = day === todayStr;
             return (
               <div
