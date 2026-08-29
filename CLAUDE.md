@@ -72,6 +72,11 @@
 `/dashboard/material-email` — 구글드라이브 공유 자료 폴더에서 파일을 골라 안내 문구와 함께
 이메일로 보낸다. 두 외부 서비스를 쓴다(둘 다 이 앱에 처음 추가된 연동, 2026-08-23):
 
+화면(폼·발송 이력 목록) 자체는 Business/Cooperation/Marketing 등과 같은 Claude Design
+"Industry" 테마로 그 자리에서 다시 그렸다(2026-08-29) — 아래 설명하는 발송 메일 본문
+HTML 템플릿(`buildMaterialEmailHtml`)과는 완전히 별개다(그건 안 바뀜, 받는 사람이 보는
+이메일 자체의 디자인). 데이터·서버 액션(`app/dashboard/actions/materialEmail.ts`)도 그대로.
+
 - **구글드라이브**(`lib/googleDriveMaterials.ts`): 서비스 계정(JWT) 인증으로 `GOOGLE_DRIVE_MATERIALS_FOLDER_ID`
   폴더 바로 아래 파일 목록만 조회한다(하위 폴더 재귀 탐색은 안 함). 서비스 계정은 폴더에
   **"편집자" 이상**으로 공유돼 있어야 한다 — "뷰어"로는 발송 직전 `ensureFileShared()`가

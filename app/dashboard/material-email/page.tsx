@@ -1,3 +1,4 @@
+import "@/components/industryTheme.css";
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { getMaterialEmailLogs } from "@/lib/queries/materialEmailLogs";
 import { getQuotationSummaries } from "@/lib/queries/quotations";
@@ -5,7 +6,6 @@ import { isGoogleDriveConfigured, listMaterialFiles } from "@/lib/googleDriveMat
 import { isMaterialEmailConfigured } from "@/lib/materialEmail";
 import { matchProductMaterialFiles } from "@/lib/materialEmailTemplate";
 import { MaterialEmailForm } from "@/components/dashboard/MaterialEmailForm";
-import { NavIcon } from "@/components/icons/NavIcon";
 
 function formatDateTime(iso: string) {
   return new Date(iso).toLocaleString("ko-KR", {
@@ -19,17 +19,19 @@ function formatDateTime(iso: string) {
 
 function SetupNotice({ missing }: { missing: string[] }) {
   return (
-    <div className="max-w-xl rounded-lg border border-amber-300 bg-amber-50 p-6 text-sm text-amber-900">
-      <h2 className="mb-2 font-semibold">자료메일발송 설정이 아직 끝나지 않았습니다</h2>
-      <p className="mb-2">다음 환경변수가 설정돼야 이 기능을 쓸 수 있습니다:</p>
-      <ul className="mb-2 list-disc pl-5">
+    <div style={{ maxWidth: 560, border: "1px solid var(--color-divider)", background: "var(--color-accent-100)", padding: "var(--space-6)", fontSize: 13, color: "var(--color-accent-900)" }}>
+      <h2 style={{ margin: "0 0 var(--space-2)", fontFamily: "var(--font-heading)", fontSize: 16, fontWeight: 600 }}>
+        자료메일발송 설정이 아직 끝나지 않았습니다
+      </h2>
+      <p style={{ margin: "0 0 var(--space-2)" }}>다음 환경변수가 설정돼야 이 기능을 쓸 수 있습니다:</p>
+      <ul style={{ margin: "0 0 var(--space-2)", paddingLeft: 20 }}>
         {missing.map((m) => (
           <li key={m}>
-            <code className="rounded bg-amber-100 px-1 py-0.5">{m}</code>
+            <code style={{ background: "var(--color-accent-200)", padding: "1px 4px" }}>{m}</code>
           </li>
         ))}
       </ul>
-      <p>자세한 발급·설정 절차는 README.md를 참고하세요.</p>
+      <p style={{ margin: 0 }}>자세한 발급·설정 절차는 README.md를 참고하세요.</p>
     </div>
   );
 }
@@ -68,17 +70,17 @@ export default async function MaterialEmailPage() {
   }));
 
   return (
-    <main className="flex w-full flex-col gap-6 p-6">
-      <div>
-        <h1 className="flex items-center gap-2 text-xl font-bold tracking-tight text-primary">
-          <NavIcon name="paperclip" className="h-5 w-5" />
-          자료메일발송
-        </h1>
-        <p className="mt-1 text-sm text-ink-mute">
-          구글드라이브 자료 폴더에서 보낼 자료를 골라 안내 내용과 함께 이메일로 보냅니다. 자료는 실제
-          첨부가 아니라 공유 링크로 전달됩니다.
-        </p>
+    <div className="industry-theme" style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 900, margin: "0 auto" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M14.5 6.5L7.9 13a2.5 2.5 0 0 0 3.5 3.5l7-7a4.2 4.2 0 0 0-6-6l-7 7a6 6 0 0 0 8.5 8.5" />
+        </svg>
+        <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 28, margin: 0, color: "var(--color-accent-700)" }}>자료메일발송</h1>
       </div>
+      <p className="text-muted" style={{ margin: "var(--space-2) 0 var(--space-6)", fontSize: 13 }}>
+        구글드라이브 자료 폴더에서 보낼 자료를 골라 안내 내용과 함께 이메일로 보냅니다. 자료는 실제 첨부가
+        아니라 공유 링크로 전달됩니다.
+      </p>
 
       {missing.length > 0 ? (
         <SetupNotice missing={missing} />
@@ -93,32 +95,46 @@ export default async function MaterialEmailPage() {
         />
       )}
 
-      <div>
-        <h2 className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-ink-mute">
-          <NavIcon name="history" className="h-4 w-4" />
+      <div style={{ marginTop: "var(--space-8)" }}>
+        <h2 style={{ fontFamily: "var(--font-heading)", fontSize: 16, margin: "0 0 var(--space-3)", display: "flex", alignItems: "center", gap: 6 }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 12a9 9 0 1 0 3-6.7" />
+            <path d="M3 4v4h4" />
+            <path d="M12 8v4l3 2" />
+          </svg>
           최근 발송 이력
         </h2>
-        <div className="flex flex-col gap-2">
+        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
           {logs.map((l) => (
-            <div key={l.id} className="rounded-sm border border-hairline bg-canvas-cream p-3 text-sm">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="font-medium text-ink">{l.subject}</span>
-                <span className="text-xs text-ink-mute">
+            <div key={l.id} style={{ border: "1px solid var(--color-divider)", padding: "var(--space-3)", fontSize: 13 }}>
+              <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                <span style={{ fontWeight: 600 }}>{l.subject}</span>
+                <span className="text-muted" style={{ fontSize: 11 }}>
                   {l.senderEmail} · {formatDateTime(l.createdAt)}
                 </span>
               </div>
-              <p className="mt-1 text-xs text-ink-mute">받는 사람: {l.recipientEmails.join(", ")}</p>
+              <p className="text-muted" style={{ margin: "4px 0 0", fontSize: 11 }}>
+                받는 사람: {l.recipientEmails.join(", ")}
+              </p>
               {l.fileNames.length > 0 && (
-                <p className="mt-1 text-xs text-ink-mute">자료: {l.fileNames.join(", ")}</p>
+                <p className="text-muted" style={{ margin: "4px 0 0", fontSize: 11 }}>
+                  자료: {l.fileNames.join(", ")}
+                </p>
               )}
               {l.quotationQuoteNumber && (
-                <p className="mt-1 text-xs text-ink-mute">첨부 산출내역: {l.quotationQuoteNumber}</p>
+                <p className="text-muted" style={{ margin: "4px 0 0", fontSize: 11 }}>
+                  첨부 산출내역: {l.quotationQuoteNumber}
+                </p>
               )}
             </div>
           ))}
-          {logs.length === 0 && <p className="text-sm text-ink-mute">아직 발송 이력이 없습니다.</p>}
+          {logs.length === 0 && (
+            <p className="text-muted" style={{ fontSize: 13 }}>
+              아직 발송 이력이 없습니다.
+            </p>
+          )}
         </div>
       </div>
-    </main>
+    </div>
   );
 }

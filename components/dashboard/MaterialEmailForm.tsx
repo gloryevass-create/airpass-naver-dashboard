@@ -37,24 +37,46 @@ function FileGroup({
   const allSelected = files.length > 0 && files.every((f) => selected.has(f.id));
 
   return (
-    <div className="flex flex-col gap-1">
-      <label className="flex items-center gap-2 bg-background px-3 py-1.5 text-xs font-semibold text-ink-mute">
+    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+      <label
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          padding: "6px var(--space-3)",
+          fontSize: 12,
+          fontWeight: 600,
+          color: "color-mix(in srgb, var(--color-text) 60%, transparent)",
+          background: "var(--color-surface)",
+        }}
+      >
         <input
           type="checkbox"
           checked={allSelected}
           disabled={files.length === 0}
           onChange={() => onToggleAll(files, !allSelected)}
-          className="h-3.5 w-3.5 shrink-0"
+          style={{ width: 14, height: 14, flex: "none", accentColor: "var(--color-accent)" }}
         />
         {title} ({files.length}) 전체 선택
       </label>
-      {files.length === 0 && <p className="px-3 py-3 text-center text-sm text-ink-mute">해당 없음</p>}
+      {files.length === 0 && (
+        <p className="text-muted" style={{ padding: "var(--space-4) 0", textAlign: "center", fontSize: 13 }}>
+          해당 없음
+        </p>
+      )}
       {files.map((f) => (
         <label
           key={f.id}
-          className={`flex cursor-pointer items-center gap-3 border-b border-hairline px-3 py-2 text-sm last:border-b-0 hover:bg-canvas-lavender/20 ${
-            selected.has(f.id) ? "bg-canvas-lavender/30" : ""
-          }`}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            borderBottom: "1px solid var(--color-divider)",
+            padding: "var(--space-2) var(--space-3)",
+            fontSize: 13,
+            cursor: "pointer",
+            background: selected.has(f.id) ? "var(--color-accent-100)" : undefined,
+          }}
         >
           <input
             type="checkbox"
@@ -62,25 +84,26 @@ function FileGroup({
             value={f.id}
             checked={selected.has(f.id)}
             onChange={() => onToggle(f.id)}
-            className="h-3.5 w-3.5 shrink-0"
+            style={{ width: 14, height: 14, flex: "none", accentColor: "var(--color-accent)" }}
           />
           {f.iconLink && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={f.iconLink} alt="" className="h-4 w-4 shrink-0" />
+            <img src={f.iconLink} alt="" style={{ width: 16, height: 16, flex: "none" }} />
           )}
-          <span className="min-w-0 flex-1 truncate text-ink" title={f.name}>
+          <span style={{ minWidth: 0, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={f.name}>
             {f.name}
           </span>
-          <span className="shrink-0 text-xs text-ink-mute">{formatFileSize(f.sizeBytes)}</span>
+          <span className="text-muted" style={{ flex: "none", fontSize: 11 }}>
+            {formatFileSize(f.sizeBytes)}
+          </span>
         </label>
       ))}
     </div>
   );
 }
 
-/** 산출내역(견적) 첨부 검색 — 물품/사업 검색과 같은 알약형 버튼 + 드롭다운
- * 디자인으로 통일한다(사용자 확인, 2026-08-28). 산출내역은 최대 1건만 첨부한다
- * (템플릿에 "견적서 원본 PDF" 자리가 하나뿐이라 단일 선택). */
+/** 산출내역(견적) 첨부 검색 — 최대 1건만 첨부한다(템플릿에 "견적서 원본 PDF"
+ * 자리가 하나뿐이라 단일 선택). */
 function QuotationPicker({
   quotations,
   value,
@@ -115,48 +138,71 @@ function QuotationPicker({
   }, [quotations, search]);
 
   return (
-    <div ref={panelRef} className="relative flex flex-col gap-1">
-      <span className="text-sm font-medium text-ink">산출내역(견적) 첨부 — 선택 안 함</span>
-      <div className="flex items-center gap-2">
+    <div ref={panelRef} className="field" style={{ position: "relative" }}>
+      <label>산출내역(견적) 첨부 — 선택 안 함</label>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="flex min-w-0 flex-1 items-center gap-1.5 truncate rounded-full border border-primary px-3 py-1.5 text-xs font-medium text-primary hover:bg-canvas-lavender/40"
+          className="btn btn-secondary"
+          style={{ minWidth: 0, flex: 1, justifyContent: "flex-start", overflow: "hidden" }}
         >
-          🔍 <span className="truncate">{selected ? `${selected.quoteNumber} · ${selected.customerName}` : `산출내역 검색 (${quotations.length}건)`}</span>
+          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            🔍 {selected ? `${selected.quoteNumber} · ${selected.customerName}` : `산출내역 검색 (${quotations.length}건)`}
+          </span>
         </button>
         {selected && (
-          <button
-            type="button"
-            onClick={() => onChange(null)}
-            aria-label="첨부 해제"
-            className="shrink-0 text-ink-mute hover:text-ink"
-          >
+          <button type="button" onClick={() => onChange(null)} aria-label="첨부 해제" className="btn btn-ghost" style={{ flex: "none" }}>
             ✕
           </button>
         )}
       </div>
 
       {open && (
-        <div className="absolute left-0 top-full z-20 mt-1 max-h-64 w-full overflow-y-auto rounded-sm border border-hairline bg-canvas-cream text-left shadow-lg">
-          <div className="sticky top-0 flex items-center gap-2 border-b border-hairline bg-canvas-cream px-3 py-2">
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            top: "100%",
+            zIndex: 20,
+            marginTop: 4,
+            maxHeight: 256,
+            width: "100%",
+            overflowY: "auto",
+            border: "1px solid var(--color-divider)",
+            background: "#ffffff",
+            textAlign: "left",
+            boxShadow: "var(--shadow-md)",
+          }}
+        >
+          <div
+            style={{
+              position: "sticky",
+              top: 0,
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              borderBottom: "1px solid var(--color-divider)",
+              background: "#ffffff",
+              padding: "var(--space-2) var(--space-3)",
+            }}
+          >
             <input
               autoFocus
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="기관명·산출번호로 검색"
-              className="min-w-0 flex-1 rounded-sm border border-hairline bg-background px-2 py-1 text-xs text-ink outline-none focus:border-primary"
+              className="input"
+              style={{ minWidth: 0, flex: 1, fontSize: 12, minHeight: 30 }}
             />
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              className="shrink-0 rounded-lg bg-primary px-2.5 py-1 text-[11px] font-bold text-white hover:bg-primary-press"
-            >
+            <button type="button" onClick={() => setOpen(false)} className="btn btn-primary" style={{ flex: "none", fontSize: 11, minHeight: 30, padding: "0 10px" }}>
               선택 완료
             </button>
           </div>
           {filtered.length === 0 ? (
-            <p className="px-3 py-4 text-center text-xs text-ink-mute">검색 결과가 없습니다.</p>
+            <p className="text-muted" style={{ padding: "var(--space-4) var(--space-3)", textAlign: "center", fontSize: 12 }}>
+              검색 결과가 없습니다.
+            </p>
           ) : (
             filtered.map((q) => (
               <button
@@ -167,14 +213,27 @@ function QuotationPicker({
                   setSearch("");
                   setOpen(false);
                 }}
-                className={`flex w-full items-center justify-between gap-2 border-t border-hairline px-3 py-1.5 text-left first:border-t-0 hover:bg-canvas-lavender/30 ${
-                  q.id === value ? "bg-canvas-lavender/20" : ""
-                }`}
+                style={{
+                  display: "flex",
+                  width: "100%",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 8,
+                  borderTop: "1px solid var(--color-divider)",
+                  borderLeft: 0,
+                  borderRight: 0,
+                  borderBottom: 0,
+                  padding: "var(--space-2) var(--space-3)",
+                  textAlign: "left",
+                  background: q.id === value ? "var(--color-accent-100)" : "transparent",
+                  cursor: "pointer",
+                  font: "inherit",
+                }}
               >
-                <span className="min-w-0 truncate text-xs font-bold text-ink">
+                <span style={{ minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 12, fontWeight: 700 }}>
                   {q.quoteNumber} · {q.customerName}
                 </span>
-                <span className="shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-semibold text-ink-mute">
+                <span className="text-muted" style={{ flex: "none", fontSize: 10 }}>
                   {q.status === "final" ? "최종" : "임시"}
                 </span>
               </button>
@@ -303,19 +362,25 @@ export function MaterialEmailForm({
           setQuotationId(null);
         }
       }}
-      className="flex flex-col gap-4"
+      style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}
     >
       <input type="hidden" name="quotationId" value={quotationId ?? ""} />
 
       {aiNotice && (
-        <p className="rounded-sm border border-primary/30 bg-canvas-lavender/40 px-3 py-2 text-xs text-primary">
+        <p
+          style={{
+            border: "1px solid var(--color-divider)",
+            background: "var(--color-accent-100)",
+            padding: "var(--space-2) var(--space-3)",
+            fontSize: 12,
+            color: "var(--color-accent-800)",
+          }}
+        >
           AI 명령 입력창에서 넘어온 내용으로 미리 채웠습니다 — 내용을 확인하고 직접 보내주세요.
         </p>
       )}
-      <div className="flex flex-col gap-1">
-        <label htmlFor="recipients" className="text-sm font-medium text-ink">
-          받는 사람 이메일 (쉼표 또는 줄바꿈으로 여러 명 입력)
-        </label>
+      <div className="field">
+        <label htmlFor="recipients">받는 사람 이메일 (쉼표 또는 줄바꿈으로 여러 명 입력)</label>
         <textarea
           id="recipients"
           name="recipients"
@@ -324,14 +389,12 @@ export function MaterialEmailForm({
           value={recipients}
           onChange={(e) => setRecipients(e.target.value)}
           placeholder="example@company.com, another@company.com"
-          className="rounded border border-hairline bg-canvas-cream px-3 py-2 text-sm text-ink outline-none focus:border-primary"
+          className="input"
         />
       </div>
 
-      <div className="flex flex-col gap-1">
-        <label htmlFor="subject" className="text-sm font-medium text-ink">
-          제목
-        </label>
+      <div className="field">
+        <label htmlFor="subject">제목</label>
         <input
           id="subject"
           name="subject"
@@ -340,14 +403,12 @@ export function MaterialEmailForm({
           maxLength={200}
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
-          className="rounded border border-hairline bg-canvas-cream px-3 py-2 text-sm text-ink outline-none focus:border-primary"
+          className="input"
         />
       </div>
 
-      <div className="flex flex-col gap-1">
-        <label htmlFor="message" className="text-sm font-medium text-ink">
-          안내 내용
-        </label>
+      <div className="field">
+        <label htmlFor="message">안내 내용</label>
         <textarea
           id="message"
           name="message"
@@ -356,19 +417,19 @@ export function MaterialEmailForm({
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="보내드리는 자료에 대한 안내 문구를 입력하세요."
-          className="rounded border border-hairline bg-canvas-cream px-3 py-2 text-sm text-ink outline-none focus:border-primary"
+          className="input"
         />
       </div>
 
       <QuotationPicker quotations={quotations} value={quotationId} onChange={setQuotationId} />
-      <p className="text-xs text-ink-mute">
+      <p className="text-muted" style={{ fontSize: 12, marginTop: -8 }}>
         산출내역을 첨부하면 메일에 &ldquo;견적 및 제품자료 안내&rdquo; 섹션(견적서 원본 PDF 링크 포함)이 자동으로
         추가됩니다. 첨부하지 않으면 이 섹션은 메일에 표시되지 않습니다.
       </p>
 
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-ink">
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+          <span style={{ fontSize: 14, fontWeight: 500 }}>
             보낼 자료 선택 {selected.size > 0 && `(${selected.size}개 선택됨)`}
           </span>
           <input
@@ -376,79 +437,80 @@ export function MaterialEmailForm({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="자료명 검색"
-            className="w-48 rounded border border-hairline bg-canvas-cream px-2 py-1 text-xs text-ink outline-none focus:border-primary"
+            className="input"
+            style={{ width: 192, fontSize: 12, minHeight: 30 }}
           />
         </div>
         {filtered.length === 0 ? (
-          <p className="rounded-sm border border-hairline p-4 text-center text-sm text-ink-mute">
+          <p className="text-muted" style={{ border: "1px solid var(--color-divider)", padding: "var(--space-4)", textAlign: "center", fontSize: 13 }}>
             {files.length === 0 ? "자료 폴더가 비어 있습니다." : "검색 결과가 없습니다."}
           </p>
         ) : (
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <div className="max-h-72 flex-1 overflow-auto rounded-sm border border-hairline bg-canvas-cream">
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-3)" }}>
+            <div style={{ maxHeight: 288, flex: "1 1 280px", overflow: "auto", border: "1px solid var(--color-divider)" }}>
               <FileGroup title="보낼 문서" files={documents} selected={selected} onToggle={toggle} onToggleAll={toggleAll} />
             </div>
-            <div className="max-h-72 flex-1 overflow-auto rounded-sm border border-hairline bg-canvas-cream">
+            <div style={{ maxHeight: 288, flex: "1 1 280px", overflow: "auto", border: "1px solid var(--color-divider)" }}>
               <FileGroup title="보낼 영상" files={videos} selected={selected} onToggle={toggle} onToggleAll={toggleAll} />
             </div>
           </div>
         )}
       </div>
 
-      <div className="rounded-sm border border-hairline bg-canvas-cream p-3 text-xs text-ink-mute">
-        <span className="font-semibold text-ink">회사 및 제품소개 자료</span>({productLinkLabels.filter((p) => p.matched).length}/
-        {productLinkLabels.length}개 연결됨)는 메일 본문에 템플릿 형태로 항상 포함됩니다 — 아래 목록에 있는 이름과
-        일치하는 파일이 자료 폴더에 있으면 자동으로 링크가 걸립니다.
-        <ul className="mt-1.5 flex flex-wrap gap-x-3 gap-y-1">
+      <div style={{ border: "1px solid var(--color-divider)", padding: "var(--space-3)", fontSize: 12 }} className="text-muted">
+        <span style={{ fontWeight: 600, color: "var(--color-text)" }}>회사 및 제품소개 자료</span>(
+        {productLinkLabels.filter((p) => p.matched).length}/{productLinkLabels.length}개 연결됨)는 메일 본문에 템플릿
+        형태로 항상 포함됩니다 — 아래 목록에 있는 이름과 일치하는 파일이 자료 폴더에 있으면 자동으로 링크가
+        걸립니다.
+        <ul style={{ marginTop: 6, display: "flex", flexWrap: "wrap", gap: "8px 12px", padding: 0, listStyle: "none" }}>
           {productLinkLabels.map((p) => (
-            <li key={p.label} className={p.matched ? "text-ink" : "text-ink-mute line-through"}>
+            <li key={p.label} style={p.matched ? { color: "var(--color-text)" } : { textDecoration: "line-through" }}>
               {p.label}
             </li>
           ))}
         </ul>
       </div>
 
-      {state?.error && <p className="text-sm text-semantic-error">{state.error}</p>}
-      {state?.success && <p className="text-sm text-semantic-success">메일을 발송했습니다.</p>}
+      {state?.error && <p style={{ color: "var(--color-accent-900)", fontSize: 13 }}>{state.error}</p>}
+      {state?.success && <p style={{ color: "var(--color-accent-700)", fontSize: 13 }}>메일을 발송했습니다.</p>}
 
-      <div className="flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={() => setPreviewOpen(true)}
-          className="w-fit rounded-full border border-hairline px-6 py-2 text-sm font-bold text-ink hover:bg-[#f7f7f8]"
-        >
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-2)" }}>
+        <button type="button" onClick={() => setPreviewOpen(true)} className="btn btn-secondary">
           미리보기
         </button>
-        <button
-          type="submit"
-          disabled={pending}
-          className="w-fit rounded-full bg-primary px-6 py-2 text-sm font-bold text-white hover:bg-primary-press disabled:opacity-50"
-        >
+        <button type="submit" disabled={pending} className="btn btn-primary">
           {pending ? "발송 중..." : "보내기"}
         </button>
       </div>
 
       {previewOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-          onClick={() => setPreviewOpen(false)}
-        >
+        <div className="dialog-backdrop" onClick={() => setPreviewOpen(false)}>
           <div
-            className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-lg bg-white shadow-xl"
+            className="dialog"
+            style={{ width: "min(720px,100%)", maxHeight: "90vh", display: "flex", flexDirection: "column", padding: 0, background: "#ffffff" }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b border-hairline px-4 py-3">
-              <span className="text-sm font-bold text-ink">메일 미리보기</span>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                borderBottom: "1px solid var(--color-divider)",
+                padding: "var(--space-3) var(--space-4)",
+              }}
+            >
+              <span style={{ fontFamily: "var(--font-heading)", fontWeight: 600, fontSize: 15 }}>메일 미리보기</span>
               <button
                 type="button"
                 onClick={() => setPreviewOpen(false)}
                 aria-label="미리보기 닫기"
-                className="text-ink-mute hover:text-ink"
+                className="btn btn-ghost"
+                style={{ padding: "2px 8px" }}
               >
                 ✕
               </button>
             </div>
-            <iframe title="메일 미리보기" srcDoc={previewHtml} className="h-[75vh] w-full border-0" />
+            <iframe title="메일 미리보기" srcDoc={previewHtml} style={{ height: "75vh", width: "100%", border: 0 }} />
           </div>
         </div>
       )}
