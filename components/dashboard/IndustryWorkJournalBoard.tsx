@@ -57,15 +57,27 @@ function isImage(contentType: string | null): boolean {
   return Boolean(contentType?.startsWith("image/"));
 }
 
+/** 날짜에서 "26년 08월" 형식의 기본 주차 라벨을 만든다(실제 등록된 값들의
+ * 형식과 동일). 사용자가 직접 다른 문구로 바꾸면 그 뒤로는 날짜를 바꿔도
+ * 자동 채움이 그 값을 덮어쓰지 않는다(마지막 자동 채움 값과 같을 때만 갱신). */
+function weekLabelFromDate(dateStr: string): string {
+  if (!dateStr) return "";
+  const [y, m] = dateStr.split("-");
+  if (!y || !m) return "";
+  return `${y.slice(2)}년 ${m}월`;
+}
+
 /* ─────────────────────────── 작성/수정 폼(인라인 카드) ─────────────────────────── */
 
 function EntryForm({
   entry,
   members,
+  currentUserName,
   onDone,
 }: {
   entry: WorkJournalEntry | null;
   members: string[];
+  currentUserName: string | null;
   onDone: () => void;
 }) {
   const action = entry ? updateWorkJournalEntry.bind(null, entry.id) : createWorkJournalEntry;
@@ -77,6 +89,23 @@ function EntryForm({
     wasPendingRef.current = pending;
   }, [pending, state, onDone]);
 
+  const initialDate = entry?.entryDate ?? new Date().toISOString().slice(0, 10);
+  const hasManualWeek = Boolean(entry?.weekLabel);
+  const [week, setWeek] = useState(hasManualWeek ? entry!.weekLabel! : weekLabelFromDate(initialDate));
+  // 날짜를 바꿀 때마다 주차 라벨을 자동으로 채우되, 사용자가 이미 직접 다른
+  // 문구를 입력했다면(기존 일지를 수정할 때, 또는 새로 작성 중 직접 고쳤을 때)
+  // 그 이후로는 날짜를 바꿔도 자동 채움이 덮어쓰지 않는다.
+  const weekModeRef = useRef<"auto" | "manual">(hasManualWeek ? "manual" : "auto");
+
+  function handleDateChange(e: React.ChangeEvent<HTMLInputElement>) {
+    if (weekModeRef.current === "auto") setWeek(weekLabelFromDate(e.target.value));
+  }
+
+  function handleWeekChange(e: React.ChangeEvent<HTMLInputElement>) {
+    weekModeRef.current = "manual";
+    setWeek(e.target.value);
+  }
+
   return (
     <div className="card blueprint elev-md" style={{ marginBottom: "var(--space-6)", padding: "var(--space-6) var(--space-8)", background: "#ffffff" }}>
       <div className="card-kicker">{entry ? "일지 수정" : "새 일지 작성"}</div>
@@ -84,7 +113,7 @@ function EntryForm({
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "var(--space-4)" }}>
           <div className="field">
             <label>작성자 *</label>
-            <select className="input" name="authorName" required defaultValue={entry?.authorName ?? ""}>
+            <select className="input" name="authorName" required defaultValue={entry?.authorName ?? currentUserName ?? ""}>
               <option value="" disabled>
                 선택
               </option>
@@ -97,11 +126,11 @@ function EntryForm({
           </div>
           <div className="field">
             <label>주차 라벨</label>
-            <input className="input" name="weekLabel" placeholder="예: 26년 02월 1~2주차" defaultValue={entry?.weekLabel ?? ""} />
+            <input className="input" name="weekLabel" placeholder="예: 26년 02월 1~2주차" value={week} onChange={handleWeekChange} />
           </div>
           <div className="field">
             <label>날짜</label>
-            <input className="input" type="date" name="entryDate" defaultValue={entry?.entryDate ?? ""} />
+            <input className="input" type="date" name="entryDate" defaultValue={initialDate} onChange={handleDateChange} />
           </div>
         </div>
         <div className="field" style={{ marginTop: "var(--space-3)" }}>
@@ -218,7 +247,10 @@ function EntryCard({ entry, onEdit }: { entry: WorkJournalEntry; onEdit: () => v
   const [, startTransition] = useTransition();
   const lines = useMemo(() => entry.content.split("\n"), [entry.content]);
   const hasMultipleLines = lines.length > 1;
-  const displayLines = expanded ? lines : lines.slice(0, 1);
+  // 접혀 있을 때는 그냥 lines[0]이 아니라 내용이 있는 첫 줄을 보여준다 —
+  // 내용이 빈 줄로 시작하면 미리보기가 통째로 빈 것처럼 보이는 문제가 있었다.
+  const firstNonEmptyLine = lines.find((l) => l.trim()) ?? "";
+  const displayLines = expanded ? lines : [firstNonEmptyLine];
 
   function handleDelete() {
     if (!window.confirm("이 업무일지를 삭제하시겠습니까?")) return;
@@ -266,7 +298,15 @@ function EntryCard({ entry, onEdit }: { entry: WorkJournalEntry; onEdit: () => v
 
 /* ─────────────────────────── 메인 보드 ─────────────────────────── */
 
-export function IndustryWorkJournalBoard({ entries, members }: { entries: WorkJournalEntry[]; members: string[] }) {
+export function IndustryWorkJournalBoard({
+  entries,
+  members,
+  currentUserName,
+}: {
+  entries: WorkJournalEntry[];
+  members: string[];
+  currentUserName: string | null;
+}) {
   const [authorFilter, setAuthorFilter] = useState("전체");
   const [editingId, setEditingId] = useState<string | null | "new">(null);
 
@@ -319,8 +359,12 @@ export function IndustryWorkJournalBoard({ entries, members }: { entries: WorkJo
         </button>
       </div>
 
-      {editingId === "new" && <EntryForm entry={null} members={members} onDone={() => setEditingId(null)} />}
-      {editingEntry && <EntryForm entry={editingEntry} members={members} onDone={() => setEditingId(null)} />}
+      {editingId === "new" && (
+        <EntryForm entry={null} members={members} currentUserName={currentUserName} onDone={() => setEditingId(null)} />
+      )}
+      {editingEntry && (
+        <EntryForm entry={editingEntry} members={members} currentUserName={currentUserName} onDone={() => setEditingId(null)} />
+      )}
 
       {filtered.length === 0 ? (
         <div className="card blueprint" style={{ padding: "var(--space-8)", textAlign: "center" }}>
