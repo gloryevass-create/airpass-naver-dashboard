@@ -79,10 +79,6 @@ function EntryForm({
 
   return (
     <div className="card blueprint elev-md" style={{ marginBottom: "var(--space-6)", padding: "var(--space-6) var(--space-8)", background: "#ffffff" }}>
-      <i className="corner tl" />
-      <i className="corner tr" />
-      <i className="corner bl" />
-      <i className="corner br" />
       <div className="card-kicker">{entry ? "일지 수정" : "새 일지 작성"}</div>
       <form action={formAction} style={{ marginTop: "var(--space-3)" }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "var(--space-4)" }}>
@@ -133,10 +129,6 @@ function EntryForm({
         {state?.error && <p style={{ color: "var(--color-accent-900)", fontSize: 13, marginTop: "var(--space-2)" }}>{state.error}</p>}
         <div style={{ display: "flex", gap: "var(--space-2)", marginTop: "var(--space-4)" }}>
           <button type="submit" className="btn btn-primary blueprint" disabled={pending}>
-            <i className="corner tl" />
-            <i className="corner tr" />
-            <i className="corner bl" />
-            <i className="corner br" />
             {pending ? "저장 중..." : entry ? "수정 저장" : "일지 추가"}
           </button>
           <button type="button" className="btn btn-ghost" onClick={onDone}>
@@ -237,10 +229,6 @@ function EntryCard({ entry, onEdit }: { entry: WorkJournalEntry; onEdit: () => v
 
   return (
     <div className="card blueprint elev-sm" style={{ marginBottom: "var(--space-4)", padding: "var(--space-5)", background: "#ffffff" }}>
-      <i className="corner tl" />
-      <i className="corner tr" />
-      <i className="corner bl" />
-      <i className="corner br" />
       <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", flexWrap: "wrap", padding: "var(--space-2) 0", marginBottom: "var(--space-3)" }}>
         <span className="tag tag-accent">{entry.authorName}</span>
         {entry.weekLabel && <span className="tag tag-outline">{entry.weekLabel}</span>}
@@ -262,10 +250,6 @@ function EntryCard({ entry, onEdit }: { entry: WorkJournalEntry; onEdit: () => v
           </button>
         )}
         <button type="button" className="btn btn-secondary blueprint" onClick={onEdit}>
-          <i className="corner tl" />
-          <i className="corner tr" />
-          <i className="corner bl" />
-          <i className="corner br" />
           수정
         </button>
         <button type="button" className="btn btn-ghost" onClick={handleDelete}>
@@ -328,10 +312,6 @@ export function IndustryWorkJournalBoard({ entries, members }: { entries: WorkJo
           ))}
         </div>
         <button type="button" className="btn btn-primary blueprint" onClick={() => setEditingId("new")}>
-          <i className="corner tl" />
-          <i className="corner tr" />
-          <i className="corner bl" />
-          <i className="corner br" />
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 5v14M5 12h14" />
           </svg>
@@ -344,10 +324,6 @@ export function IndustryWorkJournalBoard({ entries, members }: { entries: WorkJo
 
       {filtered.length === 0 ? (
         <div className="card blueprint" style={{ padding: "var(--space-8)", textAlign: "center" }}>
-          <i className="corner tl" />
-          <i className="corner tr" />
-          <i className="corner bl" />
-          <i className="corner br" />
           <p className="text-muted" style={{ margin: 0 }}>
             등록된 업무일지가 없습니다.
           </p>
