@@ -61,7 +61,13 @@ export default async function AdminPage() {
                     <td className="text-muted">{p.email}</td>
                     <td className="text-muted">{p.google_email ?? "-"}</td>
                     <td>
-                      <span className={p.role === "admin" ? "tag tag-accent" : "tag tag-outline"}>{p.role}</span>
+                      <span
+                        className={
+                          p.role === "admin" ? "tag tag-accent" : p.role === "guest" ? "tag tag-neutral" : "tag tag-outline"
+                        }
+                      >
+                        {p.role}
+                      </span>
                     </td>
                     <td className="text-muted">{new Date(p.created_at).toLocaleDateString("ko-KR")}</td>
                     <td className="text-muted">{formatDateTime(p.last_login_at)}</td>

@@ -7,7 +7,7 @@ const initialState: RegisterState = undefined;
 
 export function RegisterUserForm() {
   const [state, formAction, pending] = useActionState(registerUser, initialState);
-  const [role, setRole] = useState<"member" | "admin">("member");
+  const [role, setRole] = useState<"member" | "guest">("member");
 
   return (
     <form action={formAction} style={{ maxWidth: 640 }}>
@@ -45,16 +45,16 @@ export function RegisterUserForm() {
               />
               member
             </label>
-            <label className={`seg-opt${role === "admin" ? " active" : ""}`}>
+            <label className={`seg-opt${role === "guest" ? " active" : ""}`}>
               <input
                 type="radio"
                 name="role"
-                value="admin"
-                checked={role === "admin"}
-                onChange={() => setRole("admin")}
+                value="guest"
+                checked={role === "guest"}
+                onChange={() => setRole("guest")}
                 style={{ position: "absolute", opacity: 0, width: 0, height: 0 }}
               />
-              admin
+              guest
             </label>
           </div>
         </div>

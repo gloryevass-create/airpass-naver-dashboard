@@ -28,7 +28,7 @@ export type Database = {
           name: string | null;
           title: string | null;
           google_email: string | null;
-          role: "admin" | "member";
+          role: "admin" | "member" | "guest";
           created_at: string;
           last_login_at: string | null;
           last_login_ip: string | null;
@@ -39,7 +39,7 @@ export type Database = {
           name?: string | null;
           title?: string | null;
           google_email?: string | null;
-          role?: "admin" | "member";
+          role?: "admin" | "member" | "guest";
           created_at?: string;
           last_login_at?: string | null;
           last_login_ip?: string | null;
@@ -50,7 +50,7 @@ export type Database = {
           name?: string | null;
           title?: string | null;
           google_email?: string | null;
-          role?: "admin" | "member";
+          role?: "admin" | "member" | "guest";
           created_at?: string;
           last_login_at?: string | null;
           last_login_ip?: string | null;
