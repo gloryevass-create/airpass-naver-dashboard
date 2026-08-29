@@ -175,6 +175,27 @@ cooperationProjects.ts`, `app/dashboard/actions/marketingTasks.ts`)은 그대로
   Save as defaults)도 SI Business 2와 동일하게 구현했다 — 저장 키만 화면별로
   다르다(`cooperation-board:defaults`, `marketing-board:defaults`).
 
+## Work Journal
+
+`/dashboard/work-journal` — Cooperation/Marketing과 같은 방식으로 Claude Design
+"Industry" 테마를 그 자리에서 적용했다(2026-08-29, 새 메뉴 아님). 데이터·서버
+액션(`app/dashboard/actions/workJournal.ts`)은 그대로 두고
+`IndustryWorkJournalBoard.tsx`로 화면만 새로 짰다. 옛 `WorkJournalBoard.tsx`는
+삭제됨.
+
+- 목업은 내용 중 `**굵게**`/`~~취소선~~`/`- [x] ` 같은 가벼운 마크다운을
+  렌더링 단계에서 해석해 보여준다 — 저장되는 `content`는 여전히 평문이고,
+  화면에 그릴 때만 `tokenizeLine()`으로 해석한다(데이터 마이그레이션 없음).
+- 첨부파일은 목업과 달리 즉시 URL을 만들지 않는다 — 목록 조회 시 signed URL을
+  전부 만들면 느려지므로, 카드를 펼치고 "첨부파일 N개 보기"를 눌렀을 때만
+  `getWorkJournalAttachmentUrls()`로 그 항목의 URL만 받아온다(기존 동작 그대로
+  유지, 이미지 파일은 썸네일 미리보기).
+- 작성자 필터는 목업의 라디오형 `.seg`를 그대로 재사용했고, 새 일지 작성/수정
+  폼은 모달이 아니라 목업처럼 목록 위에 인라인 카드로 펼쳐진다.
+- 기존 `WorkJournalBoard.tsx`에는 폼 저장 실패 시에도 무조건 폼을 닫는
+  버그(`onDone()`을 항상 호출)가 있었다 — 다시 그리면서 다른 Industry 화면과
+  같은 `wasPendingRef` + `useEffect` 패턴으로 함께 고쳤다.
+
 ## Calendar
 
 `/dashboard/events2` — 사용자가 Claude Design으로 만든 "Industry" 테마

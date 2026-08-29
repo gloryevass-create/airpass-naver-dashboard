@@ -16,6 +16,8 @@ export const CHANGELOG: ChangelogEntry[] = [
       "Memo Board를 Claude Design \"Industry\" 테마로 다시 그림 — 목록/작성/상세/수정 화면 스타일만 교체하고, 기존 URL 구조(/dashboard/memos, /new, /[id], /[id]/edit)·첨부파일·댓글·알림 딥링크는 그대로 유지",
       "Business 프로젝트 상세 댓글에 청사진 카드 프레임 적용, 칸반 카드도 하단 구분선 대신 테두리 박스로 변경, 컬럼 제목의 중복 로마숫자 제거",
       "Cooperation·Marketing을 Business와 같은 Claude Design \"Industry\" 테마로 재구성 — 칸반 드래그앤드롭, 리스트뷰, 히스토리·댓글, 상단 환경설정 바(기본값 저장/초기화)까지 동일한 틀 적용. 데이터·서버 액션은 그대로 유지",
+      "Business/Cooperation/Marketing/Calendar 상단 제목의 아이콘·색을 통일(주제에 맞는 아이콘 + 공통 accent 색), 사이드바 WORKSPACE 글자색도 동일하게 맞춤",
+      "Work Journal을 같은 \"Industry\" 테마로 재구성 — 굵게/취소선/체크박스 표시(렌더링 단계에서만 해석), 첨부파일 지연 로딩·이미지 미리보기 유지. 저장 실패 시에도 폼이 무조건 닫히던 기존 버그도 함께 수정",
     ],
   },
   {
