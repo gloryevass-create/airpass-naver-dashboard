@@ -17,25 +17,30 @@
 
 ## 인증 설계
 
-- 이메일 + 비밀번호만 지원 (매직링크 없음). 공개 회원가입 없음 — 계정 생성은 `/admin`에서 관리자가
-  이메일을 입력해 초대하는 경로 하나뿐.
-- 흐름: 관리자가 `/admin`에서 초대 → Supabase가 초대 메일 발송 → 사용자가 메일의 링크 클릭 →
-  `/auth/callback`(code→세션 교환) → `/auth/set-password`(새 비밀번호 저장) → `/dashboard`.
-  비밀번호 재설정도 `/auth/forgot-password` → 동일한 `/auth/callback` → `/auth/set-password` 경로를 공유한다.
+- 이메일 + 비밀번호만 지원 (매직링크 없음). 공개 회원가입 없음 — 계정 생성은 `/dashboard/admin`에서
+  관리자가 직접 등록하는 경로 하나뿐.
+- 흐름(2026-08-29부터, 이메일 초대 방식에서 변경): 관리자가 `/dashboard/admin`에서 이름·직함·
+  회사메일·구글메일을 입력해 "등록" → `registerUser`(`app/dashboard/admin/actions.ts`)가
+  `admin.auth.admin.createUser({ email, password: 고정 기본값, email_confirm: true })`로 즉시
+  로그인 가능한 계정을 만든다(메일 발송·링크 클릭 없음). 모든 신규 계정의 초기 비밀번호는
+  `"Airpass1511!"`로 고정이고, 로그인 후 헤더 개인 메뉴 "비밀번호 변경"에서 각자 바꾼다.
+  `/auth/callback`/`/auth/set-password`는 이제 신규 가입 경로가 아니라 **비밀번호 재설정**
+  (`/auth/forgot-password` → 재설정 메일 링크 → `/auth/callback` → `/auth/set-password`)
+  전용으로만 쓰인다.
 - `proxy.ts`(Next 16 컨벤션, 구 `middleware.ts`)가 모든 요청에서 세션을 갱신하고, 로그인하지 않은
   사용자를 `/login`으로 리다이렉트한다(공개 경로: `/login`, `/auth/*`).
-- `/admin` 접근 권한(role='admin')은 proxy가 아니라 페이지 자체(`lib/supabase/authed.ts`의
+- `/dashboard/admin` 접근 권한(role='admin')은 proxy가 아니라 페이지 자체(`lib/supabase/authed.ts`의
   `requireAdminClient`)에서 DB를 조회해 확인한다 — proxy는 매 요청마다 실행되므로 낙관적 세션 체크만
   하고, DB 조회가 필요한 권한 체크는 페이지/Server Action에서 한다(Next.js 공식 auth 가이드 권장 패턴).
-- 최초 관리자는 Supabase 대시보드에서 직접 초대한 뒤 SQL로 수동 승격해야 한다(README 참고).
+- 최초 관리자는 Supabase 대시보드에서 직접 만든 뒤 SQL로 수동 승격해야 한다(README 참고).
 
 ## DB 설계
 
 - 스키마 단일 출처: `supabase/migrations/0001_init.sql`. 프로젝트 2(모니터링 에이전트)는 이 파일을
   그대로 참조만 하고 별도로 스키마를 정의하지 않는다.
 - RLS: `authenticated` 세션은 모니터링 데이터 테이블에 SELECT만 가능. INSERT/UPDATE는 `service_role`
-  키를 쓰는 프로젝트 2와, 이 앱의 관리자 초대 Server Action(`app/admin/actions.ts`, 역시 `service_role`
-  사용)만 가능하다.
+  키를 쓰는 프로젝트 2와, 이 앱의 관리자 등록 Server Action(`app/dashboard/admin/actions.ts::registerUser`,
+  역시 `service_role` 사용)만 가능하다.
 - 대시보드의 모든 조회는 `lib/queries/dashboard.ts::getLatestDataDate()`로 구한 "가장 최근 수집일"을
   기준으로 필터링한다 — 특정 날짜를 하드코딩하지 않는다.
 - Supabase 테이블 타입(`lib/types/database.types.ts`)은 `interface`가 아니라 `type` 객체 리터럴로
@@ -259,7 +264,7 @@ app/
   auth/callback/         code→세션 교환 (route handler)
   auth/set-password/     초대·재설정 후 새 비밀번호 저장
   auth/forgot-password/  재설정 메일 요청
-  admin/                 관리자 전용: 초대 폼 + 가입자 목록
+  admin/                 관리자 전용: 팀원 등록 폼(Industry 테마) + 가입자 목록(표)
   dashboard/              메인 대시보드
 components/               공용 UI (LoginForm, DashboardHeader 등)
 components/dashboard/     대시보드 전용 차트/테이블 컴포넌트

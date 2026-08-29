@@ -27,8 +27,8 @@ Supabase 대시보드 → SQL Editor에서 [`supabase/migrations/0001_init.sql`]
 ### 3. 공개 회원가입 끄기
 
 Supabase 대시보드 → Authentication → Providers → Email에서 **"Allow new users to sign up"을
-반드시 끕니다.** 이 앱은 관리자 초대로만 계정을 만드는 구조라, 이 옵션을 꺼두지 않으면 누구나
-가입할 수 있게 됩니다.
+반드시 끕니다.** 이 앱은 관리자가 직접 등록해야만 계정이 생기는 구조라, 이 옵션을 꺼두지 않으면
+누구나 가입할 수 있게 됩니다.
 
 같은 화면(또는 Authentication → URL Configuration)에서 **Redirect URLs**에 아래를 등록하세요
 (배포 후 실제 도메인으로):
@@ -40,17 +40,19 @@ https://<your-vercel-domain>/auth/callback
 
 ### 4. 첫 관리자 만들기 (닭과 달걀 문제)
 
-이 앱에서 계정을 만들 수 있는 유일한 방법은 관리자가 `/admin`에서 초대하는 것인데, 최초의
-관리자는 초대해줄 관리자가 없습니다. 그래서 최초 1회는 Supabase 대시보드에서 직접 만들어야
-합니다:
+이 앱에서 계정을 만들 수 있는 유일한 방법은 관리자가 `/dashboard/admin`에서 직접 등록하는
+것인데, 최초의 관리자는 등록해줄 관리자가 없습니다. 그래서 최초 1회는 Supabase 대시보드에서
+직접 만들어야 합니다:
 
 1. Supabase 대시보드 → Authentication → Users → **Add user** → 이메일/비밀번호 직접 입력해서
-   계정 생성 (또는 "Invite" 기능 사용)
+   계정 생성
 2. SQL Editor에서 아래 실행해 방금 만든 계정을 관리자로 승격:
    ```sql
    update public.profiles set role = 'admin' where email = '본인이메일@example.com';
    ```
-3. 이후부터는 `/admin`에서 이 관리자 계정으로 팀원을 초대하면 됩니다.
+3. 이후부터는 `/dashboard/admin`에서 이 관리자 계정으로 팀원을 등록하면 됩니다 — 이메일 발송
+   없이 즉시 로그인 가능한 계정이 만들어지고, 초기 비밀번호는 고정값 `Airpass1511!`입니다
+   (로그인 후 헤더 개인 메뉴 "비밀번호 변경"에서 각자 바꾸면 됩니다).
 
 ### 5. 로컬 환경변수 설정
 
@@ -71,8 +73,8 @@ npm run dev
 ### 7. Redirect URL 등록 (배포 후)
 
 배포된 실제 도메인이 정해지면 3단계에서 등록한 Redirect URLs에 실제 도메인의
-`/auth/callback`을 반드시 추가하세요. 등록하지 않으면 초대·비밀번호 재설정 메일의 링크가
-동작하지 않습니다.
+`/auth/callback`을 반드시 추가하세요. 등록하지 않으면 비밀번호 재설정 메일의 링크가 동작하지
+않습니다.
 
 ### 8. 자료메일발송 설정 (선택 — 안 하면 이 메뉴만 설정 안내가 뜨고 나머지는 정상 동작)
 
@@ -126,6 +128,6 @@ npm run build         # 프로덕션 빌드
 
 - 이메일+비밀번호 로그인만 지원합니다(매직링크 없음).
 - 로그인 사용자는 모니터링 데이터 테이블을 읽기(SELECT)만 할 수 있습니다. 데이터 쓰기는
-  `airpass-naver-monitor`(service_role)와 이 앱의 관리자 초대 기능만 가능합니다.
+  `airpass-naver-monitor`(service_role)와 이 앱의 관리자 팀원 등록 기능만 가능합니다.
 - 대시보드는 항상 "가장 최근 수집된 날짜"를 기준으로 표시됩니다. 아직 에이전트가 한 번도
   실행되지 않았다면 빈 상태로 보입니다.
