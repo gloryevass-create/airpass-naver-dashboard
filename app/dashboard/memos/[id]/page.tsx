@@ -80,10 +80,6 @@ export default async function MemoDetailPage({
         {canModify && (
           <div style={{ display: "flex", gap: "var(--space-2)" }}>
             <Link href={`/dashboard/memos/${memo.id}/edit`} className="btn btn-secondary blueprint">
-              <i className="corner tl" />
-              <i className="corner tr" />
-              <i className="corner bl" />
-              <i className="corner br" />
               수정
             </Link>
             <DeleteMemoButton action={deleteMemo.bind(null, memo.id)} />
@@ -116,10 +112,6 @@ export default async function MemoDetailPage({
       </p>
 
       <div className="card blueprint elev-sm" style={{ whiteSpace: "pre-wrap", fontSize: 14, lineHeight: 1.7 }}>
-        <i className="corner tl" />
-        <i className="corner tr" />
-        <i className="corner bl" />
-        <i className="corner br" />
         {memo.content}
       </div>
 
@@ -158,10 +150,6 @@ export default async function MemoDetailPage({
         <div style={{ display: "grid", gap: "var(--space-3)", marginBottom: "var(--space-5)" }}>
           {memo.comments.map((c) => (
             <div key={c.id} className="card blueprint" style={{ fontSize: 13 }}>
-              <i className="corner tl" />
-              <i className="corner tr" />
-              <i className="corner bl" />
-              <i className="corner br" />
               <div className="text-muted" style={{ marginBottom: 6 }}>
                 {c.authorEmail} · {formatDate(c.createdAt)}
               </div>

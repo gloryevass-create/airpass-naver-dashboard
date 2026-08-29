@@ -63,10 +63,6 @@ export function MemoForm() {
 
       <div style={{ display: "flex", gap: "var(--space-3)" }}>
         <button type="submit" disabled={pending} className="btn btn-primary blueprint">
-          <i className="corner tl" />
-          <i className="corner tr" />
-          <i className="corner bl" />
-          <i className="corner br" />
           {pending ? "저장 중..." : "등록"}
         </button>
         <Link href="/dashboard/memos" className="btn btn-ghost">

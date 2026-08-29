@@ -928,7 +928,7 @@ export function IndustryBusinessBoard({
         <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 28, margin: 0, color: "var(--color-accent-700)" }}>Business</h1>
       </div>
       <p className="text-muted" style={{ margin: "var(--space-2) 0 var(--space-6)", fontSize: 13 }}>
-        같은 사업 목록을 새 디자인으로 봅니다 — 여기서 추가·수정한 내용은 menu backup의 SI Business 화면에도 그대로 반영됩니다.
+        전략기획팀에서 진행중인 SI 비지니스를 관리 합니다.
       </p>
 
       <div

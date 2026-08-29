@@ -28,14 +28,10 @@ export default async function MemosPage() {
             <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 28, margin: 0, color: "var(--color-accent-700)" }}>Memo Board</h1>
           </div>
           <p style={{ margin: "var(--space-2) 0 0", opacity: 0.65, fontSize: 14 }}>
-            키워드·블로그 운영 관련 논의와 결정을 기록합니다.
+            업무별 의견이나 결정사항들을 기록합니다.
           </p>
         </div>
         <Link href="/dashboard/memos/new" className="btn btn-primary blueprint">
-          <i className="corner tl" />
-          <i className="corner tr" />
-          <i className="corner bl" />
-          <i className="corner br" />
           새 메모 작성
         </Link>
       </div>

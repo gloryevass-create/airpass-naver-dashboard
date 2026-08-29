@@ -16,10 +16,6 @@ export function MemoCommentForm({ memoId }: { memoId: string }) {
       </div>
       {state?.error && <p style={{ fontSize: 13, color: "var(--color-accent-900)" }}>{state.error}</p>}
       <button type="submit" disabled={pending} className="btn btn-primary blueprint" style={{ width: "fit-content" }}>
-        <i className="corner tl" />
-        <i className="corner tr" />
-        <i className="corner bl" />
-        <i className="corner br" />
         {pending ? "등록 중..." : "댓글 등록"}
       </button>
     </form>

@@ -796,7 +796,7 @@ export function IndustryMarketingBoard({ tasks, members }: { tasks: MarketingTas
         <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 28, margin: 0, color: "var(--color-accent-700)" }}>Marketing</h1>
       </div>
       <p className="text-muted" style={{ margin: "var(--space-2) 0 var(--space-6)", fontSize: 13 }}>
-        이 화면에서 직접 마케팅 업무를 추가·수정·삭제합니다(Notion 연동 없음 — 이 시스템이 원본입니다).
+        XR사업부 마케팅 관련 업무를 관리 합니다.
       </p>
 
       <div

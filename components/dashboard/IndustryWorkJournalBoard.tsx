@@ -331,7 +331,7 @@ export function IndustryWorkJournalBoard({
         <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 28, margin: 0, color: "var(--color-accent-700)" }}>Work Journal</h1>
       </div>
       <p className="text-muted" style={{ margin: "var(--space-2) 0 var(--space-6)", fontSize: 13 }}>
-        팀원별 주차 업무일지를 관리합니다(Notion 연동 없음 — 이 시스템이 원본입니다).
+        팀원별 주차 업무 일지를 관리합니다.
       </p>
 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-4)", flexWrap: "wrap", marginBottom: "var(--space-6)" }}>
