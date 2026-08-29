@@ -872,9 +872,25 @@ export function IndustryEventCalendar({
                       <DayItemPill key={`${item.kind}-${item.event.id}`} item={item} onEditTeam={setEditing} />
                     ))}
                     {dayEvts.length > MAX && (
-                      <span style={{ fontSize: 11, color: "color-mix(in srgb, var(--color-text) 55%, transparent)" }}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setView("day");
+                          navigateTo(day);
+                        }}
+                        style={{
+                          background: "none",
+                          border: 0,
+                          padding: 0,
+                          textAlign: "left",
+                          cursor: "pointer",
+                          font: "inherit",
+                          fontSize: 11,
+                          color: "color-mix(in srgb, var(--color-text) 55%, transparent)",
+                        }}
+                      >
                         +{dayEvts.length - MAX}개 더보기
-                      </span>
+                      </button>
                     )}
                   </div>
                 );
