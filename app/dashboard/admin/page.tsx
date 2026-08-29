@@ -14,7 +14,7 @@ export default async function AdminPage() {
     <>
       {/* 팀원 등록 영역만 Claude Design "관리자 페이지 디자인" 목업을 적용했다
           (2026-08-29) — 아래 "가입자 목록" 표는 그대로 유지(사용자 확인, "표는 제외"). */}
-      <div className="industry-theme" style={{ padding: "var(--space-8) var(--space-6)" }}>
+      <div className="industry-theme" style={{ padding: "var(--space-8) var(--space-6)", minHeight: "auto" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
