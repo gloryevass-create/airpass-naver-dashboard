@@ -303,6 +303,21 @@ cooperationProjects.ts`, `app/dashboard/actions/marketingTasks.ts`)은 그대로
 - **필요한 환경변수**: `GOOGLE_CALENDAR_CLIENT_ID`/`GOOGLE_CALENDAR_CLIENT_SECRET`
   (Google Cloud Console에서 발급, `.env.example` 참고). 리디렉션 URI는
   `<도메인>/auth/google-calendar/callback`으로 등록해야 한다.
+- **팀 일정 → 내 구글 캘린더 등록**(2026-08-29 확장): 스코프를 `calendar.readonly`
+  에서 `calendar.events`(조회+쓰기 포함, Google Cloud Console OAuth 동의 화면의
+  "데이터 액세스"에서 직접 교체)로 바꿔서, 일정 추가/수정 다이얼로그에
+  "내 구글 캘린더에도 등록" 체크박스가 생겼다(`lib/googleCalendar/api.ts`의
+  `insertGoogleCalendarEvent`/`updateGoogleCalendarEvent`/`deleteGoogleCalendarEvent`,
+  `app/dashboard/actions/eventsV2.ts`에서 호출). `team_events_v2`는 팀 전체가
+  공유하는 일정이라 "누가 자기 구글 캘린더에 연결했는지" 한 명만
+  추적한다(`google_event_id`/`google_event_owner_id`, 마이그레이션 0051) — 여러
+  사람이 각자 캘린더에 동시에 등록하는 것까지는 지원하지 않는다(과설계 방지).
+  등록한 사람(owner)만 이후 수정 시 체크박스로 계속 동기화하거나 해제(구글
+  이벤트 삭제)할 수 있고, 다른 사용자가 그 일정을 수정해도 owner가 아니면
+  구글 쪽은 전혀 건드리지 않는다(남의 캘린더에 쓸 권한이 없으므로 — 다이얼로그에
+  "다른 사용자가 연결해 둔 일정" 안내만 보여줌). 구글 API 호출 실패는(연결
+  해제·토큰 만료 등) 조용히 콘솔에만 남기고 팀 일정 저장 자체는 그대로
+  성공 처리한다(기존 조회 실패 처리와 같은 원칙).
 
 ## Memo Board
 

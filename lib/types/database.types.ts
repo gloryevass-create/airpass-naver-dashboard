@@ -836,6 +836,8 @@ export type Database = {
           content: string | null;
           assignees: string[];
           attendees: string[];
+          google_event_id: string | null;
+          google_event_owner_id: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -852,6 +854,8 @@ export type Database = {
           content?: string | null;
           assignees?: string[];
           attendees?: string[];
+          google_event_id?: string | null;
+          google_event_owner_id?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -868,6 +872,8 @@ export type Database = {
           content?: string | null;
           assignees?: string[];
           attendees?: string[];
+          google_event_id?: string | null;
+          google_event_owner_id?: string | null;
           created_at?: string;
           updated_at?: string;
         };

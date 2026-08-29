@@ -5,9 +5,12 @@ const AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
 const USERINFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo";
 
-// calendar.readonly만 요청한다(우리가 구글 캘린더에 쓸 일은 없음) + openid/email은
-// 어느 구글 계정을 연결했는지 표시하기 위해서만 쓴다.
-const SCOPES = ["https://www.googleapis.com/auth/calendar.readonly", "openid", "email"].join(" ");
+// calendar.events(이벤트 보기+쓰기, 2026-08-29 확장 — 팀 일정을 개인 구글
+// 캘린더에도 등록하는 기능 추가) + openid/email은 어느 구글 계정을 연결했는지
+// 표시하기 위해서만 쓴다. calendar.events는 이벤트 조회까지 포함하므로 별도
+// calendar.readonly는 필요 없다(범위를 최소로 유지 — 캘린더 목록·공유설정
+// 등은 건드리지 않음).
+const SCOPES = ["https://www.googleapis.com/auth/calendar.events", "openid", "email"].join(" ");
 
 export function buildGoogleAuthUrl(redirectUri: string, state: string): string {
   const params = new URLSearchParams({

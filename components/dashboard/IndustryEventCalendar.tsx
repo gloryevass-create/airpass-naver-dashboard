@@ -313,11 +313,15 @@ function EventDialog({
   event,
   defaultDate,
   members,
+  currentUserId,
+  googleConnection,
   onClose,
 }: {
   event: TeamEventV2 | null;
   defaultDate: string | null;
   members: string[];
+  currentUserId: string;
+  googleConnection: GoogleCalendarConnection | null;
   onClose: () => void;
 }) {
   const router = useRouter();
@@ -381,6 +385,28 @@ function EventDialog({
             <input type="checkbox" name="isDatetime" defaultChecked={event?.isDatetime ?? true} style={{ width: 16, height: 16, accentColor: "var(--color-accent)" }} />
             시간까지 정확함(끄면 날짜만 있는 일정으로 표시)
           </label>
+          {(() => {
+            const syncedByOther = Boolean(event?.googleEventOwnerId && event.googleEventOwnerId !== currentUserId);
+            if (syncedByOther) {
+              return (
+                <p className="text-muted" style={{ fontSize: 12, margin: 0 }}>
+                  다른 사용자가 자신의 구글 캘린더에 연결해 둔 일정입니다(이 항목은 그 사람만 동기화를 바꿀 수 있어요).
+                </p>
+              );
+            }
+            if (!googleConnection) return null;
+            return (
+              <label style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 13 }}>
+                <input
+                  type="checkbox"
+                  name="syncToGoogle"
+                  defaultChecked={Boolean(event?.googleEventId && event.googleEventOwnerId === currentUserId)}
+                  style={{ width: 16, height: 16, accentColor: "var(--color-accent)" }}
+                />
+                내 구글 캘린더({googleConnection.googleEmail})에도 등록
+              </label>
+            );
+          })()}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-3)" }}>
             <div className="field">
               <label>태그(쉼표로 구분)</label>
@@ -534,6 +560,7 @@ export function IndustryEventCalendar({
   month,
   initialCursor,
   members,
+  currentUserId,
   googleConnection,
   googleEvents,
   googleConnected,
@@ -543,6 +570,7 @@ export function IndustryEventCalendar({
   month: string;
   initialCursor: string;
   members: string[];
+  currentUserId: string;
   googleConnection: GoogleCalendarConnection | null;
   googleEvents: GoogleCalendarEvent[];
   googleConnected: boolean;
@@ -909,6 +937,8 @@ export function IndustryEventCalendar({
           event={editing === "new" ? null : editing}
           defaultDate={newEventDate}
           members={members}
+          currentUserId={currentUserId}
+          googleConnection={googleConnection}
           onClose={closeDialog}
         />
       )}

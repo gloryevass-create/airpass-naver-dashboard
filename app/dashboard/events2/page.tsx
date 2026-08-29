@@ -36,6 +36,7 @@ export default async function Events2Page({ searchParams }: { searchParams: Sear
       month={month}
       initialCursor={day}
       members={members}
+      currentUserId={user.id}
       googleConnection={googleConnection}
       googleEvents={googleEvents}
       googleConnected={googleConnected === "1"}

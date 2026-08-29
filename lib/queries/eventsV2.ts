@@ -16,6 +16,8 @@ export type TeamEventV2 = {
   content: string | null;
   assignees: string[];
   attendees: string[];
+  googleEventId: string | null;
+  googleEventOwnerId: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -61,6 +63,8 @@ export async function getTeamEventsV2(supabase: Client, month: string): Promise<
       content: e.content,
       assignees: e.assignees,
       attendees: e.attendees,
+      googleEventId: e.google_event_id,
+      googleEventOwnerId: e.google_event_owner_id,
       createdAt: e.created_at,
       updatedAt: e.updated_at,
     }));

@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { formatMember } from "@/lib/formatMember";
+import { getValidGoogleAccessToken } from "@/lib/queries/googleCalendar";
+import { insertGoogleCalendarEvent, updateGoogleCalendarEvent, deleteGoogleCalendarEvent } from "@/lib/googleCalendar/api";
 
 const PATH = "/dashboard/events2";
 
@@ -54,6 +56,17 @@ function fieldsFromForm(formData: FormData) {
   };
 }
 
+function googleEventInputFrom(fields: ReturnType<typeof fieldsFromForm>) {
+  return {
+    title: fields.title,
+    dateStart: fields.date_start,
+    dateEnd: fields.date_end,
+    isDatetime: fields.is_datetime,
+    location: fields.location,
+    content: fields.content,
+  };
+}
+
 export async function createTeamEventV2(
   _prevState: TeamEventV2FormState,
   formData: FormData
@@ -64,8 +77,25 @@ export async function createTeamEventV2(
   if (!fields.title) return { error: "일정 제목을 입력하세요." };
   if (!fields.date_start) return { error: "일시를 입력하세요." };
 
-  const { error } = await supabase.from("team_events_v2").insert(fields);
+  const { data: inserted, error } = await supabase.from("team_events_v2").insert(fields).select("id").single();
   if (error) return { error: `저장 실패: ${error.message}` };
+
+  // 구글 캘린더 등록은 부가 기능이라 실패해도 팀 일정 저장 자체는 성공으로
+  // 처리한다(연결 해제됐거나 토큰 만료 등) — 콘솔에만 남긴다.
+  if (formData.get("syncToGoogle") === "on") {
+    try {
+      const accessToken = await getValidGoogleAccessToken(supabase, user.id);
+      if (accessToken) {
+        const googleEventId = await insertGoogleCalendarEvent(accessToken, googleEventInputFrom(fields));
+        await supabase
+          .from("team_events_v2")
+          .update({ google_event_id: googleEventId, google_event_owner_id: user.id })
+          .eq("id", inserted.id);
+      }
+    } catch (e) {
+      console.error("[createTeamEventV2] 구글 캘린더 등록 실패:", e instanceof Error ? e.message : e);
+    }
+  }
 
   const { data: profile } = await supabase.from("profiles").select("name, email").eq("id", user.id).single();
   const actor = formatMember(profile?.name ?? null, null, profile?.email ?? user.email ?? "");
@@ -84,7 +114,7 @@ export async function updateTeamEventV2(
   _prevState: TeamEventV2FormState,
   formData: FormData
 ): Promise<TeamEventV2FormState> {
-  const { supabase } = await requireAuthedClient();
+  const { supabase, user } = await requireAuthedClient();
 
   const id = String(formData.get("id") ?? "");
   if (!id) return { error: "잘못된 요청입니다." };
@@ -93,9 +123,44 @@ export async function updateTeamEventV2(
   if (!fields.title) return { error: "일정 제목을 입력하세요." };
   if (!fields.date_start) return { error: "일시를 입력하세요." };
 
+  const { data: existing } = await supabase
+    .from("team_events_v2")
+    .select("google_event_id, google_event_owner_id")
+    .eq("id", id)
+    .maybeSingle();
+
+  // 이 일정을 구글 캘린더에 등록한 적이 없거나, 등록한 사람이 지금 수정하는
+  // 본인일 때만 구글 쪽도 같이 건드린다 — 남이 등록해 둔 걸 내 세션 토큰으로
+  // 고칠 수는 없으므로(권한 없음), 그런 경우 구글 이벤트는 그대로 두고 우리
+  // DB 필드만 갱신한다.
+  const canTouchGoogle = !existing?.google_event_owner_id || existing.google_event_owner_id === user.id;
+  let googleFieldUpdates: { google_event_id?: string | null; google_event_owner_id?: string | null } = {};
+
+  if (canTouchGoogle) {
+    const wantsGoogleSync = formData.get("syncToGoogle") === "on";
+    try {
+      const accessToken = await getValidGoogleAccessToken(supabase, user.id);
+      if (accessToken && wantsGoogleSync) {
+        const input = googleEventInputFrom(fields);
+        if (existing?.google_event_id) {
+          await updateGoogleCalendarEvent(accessToken, existing.google_event_id, input);
+          googleFieldUpdates = { google_event_owner_id: user.id };
+        } else {
+          const googleEventId = await insertGoogleCalendarEvent(accessToken, input);
+          googleFieldUpdates = { google_event_id: googleEventId, google_event_owner_id: user.id };
+        }
+      } else if (accessToken && !wantsGoogleSync && existing?.google_event_id) {
+        await deleteGoogleCalendarEvent(accessToken, existing.google_event_id);
+        googleFieldUpdates = { google_event_id: null, google_event_owner_id: null };
+      }
+    } catch (e) {
+      console.error("[updateTeamEventV2] 구글 캘린더 동기화 실패:", e instanceof Error ? e.message : e);
+    }
+  }
+
   const { error } = await supabase
     .from("team_events_v2")
-    .update({ ...fields, updated_at: new Date().toISOString() })
+    .update({ ...fields, ...googleFieldUpdates, updated_at: new Date().toISOString() })
     .eq("id", id);
 
   if (error) return { error: `저장 실패: ${error.message}` };
@@ -105,7 +170,23 @@ export async function updateTeamEventV2(
 }
 
 export async function deleteTeamEventV2(id: string): Promise<void> {
-  const { supabase } = await requireAuthedClient();
+  const { supabase, user } = await requireAuthedClient();
+
+  const { data: existing } = await supabase
+    .from("team_events_v2")
+    .select("google_event_id, google_event_owner_id")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (existing?.google_event_id && existing.google_event_owner_id === user.id) {
+    try {
+      const accessToken = await getValidGoogleAccessToken(supabase, user.id);
+      if (accessToken) await deleteGoogleCalendarEvent(accessToken, existing.google_event_id);
+    } catch (e) {
+      console.error("[deleteTeamEventV2] 구글 캘린더 삭제 실패:", e instanceof Error ? e.message : e);
+    }
+  }
+
   await supabase.from("team_events_v2").delete().eq("id", id);
   revalidatePath(PATH);
 }
