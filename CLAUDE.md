@@ -234,6 +234,10 @@ cooperationProjects.ts`, `app/dashboard/actions/marketingTasks.ts`)은 그대로
 - 일정의 나머지 필드(종료일시로 여러 날 걸치는 일정, 시간 유무, 담당자·참석자,
   장소·대상·내용)는 목업에 없던 것들이지만 실제 운영에 쓰이고 있어 그대로
   유지했다 — 다이얼로그에 전부 남아 있다.
+- 상단에 SI Business 2/Cooperation/Marketing/Work Journal과 같은 "환경설정
+  바"를 추가했다(2026-08-29) — 다만 완료·보류 같은 토글이 없어 "defaultView"
+  (month/week/day) 저장만 지원한다(`localStorage` 키 `calendar:defaults`).
+  Reset은 하드코딩된 기본값(month)으로 되돌린다.
 
 ## Memo Board
 

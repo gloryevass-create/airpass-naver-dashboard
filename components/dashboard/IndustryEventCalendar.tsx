@@ -102,6 +102,114 @@ function eventsOnDay(events: TeamEventV2[], day: string): TeamEventV2[] {
 
 const WEEKDAYS = ["월", "화", "수", "목", "금", "토", "일"];
 
+// SI Business 2/Cooperation/Marketing/Work Journal 상단의 "환경설정 바"(기본값
+// 저장/초기화)와 같은 패턴을 캘린더에도 적용했다 — 다만 여긴 완료·보류 같은
+// 토글이 없어 "기본 보기(월/주/일)"만 저장한다(사용자 확인, 2026-08-29).
+const CALENDAR_DEFAULTS_STORAGE_KEY = "calendar:defaults";
+const HARD_DEFAULT_VIEW: "month" | "week" | "day" = "month";
+
+function loadSavedDefaultView(): "month" | "week" | "day" | null {
+  try {
+    const raw = window.localStorage.getItem(CALENDAR_DEFAULTS_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (parsed.defaultView === "month" || parsed.defaultView === "week" || parsed.defaultView === "day") {
+      return parsed.defaultView;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function TopSettingsBar({
+  view,
+  onViewChange,
+}: {
+  view: "month" | "week" | "day";
+  onViewChange: (v: "month" | "week" | "day") => void;
+}) {
+  const [savedNotice, setSavedNotice] = useState(false);
+
+  function handleSave() {
+    window.localStorage.setItem(CALENDAR_DEFAULTS_STORAGE_KEY, JSON.stringify({ defaultView: view }));
+    setSavedNotice(true);
+    window.setTimeout(() => setSavedNotice(false), 1500);
+  }
+
+  function handleReset() {
+    window.localStorage.removeItem(CALENDAR_DEFAULTS_STORAGE_KEY);
+    onViewChange(HARD_DEFAULT_VIEW);
+  }
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: "var(--space-3)",
+        width: "100%",
+        padding: "6px var(--space-8)",
+        background: "#ffffff",
+        borderBottom: "1px solid var(--color-divider)",
+        fontSize: 12,
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
+        <label style={{ display: "inline-flex", alignItems: "center", gap: 7, color: "#374151" }}>
+          <span>defaultView</span>
+          <select
+            value={view}
+            onChange={(e) => onViewChange(e.target.value as "month" | "week" | "day")}
+            style={{
+              minHeight: 24,
+              padding: "2px 6px",
+              fontSize: 11,
+              width: "auto",
+              background: "#fff",
+              border: "1px solid #d1d5db",
+              borderRadius: 5,
+              color: "#1f2937",
+            }}
+          >
+            <option value="month">month</option>
+            <option value="week">week</option>
+            <option value="day">day</option>
+          </select>
+        </label>
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
+        {savedNotice && <span style={{ color: "#3b82f6", fontSize: 11 }}>저장됨</span>}
+        <button
+          type="button"
+          onClick={handleReset}
+          style={{ background: "none", border: 0, padding: 0, color: "#6b7280", cursor: "pointer", font: "inherit", fontSize: 11 }}
+        >
+          Reset
+        </button>
+        <button
+          type="button"
+          onClick={handleSave}
+          style={{
+            fontSize: 11,
+            fontWeight: 500,
+            minHeight: 24,
+            padding: "2px 10px",
+            background: "#eef1fb",
+            border: "1px solid #c7d0e8",
+            borderRadius: 5,
+            color: "#374151",
+            cursor: "pointer",
+          }}
+        >
+          Save as defaults
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /** 담당자/참석자 다중 선택 — Tailwind 톤의 MemberMultiSelect 대신 Industry
  * 테마의 알약형 태그(.tag-chip)로 새로 그렸다(IndustryBusinessBoard.tsx의
  * ManagerChips와 동일한 이유 — 색이 섞이면 이 페이지만의 통일된 룩이 깨짐). */
@@ -301,11 +409,22 @@ export function IndustryEventCalendar({
   members: string[];
 }) {
   const router = useRouter();
-  const [view, setView] = useState<"month" | "week" | "day">("month");
+  const [view, setView] = useState<"month" | "week" | "day">(HARD_DEFAULT_VIEW);
   const [cursor, setCursor] = useState(initialCursor);
   const [editing, setEditing] = useState<TeamEventV2 | "new" | null>(null);
   const [newEventDate, setNewEventDate] = useState<string | null>(null);
   const todayStr = new Date().toISOString().slice(0, 10);
+
+  // 저장된 기본 보기는 브라우저에서만 읽을 수 있어(localStorage) 마운트 후에
+  // 반영한다 — 서버가 렌더링한 HTML(항상 "month")과 클라이언트 초기값이
+  // 달라지는 하이드레이션 경고를 피하기 위함(IndustryBusinessBoard.tsx와
+  // 동일한 패턴).
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    const saved = loadSavedDefaultView();
+    if (saved) setView(saved);
+  }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // 커서가 현재 서버에서 불러온 달(month)을 벗어나면(주/일 보기에서 달 경계를
   // 넘어가는 경우 포함) 그 달의 데이터를 새로 불러와야 한다 — URL의 month·day를
@@ -359,7 +478,9 @@ export function IndustryEventCalendar({
   const dayEvents = view === "day" ? eventsOnDay(events, cursor) : [];
 
   return (
-    <div className="industry-theme" style={{ padding: "var(--space-8)", maxWidth: 1400, margin: "0 auto" }}>
+    <div className="industry-theme" style={{ minHeight: "100vh" }}>
+      <TopSettingsBar view={view} onViewChange={setView} />
+      <div style={{ padding: "var(--space-8)", maxWidth: 1400, margin: "0 auto" }}>
       <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <rect x="3" y="4" width="18" height="17" rx="0" />
@@ -586,6 +707,7 @@ export function IndustryEventCalendar({
           onClose={closeDialog}
         />
       )}
+      </div>
     </div>
   );
 }
