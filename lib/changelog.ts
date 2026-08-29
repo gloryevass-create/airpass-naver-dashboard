@@ -25,6 +25,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       "관리자 페이지의 가입자 목록 표도 Industry 테마로 통일(처음엔 표만 기존 스타일로 남겼다가, 두 스타일이 섞이며 레이아웃이 깨지는 문제가 있어 전체를 하나의 테마로 재구성)",
       "Industry 테마 CSS에 --space-5/7/9 변수가 정의돼 있지 않아(원본 디자인 시스템에 없던 값을 여러 목업이 그대로 참조) 일부 화면에서 여백이 0으로 계산되던 문제 수정(관리자 등록 버튼이 필드에 딱 붙어 보이던 증상으로 발견)",
       "회원등급을 admin/member/guest 3단계로 확장(profiles.role 체크 제약 수정) — 관리자 등록 폼에서는 admin은 줄 수 없고 member/guest만 선택 가능",
+      "회원정보 수정(/dashboard/account/profile)·비밀번호 변경(/dashboard/account/password) 화면도 다른 메뉴와 같은 Claude Design \"Industry\" 테마로 통일",
     ],
   },
   {
