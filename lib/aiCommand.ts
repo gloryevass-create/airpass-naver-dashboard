@@ -11,11 +11,17 @@ import "server-only";
 
 const MODEL = "claude-haiku-4-5-20251001";
 
+// 어디에 등록할지 — local: 팀 Calendar(team_events_v2)만, google: 요청자 개인
+// 구글 캘린더만(팀 Calendar에는 안 남음), both: 둘 다(2026-08-30 추가, Calendar
+// 화면의 3지선다 세그먼트와 동일한 개념).
+export type AiCalendarEventDestination = "local" | "google" | "both";
+
 export type AiCalendarEventDraft = {
   title: string;
   dateStart: string; // KST 기준 "YYYY-MM-DDTHH:mm" (datetime-local 입력값과 동일 형식)
   dateEnd: string;
   isAllDay: boolean;
+  destination: AiCalendarEventDestination;
   category: string;
   location: string;
   target: string;
@@ -102,6 +108,7 @@ function todayInSeoul(): string {
   }).format(new Date());
 }
 
+const CALENDAR_DESTINATIONS = ["local", "google", "both"] as const;
 const MEMO_CATEGORIES = ["business", "cooperation", "marketing", "etc"] as const;
 const BUSINESS_STAGES = ["", "Ⅰ영업진행", "Ⅱ사업제안", "Ⅲ제안서작성", "Ⅳ사업수행", "Ⅴ사업완료"] as const;
 const BUSINESS_STATUSES = ["시작 전", "진행 중", "완료", "보류", "실패"] as const;
@@ -177,6 +184,7 @@ export async function runAiCommand(
 - Cooperation: 협력사와의 협업 건 신규 등록(콘텐츠/하드웨어/공동생산 등 관계 유형)
 - Marketing: 마케팅 업무 신규 등록(브로슈어·홈페이지·영상 등 제작 업무)
 - 자료메일발송: 구글드라이브 자료를 이메일로 보내기(자료 소개·전달 요청)
+Calendar 일정 등록 시 destination은 문장에 "구글"이 언급되지 않으면 항상 "local"입니다. "구글 캘린더에도/구글에도 등록해줘"처럼 팀 Calendar와 구글 둘 다 언급되면 "both", "구글에만/구글 캘린더에만 등록해줘"처럼 구글만 명시되면 "google"로 설정하세요.
 오늘 날짜는 ${todayInSeoul()}(KST)입니다. "내일", "다음주 화요일" 같은 상대 날짜는 이 날짜를 기준으로 계산하세요.
 현재 로그인한 사용자 이름은 "${context.userName}"입니다. "내가", "나" 같은 표현은 이 이름으로 처리하세요.
 실제 팀원 이름 목록: ${context.teamMembers.join(", ") || "(없음)"}. 담당자류 필드는 반드시 이 목록에서 정확히 일치하는 이름만 넣고, 목록에 없거나 불확실한 이름은 추측해서 넣지 말고 빈 배열로 두세요.
@@ -198,6 +206,12 @@ export async function runAiCommand(
               },
               dateEnd: { type: "string", description: "종료 일시, 같은 형식. 없으면 빈 문자열." },
               isAllDay: { type: "boolean", description: "시간 없이 날짜만 있는 일정이면 true" },
+              destination: {
+                type: "string",
+                enum: [...CALENDAR_DESTINATIONS],
+                description:
+                  "local=팀 Calendar에만 등록(기본값), google=요청자 개인 구글 캘린더에만 등록(팀 Calendar에는 안 남음), both=둘 다. 문장에 구글이 언급되지 않으면 항상 local.",
+              },
               category: { type: "string", description: "분류(예: 미팅, 외근). 모르면 빈 문자열" },
               location: { type: "string" },
               target: { type: "string", description: "대상(예: 전사, 영업팀). 모르면 빈 문자열" },
@@ -210,6 +224,7 @@ export async function runAiCommand(
               "dateStart",
               "dateEnd",
               "isAllDay",
+              "destination",
               "category",
               "location",
               "target",
@@ -401,6 +416,7 @@ export async function runAiCommand(
         dateStart: str(input, "dateStart"),
         dateEnd: str(input, "dateEnd"),
         isAllDay: Boolean(input.isAllDay),
+        destination: pickEnum(input, "destination", CALENDAR_DESTINATIONS, "local"),
         category: str(input, "category"),
         location: str(input, "location"),
         target: str(input, "target"),

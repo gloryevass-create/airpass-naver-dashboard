@@ -67,6 +67,20 @@ function googleEventInputFrom(fields: ReturnType<typeof fieldsFromForm>) {
   };
 }
 
+type CalendarDestination = "local" | "google" | "both";
+
+// 새 일정 등록 시 어디에 등록할지 3지선다(2026-08-30) — "캘린더"(local)만 팀
+// 전체가 보는 team_events_v2에 남고, "구글"(google)은 요청자 개인 구글
+// 캘린더에만 등록해 팀 Calendar에는 아예 안 남는다(완전히 개인적인 일정을
+// 팀 일정 목록에 채우고 싶지 않을 때). destination 필드가 없는 예전 요청은
+// syncToGoogle 체크박스 방식(수정 다이얼로그가 아직 씀)과 호환되게 해석한다.
+function destinationFromForm(formData: FormData): CalendarDestination {
+  const raw = String(formData.get("destination") ?? "");
+  if (raw === "google" || raw === "both") return raw;
+  if (raw === "" && formData.get("syncToGoogle") === "on") return "both";
+  return "local";
+}
+
 export async function createTeamEventV2(
   _prevState: TeamEventV2FormState,
   formData: FormData
@@ -77,12 +91,29 @@ export async function createTeamEventV2(
   if (!fields.title) return { error: "일정 제목을 입력하세요." };
   if (!fields.date_start) return { error: "일시를 입력하세요." };
 
+  const destination = destinationFromForm(formData);
+
+  // "구글" 단독 등록 — 팀 Calendar(team_events_v2)에는 아예 행을 만들지 않고
+  // 요청자 개인 구글 캘린더에만 등록한다. 부가 기능이 아니라 이게 유일한
+  // 저장 대상이라 실패하면 그대로 에러로 돌려준다(다른 곳에 남는 게 없으므로).
+  if (destination === "google") {
+    const accessToken = await getValidGoogleAccessToken(supabase, user.id);
+    if (!accessToken) return { error: "구글 캘린더가 연결돼 있지 않습니다. 먼저 상단의 '구글 캘린더 연결'을 진행해 주세요." };
+    try {
+      await insertGoogleCalendarEvent(accessToken, googleEventInputFrom(fields));
+    } catch (e) {
+      return { error: `구글 캘린더 등록 실패: ${e instanceof Error ? e.message : String(e)}` };
+    }
+    revalidatePath(PATH);
+    return undefined;
+  }
+
   const { data: inserted, error } = await supabase.from("team_events_v2").insert(fields).select("id").single();
   if (error) return { error: `저장 실패: ${error.message}` };
 
   // 구글 캘린더 등록은 부가 기능이라 실패해도 팀 일정 저장 자체는 성공으로
   // 처리한다(연결 해제됐거나 토큰 만료 등) — 콘솔에만 남긴다.
-  if (formData.get("syncToGoogle") === "on") {
+  if (destination === "both") {
     try {
       const accessToken = await getValidGoogleAccessToken(supabase, user.id);
       if (accessToken) {
@@ -137,7 +168,7 @@ export async function updateTeamEventV2(
   let googleFieldUpdates: { google_event_id?: string | null; google_event_owner_id?: string | null } = {};
 
   if (canTouchGoogle) {
-    const wantsGoogleSync = formData.get("syncToGoogle") === "on";
+    const wantsGoogleSync = destinationFromForm(formData) === "both";
     try {
       const accessToken = await getValidGoogleAccessToken(supabase, user.id);
       if (accessToken && wantsGoogleSync) {

@@ -76,6 +76,14 @@ function CalendarEventFallbackForm({
           <input type="checkbox" name="isDatetime" defaultChecked={!input.isAllDay} />
           시간까지 정확함(끄면 날짜만 있는 일정으로 표시)
         </label>
+        <label className="flex flex-col gap-1 text-xs text-ink-mute sm:col-span-2">
+          등록 위치
+          <select name="destination" defaultValue={input.destination} className={FIELD_CLASS}>
+            <option value="local">캘린더</option>
+            <option value="google">구글</option>
+            <option value="both">캘린더+구글</option>
+          </select>
+        </label>
         <input type="hidden" name="tags" value="" />
         <label className="flex flex-col gap-1 text-xs text-ink-mute">
           분류
@@ -441,6 +449,7 @@ function buildCalendarFormData(input: Extract<AiCommandResult, { tool: "create_c
   fd.set("dateStart", input.dateStart);
   fd.set("dateEnd", input.dateEnd);
   if (!input.isAllDay) fd.set("isDatetime", "on");
+  fd.set("destination", input.destination);
   fd.set("tags", "");
   fd.set("category", input.category);
   fd.set("location", input.location);
@@ -613,7 +622,9 @@ export function AiCommandBar({ members }: { members: string[] }) {
         if (res.tool === "create_calendar_event") {
           const result = await createTeamEventV2(undefined, buildCalendarFormData(res.input));
           if (result?.error) return fail(result.error, res);
-          return succeed(`Calendar에 "${res.input.title}" 일정을 등록했습니다.`);
+          const destLabel =
+            res.input.destination === "google" ? "구글 캘린더" : res.input.destination === "both" ? "Calendar와 구글 캘린더" : "Calendar";
+          return succeed(`${destLabel}에 "${res.input.title}" 일정을 등록했습니다.`);
         }
         if (res.tool === "create_business_project") {
           const result = await createBusinessProjectV2(undefined, buildBusinessFormData(res.input));

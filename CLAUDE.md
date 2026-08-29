@@ -318,6 +318,19 @@ cooperationProjects.ts`, `app/dashboard/actions/marketingTasks.ts`)은 그대로
   "다른 사용자가 연결해 둔 일정" 안내만 보여줌). 구글 API 호출 실패는(연결
   해제·토큰 만료 등) 조용히 콘솔에만 남기고 팀 일정 저장 자체는 그대로
   성공 처리한다(기존 조회 실패 처리와 같은 원칙).
+- **신규 등록 3지선다**(2026-08-30): 새 일정 추가 다이얼로그의 체크박스를
+  "캘린더"/"구글"/"캘린더+구글" 3지선다(`.seg`/`.seg-opt`)로 바꿨다
+  (`app/dashboard/actions/eventsV2.ts::destinationFromForm`). "구글" 단독은
+  `team_events_v2`에 아예 행을 안 만들고 요청자 개인 구글 캘린더에만
+  등록한다 — 완전히 개인적인 일정을 팀 전체가 보는 목록에 채우고 싶지
+  않을 때를 위함. 이 경우 담당자/참석자/태그/분류/대상 필드는 구글
+  이벤트가 쓰지 않는 값이라 폼에서 통째로 숨긴다. 반대로 기존 일정
+  수정 다이얼로그는 이미 team_events_v2 행이 있어 "구글 단독"으로
+  전환할 개념이 없으므로 예전처럼 캘린더+구글 동기화 체크박스 하나만
+  유지한다. 상단 통합 AI 입력창(`AiCommandBar.tsx`)도 같은 3지선다를
+  쓴다 — `lib/aiCommand.ts`가 문장에 "구글"이 언급됐는지로
+  `destination`(local/google/both)까지 함께 추출해 `createTeamEventV2`에
+  그대로 넘긴다(언급 없으면 항상 local).
 
 ## Memo Board
 

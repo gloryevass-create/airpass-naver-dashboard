@@ -329,6 +329,11 @@ function EventDialog({
   const [state, formAction, pending] = useActionState(action, undefined);
   const [, startTransition] = useTransition();
   const wasPendingRef = useRef(false);
+  // 신규 등록 시에만 캘린더/구글/캘린더+구글 3지선다를 쓴다("구글" 단독은
+  // team_events_v2 행 자체가 안 생기므로 이미 만들어진 일정을 수정하며 바꿀
+  // 개념이 아님 — 수정은 기존 체크박스형 캘린더+구글 토글을 그대로 쓴다).
+  const [destination, setDestination] = useState<"local" | "google" | "both">("local");
+  const showGoogleOnlyFields = !event && destination === "google";
 
   // useActionState의 dispatch는 서버 액션 결과를 그 자리에서 돌려주지 않는다 —
   // pending이 true→false로 바뀌는 순간 에러가 없을 때만 닫는다(이 세션에서
@@ -386,47 +391,94 @@ function EventDialog({
             시간까지 정확함(끄면 날짜만 있는 일정으로 표시)
           </label>
           {(() => {
-            const syncedByOther = Boolean(event?.googleEventOwnerId && event.googleEventOwnerId !== currentUserId);
-            if (syncedByOther) {
+            if (event) {
+              // 수정: 기존 일정은 이미 team_events_v2 행이 있으므로 "구글 단독"으로
+              // 바꾸는 개념이 없다 — 캘린더+구글 동기화 여부만 토글한다.
+              const syncedByOther = Boolean(event.googleEventOwnerId && event.googleEventOwnerId !== currentUserId);
+              if (syncedByOther) {
+                return (
+                  <p className="text-muted" style={{ fontSize: 12, margin: 0 }}>
+                    다른 사용자가 자신의 구글 캘린더에 연결해 둔 일정입니다(이 항목은 그 사람만 동기화를 바꿀 수 있어요).
+                  </p>
+                );
+              }
+              if (!googleConnection) return null;
               return (
-                <p className="text-muted" style={{ fontSize: 12, margin: 0 }}>
-                  다른 사용자가 자신의 구글 캘린더에 연결해 둔 일정입니다(이 항목은 그 사람만 동기화를 바꿀 수 있어요).
-                </p>
+                <label style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 13 }}>
+                  <input
+                    type="checkbox"
+                    name="syncToGoogle"
+                    defaultChecked={Boolean(event.googleEventId && event.googleEventOwnerId === currentUserId)}
+                    style={{ width: 16, height: 16, accentColor: "var(--color-accent)" }}
+                  />
+                  내 구글 캘린더({googleConnection.googleEmail})에도 등록
+                </label>
               );
             }
+            // 신규 추가: 구글 캘린더가 연결돼 있을 때만 3지선다를 보여준다
+            // (연결 안 돼 있으면 "캘린더"만 가능하므로 굳이 선택지를 안 보여줌).
             if (!googleConnection) return null;
             return (
-              <label style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 13 }}>
-                <input
-                  type="checkbox"
-                  name="syncToGoogle"
-                  defaultChecked={Boolean(event?.googleEventId && event.googleEventOwnerId === currentUserId)}
-                  style={{ width: 16, height: 16, accentColor: "var(--color-accent)" }}
-                />
-                내 구글 캘린더({googleConnection.googleEmail})에도 등록
-              </label>
+              <div className="field">
+                <label>등록 위치</label>
+                <div className="seg">
+                  {([
+                    ["local", "캘린더"],
+                    ["google", "구글"],
+                    ["both", "캘린더+구글"],
+                  ] as const).map(([v, label]) => (
+                    <button
+                      key={v}
+                      type="button"
+                      className={`seg-opt${destination === v ? " active" : ""}`}
+                      onClick={() => setDestination(v)}
+                      style={{ border: 0 }}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <input type="hidden" name="destination" value={destination} />
+                {destination === "google" && (
+                  <p className="text-muted" style={{ fontSize: 12, margin: "6px 0 0" }}>
+                    내 구글 캘린더({googleConnection.googleEmail})에만 등록되고, 팀 Calendar 목록에는 남지 않습니다.
+                  </p>
+                )}
+              </div>
             );
           })()}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-3)" }}>
-            <div className="field">
-              <label>태그(쉼표로 구분)</label>
-              <input className="input" name="tags" defaultValue={event?.tags.join(", ") ?? ""} placeholder="예: 미팅, 외근" />
+          {!showGoogleOnlyFields && (
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-3)" }}>
+              <div className="field">
+                <label>태그(쉼표로 구분)</label>
+                <input className="input" name="tags" defaultValue={event?.tags.join(", ") ?? ""} placeholder="예: 미팅, 외근" />
+              </div>
+              <div className="field">
+                <label>분류</label>
+                <input className="input" name="category" defaultValue={event?.category ?? ""} />
+              </div>
+              <div className="field">
+                <label>장소</label>
+                <input className="input" name="location" defaultValue={event?.location ?? ""} />
+              </div>
+              <div className="field">
+                <label>대상</label>
+                <input className="input" name="target" defaultValue={event?.target ?? ""} />
+              </div>
             </div>
-            <div className="field">
-              <label>분류</label>
-              <input className="input" name="category" defaultValue={event?.category ?? ""} />
-            </div>
+          )}
+          {showGoogleOnlyFields && (
             <div className="field">
               <label>장소</label>
-              <input className="input" name="location" defaultValue={event?.location ?? ""} />
+              <input className="input" name="location" defaultValue="" />
             </div>
-            <div className="field">
-              <label>대상</label>
-              <input className="input" name="target" defaultValue={event?.target ?? ""} />
-            </div>
-          </div>
-          <MemberChips name="assignees" label="담당자" members={members} defaultValue={event?.assignees ?? []} />
-          <MemberChips name="attendees" label="참석자" members={members} defaultValue={event?.attendees ?? []} />
+          )}
+          {!showGoogleOnlyFields && (
+            <>
+              <MemberChips name="assignees" label="담당자" members={members} defaultValue={event?.assignees ?? []} />
+              <MemberChips name="attendees" label="참석자" members={members} defaultValue={event?.attendees ?? []} />
+            </>
+          )}
           <div className="field">
             <label>내용</label>
             <textarea className="input" name="content" defaultValue={event?.content ?? ""} rows={3} />
