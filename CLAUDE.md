@@ -264,7 +264,7 @@ app/
   auth/callback/         code→세션 교환 (route handler)
   auth/set-password/     초대·재설정 후 새 비밀번호 저장
   auth/forgot-password/  재설정 메일 요청
-  admin/                 관리자 전용: 팀원 등록 폼(Industry 테마) + 가입자 목록(표)
+  admin/                 관리자 전용: 팀원 등록 폼 + 가입자 목록, 전체 Industry 테마
   dashboard/              메인 대시보드
 components/               공용 UI (LoginForm, DashboardHeader 등)
 components/dashboard/     대시보드 전용 차트/테이블 컴포넌트
