@@ -574,7 +574,14 @@ export function IndustryEventCalendar({
                           fontFamily: "var(--font-heading)",
                           fontSize: 14,
                           lineHeight: 1,
-                          color: isToday ? "var(--color-accent-700)" : undefined,
+                          display: "inline-flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          width: isToday ? 22 : undefined,
+                          height: isToday ? 22 : undefined,
+                          borderRadius: isToday ? "50%" : undefined,
+                          background: isToday ? "var(--color-accent)" : undefined,
+                          color: isToday ? "var(--color-bg)" : undefined,
                           fontWeight: isToday ? 600 : 400,
                         }}
                       >
@@ -648,7 +655,14 @@ export function IndustryEventCalendar({
                     style={{
                       fontFamily: "var(--font-heading)",
                       fontSize: 14,
-                      color: isToday ? "var(--color-accent-700)" : undefined,
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: isToday ? 22 : undefined,
+                      height: isToday ? 22 : undefined,
+                      borderRadius: isToday ? "50%" : undefined,
+                      background: isToday ? "var(--color-accent)" : undefined,
+                      color: isToday ? "var(--color-bg)" : undefined,
                       fontWeight: isToday ? 600 : 400,
                     }}
                   >
