@@ -57,6 +57,33 @@ export type Database = {
         };
         Relationships: [];
       };
+      google_calendar_connections: {
+        Row: {
+          user_id: string;
+          google_email: string;
+          refresh_token: string;
+          access_token: string | null;
+          access_token_expires_at: string | null;
+          connected_at: string;
+        };
+        Insert: {
+          user_id: string;
+          google_email: string;
+          refresh_token: string;
+          access_token?: string | null;
+          access_token_expires_at?: string | null;
+          connected_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          google_email?: string;
+          refresh_token?: string;
+          access_token?: string | null;
+          access_token_expires_at?: string | null;
+          connected_at?: string;
+        };
+        Relationships: [];
+      };
       keywords: {
         Row: {
           id: string;

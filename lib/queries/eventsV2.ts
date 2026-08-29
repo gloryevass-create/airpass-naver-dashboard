@@ -20,18 +20,24 @@ export type TeamEventV2 = {
   updatedAt: string;
 };
 
+/** month("YYYY-MM")를 포함하는, 앞뒤 캘린더 그리드에 걸치는 며칠까지 넉넉하게
+ * 담는 범위. 구글 캘린더 일정을 같은 화면에 같이 보여줄 때도 정확히 같은
+ * 범위를 써야 그리드 경계에서 어긋나지 않는다(app/dashboard/events2/page.tsx). */
+export function eventsV2RangeForMonth(month: string): { rangeStart: string; rangeEnd: string } {
+  const [year, mon] = month.split("-").map(Number);
+  return {
+    rangeStart: new Date(Date.UTC(year, mon - 2, 21)).toISOString(),
+    rangeEnd: new Date(Date.UTC(year, mon, 10)).toISOString(),
+  };
+}
+
 /**
- * month는 "YYYY-MM" 형식. 해당 월(+앞뒤 캘린더 그리드에 걸치는 며칠)을 포함하는
- * 넉넉한 범위로 조회한다 — 정확한 그리드 경계는 컴포넌트에서 다시 자른다.
- *
  * team_events_v2는 이 대시보드가 직접 쓰는(Notion 연동 없는) 일정 데이터라
  * admin 캐싱 없이 요청자의 세션 클라이언트로 매번 최신값을 읽는다
  * (product_catalog/business_projects_v2와 동일한 패턴).
  */
 export async function getTeamEventsV2(supabase: Client, month: string): Promise<TeamEventV2[]> {
-  const [year, mon] = month.split("-").map(Number);
-  const rangeStart = new Date(Date.UTC(year, mon - 2, 21)).toISOString();
-  const rangeEnd = new Date(Date.UTC(year, mon, 10)).toISOString();
+  const { rangeStart, rangeEnd } = eventsV2RangeForMonth(month);
 
   const { data } = await supabase
     .from("team_events_v2")

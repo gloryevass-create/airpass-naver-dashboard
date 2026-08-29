@@ -239,6 +239,42 @@ cooperationProjects.ts`, `app/dashboard/actions/marketingTasks.ts`)은 그대로
   (month/week/day) 저장만 지원한다(`localStorage` 키 `calendar:defaults`).
   Reset은 하드코딩된 기본값(month)으로 되돌린다.
 
+## 개인 Google 캘린더 연동
+
+로그인한 사용자가 자기 구글 캘린더를 연결하면, **그 사람이 로그인했을 때만**
+자기 구글 일정이 Calendar 화면에 함께 보인다(2026-08-29). `profiles.google_email`
+(자기소개용 텍스트 필드, 회원정보 수정 화면)과는 완전히 별개다 — 실제 일정을
+읽어오려면 OAuth 동의를 받아 발급되는 access/refresh token이 필요해서, 이
+기능은 새 테이블 `google_calendar_connections`에 토큰을 저장하는 방식으로
+따로 구현했다.
+
+- **OAuth 흐름**: Calendar 화면의 "구글 캘린더 연결" 버튼(`GoogleCalendarControl`,
+  `IndustryEventCalendar.tsx`) → `GET /auth/google-calendar/connect`(CSRF
+  방지용 state를 쿠키에 저장하고 구글 동의 화면으로 리다이렉트) → 사용자 동의 →
+  `GET /auth/google-calendar/callback`(state 검증 → code를 access/refresh
+  token으로 교환 → `google_calendar_connections`에 upsert) → Calendar로 복귀.
+  범위는 `calendar.readonly` + `openid`/`email`(연결된 계정 표시용)만 요청 —
+  구글 쪽에 쓰기(일정 등록 등)는 하지 않는다.
+- **토큰 갱신**: `lib/queries/googleCalendar.ts::getMyGoogleCalendarEvents()`가
+  매번 access_token 만료(또는 만료 임박)를 확인해 필요하면 refresh_token으로
+  새로 받고 DB 캐시도 같이 갱신한다. 구글 쪽 요청이 실패해도 조용히 빈
+  배열을 돌려준다 — 이 기능 실패가 Calendar 화면 전체를 막으면 안 되기 때문.
+- **개인정보 격리**: `app/dashboard/events2/page.tsx`가 항상 **요청을 보낸
+  본인의 `user.id`**로만 연결/일정을 조회한다 — 다른 사람 화면에는 절대
+  섞이지 않는다(서버 컴포넌트가 매 요청마다 그 세션의 사용자로만 조회하는
+  구조라 자연히 보장됨, 별도 격리 로직 불필요).
+- **권한 모델**: `profiles.role`과 달리 이 테이블은 자기 행을 자기가
+  연결/해제/재연결해도 문제될 게 없어(권한상승 위험 없음) `profiles`처럼
+  admin(service_role) 클라이언트를 거치지 않고 RLS로 본인 행 CRUD를 바로
+  허용한다(마이그레이션 0050).
+- **화면 표시**: 팀 일정(`team_events_v2`)과 구글 일정을 시작 시각순으로 섞어
+  보여주되(`dayItems()`), 구글 일정은 파란 점(`GOOGLE_DOT_COLOR`)으로
+  구분하고 클릭하면 우리 수정 다이얼로그가 아니라 구글 캘린더 원본을 새 탭으로
+  연다(우리 DB 데이터가 아니라 수정·삭제 불가).
+- **필요한 환경변수**: `GOOGLE_CALENDAR_CLIENT_ID`/`GOOGLE_CALENDAR_CLIENT_SECRET`
+  (Google Cloud Console에서 발급, `.env.example` 참고). 리디렉션 URI는
+  `<도메인>/auth/google-calendar/callback`으로 등록해야 한다.
+
 ## Memo Board
 
 `/dashboard/memos` — Claude Design "Industry" 테마 목업("게시판 디자인

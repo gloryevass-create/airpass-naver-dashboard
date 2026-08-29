@@ -27,6 +27,8 @@ export const CHANGELOG: ChangelogEntry[] = [
       "회원등급을 admin/member/guest 3단계로 확장(profiles.role 체크 제약 수정) — 관리자 등록 폼에서는 admin은 줄 수 없고 member/guest만 선택 가능",
       "회원정보 수정(/dashboard/account/profile)·비밀번호 변경(/dashboard/account/password) 화면도 다른 메뉴와 같은 Claude Design \"Industry\" 테마로 통일",
       "Calendar 상단에도 SI Business 2 등과 같은 환경설정 바 추가 — 기본 보기(월/주/일)를 저장해두면 다음에 열 때도 그 보기로 고정됨",
+      "Calendar 오늘 날짜 숫자에 원형 배지 표시(월/주 보기)",
+      "개인 Google 캘린더 연동 추가 — Calendar 화면에서 \"구글 캘린더 연결\"로 OAuth 동의 후 연결하면, 로그인한 본인 화면에서만 자기 구글 일정이 팀 일정과 함께 보임(다른 사람에게는 보이지 않음). 우리 DB 일정이 아니라 클릭하면 구글 캘린더 원본을 새 탭으로 엶",
     ],
   },
   {

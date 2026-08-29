@@ -4,6 +4,9 @@ import { useActionState, useEffect, useRef, useState, useTransition } from "reac
 import { useRouter } from "next/navigation";
 import type { TeamEventV2 } from "@/lib/queries/eventsV2";
 import { createTeamEventV2, updateTeamEventV2, deleteTeamEventV2 } from "@/app/dashboard/actions/eventsV2";
+import type { GoogleCalendarConnection } from "@/lib/queries/googleCalendar";
+import type { GoogleCalendarEvent } from "@/lib/googleCalendar/api";
+import { disconnectGoogleCalendar } from "@/app/dashboard/actions/googleCalendar";
 
 // 태그별 점 색상 — 기존 Tailwind 버전(TeamEventCalendarV2.tsx)의 TAG_COLORS와
 // 같은 태그 이름을 매핑하되, 이 목업은 색이 있는 알약이 아니라 작은 점 하나로
@@ -98,6 +101,25 @@ function eventsOnDay(events: TeamEventV2[], day: string): TeamEventV2[] {
     const end = e.dateEnd ? toKstDateStr(e.dateEnd) : start;
     return day >= start && day <= end;
   });
+}
+
+function googleEventsOnDay(events: GoogleCalendarEvent[], day: string): GoogleCalendarEvent[] {
+  return events.filter((e) => {
+    const start = toKstDateStr(e.dateStart);
+    const end = e.dateEnd ? toKstDateStr(e.dateEnd) : start;
+    return day >= start && day <= end;
+  });
+}
+
+// 팀 일정과 개인 구글 일정을 한 목록으로 섞어서(시작 시각순) 보여주기 위한
+// 타입 — 구글 일정은 우리 DB에 없는 남의 데이터라 클릭해도 수정 다이얼로그를
+// 열지 않고 새 탭에서 구글 캘린더 원본으로 보낸다(GoogleEventPill).
+type DayItem = { kind: "team"; event: TeamEventV2 } | { kind: "google"; event: GoogleCalendarEvent };
+
+function dayItems(day: string, events: TeamEventV2[], googleEvents: GoogleCalendarEvent[]): DayItem[] {
+  const team: DayItem[] = eventsOnDay(events, day).map((event) => ({ kind: "team", event }));
+  const google: DayItem[] = googleEventsOnDay(googleEvents, day).map((event) => ({ kind: "google", event }));
+  return [...team, ...google].sort((a, b) => a.event.dateStart.localeCompare(b.event.dateStart));
 }
 
 const WEEKDAYS = ["월", "화", "수", "목", "금", "토", "일"];
@@ -395,6 +417,79 @@ function EventPill({ event, onClick, big }: { event: TeamEventV2; onClick: () =>
   );
 }
 
+const GOOGLE_DOT_COLOR = "#4285F4";
+
+/** 구글 캘린더 일정은 우리 DB 데이터가 아니라 수정·삭제를 할 수 없다 —
+ * 클릭하면 구글 캘린더 원본을 새 탭으로 연다. */
+function GoogleEventPill({ event, big }: { event: GoogleCalendarEvent; big?: boolean }) {
+  return (
+    <a
+      href={event.htmlLink || undefined}
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 6,
+        width: "100%",
+        textAlign: "left",
+        textDecoration: "none",
+        fontSize: big ? 14 : 11.5,
+        padding: big ? "6px 0" : "1px 0",
+        color: "var(--color-text)",
+        overflow: "hidden",
+      }}
+    >
+      <span style={{ flex: "none", width: 6, height: 6, borderRadius: "50%", background: GOOGLE_DOT_COLOR }} />
+      <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{event.title}</span>
+    </a>
+  );
+}
+
+function DayItemPill({ item, onEditTeam, big }: { item: DayItem; onEditTeam: (e: TeamEventV2) => void; big?: boolean }) {
+  return item.kind === "team" ? (
+    <EventPill event={item.event} onClick={() => onEditTeam(item.event)} big={big} />
+  ) : (
+    <GoogleEventPill event={item.event} big={big} />
+  );
+}
+
+/* ─────────────────────────── 구글 캘린더 연결 상태 ─────────────────────────── */
+
+function GoogleCalendarControl({ connection }: { connection: GoogleCalendarConnection | null }) {
+  const router = useRouter();
+  const [, startTransition] = useTransition();
+
+  function handleDisconnect() {
+    if (!window.confirm("구글 캘린더 연결을 해제할까요? 내 구글 일정이 더 이상 표시되지 않습니다.")) return;
+    startTransition(async () => {
+      await disconnectGoogleCalendar();
+      router.refresh();
+    });
+  }
+
+  if (!connection) {
+    return (
+      <a href="/auth/google-calendar/connect" className="btn btn-secondary" style={{ fontSize: 12 }}>
+        <span style={{ flex: "none", width: 8, height: 8, borderRadius: "50%", background: GOOGLE_DOT_COLOR }} />
+        구글 캘린더 연결
+      </a>
+    );
+  }
+
+  return (
+    <div style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 12 }}>
+      <span className="text-muted" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+        <span style={{ flex: "none", width: 8, height: 8, borderRadius: "50%", background: GOOGLE_DOT_COLOR }} />
+        {connection.googleEmail} 연결됨
+      </span>
+      <button type="button" className="btn btn-ghost" onClick={handleDisconnect} style={{ fontSize: 12 }}>
+        연결 해제
+      </button>
+    </div>
+  );
+}
+
 /* ─────────────────────────── 메인 캘린더 ─────────────────────────── */
 
 export function IndustryEventCalendar({
@@ -402,11 +497,19 @@ export function IndustryEventCalendar({
   month,
   initialCursor,
   members,
+  googleConnection,
+  googleEvents,
+  googleConnected,
+  googleError,
 }: {
   events: TeamEventV2[];
   month: string;
   initialCursor: string;
   members: string[];
+  googleConnection: GoogleCalendarConnection | null;
+  googleEvents: GoogleCalendarEvent[];
+  googleConnected: boolean;
+  googleError: string | null;
 }) {
   const router = useRouter();
   const [view, setView] = useState<"month" | "week" | "day">(HARD_DEFAULT_VIEW);
@@ -414,6 +517,32 @@ export function IndustryEventCalendar({
   const [editing, setEditing] = useState<TeamEventV2 | "new" | null>(null);
   const [newEventDate, setNewEventDate] = useState<string | null>(null);
   const todayStr = new Date().toISOString().slice(0, 10);
+
+  // 구글 연동 후 돌아왔을 때만 잠깐 보여줄 안내문 — URL의 googleConnected/
+  // googleError 쿼리는 한 번 보여준 뒤 지운다(계속 남아있으면 새로고침·다른
+  // 달로 이동해도 배너가 안 사라짐).
+  const [googleBanner] = useState(() =>
+    googleConnected
+      ? { type: "success" as const, message: "구글 캘린더가 연결됐습니다." }
+      : googleError
+        ? {
+            type: "error" as const,
+            message:
+              googleError === "not_configured"
+                ? "구글 캘린더 연동이 아직 설정되지 않았습니다."
+                : googleError === "no_refresh_token"
+                  ? "구글에서 재연결 권한을 받지 못했습니다. 구글 계정의 '연결된 앱' 설정에서 이 앱 연결을 해제한 뒤 다시 시도해주세요."
+                  : "구글 캘린더 연결에 실패했습니다. 다시 시도해주세요.",
+          }
+        : null
+  );
+  useEffect(() => {
+    if (!googleConnected && !googleError) return;
+    const params = new URLSearchParams({ month });
+    if (cursor) params.set("day", cursor);
+    router.replace(`/dashboard/events2?${params.toString()}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // 저장된 기본 보기는 브라우저에서만 읽을 수 있어(localStorage) 마운트 후에
   // 반영한다 — 서버가 렌더링한 HTML(항상 "month")과 클라이언트 초기값이
@@ -475,26 +604,43 @@ export function IndustryEventCalendar({
 
   const weeks = view === "month" ? buildMonthGrid(month) : [];
   const weekDays = view === "week" ? Array.from({ length: 7 }, (_, i) => addDaysToDateStr(startOfWeek(cursor), i)) : [];
-  const dayEvents = view === "day" ? eventsOnDay(events, cursor) : [];
+  const dayEventItems = view === "day" ? dayItems(cursor, events, googleEvents) : [];
 
   return (
     <div className="industry-theme" style={{ minHeight: "100vh" }}>
       <TopSettingsBar view={view} onViewChange={setView} />
       <div style={{ padding: "var(--space-8)", maxWidth: 1400, margin: "0 auto" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="3" y="4" width="18" height="17" rx="0" />
-          <line x1="3" y1="9" x2="21" y2="9" />
-          <line x1="7" y1="2" x2="7" y2="5" />
-          <line x1="17" y1="2" x2="17" y2="5" />
-        </svg>
-        <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 28, margin: 0, color: "var(--color-accent-700)" }}>Calendar</h1>
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "var(--space-4)", flexWrap: "wrap" }}>
+        <div>
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="4" width="18" height="17" rx="0" />
+              <line x1="3" y1="9" x2="21" y2="9" />
+              <line x1="7" y1="2" x2="7" y2="5" />
+              <line x1="17" y1="2" x2="17" y2="5" />
+            </svg>
+            <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 28, margin: 0, color: "var(--color-accent-700)" }}>Calendar</h1>
+          </div>
+          <p className="text-muted" style={{ margin: "var(--space-2) 0 0", fontSize: 14 }}>
+            이 화면에서 직접 일정을 추가·수정·삭제합니다(Notion 연동 없음 — 이 시스템이 원본입니다).
+          </p>
+        </div>
+        <GoogleCalendarControl connection={googleConnection} />
       </div>
-      <p className="text-muted" style={{ margin: "var(--space-2) 0 var(--space-6)", fontSize: 14 }}>
-        이 화면에서 직접 일정을 추가·수정·삭제합니다(Notion 연동 없음 — 이 시스템이 원본입니다).
-      </p>
 
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "var(--space-4)", flexWrap: "wrap", gap: "var(--space-3)" }}>
+      {googleBanner && (
+        <p
+          style={{
+            fontSize: 13,
+            margin: "var(--space-3) 0 0",
+            color: googleBanner.type === "error" ? "var(--color-accent-900)" : "var(--color-accent-700)",
+          }}
+        >
+          {googleBanner.message}
+        </p>
+      )}
+
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "var(--space-6)", marginBottom: "var(--space-4)", flexWrap: "wrap", gap: "var(--space-3)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", flexWrap: "wrap" }}>
           <button type="button" className="btn btn-secondary btn-icon" onClick={prevPeriod} aria-label="이전">
             ←
@@ -549,7 +695,7 @@ export function IndustryEventCalendar({
             <div key={wi} style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 1, marginBottom: 1 }}>
               {week.map((day) => {
                 const inMonth = day.slice(0, 7) === month;
-                const dayEvts = eventsOnDay(events, day);
+                const dayEvts = dayItems(day, events, googleEvents);
                 const isToday = day === todayStr;
                 const MAX = 3;
                 return (
@@ -597,8 +743,8 @@ export function IndustryEventCalendar({
                         +
                       </button>
                     </div>
-                    {dayEvts.slice(0, MAX).map((ev) => (
-                      <EventPill key={ev.id} event={ev} onClick={() => setEditing(ev)} />
+                    {dayEvts.slice(0, MAX).map((item) => (
+                      <DayItemPill key={`${item.kind}-${item.event.id}`} item={item} onEditTeam={setEditing} />
                     ))}
                     {dayEvts.length > MAX && (
                       <span style={{ fontSize: 11, color: "color-mix(in srgb, var(--color-text) 55%, transparent)" }}>
@@ -616,7 +762,7 @@ export function IndustryEventCalendar({
       {view === "week" && (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 1 }}>
           {weekDays.map((day, i) => {
-            const dayEvts = eventsOnDay(events, day);
+            const dayEvts = dayItems(day, events, googleEvents);
             const isToday = day === todayStr;
             return (
               <div
@@ -669,8 +815,8 @@ export function IndustryEventCalendar({
                     {Number(day.slice(8, 10))}
                   </span>
                 </div>
-                {dayEvts.map((ev) => (
-                  <EventPill key={ev.id} event={ev} onClick={() => setEditing(ev)} />
+                {dayEvts.map((item) => (
+                  <DayItemPill key={`${item.kind}-${item.event.id}`} item={item} onEditTeam={setEditing} />
                 ))}
                 <button
                   type="button"
@@ -699,10 +845,10 @@ export function IndustryEventCalendar({
             gap: 4,
           }}
         >
-          {dayEvents.map((ev) => (
-            <EventPill key={ev.id} event={ev} onClick={() => setEditing(ev)} big />
+          {dayEventItems.map((item) => (
+            <DayItemPill key={`${item.kind}-${item.event.id}`} item={item} onEditTeam={setEditing} big />
           ))}
-          {dayEvents.length === 0 && (
+          {dayEventItems.length === 0 && (
             <p className="text-muted" style={{ fontSize: 13, margin: "var(--space-2) 0" }}>
               일정이 없습니다.
             </p>
