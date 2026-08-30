@@ -32,6 +32,10 @@ export function RegisterUserForm() {
           <input className="input" id="reg-google-email" name="googleEmail" type="email" placeholder="teammate@gmail.com" />
         </div>
         <div className="field">
+          <label htmlFor="reg-phone">핸드폰번호</label>
+          <input className="input" id="reg-phone" name="phone" type="tel" placeholder="010-1234-5678" />
+        </div>
+        <div className="field">
           <label id="reg-role-label">역할</label>
           <div className="seg" role="radiogroup" aria-labelledby="reg-role-label">
             <label className={`seg-opt${role === "member" ? " active" : ""}`}>

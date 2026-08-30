@@ -10,11 +10,13 @@ export function ProfileForm({
   companyEmail,
   title,
   googleEmail,
+  phone,
 }: {
   name: string | null;
   companyEmail: string;
   title: string;
   googleEmail: string;
+  phone: string;
 }) {
   const [state, formAction, pending] = useActionState(updateOwnProfile, initialState);
 
@@ -36,6 +38,10 @@ export function ProfileForm({
         <div className="field">
           <label htmlFor="googleEmail">구글메일</label>
           <input className="input" id="googleEmail" name="googleEmail" type="email" defaultValue={googleEmail} placeholder="example@gmail.com" />
+        </div>
+        <div className="field">
+          <label htmlFor="phone">핸드폰번호</label>
+          <input className="input" id="phone" name="phone" type="tel" defaultValue={phone} placeholder="010-1234-5678" />
         </div>
       </div>
       <p className="text-muted" style={{ fontSize: 12, margin: "0 0 var(--space-5)" }}>

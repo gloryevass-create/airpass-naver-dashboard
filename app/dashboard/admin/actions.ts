@@ -23,6 +23,7 @@ export async function registerUser(
   const name = String(formData.get("name") ?? "").trim();
   const title = String(formData.get("title") ?? "").trim();
   const googleEmail = String(formData.get("googleEmail") ?? "").trim();
+  const phone = String(formData.get("phone") ?? "").trim();
   const role = formData.get("role") === "guest" ? "guest" : "member";
 
   if (!email || !email.includes("@")) {
@@ -51,9 +52,10 @@ export async function registerUser(
     return { error: `등록 실패: ${error.message}` };
   }
 
-  if (data.user && (googleEmail || role === "guest")) {
-    const updates: { google_email?: string; role?: "guest" } = {};
+  if (data.user && (googleEmail || phone || role === "guest")) {
+    const updates: { google_email?: string; phone?: string; role?: "guest" } = {};
     if (googleEmail) updates.google_email = googleEmail;
+    if (phone) updates.phone = phone;
     if (role === "guest") updates.role = role;
     await admin.from("profiles").update(updates).eq("id", data.user.id);
   }

@@ -47,6 +47,7 @@ export default async function AdminPage() {
                   <th>직함</th>
                   <th>회사메일</th>
                   <th>구글메일</th>
+                  <th>핸드폰번호</th>
                   <th>역할</th>
                   <th>가입일</th>
                   <th>최근 로그인</th>
@@ -60,6 +61,7 @@ export default async function AdminPage() {
                     <td className="text-muted">{p.title ?? "-"}</td>
                     <td className="text-muted">{p.email}</td>
                     <td className="text-muted">{p.google_email ?? "-"}</td>
+                    <td className="text-muted">{p.phone ?? "-"}</td>
                     <td>
                       <span
                         className={
@@ -76,7 +78,7 @@ export default async function AdminPage() {
                 ))}
                 {(!profiles || profiles.length === 0) && (
                   <tr>
-                    <td colSpan={8} className="text-muted" style={{ textAlign: "center", padding: "var(--space-6)" }}>
+                    <td colSpan={9} className="text-muted" style={{ textAlign: "center", padding: "var(--space-6)" }}>
                       아직 가입자가 없습니다.
                     </td>
                   </tr>

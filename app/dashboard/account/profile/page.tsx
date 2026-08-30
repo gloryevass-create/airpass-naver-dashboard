@@ -33,7 +33,7 @@ export default async function ProfilePage() {
           <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 28, margin: 0, color: "var(--color-accent-700)" }}>회원정보 수정</h1>
         </div>
         <p className="text-muted" style={{ margin: "var(--space-2) 0 var(--space-6)", fontSize: 13 }}>
-          직급과 구글메일을 수정할 수 있습니다.
+          직급·구글메일·핸드폰번호를 수정할 수 있습니다.
         </p>
 
         <ProfileForm
@@ -41,6 +41,7 @@ export default async function ProfilePage() {
           companyEmail={profile?.email ?? user.email ?? ""}
           title={profile?.title ?? ""}
           googleEmail={profile?.google_email ?? ""}
+          phone={profile?.phone ?? ""}
         />
       </div>
     </div>
