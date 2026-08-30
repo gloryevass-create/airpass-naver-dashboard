@@ -491,7 +491,7 @@ export function MaterialEmailForm({
         <div className="dialog-backdrop" onClick={() => setPreviewOpen(false)}>
           <div
             className="dialog"
-            style={{ width: "min(720px,100%)", maxHeight: "90vh", display: "flex", flexDirection: "column", padding: 0, background: "#ffffff" }}
+            style={{ width: "min(1240px,96vw)", maxHeight: "90vh", display: "flex", flexDirection: "column", padding: 0, background: "#ffffff" }}
             onClick={(e) => e.stopPropagation()}
           >
             <div
