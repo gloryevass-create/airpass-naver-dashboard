@@ -1,14 +1,13 @@
 // 클라이언트(MaterialEmailForm)와 서버(AI 자동발송 액션) 양쪽에서 같은 기본
 // 제목·안내문을 써야 해서 공용 파일로 분리했다(사용자 확인, 2026-08-26).
-export const DEFAULT_MATERIAL_EMAIL_SUBJECT = "에어패스 제품군 브로셔 및 영상 자료 송부드립니다.";
+export const DEFAULT_MATERIAL_EMAIL_SUBJECT = "[에어패스] 제품군 브로셔 및 소개 영상 자료 송부의 건";
 
-export const DEFAULT_MATERIAL_EMAIL_MESSAGE = `안녕하세요! 에어패스 입니다.
-요청하신 에어패스 제품군 브로셔와 영상자료 송부드립니다.
-살펴보시고 궁금한 사항이 있으시면 언제든지 메일이나 편하게 전화 주시면
-자세한 상담 드리도록 하겠습니다.
+export const DEFAULT_MATERIAL_EMAIL_MESSAGE = `안녕하세요, 에어패스입니다.
+
+요청하신 에어패스 제품군의 브로셔와 소개 영상 자료를 첨부하여 전달드립니다.
+
+전달해 드린 자료를 검토해 보시고 추가로 궁금하신 사항이나 상담이 필요하신 경우, 언제든지 이메일 또는 전화로 연락해 주시면 친절하고 자세하게 안내해 드리겠습니다.
 
 감사합니다.
 
-홈페이지 : http://www.airpass.co.kr
-유튜브 : https://www.youtube.com/@AIRPASS_XR
-전화번호 : 02-561-1511`;
+에어패스 드림`;
