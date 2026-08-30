@@ -252,6 +252,7 @@ export function MaterialEmailForm({
   senderName,
   senderTitle,
   senderEmail,
+  senderPhone,
 }: {
   files: DriveMaterialFile[];
   quotations: QuotationSummary[];
@@ -259,6 +260,7 @@ export function MaterialEmailForm({
   senderName: string;
   senderTitle: string | null;
   senderEmail: string;
+  senderPhone: string | null;
 }) {
   const [state, formAction, pending] = useActionState(sendMaterialEmailAction, initialState);
   const [search, setSearch] = useState("");
@@ -322,6 +324,7 @@ export function MaterialEmailForm({
       senderName: senderName || "-",
       senderTitle,
       senderEmail: senderEmail || "-",
+      senderPhone,
       documents: selectedFiles.filter((f) => !isVideoFile(f)).map((f) => ({ name: f.name, link: "#" })),
       videos: selectedFiles.filter(isVideoFile).map((f) => ({ name: f.name, link: "#" })),
       quotation: selectedQuotation
@@ -329,7 +332,7 @@ export function MaterialEmailForm({
         : null,
       productLinks: productLinkLabels.map((p) => ({ label: p.label, link: p.matched ? "#" : null })),
     });
-  }, [files, selected, subject, message, senderName, senderTitle, senderEmail, selectedQuotation, productLinkLabels]);
+  }, [files, selected, subject, message, senderName, senderTitle, senderEmail, senderPhone, selectedQuotation, productLinkLabels]);
 
   function toggle(id: string) {
     setSelected((prev) => {

@@ -62,15 +62,24 @@ function fileListBlock(title: string, files: MaterialEmailFileLink[]): string {
   `;
 }
 
+// 산출내역을 첨부하지 않아도 이 섹션 전체(제목·3개 안내 카드)는 항상 보여주고,
+// 견적서 하이라이트 박스만 "견적내용이 없습니다."로 바뀐다 — 예전엔 산출내역이
+// 없으면 섹션이 통째로 사라졌는데, 그 3개 카드는 산출내역과 무관한 일반 서비스
+// 안내라 항상 노출하는 쪽으로 바꿨다(사용자 확인, 2026-08-30).
 function quotationSectionHtml(quotation: MaterialEmailQuotation): string {
-  if (!quotation) return "";
+  const quotationBoxHtml = quotation
+    ? `
+        <div style="font-size:15px;font-weight:700;color:#111827;margin-bottom:10px;">견적서 원본 PDF 열람 · 다운로드</div>
+        <a href="${escapeHtml(quotation.printUrl)}" style="display:inline-block;background:#2b6bff;color:#fff;border-radius:6px;padding:10px 18px;font-size:13.5px;font-weight:700;">${escapeHtml(quotation.quoteNumber)} 견적서 보기 →</a>
+    `
+    : `<div style="font-size:14.5px;color:#6b7280;">견적내용이 없습니다.</div>`;
+
   return `
       <h2 style="font-size:18px;font-weight:700;color:#111827;margin:0 0 4px;">견적 및 제품자료 안내</h2>
       <div style="width:36px;height:3px;background:#22c55e;border-radius:2px;margin-bottom:18px;"></div>
 
       <div style="background:#f0f5ff;border:1px solid #dbe6fe;border-radius:10px;padding:18px 22px;margin-bottom:28px;">
-        <div style="font-size:15px;font-weight:700;color:#111827;margin-bottom:10px;">견적서 원본 PDF 열람 · 다운로드</div>
-        <a href="${escapeHtml(quotation.printUrl)}" style="display:inline-block;background:#2b6bff;color:#fff;border-radius:6px;padding:10px 18px;font-size:13.5px;font-weight:700;">${escapeHtml(quotation.quoteNumber)} 견적서 보기 →</a>
+        ${quotationBoxHtml}
       </div>
 
       <div style="display:flex;gap:14px;margin-bottom:44px;">
@@ -114,14 +123,18 @@ export function buildMaterialEmailHtml(params: {
   senderName: string;
   senderTitle: string | null;
   senderEmail: string;
+  senderPhone: string | null;
   documents: MaterialEmailFileLink[];
   videos: MaterialEmailFileLink[];
   quotation: MaterialEmailQuotation;
   productLinks: MaterialEmailProductLink[];
 }): string {
-  const { subject, message, senderName, senderTitle, senderEmail, documents, videos, quotation, productLinks } = params;
+  const { subject, message, senderName, senderTitle, senderEmail, senderPhone, documents, videos, quotation, productLinks } = params;
 
   const senderLine = senderTitle ? `${escapeHtml(senderName)} ${escapeHtml(senderTitle)}` : escapeHtml(senderName);
+  // 개인 핸드폰번호(profiles.phone)가 등록돼 있을 때만 M. 줄을 보여준다 — 회사
+  // 대표번호(T.)는 QUOTATION_SUPPLIER 고정값 그대로 항상 표시한다.
+  const phoneLine = senderPhone ? `M. ${escapeHtml(senderPhone)} · ` : "";
   const attachedFilesHtml = fileListBlock("📄 첨부 문서", documents) + fileListBlock("🎬 첨부 영상", videos);
 
   return `<!DOCTYPE html>
@@ -165,7 +178,7 @@ export function buildMaterialEmailHtml(params: {
         <div style="background:#f8f9fb;border-left:3px solid #2b6bff;border-radius:8px;padding:20px 24px;margin-bottom:16px;">
           <div style="font-size:15px;font-weight:700;color:#111827;margin-bottom:8px;">${senderLine}</div>
           <div style="font-size:13.5px;color:#6b7280;line-height:1.7;">
-            T. ${escapeHtml(QUOTATION_SUPPLIER.phone)}<br>
+            ${phoneLine}T. ${escapeHtml(QUOTATION_SUPPLIER.phone)}<br>
             E. ${escapeHtml(senderEmail)}
           </div>
         </div>

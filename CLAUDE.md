@@ -101,13 +101,20 @@ HTML 템플릿(`buildMaterialEmailHtml`)과는 완전히 별개다(그건 안 �
   호출하지 않으려고 자리표시 링크(`#`)를 쓰고, 실제 발송(`app/dashboard/actions/materialEmail.ts`)
   시점에만 `ensureFileShared`로 진짜 공유 링크를 만든다.
   - **산출내역(견적) 첨부**: 화면에서 저장된 산출내역을 검색해 최대 1건 연결하면(`quotations.id`,
-    `material_email_logs.quotation_id`/`quotation_quote_number`로 이력에 남김), 메일에 "견적 및
-    제품자료 안내" 섹션(산출내역 인쇄용 페이지 절대 URL 포함)이 추가된다 — 첨부하지 않으면 이
-    섹션 자체가 통째로 빠진다. 절대 URL은 `next/headers`의 요청 host로 만든다(별도 SITE_URL
-    환경변수 없이 어느 배포에서도 맞는 링크가 나오게).
+    `material_email_logs.quotation_id`/`quotation_quote_number`로 이력에 남김), "견적 및 제품자료
+    안내" 섹션의 하이라이트 박스에 산출내역 인쇄용 페이지 절대 URL이 담긴 버튼이 나온다. 섹션
+    자체(제목·3개 서비스 안내 카드)는 첨부 여부와 무관하게 항상 노출되고, 첨부하지 않았을 땐
+    그 박스에 "견적내용이 없습니다."만 대신 표시된다(2026-08-30 변경 — 예전엔 섹션 전체가
+    통째로 빠졌으나, 3개 카드는 특정 견적과 무관한 일반 서비스 안내라 항상 보이는 쪽으로
+    바꿨다). 절대 URL은 `next/headers`의 요청 host로 만든다(별도 SITE_URL 환경변수 없이 어느
+    배포에서도 맞는 링크가 나오게).
   - **"회사 및 제품소개 자료" 7개 링크**: `PRODUCT_MATERIAL_CATALOG`(고정 이름 목록)가 자료
     폴더 파일명과 키워드로 매칭되면 그 파일의 실제 공유 링크를 넣고, 못 찾으면 그 항목은 메일에서
     빠진다(가짜 링크를 만들지 않음) — 파일을 폴더에 추가/이름 변경하면 코드 수정 없이 바로 반영된다.
+  - **발신자 서명(하단 박스)**: 이름·직함·이메일은 예전부터 로그인한 사용자의 `profiles`
+    값이었고(`name`/`title`/`email`), 2026-08-30부터 `profiles.phone`(핸드폰번호)이 있으면
+    "M. {phone} · T. {회사 대표번호}" 형태로 개인 번호도 함께 보여준다(없으면 회사 대표번호만,
+    `lib/quotationCompany.ts::QUOTATION_SUPPLIER.phone`은 그대로 고정값).
 
 ## 산출내역 관리
 

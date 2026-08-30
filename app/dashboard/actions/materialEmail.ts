@@ -92,10 +92,11 @@ async function performSend(
     return { error: `제품소개 자료 링크 생성 실패: ${e instanceof Error ? e.message : "알 수 없는 오류"}` };
   }
 
-  const { data: profile } = await supabase.from("profiles").select("name, title, email").eq("id", user.id).single();
+  const { data: profile } = await supabase.from("profiles").select("name, title, email, phone").eq("id", user.id).single();
   const senderName = profile?.name ?? profile?.email ?? user.email ?? "";
   const senderTitle = profile?.title ?? null;
   const senderEmail = profile?.email ?? user.email ?? "";
+  const senderPhone = profile?.phone ?? null;
 
   try {
     await sendMaterialEmailViaResend({
@@ -105,6 +106,7 @@ async function performSend(
       senderName,
       senderTitle,
       senderEmail,
+      senderPhone,
       documents,
       videos,
       quotation,

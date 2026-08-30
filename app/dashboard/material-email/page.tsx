@@ -58,7 +58,7 @@ export default async function MaterialEmailPage() {
     getQuotationSummaries(supabase),
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) return null;
-      const { data } = await supabase.from("profiles").select("name, title, email").eq("id", user.id).single();
+      const { data } = await supabase.from("profiles").select("name, title, email, phone").eq("id", user.id).single();
       return data;
     }),
   ]);
@@ -92,6 +92,7 @@ export default async function MaterialEmailPage() {
           senderName={profile?.name ?? profile?.email ?? ""}
           senderTitle={profile?.title ?? null}
           senderEmail={profile?.email ?? ""}
+          senderPhone={profile?.phone ?? null}
         />
       )}
 
