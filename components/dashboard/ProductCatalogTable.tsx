@@ -543,7 +543,7 @@ export function ProductCatalogTable({
                     </td>
                     <td style={{ fontWeight: 600 }}>{formatWon(p.unitPrice)}</td>
                     <td className="text-muted">{p.supplyType === "partner" ? "협력사" : "직공급"}</td>
-                    <td className="text-muted">{p.supplyType === "partner" ? (p.supplierVendorName ?? "-") : "-"}</td>
+                    <td className="text-muted">{p.supplierVendorName ?? "-"}</td>
                     <td>
                       {(p.supplyType === "partner" ? p.commissionRate : p.marginRate) != null ? (
                         <span className="tag tag-accent">{formatRate(p.supplyType === "partner" ? p.commissionRate : p.marginRate)}</span>
