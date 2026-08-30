@@ -17,7 +17,7 @@ export default async function LoginPage({
         <img src="/login-logo.png" alt="Strategic Planning Team" className="h-auto w-full" />
       </div>
       {isSupabaseConfigured ? (
-        <LoginForm redirectTo={redirectTo && redirectTo.startsWith("/") ? redirectTo : "/dashboard/events2"} />
+        <LoginForm redirectTo={redirectTo && redirectTo.startsWith("/") ? redirectTo : "/dashboard/calendar"} />
       ) : (
         <SetupNotice />
       )}

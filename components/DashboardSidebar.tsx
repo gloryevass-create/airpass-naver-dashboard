@@ -21,8 +21,8 @@ function isActivePath(pathname: string | null, href: string): boolean {
 // 다른 그룹처럼 접었다 폈다 할 수 있었는데, 이 디자인에서는 상단 고정 목록과
 // 접이식 그룹을 구분해서 그린다).
 const TOP_ITEMS: LeafItem[] = [
-  { href: "/dashboard/events2", label: "Calendar", icon: "calendar" },
-  { href: "/dashboard/business3", label: "Business", icon: "briefcase" },
+  { href: "/dashboard/calendar", label: "Calendar", icon: "calendar" },
+  { href: "/dashboard/business", label: "Business", icon: "briefcase" },
   { href: "/dashboard/cooperation", label: "Cooperation", icon: "share" },
   { href: "/dashboard/marketing-tasks", label: "Marketing", icon: "list" },
   { href: "/dashboard/memos", label: "Memo Board", icon: "clipboard" },

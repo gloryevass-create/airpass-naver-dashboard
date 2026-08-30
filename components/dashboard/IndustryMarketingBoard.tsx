@@ -13,7 +13,7 @@ import {
   updateMarketingTaskHistoryEntry,
 } from "@/app/dashboard/actions/marketingTasks";
 
-// Business(/dashboard/business3)를 Claude Design "Industry" 테마로 다시 그린 것과
+// Business(/dashboard/business)를 Claude Design "Industry" 테마로 다시 그린 것과
 // 같은 틀을 재사용한다 — 데이터·서버 액션은 기존 Marketing 그대로, 화면만
 // 새로 그렸다(사용자 확인, 2026-08-29).
 const CATEGORIES = ["문서", "영상", "사진", "웹페이지", "광고"];

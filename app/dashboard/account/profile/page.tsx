@@ -11,7 +11,7 @@ export default async function ProfilePage() {
     <div className="industry-theme" style={{ padding: "var(--space-8) var(--space-6)", minHeight: "auto" }}>
       <div style={{ maxWidth: 800, margin: "0 auto" }}>
         <Link
-          href="/dashboard/events2"
+          href="/dashboard/calendar"
           style={{
             display: "inline-flex",
             alignItems: "center",

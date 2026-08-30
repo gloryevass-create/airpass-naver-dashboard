@@ -24,7 +24,7 @@ export type TeamEventV2 = {
 
 /** month("YYYY-MM")를 포함하는, 앞뒤 캘린더 그리드에 걸치는 며칠까지 넉넉하게
  * 담는 범위. 구글 캘린더 일정을 같은 화면에 같이 보여줄 때도 정확히 같은
- * 범위를 써야 그리드 경계에서 어긋나지 않는다(app/dashboard/events2/page.tsx). */
+ * 범위를 써야 그리드 경계에서 어긋나지 않는다(app/dashboard/calendar/page.tsx). */
 export function eventsV2RangeForMonth(month: string): { rangeStart: string; rangeEnd: string } {
   const [year, mon] = month.split("-").map(Number);
   return {

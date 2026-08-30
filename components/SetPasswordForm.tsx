@@ -34,7 +34,7 @@ export function SetPasswordForm() {
       return;
     }
 
-    router.push("/dashboard/events2");
+    router.push("/dashboard/calendar");
     router.refresh();
   }
 

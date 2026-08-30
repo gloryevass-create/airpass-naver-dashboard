@@ -9,6 +9,12 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: "2026-08-30",
+    items: [
+      "Calendar 접속 경로를 /dashboard/events2 → /dashboard/calendar로, Business(SI Business 2) 접속 경로를 /dashboard/business3 → /dashboard/business로 변경(내부 데이터 모델·테이블명은 그대로, URL 경로만 변경)",
+    ],
+  },
+  {
     date: "2026-08-29",
     items: [
       "사이드바 그룹 목록이 부분 스크롤되지 않던 문제 근본 수정 — 대시보드 셸 전체에 뷰포트 높이 제약(h-screen)을 줘서 헤더·사이드바는 고정되고 본문 영역만 스크롤되도록 구조 변경(인쇄 페이지는 인쇄 시 제약을 풂)",

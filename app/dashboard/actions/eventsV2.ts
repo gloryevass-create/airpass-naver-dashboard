@@ -6,7 +6,7 @@ import { formatMember } from "@/lib/formatMember";
 import { getValidGoogleAccessToken } from "@/lib/queries/googleCalendar";
 import { insertGoogleCalendarEvent, updateGoogleCalendarEvent, deleteGoogleCalendarEvent } from "@/lib/googleCalendar/api";
 
-const PATH = "/dashboard/events2";
+const PATH = "/dashboard/calendar";
 
 export type TeamEventV2FormState = { error?: string } | undefined;
 

@@ -661,7 +661,7 @@ export function IndustryEventCalendar({
     if (!googleConnected && !googleError) return;
     const params = new URLSearchParams({ month });
     if (cursor) params.set("day", cursor);
-    router.replace(`/dashboard/events2?${params.toString()}`);
+    router.replace(`/dashboard/calendar?${params.toString()}`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -692,7 +692,7 @@ export function IndustryEventCalendar({
       setCursor(newCursor);
       return;
     }
-    router.push(`/dashboard/events2?month=${newMonth}&day=${newCursor}`);
+    router.push(`/dashboard/calendar?month=${newMonth}&day=${newCursor}`);
   }
 
   function prevPeriod() {

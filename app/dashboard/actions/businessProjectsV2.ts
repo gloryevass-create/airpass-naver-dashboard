@@ -8,7 +8,7 @@ const PATH = "/dashboard/business2";
 // SI Business 2(Industry 디자인 시스템 재구현, 2026-08-28)는 같은 business_projects_v2
 // 데이터를 다른 화면으로 보여줄 뿐이라 이 액션들을 그대로 재사용한다 — 두 화면
 // 다 캐시가 갱신되도록 항상 같이 무효화한다.
-const PATH_V2_REDESIGN = "/dashboard/business3";
+const PATH_V2_REDESIGN = "/dashboard/business";
 
 function revalidateBusinessPaths() {
   revalidatePath(PATH);

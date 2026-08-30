@@ -176,11 +176,11 @@ Claude Design "Industry" 테마로 그 자리에서 다시 그렸다(2026-08-29)
 
 ## SI Business 2
 
-`/dashboard/business3`(사이드바 라벨은 "SI Business 2") — 기존 SI Business
+`/dashboard/business`(사이드바 라벨은 "SI Business 2") — 기존 SI Business
 (`/dashboard/business2`)와 **완전히 같은 `business_projects_v2` 데이터·서버
 액션**(`app/dashboard/actions/businessProjectsV2.ts`)을 쓰는 또 하나의 화면이다.
 별도 사업 목록이 아니다 — 어느 쪽에서 추가·수정·삭제해도 두 화면 모두 갱신된다
-(액션마다 `/dashboard/business2`와 `/dashboard/business3`를 함께
+(액션마다 `/dashboard/business2`와 `/dashboard/business`를 함께
 `revalidatePath`). 사용자가 Claude Design으로 만든 "Industry"(철강청사진
 와이어프레임: 스틸블루 단색 악센트, 사각 모서리 + "+" 등록마크가 있는 카드·버튼,
 Barlow/Barlow Condensed) 테마를 그대로 이식했다(2026-08-28).
@@ -195,7 +195,7 @@ Barlow/Barlow Condensed) 테마를 그대로 이식했다(2026-08-28).
   아래로 스코프했다 — 원본은 `body`/`h1`처럼 전역 셀렉터를 쓰는 진짜 전역
   스타일시트라, 스코프하지 않으면 이 페이지 바깥의 Tailwind 화면까지 깨진다.
   이 테마를 쓰는 각 `page.tsx`가 이 CSS를 라우트 단위로 import하고, 최상위
-  컨테이너에 `.industry-theme` 클래스를 건다 — Calendar(`/dashboard/events2`)도
+  컨테이너에 `.industry-theme` 클래스를 건다 — Calendar(`/dashboard/calendar`)도
   같은 파일을 공유해서 쓴다(아래 참고).
 - 칸반 단계 이동은 마우스 드래그(HTML5 `draggable`)로 컬럼 사이를 옮기는 방식과
   카드 안 `<select>` 두 가지를 모두 지원한다(디자인 원본에 둘 다 있었음).
@@ -251,7 +251,7 @@ cooperationProjects.ts`, `app/dashboard/actions/marketingTasks.ts`)은 그대로
 
 ## Calendar
 
-`/dashboard/events2` — 사용자가 Claude Design으로 만든 "Industry" 테마
+`/dashboard/calendar` — 사용자가 Claude Design으로 만든 "Industry" 테마
 캘린더 목업을 그대로 이식했다(2026-08-29, SI Business 2와 같은 디자인
 시스템 — `components/industryTheme.css` 공유). SI Business 2와 달리 이건
 **같은 화면을 그 자리에서 다시 그린 것**이다(새 메뉴를 따로 만들지 않음) —
@@ -300,7 +300,7 @@ cooperationProjects.ts`, `app/dashboard/actions/marketingTasks.ts`)은 그대로
   매번 access_token 만료(또는 만료 임박)를 확인해 필요하면 refresh_token으로
   새로 받고 DB 캐시도 같이 갱신한다. 구글 쪽 요청이 실패해도 조용히 빈
   배열을 돌려준다 — 이 기능 실패가 Calendar 화면 전체를 막으면 안 되기 때문.
-- **개인정보 격리**: `app/dashboard/events2/page.tsx`가 항상 **요청을 보낸
+- **개인정보 격리**: `app/dashboard/calendar/page.tsx`가 항상 **요청을 보낸
   본인의 `user.id`**로만 연결/일정을 조회한다 — 다른 사람 화면에는 절대
   섞이지 않는다(서버 컴포넌트가 매 요청마다 그 세션의 사용자로만 조회하는
   구조라 자연히 보장됨, 별도 격리 로직 불필요).

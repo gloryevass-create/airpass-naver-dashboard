@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
   }
 
   if (!isGoogleCalendarConfigured) {
-    return NextResponse.redirect(`${origin}/dashboard/events2?googleError=not_configured`);
+    return NextResponse.redirect(`${origin}/dashboard/calendar?googleError=not_configured`);
   }
 
   const state = randomUUID();

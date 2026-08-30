@@ -61,7 +61,7 @@ export function DashboardHeader({
         >
           <NavIcon name="menu" className="h-5 w-5" />
         </button>
-        <Link href="/dashboard/events2" className="flex min-w-0 shrink-0 items-center">
+        <Link href="/dashboard/calendar" className="flex min-w-0 shrink-0 items-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logo.png" alt="Strategic Planning Team" className="-ml-3 h-10 w-auto" />
         </Link>
