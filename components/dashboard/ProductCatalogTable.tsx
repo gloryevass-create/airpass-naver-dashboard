@@ -453,8 +453,8 @@ export function ProductCatalogTable({
               className="input"
               style={{ minHeight: 30, fontSize: 12 }}
             >
-              <option value="__choose__">공급 협력사 선택</option>
-              <option value="__none__">협력사 연결 해제</option>
+              <option value="__choose__">공급 제조사 선택</option>
+              <option value="__none__">제조사 연결 해제</option>
               {vendors.map((v) => (
                 <option key={v.id} value={v.id}>
                   {v.companyName}
@@ -467,7 +467,7 @@ export function ProductCatalogTable({
               disabled={selected.size === 0 || bulkVendorId === "__choose__"}
               className="btn btn-primary"
             >
-              선택 제품 일괄 적용
+              적용
             </button>
           </div>
         </div>
@@ -480,7 +480,7 @@ export function ProductCatalogTable({
                 <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>규격</th>
                 <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>단가</th>
                 <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>공급방식</th>
-                <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>협력사</th>
+                <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>제조사</th>
                 <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>수수료/마진율</th>
                 <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>조달정보</th>
                 <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>비고</th>

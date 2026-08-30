@@ -105,14 +105,14 @@ export async function uploadVendorDocument(formData: FormData): Promise<UploadVe
   }
 
   if (!vendorId) {
-    const fallbackName = file.name.replace(/\.[^.]+$/, "").trim().slice(0, 120) || "새 협력사";
+    const fallbackName = file.name.replace(/\.[^.]+$/, "").trim().slice(0, 120) || "새 제조사";
     const { data: created, error: createError } = await supabase
       .from("partner_vendors")
       .insert({ company_name: extracted.companyName || fallbackName })
       .select("id")
       .single();
     if (createError || !created) {
-      return { ok: false, error: `협력사 등록 실패: ${createError?.message ?? "알 수 없는 오류"}` };
+      return { ok: false, error: `제조사 등록 실패: ${createError?.message ?? "알 수 없는 오류"}` };
     }
     vendorId = created.id;
   }

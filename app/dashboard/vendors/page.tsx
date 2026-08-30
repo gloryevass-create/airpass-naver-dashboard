@@ -16,7 +16,7 @@ export default async function VendorsPage() {
           <rect x="14" y="10.5" width="6.5" height="5" rx="1" />
           <circle cx="16.7" cy="13" r=".6" fill="currentColor" stroke="none" />
         </svg>
-        <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 28, margin: 0, color: "var(--color-accent-700)" }}>협력사 관리</h1>
+        <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 28, margin: 0, color: "var(--color-accent-700)" }}>제조사 관리</h1>
       </div>
       <p className="text-muted" style={{ margin: "var(--space-2) 0 var(--space-6)", fontSize: 13 }}>
         사업자등록증·통장 사본·명함을 올리면 AI가 업체 정보를 자동으로 읽어 채워줍니다.

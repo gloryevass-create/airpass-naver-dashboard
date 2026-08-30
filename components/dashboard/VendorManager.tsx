@@ -125,7 +125,7 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
   }
 
   function handleDeleteVendor(id: string) {
-    if (!window.confirm("이 협력사를 삭제할까요? 첨부된 문서도 함께 삭제됩니다.")) return;
+    if (!window.confirm("이 제조사를 삭제할까요? 첨부된 문서도 함께 삭제됩니다.")) return;
     if (selectedId === id) setSelectedId(null);
     startTransition(async () => {
       await deleteVendor(id);
@@ -274,7 +274,7 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
               Partner Vendor
             </span>
             <h2 style={{ margin: "2px 0 0", fontFamily: "var(--font-heading)", fontSize: 20, fontWeight: 600 }}>
-              {selected ? selected.companyName || "업체 정보" : "새 협력사 등록"}
+              {selected ? selected.companyName || "업체 정보" : "새 제조사 등록"}
             </h2>
             <p className="text-muted" style={{ margin: "2px 0 0", fontSize: 12 }}>
               문서를 올리면 내용을 자동 입력하며, 모든 항목은 직접 수정할 수 있습니다.
