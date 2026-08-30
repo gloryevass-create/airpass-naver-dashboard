@@ -209,8 +209,7 @@ export function buildMaterialEmailHtml(params: {
 
       <div style="padding:8px 40px 44px;border-top:1px solid ${COLOR.divider};">
 
-        <p style="font-size:15px;color:${COLOR.neutral800};line-height:1.7;margin:28px 0 6px;">${escapeHtml(subject)}</p>
-        <p style="font-size:15px;color:${COLOR.text};line-height:1.7;margin:0 0 32px;white-space:pre-wrap;">${escapeHtml(message)}</p>
+        <p style="font-size:15px;color:${COLOR.text};line-height:1.7;margin:28px 0 32px;white-space:pre-wrap;">${escapeHtml(message)}</p>
 
         <div style="border:1px solid ${COLOR.divider};background:#ffffff;padding:22px 24px;margin-bottom:36px;">
           <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:${COLOR.accent};margin-bottom:6px;">ABOUT AIRPASS</div>
