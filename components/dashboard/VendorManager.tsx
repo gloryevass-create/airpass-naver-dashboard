@@ -224,7 +224,7 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
           placeholder="업체명·사업자번호·담당자 검색"
           className="input"
         />
-        <div style={{ margin: "0 calc(var(--space-4) * -1)", display: "flex", maxHeight: "32rem", flexDirection: "column", gap: 2, overflowY: "auto" }}>
+        <div style={{ margin: "0 calc(var(--space-4) * -1)", display: "flex", maxHeight: "calc(100vh - 280px)", flexDirection: "column", gap: 2, overflowY: "auto" }}>
           {filtered.map((v) => (
             <button
               key={v.id}
