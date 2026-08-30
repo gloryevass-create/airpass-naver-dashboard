@@ -3,7 +3,7 @@ import { getBudgetBids, getScrapedBudgetBids } from "@/lib/queries/budget";
 import { getMonitorKeywords } from "@/lib/queries/monitorKeywords";
 import { getScrapedNoticeIds } from "@/lib/queries/scraps";
 import { BudgetBidList } from "@/components/dashboard/BudgetBidList";
-import { MonitorDateRangeFilter } from "@/components/dashboard/MonitorDateRangeFilter";
+import { NewsDateRangeFilter } from "@/components/dashboard/NewsDateRangeFilter";
 import { MonitorKeywordManager } from "@/components/dashboard/MonitorKeywordManager";
 import { NavIcon } from "@/components/icons/NavIcon";
 
@@ -33,7 +33,7 @@ export default async function BudgetPage({ searchParams }: { searchParams: Searc
         </p>
       </div>
       <MonitorKeywordManager track="budget" keywords={keywords} path={PATH} />
-      <MonitorDateRangeFilter basePath={PATH} range={range} resultCount={bids.length} />
+      <NewsDateRangeFilter basePath={PATH} range={range} resultCount={bids.length} />
       <BudgetBidList
         bids={bids}
         scrapedBids={scrapedBids}

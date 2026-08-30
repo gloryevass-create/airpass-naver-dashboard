@@ -3,7 +3,7 @@ import { getPrespecNotices, getScrapedPrespecNotices } from "@/lib/queries/presp
 import { getMonitorKeywords } from "@/lib/queries/monitorKeywords";
 import { getScrapedNoticeIds } from "@/lib/queries/scraps";
 import { PrespecNoticeList } from "@/components/dashboard/PrespecNoticeList";
-import { MonitorDateRangeFilter } from "@/components/dashboard/MonitorDateRangeFilter";
+import { NewsDateRangeFilter } from "@/components/dashboard/NewsDateRangeFilter";
 import { NavIcon } from "@/components/icons/NavIcon";
 import Link from "next/link";
 
@@ -36,7 +36,7 @@ export default async function PrespecPage({ searchParams }: { searchParams: Sear
           과 동일한 목록을 씁니다.
         </p>
       </div>
-      <MonitorDateRangeFilter basePath={PATH} range={range} resultCount={notices.length} />
+      <NewsDateRangeFilter basePath={PATH} range={range} resultCount={notices.length} />
       <PrespecNoticeList
         notices={notices}
         scrapedNotices={scrapedNotices}

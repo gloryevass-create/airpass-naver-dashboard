@@ -6,7 +6,7 @@ import { getScrapedNoticeIds } from "@/lib/queries/scraps";
 import { extractHotKeywordsWithAI } from "@/lib/newsHotKeywordsAi";
 import { NewsList } from "@/components/dashboard/NewsList";
 import { NewsHotKeywords } from "@/components/dashboard/NewsHotKeywords";
-import { MonitorDateRangeFilter } from "@/components/dashboard/MonitorDateRangeFilter";
+import { NewsDateRangeFilter } from "@/components/dashboard/NewsDateRangeFilter";
 import { MonitorKeywordManager } from "@/components/dashboard/MonitorKeywordManager";
 import { NavIcon } from "@/components/icons/NavIcon";
 
@@ -54,7 +54,7 @@ export default async function NewsPage({ searchParams }: { searchParams: SearchP
         </p>
       </div>
       <MonitorKeywordManager track="news" keywords={keywords} path="/dashboard/news" />
-      <MonitorDateRangeFilter basePath="/dashboard/news" range={range} resultCount={articles.length} />
+      <NewsDateRangeFilter basePath="/dashboard/news" range={range} resultCount={articles.length} />
       <Suspense fallback={<HotKeywordsSkeleton />}>
         <HotKeywordsSection titles={articles.map((a) => a.title)} />
       </Suspense>
