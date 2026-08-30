@@ -51,7 +51,7 @@ function escapeHtml(text: string): string {
 }
 
 function linkPill(label: string, href: string): string {
-  return `<a href="${escapeHtml(href)}" style="background:#eef2ff;border-radius:8px;padding:14px 18px;font-size:14.5px;font-weight:600;color:#2b6bff;">${escapeHtml(label)} →</a>`;
+  return `<a href="${escapeHtml(href)}" style="background:#eef2ff;border-radius:8px;padding:14px 18px;font-size:14.5px;font-weight:600;color:#2b6bff;text-decoration:none;">${escapeHtml(label)} →</a>`;
 }
 
 function fileListBlock(title: string, files: MaterialEmailFileLink[]): string {
@@ -70,7 +70,7 @@ function quotationSectionHtml(quotation: MaterialEmailQuotation): string {
   const quotationBoxHtml = quotation
     ? `
         <div style="font-size:15px;font-weight:700;color:#111827;margin-bottom:4px;">견적서 원본 PDF 열람 · 다운로드</div>
-        <a href="${escapeHtml(quotation.printUrl)}" style="display:inline-block;background:#2b6bff;color:#fff;border-radius:6px;padding:10px 18px;font-size:13.5px;font-weight:700;">${escapeHtml(quotation.quoteNumber)} 견적서 보기 →</a>
+        <a href="${escapeHtml(quotation.printUrl)}" style="display:inline-block;background:#2b6bff;color:#fff;border-radius:6px;padding:10px 18px;font-size:13.5px;font-weight:700;text-decoration:none;">${escapeHtml(quotation.quoteNumber)} 견적서 보기 →</a>
     `
     : `<div style="font-size:14.5px;color:#6b7280;">견적내용이 없습니다.</div>`;
 
