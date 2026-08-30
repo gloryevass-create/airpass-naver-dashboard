@@ -325,6 +325,7 @@ export function MaterialEmailForm({
       senderTitle,
       senderEmail: senderEmail || "-",
       senderPhone,
+      logoUrl: "/airpass-logo.png",
       documents: selectedFiles.filter((f) => !isVideoFile(f)).map((f) => ({ name: f.name, link: "#" })),
       videos: selectedFiles.filter(isVideoFile).map((f) => ({ name: f.name, link: "#" })),
       quotation: selectedQuotation

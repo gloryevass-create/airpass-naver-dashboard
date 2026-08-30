@@ -26,6 +26,7 @@ export async function sendMaterialEmail(params: {
   senderTitle: string | null;
   senderEmail: string;
   senderPhone: string | null;
+  logoUrl: string;
   documents: MaterialEmailFileLink[];
   videos: MaterialEmailFileLink[];
   quotation: MaterialEmailQuotation;
@@ -49,6 +50,7 @@ export async function sendMaterialEmail(params: {
     senderTitle: params.senderTitle,
     senderEmail: params.senderEmail,
     senderPhone: params.senderPhone,
+    logoUrl: params.logoUrl,
     documents: params.documents,
     videos: params.videos,
     quotation: params.quotation,
