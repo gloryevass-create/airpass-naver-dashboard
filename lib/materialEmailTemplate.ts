@@ -51,14 +51,14 @@ function escapeHtml(text: string): string {
 }
 
 function linkPill(label: string, href: string): string {
-  return `<a href="${escapeHtml(href)}" style="display:block;background:#eef2ff;border-radius:8px;padding:14px 18px;font-size:14.5px;font-weight:600;color:#2b6bff;margin-bottom:10px;">${escapeHtml(label)} →</a>`;
+  return `<a href="${escapeHtml(href)}" style="background:#eef2ff;border-radius:8px;padding:14px 18px;font-size:14.5px;font-weight:600;color:#2b6bff;">${escapeHtml(label)} →</a>`;
 }
 
 function fileListBlock(title: string, files: MaterialEmailFileLink[]): string {
   if (files.length === 0) return "";
   return `
       <div style="font-size:15px;font-weight:700;color:#111827;margin:0 0 10px;">${escapeHtml(title)}</div>
-      <div style="margin-bottom:24px;">${files.map((f) => linkPill(f.name, f.link)).join("")}</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;">${files.map((f) => linkPill(f.name, f.link)).join("")}</div>
   `;
 }
 
@@ -69,7 +69,7 @@ function fileListBlock(title: string, files: MaterialEmailFileLink[]): string {
 function quotationSectionHtml(quotation: MaterialEmailQuotation): string {
   const quotationBoxHtml = quotation
     ? `
-        <div style="font-size:15px;font-weight:700;color:#111827;margin-bottom:10px;">견적서 원본 PDF 열람 · 다운로드</div>
+        <div style="font-size:15px;font-weight:700;color:#111827;margin-bottom:4px;">견적서 원본 PDF 열람 · 다운로드</div>
         <a href="${escapeHtml(quotation.printUrl)}" style="display:inline-block;background:#2b6bff;color:#fff;border-radius:6px;padding:10px 18px;font-size:13.5px;font-weight:700;">${escapeHtml(quotation.quoteNumber)} 견적서 보기 →</a>
     `
     : `<div style="font-size:14.5px;color:#6b7280;">견적내용이 없습니다.</div>`;
@@ -82,18 +82,18 @@ function quotationSectionHtml(quotation: MaterialEmailQuotation): string {
         ${quotationBoxHtml}
       </div>
 
-      <div style="display:flex;gap:14px;margin-bottom:44px;">
-        <div style="flex:1;background:#0b1f4d;color:#fff;border-radius:10px;padding:20px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:44px;">
+        <div style="background:#0b1f4d;color:#fff;border-radius:10px;padding:20px;">
           <div style="font-size:12px;font-weight:700;color:#93a5d6;margin-bottom:10px;">01</div>
           <div style="font-size:15px;font-weight:700;margin-bottom:8px;">제품자료 제공</div>
           <div style="font-size:12.5px;color:#c3cce6;line-height:1.6;">에어패스·올댓비전<br>메타에듀시스 등</div>
         </div>
-        <div style="flex:1;background:#2b6bff;color:#fff;border-radius:10px;padding:20px;">
+        <div style="background:#2b6bff;color:#fff;border-radius:10px;padding:20px;">
           <div style="font-size:12px;font-weight:700;color:#bcd0ff;margin-bottom:10px;">02</div>
           <div style="font-size:15px;font-weight:700;margin-bottom:8px;">구성 검토 지원</div>
           <div style="font-size:12.5px;color:#dbe6ff;line-height:1.6;">예산·공간 여건에 맞는<br>품목 조정 및 제안</div>
         </div>
-        <div style="flex:1;background:#34d3c4;color:#083c38;border-radius:10px;padding:20px;">
+        <div style="background:#34d3c4;color:#083c38;border-radius:10px;padding:20px;">
           <div style="font-size:12px;font-weight:700;color:#0b5f57;margin-bottom:10px;">03</div>
           <div style="font-size:15px;font-weight:700;margin-bottom:8px;">구축 이후 지원</div>
           <div style="font-size:12.5px;color:#1f5c55;line-height:1.6;">설치·교육·유지보수<br>연계 지원</div>
@@ -113,7 +113,7 @@ function productLinksSectionHtml(productLinks: MaterialEmailProductLink[]): stri
       <p style="font-size:14px;color:#6b7280;line-height:1.7;margin:0 0 18px;">
         아래 항목을 선택하시면 공용 자료 폴더에서 바로 확인하거나 다운로드하실 수 있습니다.
       </p>
-      <div style="margin-bottom:40px;">${matched.map((p) => linkPill(p.label, p.link)).join("")}</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:40px;">${matched.map((p) => linkPill(p.label, p.link)).join("")}</div>
   `;
 }
 
@@ -144,14 +144,14 @@ export function buildMaterialEmailHtml(params: {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body style="margin:0;background:#f3f4f6;font-family:'Pretendard',-apple-system,'Malgun Gothic',sans-serif;">
-  <div style="width:100%;max-width:640px;margin:0 auto;padding:32px 16px 80px;box-sizing:border-box;">
+  <div style="width:100%;max-width:1200px;margin:0 auto;padding:32px 24px 80px;box-sizing:border-box;">
     <div style="background:#ffffff;border-radius:16px;box-shadow:0 1px 3px rgba(0,0,0,0.06);overflow:hidden;">
 
-      <div style="padding:8px 32px 0;">
+      <div style="padding:8px 40px 0;">
         <div style="font-size:20px;font-weight:700;color:#111827;padding:16px 0 20px;border-bottom:1px solid #f3f4f6;">${escapeHtml(subject)}</div>
       </div>
 
-      <div style="padding:28px 32px 36px;">
+      <div style="padding:36px 40px 44px;">
         <div style="display:inline-flex;align-items:center;gap:8px;background:#eef2ff;color:#0b1f4d;font-size:12px;font-weight:700;letter-spacing:0.03em;padding:6px 12px;border-radius:20px;margin-bottom:18px;">· AIRPASS</div>
 
         <p style="font-size:15px;color:#374151;line-height:1.7;margin:0 0 6px;">${escapeHtml(subject)}</p>
