@@ -21,6 +21,28 @@ function isVideoFile(f: DriveMaterialFile): boolean {
   return f.mimeType.startsWith("video/");
 }
 
+// macOS(파인더)에서 올린 한글 파일명은 자모가 분리된 NFD로 저장되는 경우가 많아,
+// 검색창에 입력한 NFC 문자열과 바이트 단위로 달라 .includes()가 실패해 일부
+// 파일만 검색되는 버그가 있었다 — lib/materialEmailTemplate.ts의 카탈로그 매칭에
+// 적용했던 것과 같은 정규화를 여기에도 적용한다(사용자 확인, 2026-08-28 참고).
+function normalize(text: string): string {
+  return text.normalize("NFC").toLowerCase();
+}
+
+function FileTypeIcon({ video }: { video: boolean }) {
+  return video ? (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ flex: "none", opacity: 0.6 }}>
+      <rect x="2" y="5" width="20" height="14" rx="2" />
+      <path d="m10 9 5 3-5 3z" fill="currentColor" stroke="none" />
+    </svg>
+  ) : (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ flex: "none", opacity: 0.6 }}>
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <path d="M14 2v6h6" />
+    </svg>
+  );
+}
+
 function FileGroup({
   title,
   files,
@@ -40,6 +62,9 @@ function FileGroup({
     <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
       <label
         style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 1,
           display: "flex",
           alignItems: "center",
           gap: 8,
@@ -86,10 +111,7 @@ function FileGroup({
             onChange={() => onToggle(f.id)}
             style={{ width: 14, height: 14, flex: "none", accentColor: "var(--color-accent)" }}
           />
-          {f.iconLink && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={f.iconLink} alt="" style={{ width: 16, height: 16, flex: "none" }} />
-          )}
+          <FileTypeIcon video={isVideoFile(f)} />
           <span style={{ minWidth: 0, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={f.name}>
             {f.name}
           </span>
@@ -127,13 +149,13 @@ function QuotationPicker({
   }, []);
 
   const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
+    const q = normalize(search.trim());
     if (!q) return quotations;
     return quotations.filter(
       (item) =>
-        item.quoteNumber.toLowerCase().includes(q) ||
-        item.customerName.toLowerCase().includes(q) ||
-        (item.projectTitle ?? "").toLowerCase().includes(q)
+        normalize(item.quoteNumber).includes(q) ||
+        normalize(item.customerName).includes(q) ||
+        normalize(item.projectTitle ?? "").includes(q)
     );
   }, [quotations, search]);
 
@@ -302,9 +324,9 @@ export function MaterialEmailForm({
   /* eslint-enable react-hooks/set-state-in-effect */
 
   const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
+    const q = normalize(search.trim());
     if (!q) return files;
-    return files.filter((f) => f.name.toLowerCase().includes(q));
+    return files.filter((f) => normalize(f.name).includes(q));
   }, [files, search]);
 
   const documents = useMemo(() => filtered.filter((f) => !isVideoFile(f)), [filtered]);
@@ -461,20 +483,6 @@ export function MaterialEmailForm({
         )}
       </div>
 
-      <div style={{ border: "1px solid var(--color-divider)", padding: "var(--space-3)", fontSize: 12 }} className="text-muted">
-        <span style={{ fontWeight: 600, color: "var(--color-text)" }}>회사 및 제품소개 자료</span>(
-        {productLinkLabels.filter((p) => p.matched).length}/{productLinkLabels.length}개 연결됨)는 메일 본문에 템플릿
-        형태로 항상 포함됩니다 — 아래 목록에 있는 이름과 일치하는 파일이 자료 폴더에 있으면 자동으로 링크가
-        걸립니다.
-        <ul style={{ marginTop: 6, display: "flex", flexWrap: "wrap", gap: "8px 12px", padding: 0, listStyle: "none" }}>
-          {productLinkLabels.map((p) => (
-            <li key={p.label} style={p.matched ? { color: "var(--color-text)" } : { textDecoration: "line-through" }}>
-              {p.label}
-            </li>
-          ))}
-        </ul>
-      </div>
-
       {state?.error && <p style={{ color: "var(--color-accent-900)", fontSize: 13 }}>{state.error}</p>}
       {state?.success && <p style={{ color: "var(--color-accent-700)", fontSize: 13 }}>메일을 발송했습니다.</p>}
 
@@ -491,7 +499,7 @@ export function MaterialEmailForm({
         <div className="dialog-backdrop" onClick={() => setPreviewOpen(false)}>
           <div
             className="dialog"
-            style={{ width: "min(1240px,96vw)", maxHeight: "90vh", display: "flex", flexDirection: "column", padding: 0, background: "#ffffff" }}
+            style={{ width: "min(960px,96vw)", maxHeight: "90vh", display: "flex", flexDirection: "column", padding: 0, background: "#ffffff" }}
             onClick={(e) => e.stopPropagation()}
           >
             <div

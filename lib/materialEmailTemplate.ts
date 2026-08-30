@@ -196,7 +196,7 @@ export function buildMaterialEmailHtml(params: {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body style="margin:0;background:${COLOR.bg};font-family:${FONT_BODY};color:${COLOR.text};">
-  <div style="width:100%;max-width:1200px;margin:0 auto;padding:32px 24px 80px;box-sizing:border-box;">
+  <div style="width:100%;max-width:900px;margin:0 auto;padding:32px 24px 80px;box-sizing:border-box;">
     <div style="border:1px solid ${COLOR.divider};background:#ffffff;">
 
       <div style="padding:28px 40px;">
