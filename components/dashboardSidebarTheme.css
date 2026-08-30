@@ -36,6 +36,27 @@
   padding: 10px;
 }
 
+/* WORKSPACE 앞 별(sparkle) 아이콘 깜빡임(2026-08-30, 사용자 확인). */
+@keyframes ds-sidebar-sparkle-twinkle {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.3;
+    transform: scale(0.82);
+  }
+}
+.ds-sidebar-brand-sparkle {
+  animation: ds-sidebar-sparkle-twinkle 1.6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ds-sidebar-brand-sparkle {
+    animation: none;
+  }
+}
+
 .ds-sidebar-row {
   display: flex;
   align-items: center;

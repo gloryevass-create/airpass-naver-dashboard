@@ -180,7 +180,11 @@ export function DashboardSidebar({ latestDate }: { latestDate: string | null }) 
         <div className="flex shrink-0 flex-col gap-1 p-2 pb-0">
           <div className="px-1 pb-2 pt-1">
             <div className={`ds-sidebar-brand${showLabels ? "" : " collapsed"}`}>
-              <NavIcon name="sparkle" className="h-[18px] w-[18px] shrink-0" style={{ color: "var(--sb-accent-700)" }} />
+              <NavIcon
+                name="sparkle"
+                className="h-[18px] w-[18px] shrink-0 ds-sidebar-brand-sparkle"
+                style={{ color: "var(--sb-accent-700)" }}
+              />
               {showLabels && (
                 <>
                   <span className="flex-1 text-[15px] font-bold tracking-wide" style={{ color: "var(--sb-accent-700)" }}>
