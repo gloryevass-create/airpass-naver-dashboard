@@ -163,14 +163,22 @@ export async function bulkImportProducts(rows: BulkImportRow[]): Promise<{ added
   return { added: inserts.length };
 }
 
-/** 여러 제품을 선택해 협력사를 한 번에 지정(또는 해제)한다. */
+/** 여러 제품을 선택해 협력사를 한 번에 지정(또는 해제)한다. supply_type도 함께
+ * 맞춰준다 — 협력사를 지정하면서 supply_type이 여전히 "direct"로 남으면, 화면의
+ * 협력사/수수료율 열이 supply_type 기준으로만 표시되는 값이라 지정이 반영 안 된
+ * 것처럼 보이는 버그가 있었다(반대로 해제 시에도 "partner"로 남아있으면 이름
+ * 없는 협력사 행이 됨). */
 export async function bulkAssignVendor(productIds: string[], vendorId: string | null): Promise<void> {
   if (productIds.length === 0) return;
   const { supabase } = await requireAuthedClient();
 
   await supabase
     .from("product_catalog")
-    .update({ supplier_vendor_id: vendorId, updated_at: new Date().toISOString() })
+    .update({
+      supplier_vendor_id: vendorId,
+      supply_type: vendorId ? "partner" : "direct",
+      updated_at: new Date().toISOString(),
+    })
     .in("id", productIds);
 
   revalidatePath(PATH);
