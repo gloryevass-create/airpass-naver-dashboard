@@ -9,11 +9,13 @@ const DOCUMENT_LABELS: Record<VendorDocumentType, string> = {
   business_registration: "사업자등록증",
   bankbook: "통장 사본",
   business_card: "명함",
+  product_material: "제품자료",
 };
 const DOCUMENT_HINTS: Record<VendorDocumentType, string> = {
   business_registration: "업체명·사업자번호·대표자·주소·업태·종목",
   bankbook: "은행·계좌번호·예금주",
   business_card: "담당자·직함·연락처·이메일",
+  product_material: "카탈로그·브로슈어 등 참고자료(여러 건 첨부 가능)",
 };
 const DOCUMENT_TYPES = Object.keys(DOCUMENT_LABELS) as VendorDocumentType[];
 
@@ -303,7 +305,7 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
               JPG·PNG·WebP·PDF, 파일당 12MB 이하
             </span>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "var(--space-3)" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "var(--space-3)" }}>
             {DOCUMENT_TYPES.map((type) => {
               const docs = selected?.documents.filter((d) => d.documentType === type) ?? [];
               return (

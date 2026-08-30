@@ -40,12 +40,16 @@ const FIELDS_BY_DOCUMENT_TYPE: Record<VendorDocumentType, (keyof ExtractedVendor
   ],
   bankbook: ["bankName", "accountNumber", "accountHolder"],
   business_card: ["contactName", "contactTitle", "contactPhone", "contactEmail"],
+  // 제품자료(카탈로그·브로슈어 등)는 업체 정보 추출 대상이 아니다 — 첨부만
+  // 한다(app/dashboard/actions/vendors.ts에서 이 타입은 AI 호출 자체를 건너뜀).
+  product_material: [],
 };
 
 const DOCUMENT_LABELS: Record<VendorDocumentType, string> = {
   business_registration: "사업자등록증",
   bankbook: "통장 사본(은행 계좌)",
   business_card: "명함",
+  product_material: "제품자료",
 };
 
 const MODEL = "claude-haiku-4-5-20251001";

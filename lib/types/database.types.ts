@@ -1687,7 +1687,7 @@ export type Database = {
         Row: {
           id: string;
           vendor_id: string;
-          document_type: "business_registration" | "bankbook" | "business_card";
+          document_type: "business_registration" | "bankbook" | "business_card" | "product_material";
           original_name: string;
           storage_path: string;
           created_at: string;
@@ -1695,7 +1695,7 @@ export type Database = {
         Insert: {
           id?: string;
           vendor_id: string;
-          document_type: "business_registration" | "bankbook" | "business_card";
+          document_type: "business_registration" | "bankbook" | "business_card" | "product_material";
           original_name: string;
           storage_path: string;
           created_at?: string;
@@ -1703,7 +1703,7 @@ export type Database = {
         Update: {
           id?: string;
           vendor_id?: string;
-          document_type?: "business_registration" | "bankbook" | "business_card";
+          document_type?: "business_registration" | "bankbook" | "business_card" | "product_material";
           original_name?: string;
           storage_path?: string;
           created_at?: string;

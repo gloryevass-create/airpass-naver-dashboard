@@ -3,7 +3,7 @@ import type { Database } from "@/lib/types/database.types";
 
 type Client = SupabaseClient<Database>;
 
-export type VendorDocumentType = "business_registration" | "bankbook" | "business_card";
+export type VendorDocumentType = "business_registration" | "bankbook" | "business_card" | "product_material";
 
 export type VendorDocument = {
   id: string;

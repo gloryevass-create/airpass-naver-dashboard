@@ -78,7 +78,7 @@ export async function uploadVendorDocument(formData: FormData): Promise<UploadVe
   if (!(file instanceof File) || file.size === 0) {
     return { ok: false, error: "파일을 선택하세요." };
   }
-  if (!["business_registration", "bankbook", "business_card"].includes(documentType)) {
+  if (!["business_registration", "bankbook", "business_card", "product_material"].includes(documentType)) {
     return { ok: false, error: "잘못된 문서 종류입니다." };
   }
   const allowed = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
@@ -91,13 +91,17 @@ export async function uploadVendorDocument(formData: FormData): Promise<UploadVe
 
   const bytes = new Uint8Array(await file.arrayBuffer());
 
+  // 제품자료는 업체 정보 추출 대상이 아니라 AI 호출 자체를 건너뛴다(카탈로그
+  // 이미지에서 사업자번호 같은 값을 억지로 읽어내려 하지 않도록).
   let extracted: Record<string, string> = {};
-  try {
-    extracted = await extractVendorInfoFromDocument(bytes, file.type, documentType);
-  } catch (e) {
-    // AI 추출 실패해도 파일 업로드/등록 자체는 계속 진행한다.
-    extracted = {};
-    console.error("[uploadVendorDocument] AI 추출 실패:", e instanceof Error ? e.message : e);
+  if (documentType !== "product_material") {
+    try {
+      extracted = await extractVendorInfoFromDocument(bytes, file.type, documentType);
+    } catch (e) {
+      // AI 추출 실패해도 파일 업로드/등록 자체는 계속 진행한다.
+      extracted = {};
+      console.error("[uploadVendorDocument] AI 추출 실패:", e instanceof Error ? e.message : e);
+    }
   }
 
   if (!vendorId) {
