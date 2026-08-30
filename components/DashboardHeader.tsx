@@ -67,7 +67,7 @@ export function DashboardHeader({
         </Link>
       </div>
       <div className="hidden flex-1 justify-center px-4 lg:flex">
-        <AiCommandBar members={teamMembers} />
+        <AiCommandBar members={teamMembers} currentUserName={name ?? email} />
       </div>
       <div className="flex items-center gap-2 text-sm md:gap-4">
         <NotificationBell initialNotifications={notifications} userId={userId} />

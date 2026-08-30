@@ -8,6 +8,7 @@ import { createBusinessProjectV2 } from "@/app/dashboard/actions/businessProject
 import { createCooperationProject } from "@/app/dashboard/actions/cooperationProjects";
 import { createMarketingTask } from "@/app/dashboard/actions/marketingTasks";
 import { sendMaterialEmailFromAiDraft } from "@/app/dashboard/actions/materialEmail";
+import { createWorkJournalEntry } from "@/app/dashboard/actions/workJournal";
 import {
   runAiCommand,
   type AiCommandActionResult,
@@ -34,6 +35,15 @@ const MARKETING_STATUSES = ["시작 전", "진행 중", "완료", "종료"];
 
 const FIELD_CLASS =
   "rounded-sm border border-hairline bg-background px-3 py-1.5 text-sm text-ink outline-none focus:border-primary";
+
+// IndustryWorkJournalBoard.tsx의 weekLabelFromDate와 동일한 규칙 — 날짜에서
+// "YY년 MM월" 주차 라벨을 자동으로 만든다(사용자가 직접 입력한 것처럼 채워짐).
+function weekLabelFromDate(dateStr: string): string {
+  if (!dateStr) return "";
+  const [y, m] = dateStr.split("-");
+  if (!y || !m) return "";
+  return `${y.slice(2)}년 ${m}월`;
+}
 
 /** 정상 흐름에서는 AI 결과를 그대로 기존 create 액션에 바로 제출해 자동 등록한다
  * (확인 버튼 클릭 요구 안 함, 사용자 확인 2026-08-26). 이 폼들은 자동 등록이
@@ -443,6 +453,58 @@ function MarketingTaskFallbackForm({
   );
 }
 
+function WorkJournalFallbackForm({
+  input,
+  currentUserName,
+  onDone,
+}: {
+  input: Extract<AiCommandResult, { tool: "create_work_journal_entry" }>["input"];
+  currentUserName: string;
+  onDone: () => void;
+}) {
+  const router = useRouter();
+  const [state, formAction, pending] = useActionState(createWorkJournalEntry, undefined);
+
+  return (
+    <form
+      action={async (formData) => {
+        await formAction(formData);
+        router.refresh();
+        onDone();
+      }}
+      className="flex flex-col gap-2"
+    >
+      <input type="hidden" name="authorName" value={currentUserName} />
+      <input type="hidden" name="weekLabel" value={weekLabelFromDate(input.entryDate)} />
+      <label className="flex flex-col gap-1 text-xs text-ink-mute">
+        날짜
+        <input name="entryDate" type="date" defaultValue={input.entryDate} className={FIELD_CLASS} />
+      </label>
+      <label className="flex flex-col gap-1 text-xs text-ink-mute">
+        내용 *
+        <textarea name="content" defaultValue={input.content} required rows={3} className={FIELD_CLASS} />
+      </label>
+      {state?.error && <p className="text-sm text-semantic-error">{state.error}</p>}
+      <div className="flex gap-2">
+        <button
+          type="submit"
+          disabled={pending}
+          className="w-fit rounded-lg bg-primary px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-press disabled:opacity-50"
+        >
+          {pending ? "저장 중..." : "일지 등록"}
+        </button>
+        <button
+          type="button"
+          onClick={onDone}
+          className="w-fit rounded-lg border border-hairline px-4 py-1.5 text-xs font-medium text-ink hover:bg-[#f7f7f8]"
+        >
+          취소
+        </button>
+      </div>
+    </form>
+  );
+}
+
 function buildCalendarFormData(input: Extract<AiCommandResult, { tool: "create_calendar_event" }>["input"]): FormData {
   const fd = new FormData();
   fd.set("title", input.title);
@@ -542,7 +604,21 @@ function buildMarketingFormData(input: Extract<AiCommandResult, { tool: "create_
   return fd;
 }
 
-export function AiCommandBar({ members }: { members: string[] }) {
+// 작성자는 항상 로그인한 사용자 본인으로 자동 지정한다(수동 폼과 동일한 규칙,
+// IndustryWorkJournalBoard.tsx 참고) — AI가 이름을 추출·추측하지 않는다.
+function buildWorkJournalFormData(
+  input: Extract<AiCommandResult, { tool: "create_work_journal_entry" }>["input"],
+  currentUserName: string
+): FormData {
+  const fd = new FormData();
+  fd.set("authorName", currentUserName);
+  fd.set("entryDate", input.entryDate);
+  fd.set("weekLabel", weekLabelFromDate(input.entryDate));
+  fd.set("content", input.content);
+  return fd;
+}
+
+export function AiCommandBar({ members, currentUserName }: { members: string[]; currentUserName: string }) {
   const router = useRouter();
   const [message, setMessage] = useState("");
   const [history, setHistory] = useState<AiCommandTurn[]>([]);
@@ -654,6 +730,11 @@ export function AiCommandBar({ members }: { members: string[] }) {
           }
           return succeed(`"${res.input.recipients}"로 자료메일을 발송했습니다.`);
         }
+        if (res.tool === "create_work_journal_entry") {
+          const result = await createWorkJournalEntry(undefined, buildWorkJournalFormData(res.input, currentUserName));
+          if (result?.error) return fail(result.error, res);
+          return succeed(`Work Journal에 ${res.input.entryDate} 일지를 기록했습니다.`);
+        }
         // create_memo: 성공 시 createMemo 내부에서 redirect()가 던져져 여기 아래 코드는
         // 실행되지 않고 그대로 이동한다 — 실패(검증 오류)일 때만 아래에 도달한다.
         const result = await createMemo(undefined, buildMemoFormData(res.input));
@@ -691,7 +772,7 @@ export function AiCommandBar({ members }: { members: string[] }) {
           placeholder={
             pendingQuestion
               ? "답변을 입력하세요"
-              : "AI에게 일정 등록·메모 작성·SI Business/Cooperation/Marketing 등록을 시켜보세요"
+              : "AI에게 일정 등록·메모 작성·SI Business/Cooperation/Marketing 등록·업무일지 기록을 시켜보세요"
           }
           disabled={isPending}
           className="min-w-0 flex-1 rounded-full border border-transparent bg-white/95 px-4 py-1.5 text-sm text-ink outline-none focus:border-primary disabled:opacity-60"
@@ -752,6 +833,11 @@ export function AiCommandBar({ members }: { members: string[] }) {
           {fallbackDraft?.tool === "create_marketing_task" && (
             <div className="mt-2">
               <MarketingTaskFallbackForm input={fallbackDraft.input} members={members} onDone={reset} />
+            </div>
+          )}
+          {fallbackDraft?.tool === "create_work_journal_entry" && (
+            <div className="mt-2">
+              <WorkJournalFallbackForm input={fallbackDraft.input} currentUserName={currentUserName} onDone={reset} />
             </div>
           )}
         </div>

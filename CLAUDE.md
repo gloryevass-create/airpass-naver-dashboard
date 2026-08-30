@@ -243,6 +243,11 @@ cooperationProjects.ts`, `app/dashboard/actions/marketingTasks.ts`)은 그대로
 - 기존 `WorkJournalBoard.tsx`에는 폼 저장 실패 시에도 무조건 폼을 닫는
   버그(`onDone()`을 항상 호출)가 있었다 — 다시 그리면서 다른 Industry 화면과
   같은 `wasPendingRef` + `useEffect` 패턴으로 함께 고쳤다.
+- 상단 통합 AI 입력창(`AiCommandBar.tsx`)에서도 일지를 기록할 수 있다
+  (2026-08-30 추가) — 작성자는 AI가 추출하지 않고 항상 로그인한 사용자
+  본인으로 자동 지정한다(`DashboardHeader.tsx`가 넘기는 `currentUserName`
+  prop). 주차 라벨도 수동 폼과 동일하게 `weekLabelFromDate()`로 날짜에서
+  자동 생성한다.
 
 ## Calendar
 

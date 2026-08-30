@@ -88,6 +88,11 @@ export type AiMaterialEmailDraft = {
   fileNameHints: string[];
 };
 
+export type AiWorkJournalDraft = {
+  content: string;
+  entryDate: string; // KST 기준 YYYY-MM-DD
+};
+
 export type AiCommandResult =
   | { tool: "create_calendar_event"; input: AiCalendarEventDraft }
   | { tool: "create_memo"; input: AiMemoDraft }
@@ -95,6 +100,7 @@ export type AiCommandResult =
   | { tool: "create_cooperation_project"; input: AiCooperationProjectDraft }
   | { tool: "create_marketing_task"; input: AiMarketingTaskDraft }
   | { tool: "send_material_email"; input: AiMaterialEmailDraft }
+  | { tool: "create_work_journal_entry"; input: AiWorkJournalDraft }
   | { tool: "ask_clarification"; question: string };
 
 export type AiCommandTurn = { role: "user" | "assistant"; text: string };
@@ -184,12 +190,15 @@ export async function runAiCommand(
 - Cooperation: 협력사와의 협업 건 신규 등록(콘텐츠/하드웨어/공동생산 등 관계 유형)
 - Marketing: 마케팅 업무 신규 등록(브로슈어·홈페이지·영상 등 제작 업무)
 - 자료메일발송: 구글드라이브 자료를 이메일로 보내기(자료 소개·전달 요청)
+- Work Journal: 로그인한 사용자 본인의 업무 일지 기록(오늘/이번 주 한 일을 남겨달라는 요청)
+Work Journal의 entryDate는 문장에 날짜가 없으면 오늘 날짜를 쓰세요. 작성자는 항상 현재 로그인한
+사용자 본인으로 자동 지정되므로 별도로 묻거나 추출하지 마세요.
 Calendar 일정 등록 시 destination은 문장에 "구글"이 언급되지 않으면 항상 "local"입니다. "구글 캘린더에도/구글에도 등록해줘"처럼 팀 Calendar와 구글 둘 다 언급되면 "both", "구글에만/구글 캘린더에만 등록해줘"처럼 구글만 명시되면 "google"로 설정하세요.
 오늘 날짜는 ${todayInSeoul()}(KST)입니다. "내일", "다음주 화요일" 같은 상대 날짜는 이 날짜를 기준으로 계산하세요.
 현재 로그인한 사용자 이름은 "${context.userName}"입니다. "내가", "나" 같은 표현은 이 이름으로 처리하세요.
 실제 팀원 이름 목록: ${context.teamMembers.join(", ") || "(없음)"}. 담당자류 필드는 반드시 이 목록에서 정확히 일치하는 이름만 넣고, 목록에 없거나 불확실한 이름은 추측해서 넣지 말고 빈 배열로 두세요.
 자료메일발송의 recipients는 문장에 실제 이메일 주소(@ 포함)가 명시된 경우에만 채우세요. 이름만 언급되고 이메일 주소가 없으면 절대 추측하지 말고 빈 문자열로 두세요(사람 이름을 이메일 주소로 지어내는 것 절대 금지). 이메일 주소만 말하고 제목·내용·자료를 따로 지정하지 않았다면("이 주소로 보내줘" 등) subject·message·fileNameHints를 전부 빈 값으로 둬서 화면의 기본 안내문·전체 자료 선택이 그대로 쓰이게 하세요 — 억지로 지어내지 마세요.
-위 6개 메뉴 중 어디에도 해당하지 않거나, 제목처럼 핵심 정보가 빠져 등록할 수 없으면 ask_clarification 도구로 한 가지만 짧게 되물으세요. 억지로 다른 도구를 고르지 마세요.
+위 7개 메뉴 중 어디에도 해당하지 않거나, 제목처럼 핵심 정보가 빠져 등록할 수 없으면 ask_clarification 도구로 한 가지만 짧게 되물으세요. 억지로 다른 도구를 고르지 마세요.
 모르는 값은 절대 추측하지 말고 빈 문자열/빈 배열로 두세요. enum으로 제한된 필드는 목록에 없으면 빈 문자열을 쓰세요.`,
       messages,
       tools: [
@@ -379,6 +388,18 @@ Calendar 일정 등록 시 destination은 문장에 "구글"이 언급되지 않
           },
         },
         {
+          name: "create_work_journal_entry",
+          description: "Work Journal에 로그인한 사용자 본인의 새 업무 일지를 작성한다. 오늘/이번 주 업무 내용을 기록해달라는 요청일 때 사용한다.",
+          input_schema: {
+            type: "object",
+            properties: {
+              content: { type: "string", description: "일지 내용" },
+              entryDate: { type: "string", description: "일지 날짜 YYYY-MM-DD. 언급 없으면 오늘 날짜." },
+            },
+            required: ["content", "entryDate"],
+          },
+        },
+        {
           name: "ask_clarification",
           description: "요청이 모호하거나 필수 정보가 빠졌을 때 짧게 되묻는다.",
           input_schema: {
@@ -506,6 +527,16 @@ Calendar 일정 등록 시 destination은 문장에 "구글"이 언급되지 않
         subject: str(input, "subject"),
         message: str(input, "message"),
         fileNameHints: toStringArray(input.fileNameHints),
+      },
+    };
+  }
+
+  if (toolUse.name === "create_work_journal_entry") {
+    return {
+      tool: "create_work_journal_entry",
+      input: {
+        content: str(input, "content"),
+        entryDate: str(input, "entryDate") || todayInSeoul(),
       },
     };
   }
