@@ -40,9 +40,13 @@
   --color-accent-800: #2c455d;
   --color-accent-900: #1d2d3d;
 
-  --font-heading: "Barlow Condensed", system-ui, sans-serif;
+  /* Barlow/Barlow Condensed는 라틴 문자 전용이라 한글 글리프가 없다 — 한글은
+     "맑은 고딕"(Malgun Gothic)을 명시로 지정해서 OS 자동 대체(맥은 보통 Apple SD
+     Gothic Neo)에 맡기지 않고 항상 같은 한글 폰트로 렌더링되게 한다(사용자 확인,
+     2026-08-31). 영문/숫자는 그대로 Barlow 계열이 먼저 매칭된다. */
+  --font-heading: "Barlow Condensed", "Malgun Gothic", system-ui, sans-serif;
   --font-heading-weight: 600;
-  --font-body: "Barlow", system-ui, sans-serif;
+  --font-body: "Barlow", "Malgun Gothic", system-ui, sans-serif;
 
   /* 원본 디자인 시스템 CSS는 1/2/3/4/6/8만 정의했지만(3.4px 단위 배수), 여러
      목업 HTML은 5/7/9도 그대로 참조한다 — 정의되지 않은 CSS 변수는 조용히
