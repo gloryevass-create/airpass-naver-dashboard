@@ -138,6 +138,9 @@ function TopSettingsBar({
         background: "#ffffff",
         borderBottom: "1px solid var(--color-divider)",
         fontSize: 12,
+        position: "sticky",
+        top: 0,
+        zIndex: 5,
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
