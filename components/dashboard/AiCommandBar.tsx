@@ -27,7 +27,7 @@ const MEMO_CATEGORY_OPTIONS = [
 
 const BUSINESS_STAGES = ["Ⅰ영업진행", "Ⅱ사업제안", "Ⅲ제안서작성", "Ⅳ사업수행", "Ⅴ사업완료"];
 const BUSINESS_STATUSES = ["시작 전", "진행 중", "완료", "보류", "실패"];
-const COOPERATION_RELATION_TYPES = ["콘텐츠", "하드웨어", "공동생산 판매", "제품 판매", "자재구매", "일반", "비즈니스협업"];
+const COOPERATION_RELATION_TYPES = ["콘텐츠/하드웨어", "공동생산 판매", "제품 판매", "자재구매", "일반", "비즈니스협업"];
 const COOPERATION_STATUSES = ["시작 전", "진행 중", "완료", "종료"];
 const MARKETING_CATEGORIES = ["문서", "영상", "사진", "웹페이지", "광고"];
 const MARKETING_STAGES = ["기획", "제작", "수행"];

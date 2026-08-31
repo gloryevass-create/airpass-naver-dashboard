@@ -120,8 +120,7 @@ const BUSINESS_STAGES = ["", "Ⅰ영업진행", "Ⅱ사업제안", "Ⅲ제안서
 const BUSINESS_STATUSES = ["시작 전", "진행 중", "완료", "보류", "실패"] as const;
 const COOPERATION_RELATION_TYPES = [
   "",
-  "콘텐츠",
-  "하드웨어",
+  "콘텐츠/하드웨어",
   "공동생산 판매",
   "제품 판매",
   "자재구매",
