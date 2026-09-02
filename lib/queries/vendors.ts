@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/types/database.types";
+import { driveFileViewUrl } from "@/lib/googleDriveAttachments";
 
 type Client = SupabaseClient<Database>;
 
@@ -9,7 +10,8 @@ export type VendorDocument = {
   id: string;
   documentType: VendorDocumentType;
   originalName: string;
-  storagePath: string;
+  storagePath: string | null;
+  driveFileId: string | null;
   signedUrl: string | null;
   createdAt: string;
 };
@@ -53,13 +55,14 @@ export async function getVendors(supabase: Client): Promise<Vendor[]> {
     docsByVendor.set(doc.vendor_id, list);
   }
 
+  const legacyDocs = (documents ?? []).filter((doc) => doc.storage_path);
   const signedUrls = await Promise.all(
-    (documents ?? []).map((doc) =>
-      supabase.storage.from("vendor-documents").createSignedUrl(doc.storage_path, SIGNED_URL_TTL_SECONDS)
+    legacyDocs.map((doc) =>
+      supabase.storage.from("vendor-documents").createSignedUrl(doc.storage_path as string, SIGNED_URL_TTL_SECONDS)
     )
   );
   const signedUrlByPath = new Map(
-    (documents ?? []).map((doc, i) => [doc.storage_path, signedUrls[i].data?.signedUrl ?? null])
+    legacyDocs.map((doc, i) => [doc.storage_path as string, signedUrls[i].data?.signedUrl ?? null])
   );
 
   return (vendors ?? []).map((v) => ({
@@ -86,7 +89,12 @@ export async function getVendors(supabase: Client): Promise<Vendor[]> {
       documentType: d.document_type,
       originalName: d.original_name,
       storagePath: d.storage_path,
-      signedUrl: signedUrlByPath.get(d.storage_path) ?? null,
+      driveFileId: d.drive_file_id,
+      signedUrl: d.drive_file_id
+        ? driveFileViewUrl(d.drive_file_id)
+        : d.storage_path
+          ? (signedUrlByPath.get(d.storage_path) ?? null)
+          : null,
       createdAt: d.created_at,
     })),
   }));

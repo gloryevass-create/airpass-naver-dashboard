@@ -63,7 +63,13 @@ export type MemoDetail = {
   title: string;
   content: string;
   createdAt: string;
-  attachments: { id: string; fileName: string; storagePath: string; fileSize: number | null }[];
+  attachments: {
+    id: string;
+    fileName: string;
+    storagePath: string | null;
+    driveFileId: string | null;
+    fileSize: number | null;
+  }[];
   comments: { id: string; authorEmail: string; content: string; createdAt: string }[];
 };
 
@@ -93,6 +99,7 @@ export async function getMemoDetail(supabase: Client, id: string): Promise<MemoD
       id: a.id,
       fileName: a.file_name,
       storagePath: a.storage_path,
+      driveFileId: a.drive_file_id,
       fileSize: a.file_size,
     })),
     comments: (comments ?? []).map((c) => ({

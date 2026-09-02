@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { extractVendorInfoFromDocument } from "@/lib/vendorDocumentAi";
 import type { VendorDocumentType } from "@/lib/queries/vendors";
+import { deleteAttachmentFromDrive, isGoogleDriveAttachmentsConfigured, uploadAttachmentToDrive } from "@/lib/googleDriveAttachments";
 
 const PATH = "/dashboard/vendors";
 
@@ -53,9 +54,21 @@ export async function saveVendor(_prevState: VendorFormState, formData: FormData
 export async function deleteVendor(id: string): Promise<void> {
   const { supabase } = await requireAuthedClient();
 
-  const { data: documents } = await supabase.from("vendor_documents").select("storage_path").eq("vendor_id", id);
+  const { data: documents } = await supabase
+    .from("vendor_documents")
+    .select("storage_path, drive_file_id")
+    .eq("vendor_id", id);
   if (documents?.length) {
-    await supabase.storage.from("vendor-documents").remove(documents.map((d) => d.storage_path));
+    const legacyPaths = documents.map((d) => d.storage_path).filter((p): p is string => Boolean(p));
+    if (legacyPaths.length) {
+      await supabase.storage.from("vendor-documents").remove(legacyPaths);
+    }
+    await Promise.all(
+      documents
+        .map((d) => d.drive_file_id)
+        .filter((fid): fid is string => Boolean(fid))
+        .map((fileId) => deleteAttachmentFromDrive(fileId))
+    );
   }
   await supabase.from("partner_vendors").delete().eq("id", id);
 
@@ -117,6 +130,24 @@ export async function uploadVendorDocument(formData: FormData): Promise<UploadVe
     vendorId = created.id;
   }
 
+  if (isGoogleDriveAttachmentsConfigured) {
+    const fileId = await uploadAttachmentToDrive("vendor", file.name, bytes, file.type).catch((e) => {
+      console.error("[uploadVendorDocument] 업로드 실패:", e instanceof Error ? e.message : e);
+      return null;
+    });
+    if (!fileId) {
+      return { ok: false, error: "업로드 실패: 구글드라이브에 파일을 올리지 못했습니다." };
+    }
+    await supabase.from("vendor_documents").insert({
+      vendor_id: vendorId,
+      document_type: documentType,
+      original_name: file.name,
+      drive_file_id: fileId,
+    });
+    revalidatePath(PATH);
+    return { ok: true, vendorId, extracted };
+  }
+
   const path = `${vendorId}/${randomUUID()}-${file.name}`;
   const { error: uploadError } = await supabase.storage.from("vendor-documents").upload(path, bytes, {
     contentType: file.type,
@@ -136,9 +167,19 @@ export async function uploadVendorDocument(formData: FormData): Promise<UploadVe
   return { ok: true, vendorId, extracted };
 }
 
-export async function deleteVendorDocument(documentId: string, storagePath: string): Promise<void> {
+export async function deleteVendorDocument(documentId: string): Promise<void> {
   const { supabase } = await requireAuthedClient();
-  await supabase.storage.from("vendor-documents").remove([storagePath]);
+  const { data: document } = await supabase
+    .from("vendor_documents")
+    .select("storage_path, drive_file_id")
+    .eq("id", documentId)
+    .maybeSingle();
+  if (document?.storage_path) {
+    await supabase.storage.from("vendor-documents").remove([document.storage_path]);
+  }
+  if (document?.drive_file_id) {
+    await deleteAttachmentFromDrive(document.drive_file_id);
+  }
   await supabase.from("vendor_documents").delete().eq("id", documentId);
   revalidatePath(PATH);
 }

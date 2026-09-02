@@ -467,7 +467,8 @@ export type Database = {
           id: string;
           memo_id: string;
           file_name: string;
-          storage_path: string;
+          storage_path: string | null;
+          drive_file_id: string | null;
           file_size: number | null;
           created_at: string;
         };
@@ -475,7 +476,8 @@ export type Database = {
           id?: string;
           memo_id: string;
           file_name: string;
-          storage_path: string;
+          storage_path?: string | null;
+          drive_file_id?: string | null;
           file_size?: number | null;
           created_at?: string;
         };
@@ -483,7 +485,8 @@ export type Database = {
           id?: string;
           memo_id?: string;
           file_name?: string;
-          storage_path?: string;
+          storage_path?: string | null;
+          drive_file_id?: string | null;
           file_size?: number | null;
           created_at?: string;
         };
@@ -1692,7 +1695,8 @@ export type Database = {
           vendor_id: string;
           document_type: "business_registration" | "bankbook" | "business_card" | "product_material";
           original_name: string;
-          storage_path: string;
+          storage_path: string | null;
+          drive_file_id: string | null;
           created_at: string;
         };
         Insert: {
@@ -1700,7 +1704,8 @@ export type Database = {
           vendor_id: string;
           document_type: "business_registration" | "bankbook" | "business_card" | "product_material";
           original_name: string;
-          storage_path: string;
+          storage_path?: string | null;
+          drive_file_id?: string | null;
           created_at?: string;
         };
         Update: {
@@ -1708,7 +1713,8 @@ export type Database = {
           vendor_id?: string;
           document_type?: "business_registration" | "bankbook" | "business_card" | "product_material";
           original_name?: string;
-          storage_path?: string;
+          storage_path?: string | null;
+          drive_file_id?: string | null;
           created_at?: string;
         };
         Relationships: [];
@@ -2007,7 +2013,8 @@ export type Database = {
           entry_id: string;
           file_name: string;
           content_type: string | null;
-          storage_path: string;
+          storage_path: string | null;
+          drive_file_id: string | null;
           created_at: string;
         };
         Insert: {
@@ -2015,7 +2022,8 @@ export type Database = {
           entry_id: string;
           file_name: string;
           content_type?: string | null;
-          storage_path: string;
+          storage_path?: string | null;
+          drive_file_id?: string | null;
           created_at?: string;
         };
         Update: {
@@ -2023,7 +2031,8 @@ export type Database = {
           entry_id?: string;
           file_name?: string;
           content_type?: string | null;
-          storage_path?: string;
+          storage_path?: string | null;
+          drive_file_id?: string | null;
           created_at?: string;
         };
         Relationships: [];

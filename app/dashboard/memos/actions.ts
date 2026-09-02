@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import type { MemoCategory } from "@/lib/queries/memos";
 import { formatMember } from "@/lib/formatMember";
+import { deleteAttachmentFromDrive, isGoogleDriveAttachmentsConfigured, uploadAttachmentToDrive } from "@/lib/googleDriveAttachments";
 
 const CATEGORIES: MemoCategory[] = ["business", "cooperation", "marketing", "etc"];
 
@@ -86,6 +87,24 @@ export async function createMemo(_prevState: CreateMemoState, formData: FormData
 
   let attachmentFailed = false;
   for (const file of files) {
+    if (isGoogleDriveAttachmentsConfigured) {
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      const fileId = await uploadAttachmentToDrive("memo", file.name, bytes, file.type).catch((e) => {
+        console.error(`[createMemo] 첨부파일 업로드 실패 (${file.name}):`, e instanceof Error ? e.message : e);
+        return null;
+      });
+      if (!fileId) {
+        attachmentFailed = true;
+        continue;
+      }
+      await supabase.from("ad_strategy_memo_attachments").insert({
+        memo_id: memo.id,
+        file_name: file.name,
+        drive_file_id: fileId,
+        file_size: file.size,
+      });
+      continue;
+    }
     const path = `${memo.id}/${randomUUID()}-${file.name}`;
     const { error: uploadError } = await supabase.storage.from("memo-attachments").upload(path, file, {
       contentType: file.type,
@@ -171,10 +190,19 @@ export async function updateMemo(
   if (removeAttachmentIds.length > 0) {
     const { data: toRemove } = await supabase
       .from("ad_strategy_memo_attachments")
-      .select("id, storage_path")
+      .select("id, storage_path, drive_file_id")
       .in("id", removeAttachmentIds);
     if (toRemove?.length) {
-      await supabase.storage.from("memo-attachments").remove(toRemove.map((a) => a.storage_path));
+      const legacyPaths = toRemove.map((a) => a.storage_path).filter((p): p is string => Boolean(p));
+      if (legacyPaths.length) {
+        await supabase.storage.from("memo-attachments").remove(legacyPaths);
+      }
+      await Promise.all(
+        toRemove
+          .map((a) => a.drive_file_id)
+          .filter((id): id is string => Boolean(id))
+          .map((fileId) => deleteAttachmentFromDrive(fileId))
+      );
       await supabase
         .from("ad_strategy_memo_attachments")
         .delete()
@@ -187,6 +215,24 @@ export async function updateMemo(
 
   let attachmentFailed = false;
   for (const file of files) {
+    if (isGoogleDriveAttachmentsConfigured) {
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      const fileId = await uploadAttachmentToDrive("memo", file.name, bytes, file.type).catch((e) => {
+        console.error(`[updateMemo] 첨부파일 업로드 실패 (${file.name}):`, e instanceof Error ? e.message : e);
+        return null;
+      });
+      if (!fileId) {
+        attachmentFailed = true;
+        continue;
+      }
+      await supabase.from("ad_strategy_memo_attachments").insert({
+        memo_id: memoId,
+        file_name: file.name,
+        drive_file_id: fileId,
+        file_size: file.size,
+      });
+      continue;
+    }
     const path = `${memoId}/${randomUUID()}-${file.name}`;
     const { error: uploadError } = await supabase.storage.from("memo-attachments").upload(path, file, {
       contentType: file.type,
@@ -220,10 +266,19 @@ export async function deleteMemo(memoId: string, formData: FormData): Promise<vo
 
   const { data: attachments } = await supabase
     .from("ad_strategy_memo_attachments")
-    .select("storage_path")
+    .select("storage_path, drive_file_id")
     .eq("memo_id", memoId);
   if (attachments?.length) {
-    await supabase.storage.from("memo-attachments").remove(attachments.map((a) => a.storage_path));
+    const legacyPaths = attachments.map((a) => a.storage_path).filter((p): p is string => Boolean(p));
+    if (legacyPaths.length) {
+      await supabase.storage.from("memo-attachments").remove(legacyPaths);
+    }
+    await Promise.all(
+      attachments
+        .map((a) => a.drive_file_id)
+        .filter((id): id is string => Boolean(id))
+        .map((fileId) => deleteAttachmentFromDrive(fileId))
+    );
   }
 
   await supabase.from("ad_strategy_memos").delete().eq("id", memoId);

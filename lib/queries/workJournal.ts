@@ -7,7 +7,8 @@ export type WorkJournalAttachment = {
   id: string;
   fileName: string;
   contentType: string | null;
-  storagePath: string;
+  storagePath: string | null;
+  driveFileId: string | null;
 };
 
 export type WorkJournalEntry = {
@@ -44,6 +45,7 @@ export async function getWorkJournalEntries(supabase: Client): Promise<WorkJourn
       fileName: a.file_name,
       contentType: a.content_type,
       storagePath: a.storage_path,
+      driveFileId: a.drive_file_id,
     });
     attachmentsByEntry.set(a.entry_id, list);
   }

@@ -6,6 +6,7 @@ import { getMemoDetail } from "@/lib/queries/memos";
 import { MemoCommentForm } from "@/components/MemoCommentForm";
 import { DeleteMemoButton } from "@/components/DeleteMemoButton";
 import { deleteMemo } from "@/app/dashboard/memos/actions";
+import { driveFileViewUrl } from "@/lib/googleDriveAttachments";
 
 const CATEGORY_LABEL: Record<string, string> = {
   business: "SI Business",
@@ -53,6 +54,8 @@ export default async function MemoDetailPage({
 
   const attachmentsWithUrl = await Promise.all(
     memo.attachments.map(async (a) => {
+      if (a.driveFileId) return { ...a, url: driveFileViewUrl(a.driveFileId) };
+      if (!a.storagePath) return { ...a, url: null };
       const { data } = await supabase.storage
         .from("memo-attachments")
         .createSignedUrl(a.storagePath, 60 * 60);

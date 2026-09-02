@@ -188,10 +188,10 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
     }
   }
 
-  function handleDeleteDocument(documentId: string, storagePath: string) {
+  function handleDeleteDocument(documentId: string) {
     if (!window.confirm("이 첨부 문서를 삭제할까요?")) return;
     startTransition(async () => {
-      await deleteVendorDocument(documentId, storagePath);
+      await deleteVendorDocument(documentId);
       router.refresh();
     });
   }
@@ -329,7 +329,7 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
                       )}
                       <button
                         type="button"
-                        onClick={() => handleDeleteDocument(doc.id, doc.storagePath)}
+                        onClick={() => handleDeleteDocument(doc.id)}
                         style={{ flex: "none", background: "none", border: 0, padding: 0, color: "var(--color-accent-900)", cursor: "pointer", font: "inherit", fontSize: 11 }}
                       >
                         삭제

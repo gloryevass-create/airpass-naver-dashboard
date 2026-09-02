@@ -179,7 +179,9 @@ function AttachmentList({ entry }: { entry: WorkJournalEntry }) {
   async function load() {
     if (urls || loading) return;
     setLoading(true);
-    const result = await getWorkJournalAttachmentUrls(entry.attachments.map((a) => a.storagePath));
+    const result = await getWorkJournalAttachmentUrls(
+      entry.attachments.map((a) => ({ id: a.id, storagePath: a.storagePath, driveFileId: a.driveFileId }))
+    );
     setUrls(result);
     setLoading(false);
   }
@@ -201,7 +203,7 @@ function AttachmentList({ entry }: { entry: WorkJournalEntry }) {
       {urls && (
         <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-2)", marginTop: "var(--space-2)" }}>
           {entry.attachments.map((a) => {
-            const url = urls[a.storagePath];
+            const url = urls[a.id];
             return (
               <div
                 key={a.id}

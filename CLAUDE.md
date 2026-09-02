@@ -116,6 +116,31 @@ HTML 템플릿(`buildMaterialEmailHtml`)과는 완전히 별개다(그건 안 �
     "M. {phone} · T. {회사 대표번호}" 형태로 개인 번호도 함께 보여준다(없으면 회사 대표번호만,
     `lib/quotationCompany.ts::QUOTATION_SUPPLIER.phone`은 그대로 고정값).
 
+## 첨부파일 저장소 (제조사 서류 / Work Journal / Memo Board)
+
+세 기능(`vendor_documents`, `work_journal_attachments`, `ad_strategy_memo_attachments`)의
+첨부파일은 원래 전부 Supabase Storage에 올라갔는데, Work Journal에 임시로 대량 업로드된
+파일 때문에 Storage 용량(무료 한도)이 초과돼(2026-09-02) 회사 공용 구글드라이브(서비스
+계정)로 전환했다. 자료메일발송(`lib/googleDriveMaterials.ts`)이 쓰는 것과 같은 서비스
+계정 자격증명(`GOOGLE_SERVICE_ACCOUNT_EMAIL`/`GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY`)을
+재사용하지만, 그건 "고정 카탈로그 폴더를 읽기만" 하는 목적이라 별도 모듈
+`lib/googleDriveAttachments.ts`로 분리했다 — 이 모듈은 `GOOGLE_DRIVE_ATTACHMENTS_ROOT_FOLDER_ID`
+루트 폴더 아래 서비스별 하위 폴더("Work Journal"/"Memo Board"/"제조사 관리")에 쓰기
+(업로드·삭제)까지 한다.
+
+- **하위 호환(무마이그레이션)**: 세 테이블 모두 `storage_path`를 nullable로 바꾸고
+  `drive_file_id`를 추가했다(0054) — 기존에 이미 올라간 파일은 손대지 않고 그대로
+  `storage_path`/Supabase signed URL로 계속 열람되고, `GOOGLE_DRIVE_ATTACHMENTS_ROOT_FOLDER_ID`가
+  설정된 시점 이후 새로 올리는 파일만 `drive_file_id`를 쓴다. 한 행에는 둘 중 하나만
+  채워진다 — 조회/삭제 코드는 항상 `drive_file_id` 유무로 분기한다. 이 환경변수가 비어
+  있으면(`isGoogleDriveAttachmentsConfigured`) 예전처럼 Supabase Storage 업로드로 자동
+  폴백한다.
+- 구글드라이브 파일은 업로드 시 "링크가 있는 모든 사용자" 읽기 권한을 한 번만 부여하면
+  이후 만료되지 않는 고정 URL(`driveFileViewUrl`)로 바로 열람된다 — Supabase Storage의
+  signed URL(TTL 있음, 조회마다 API 호출 필요)과 달리 개별 조회 시점의 API 호출이 없다.
+  Work Journal의 `getWorkJournalAttachmentUrls()` 반환 키는 이 전환으로 `storage_path`
+  대신 첨부파일 `id`로 통일했다(구글드라이브 첨부는 `storage_path`가 없어서).
+
 ## 산출내역 관리
 
 `/dashboard/quotations` — WHIZZUP 레퍼런스 사이트의 견적서 기능을 참고해 핵심만 이식했다
