@@ -9,6 +9,7 @@ function formatDateHeading(dateStr: string): string {
     month: "long",
     day: "numeric",
     weekday: "short",
+    timeZone: "Asia/Seoul",
   });
 }
 

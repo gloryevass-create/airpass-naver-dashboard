@@ -73,6 +73,7 @@ export default async function MemosPage() {
                   day: "2-digit",
                   hour: "2-digit",
                   minute: "2-digit",
+                  timeZone: "Asia/Seoul",
                 })}
               </td>
               <td>{m.commentCount}</td>

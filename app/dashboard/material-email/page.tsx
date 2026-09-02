@@ -8,6 +8,8 @@ import { isMaterialEmailConfigured } from "@/lib/materialEmail";
 import { matchProductMaterialFiles } from "@/lib/materialEmailTemplate";
 import { MaterialEmailForm } from "@/components/dashboard/MaterialEmailForm";
 
+// 서버 컴포넌트(Vercel UTC 런타임)라 timeZone을 명시하지 않으면 실제 한국시간보다
+// 9시간 느리게 표시된다(2026-09-03 관리자 페이지 로그인 기록에서 신고).
 function formatDateTime(iso: string) {
   return new Date(iso).toLocaleString("ko-KR", {
     year: "numeric",
@@ -15,6 +17,7 @@ function formatDateTime(iso: string) {
     day: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
+    timeZone: "Asia/Seoul",
   });
 }
 

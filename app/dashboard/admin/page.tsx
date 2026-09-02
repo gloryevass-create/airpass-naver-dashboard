@@ -2,9 +2,12 @@ import "@/components/industryTheme.css";
 import { requireAdminClient } from "@/lib/supabase/authed";
 import { RegisterUserForm } from "@/components/RegisterUserForm";
 
+// 서버 컴포넌트라 Vercel 런타임(UTC)에서 렌더링된다 — timeZone을 명시하지 않으면
+// "ko-KR" 로케일 표기 형식은 한글이어도 시각 자체는 UTC라 실제 한국시간보다
+// 9시간 느리게 보인다(2026-09-03 사용자 신고로 발견).
 function formatDateTime(iso: string | null): string {
   if (!iso) return "-";
-  return new Date(iso).toLocaleString("ko-KR");
+  return new Date(iso).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" });
 }
 
 // Claude Design "관리자 페이지 디자인" 목업을 페이지 전체(등록 폼 + 가입자 목록 표)에
@@ -71,7 +74,7 @@ export default async function AdminPage() {
                         {p.role}
                       </span>
                     </td>
-                    <td className="text-muted">{new Date(p.created_at).toLocaleDateString("ko-KR")}</td>
+                    <td className="text-muted">{new Date(p.created_at).toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul" })}</td>
                     <td className="text-muted">{formatDateTime(p.last_login_at)}</td>
                     <td className="text-muted">{p.last_login_ip ?? "-"}</td>
                   </tr>

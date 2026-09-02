@@ -21,7 +21,7 @@ export default async function DisabilityWelfarePage() {
           &ldquo;복지관&rdquo;이 모두 포함된 공공시설만 추려서 담았습니다.
           {latestSync && (
             <span className="ml-1 text-ink-mute">
-              (최근 동기화: {new Date(latestSync).toLocaleString("ko-KR")})
+              (최근 동기화: {new Date(latestSync).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })})
             </span>
           )}
         </p>

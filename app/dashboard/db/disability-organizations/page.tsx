@@ -20,7 +20,7 @@ export default async function DisabilityOrganizationsPage() {
           그대로 담습니다.
           {latestSync && (
             <span className="ml-1 text-ink-mute">
-              (최근 동기화: {new Date(latestSync).toLocaleString("ko-KR")})
+              (최근 동기화: {new Date(latestSync).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })})
             </span>
           )}
         </p>

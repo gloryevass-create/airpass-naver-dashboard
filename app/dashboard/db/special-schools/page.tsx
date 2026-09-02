@@ -19,7 +19,7 @@ export default async function SpecialSchoolsPage() {
           전국 특수학교 현황(공공데이터포털, 교육부 국립특수교육원_특수학교현황).
           {latestSync && (
             <span className="ml-1 text-ink-mute">
-              (최근 동기화: {new Date(latestSync).toLocaleString("ko-KR")})
+              (최근 동기화: {new Date(latestSync).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })})
             </span>
           )}
         </p>
