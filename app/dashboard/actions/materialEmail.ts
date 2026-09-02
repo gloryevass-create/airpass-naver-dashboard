@@ -29,7 +29,7 @@ function parseRecipients(raw: string): string[] {
 // 회사 소개자료 폴더에서 PRODUCT_MATERIAL_CATALOG 이름과 일치하는 파일만 실제
 // 공유 링크로 바꾼다(사용자 확인, 2026-08-28) — 발송 시점에만 ensureFileShared를
 // 호출해 불필요한 구글드라이브 권한 변경 API 호출을 피한다(미리보기에서는 안 함).
-async function resolveProductLinks(): Promise<MaterialEmailProductLink[]> {
+export async function resolveProductLinks(): Promise<MaterialEmailProductLink[]> {
   const files = await listMaterialFiles();
   const matched = matchProductMaterialFiles(files);
   return Promise.all(
@@ -43,7 +43,7 @@ async function resolveProductLinks(): Promise<MaterialEmailProductLink[]> {
 
 /** 요청 헤더에서 이 배포의 절대 origin을 구한다 — 이메일은 브라우저 밖에서
  * 열리므로 상대경로 링크(/dashboard/...)를 쓸 수 없다. */
-async function resolveBaseUrl(): Promise<string> {
+export async function resolveBaseUrl(): Promise<string> {
   const h = await headers();
   const host = h.get("host");
   const proto = h.get("x-forwarded-proto") ?? "https";

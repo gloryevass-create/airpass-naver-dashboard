@@ -62,6 +62,17 @@ function normalize(text: string): string {
   return text.normalize("NFC").toLowerCase();
 }
 
+const VIDEO_EXTENSIONS = [".mp4", ".mov", ".avi", ".webm", ".mkv", ".wmv"];
+
+/** 발송 이력(material_email_logs)은 파일 mimeType을 저장하지 않아(파일명·링크만
+ * 남김) 실제 발송 당시 문서/동영상 분류를 파일명 확장자로 근사한다 — 이력 재구성
+ * (메일 원문 다시보기, 2026-09-03) 전용이고, 실시간 발송/미리보기는 여전히
+ * DriveMaterialFile.mimeType 기반 분류(MaterialEmailForm.tsx의 isVideoFile)를 쓴다. */
+export function isVideoFileName(name: string): boolean {
+  const lower = name.toLowerCase();
+  return VIDEO_EXTENSIONS.some((ext) => lower.endsWith(ext));
+}
+
 /** PRODUCT_MATERIAL_CATALOG의 각 항목에 대해, 이름이 일치하는 파일의 id를 찾는다
  * (없으면 null — 호출부가 실제 링크 생성 여부를 판단). */
 export function matchProductMaterialFiles<T extends { id: string; name: string }>(

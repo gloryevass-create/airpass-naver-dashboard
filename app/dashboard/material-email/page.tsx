@@ -1,4 +1,5 @@
 import "@/components/industryTheme.css";
+import Link from "next/link";
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { getMaterialEmailLogs } from "@/lib/queries/materialEmailLogs";
 import { getQuotationSummaries } from "@/lib/queries/quotations";
@@ -109,7 +110,12 @@ export default async function MaterialEmailPage() {
           {logs.map((l) => (
             <div key={l.id} style={{ border: "1px solid var(--color-divider)", padding: "var(--space-3)", fontSize: 13 }}>
               <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-                <span style={{ fontWeight: 600 }}>{l.subject}</span>
+                <Link
+                  href={`/dashboard/material-email/${l.id}`}
+                  style={{ fontWeight: 600, color: "var(--color-accent-700)", textDecoration: "underline" }}
+                >
+                  {l.subject}
+                </Link>
                 <span className="text-muted" style={{ fontSize: 11 }}>
                   {l.senderEmail} · {formatDateTime(l.createdAt)}
                 </span>
