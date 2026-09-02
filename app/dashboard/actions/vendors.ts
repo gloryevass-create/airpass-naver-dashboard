@@ -130,7 +130,7 @@ export async function uploadVendorDocument(formData: FormData): Promise<UploadVe
     vendorId = created.id;
   }
 
-  if (isGoogleDriveAttachmentsConfigured) {
+  if (await isGoogleDriveAttachmentsConfigured()) {
     const fileId = await uploadAttachmentToDrive("vendor", file.name, bytes, file.type).catch((e) => {
       console.error("[uploadVendorDocument] 업로드 실패:", e instanceof Error ? e.message : e);
       return null;

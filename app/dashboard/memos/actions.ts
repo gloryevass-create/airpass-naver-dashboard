@@ -86,8 +86,9 @@ export async function createMemo(_prevState: CreateMemoState, formData: FormData
   }
 
   let attachmentFailed = false;
+  const useDrive = await isGoogleDriveAttachmentsConfigured();
   for (const file of files) {
-    if (isGoogleDriveAttachmentsConfigured) {
+    if (useDrive) {
       const bytes = new Uint8Array(await file.arrayBuffer());
       const fileId = await uploadAttachmentToDrive("memo", file.name, bytes, file.type).catch((e) => {
         console.error(`[createMemo] 첨부파일 업로드 실패 (${file.name}):`, e instanceof Error ? e.message : e);
@@ -214,8 +215,9 @@ export async function updateMemo(
   }
 
   let attachmentFailed = false;
+  const useDrive = await isGoogleDriveAttachmentsConfigured();
   for (const file of files) {
-    if (isGoogleDriveAttachmentsConfigured) {
+    if (useDrive) {
       const bytes = new Uint8Array(await file.arrayBuffer());
       const fileId = await uploadAttachmentToDrive("memo", file.name, bytes, file.type).catch((e) => {
         console.error(`[updateMemo] 첨부파일 업로드 실패 (${file.name}):`, e instanceof Error ? e.message : e);

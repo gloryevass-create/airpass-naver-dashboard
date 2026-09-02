@@ -80,8 +80,9 @@ export async function createWorkJournalEntry(
     .single();
   if (error || !entry) return { error: `저장 실패: ${error?.message ?? "알 수 없는 오류"}` };
 
+  const useDrive = await isGoogleDriveAttachmentsConfigured();
   for (const file of files) {
-    if (isGoogleDriveAttachmentsConfigured) {
+    if (useDrive) {
       const bytes = new Uint8Array(await file.arrayBuffer());
       const fileId = await uploadAttachmentToDrive("journal", file.name, bytes, file.type).catch((e) => {
         console.error(`[createWorkJournalEntry] 첨부파일 업로드 실패 (${file.name}):`, e instanceof Error ? e.message : e);

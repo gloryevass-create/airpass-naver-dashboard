@@ -1,5 +1,6 @@
 import "@/components/industryTheme.css";
 import { requireAdminClient } from "@/lib/supabase/authed";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { RegisterUserForm } from "@/components/RegisterUserForm";
 
 // 서버 컴포넌트라 Vercel 런타임(UTC)에서 렌더링된다 — timeZone을 명시하지 않으면
@@ -14,13 +15,24 @@ function formatDateTime(iso: string | null): string {
 // 적용했다(2026-08-29) — 처음에는 표만 기존 Tailwind 스타일로 남겨뒀는데, 두 스타일이
 // 섞이면서 레이아웃이 깨지는 문제가 있어(등록 폼 영역의 min-height:100vh가 표를 화면
 // 밖으로 밀어냄) 전체를 하나의 .industry-theme로 통일했다(사용자 확인).
-export default async function AdminPage() {
+type SearchParams = Promise<{ driveUploadConnected?: string; driveUploadError?: string }>;
+
+export default async function AdminPage({ searchParams }: { searchParams: SearchParams }) {
   const { supabase } = await requireAdminClient();
+  const { driveUploadConnected, driveUploadError } = await searchParams;
 
   const { data: profiles } = await supabase
     .from("profiles")
     .select("*")
     .order("created_at", { ascending: false });
+
+  // google_drive_upload_connection은 RLS 정책이 없어(service_role만 접근) admin
+  // 클라이언트로 조회해야 한다 — 다른 테이블처럼 세션 클라이언트로는 항상 빈 결과다.
+  const { data: driveConnection } = await createAdminClient()
+    .from("google_drive_upload_connection")
+    .select("google_email, connected_at")
+    .eq("id", true)
+    .maybeSingle();
 
   return (
     <div className="industry-theme" style={{ padding: "var(--space-8) var(--space-6)" }}>
@@ -37,6 +49,55 @@ export default async function AdminPage() {
         </p>
 
         <RegisterUserForm />
+
+        <div style={{ marginTop: "var(--space-9)" }}>
+          <p style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", opacity: 0.55, margin: "0 0 var(--space-3)" }}>
+            첨부파일 업로드용 구글드라이브 연결
+          </p>
+          {driveUploadConnected && (
+            <p style={{ fontSize: 12, color: "var(--color-accent-700)", margin: "0 0 var(--space-2)" }}>
+              연결되었습니다.
+            </p>
+          )}
+          {driveUploadError && (
+            <p style={{ fontSize: 12, color: "var(--color-danger, #b3261e)", margin: "0 0 var(--space-2)" }}>
+              연결에 실패했습니다({driveUploadError}). 다시 시도해 주세요.
+            </p>
+          )}
+          <div
+            style={{
+              border: "1px solid var(--color-divider)",
+              padding: "var(--space-4)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: "var(--space-4)",
+              flexWrap: "wrap",
+              maxWidth: 560,
+            }}
+          >
+            <div style={{ fontSize: 13 }}>
+              {driveConnection ? (
+                <>
+                  <div>연결된 계정: <strong>{driveConnection.google_email}</strong></div>
+                  <div className="text-muted" style={{ fontSize: 11, marginTop: 4 }}>
+                    Work Journal·Memo Board·제조사 관리 첨부파일이 이 계정의 구글드라이브로 올라갑니다.
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div>아직 연결되지 않았습니다.</div>
+                  <div className="text-muted" style={{ fontSize: 11, marginTop: 4 }}>
+                    연결 전까지는 첨부파일이 Supabase Storage로 업로드됩니다.
+                  </div>
+                </>
+              )}
+            </div>
+            <a href="/auth/google-drive-upload/connect" className="btn btn-primary" style={{ whiteSpace: "nowrap" }}>
+              {driveConnection ? "다시 연결" : "연결하기"}
+            </a>
+          </div>
+        </div>
 
         <div style={{ marginTop: "var(--space-9)" }}>
           <p style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", opacity: 0.55, margin: "0 0 var(--space-3)" }}>

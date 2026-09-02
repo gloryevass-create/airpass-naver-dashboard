@@ -121,21 +121,30 @@ HTML 템플릿(`buildMaterialEmailHtml`)과는 완전히 별개다(그건 안 �
 
 세 기능(`vendor_documents`, `work_journal_attachments`, `ad_strategy_memo_attachments`)의
 첨부파일은 원래 전부 Supabase Storage에 올라갔는데, Work Journal에 임시로 대량 업로드된
-파일 때문에 Storage 용량(무료 한도)이 초과돼(2026-09-02) 회사 공용 구글드라이브(서비스
-계정)로 전환했다. 자료메일발송(`lib/googleDriveMaterials.ts`)이 쓰는 것과 같은 서비스
-계정 자격증명(`GOOGLE_SERVICE_ACCOUNT_EMAIL`/`GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY`)을
-재사용하지만, 그건 "고정 카탈로그 폴더를 읽기만" 하는 목적이라 별도 모듈
-`lib/googleDriveAttachments.ts`로 분리했다 — 이 모듈은 `GOOGLE_DRIVE_ATTACHMENTS_ROOT_FOLDER_ID`
-루트 폴더 아래 서비스별 하위 폴더("Work Journal"/"Memo Board"/"제조사 관리")에 쓰기
-(업로드·삭제)까지 한다.
+파일 때문에 Storage 용량(무료 한도)이 초과돼(2026-09-02) 회사 공용 구글드라이브로
+전환했다 — `lib/googleDriveAttachments.ts`가 `GOOGLE_DRIVE_ATTACHMENTS_ROOT_FOLDER_ID`
+루트 폴더 아래 서비스별 하위 폴더("Work Journal"/"Memo Board"/"제조사 관리")에 업로드·삭제한다.
 
+- **서비스 계정이 아니라 실제 계정 OAuth로 인증한다(2026-09-03 확정)**: 처음엔 자료메일발송
+  (`lib/googleDriveMaterials.ts`)과 같은 서비스 계정으로 시도했는데, **구글 서비스 계정은
+  자체 저장용량이 0이라 파일 생성(쓰기)이 `storageQuotaExceeded`로 원천 차단된다**(읽기·
+  공유만 가능 — 자료메일발송은 기존 파일을 읽기만 해서 이 문제가 안 보였다). 그래서 실제
+  구글 계정(`airpass.ai@gmail.com`)의 OAuth 연결로 바꿨다 — `google_drive_upload_connection`
+  (0055, RLS 정책 없음·`service_role`만 접근 가능한 싱글턴 테이블, 회사 전체가 공유하는
+  연결 하나뿐)에 refresh_token을 저장하고, 업로드 용량은 그 계정의 개인 구글 드라이브
+  용량(무료 15GB)을 그대로 쓴다. 연결은 `/dashboard/admin`의 "첨부파일 업로드용
+  구글드라이브 연결" 카드에서 관리자만 할 수 있다(`app/auth/google-drive-upload/{connect,callback}`,
+  개인 Google 캘린더 연동과 같은 OAuth 코드 패턴이지만 사용자별이 아니라 회사 전체가
+  공유하는 연결이라는 점이 다르다 — 같은 OAuth 클라이언트 자격증명
+  `GOOGLE_CALENDAR_CLIENT_ID`/`SECRET`을 재사용하되 scope만 `drive`로 다르게 요청한다).
+  `isGoogleDriveAttachmentsConfigured()`는 이제 DB를 조회해야 해서(연결 존재 여부) 비동기
+  함수다 — 예전(동기 상수) 코드를 참고하지 말 것.
 - **하위 호환(무마이그레이션)**: 세 테이블 모두 `storage_path`를 nullable로 바꾸고
   `drive_file_id`를 추가했다(0054) — 기존에 이미 올라간 파일은 손대지 않고 그대로
-  `storage_path`/Supabase signed URL로 계속 열람되고, `GOOGLE_DRIVE_ATTACHMENTS_ROOT_FOLDER_ID`가
-  설정된 시점 이후 새로 올리는 파일만 `drive_file_id`를 쓴다. 한 행에는 둘 중 하나만
-  채워진다 — 조회/삭제 코드는 항상 `drive_file_id` 유무로 분기한다. 이 환경변수가 비어
-  있으면(`isGoogleDriveAttachmentsConfigured`) 예전처럼 Supabase Storage 업로드로 자동
-  폴백한다.
+  `storage_path`/Supabase signed URL로 계속 열람되고, 루트 폴더 환경변수가 설정되고
+  구글드라이브 계정이 연결된 시점 이후 새로 올리는 파일만 `drive_file_id`를 쓴다. 한
+  행에는 둘 중 하나만 채워진다 — 조회/삭제 코드는 항상 `drive_file_id` 유무로 분기한다.
+  둘 중 하나라도 안 갖춰지면 예전처럼 Supabase Storage 업로드로 자동 폴백한다.
 - 구글드라이브 파일은 업로드 시 "링크가 있는 모든 사용자" 읽기 권한을 한 번만 부여하면
   이후 만료되지 않는 고정 URL(`driveFileViewUrl`)로 바로 열람된다 — Supabase Storage의
   signed URL(TTL 있음, 조회마다 API 호출 필요)과 달리 개별 조회 시점의 API 호출이 없다.

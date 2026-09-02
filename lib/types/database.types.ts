@@ -87,6 +87,36 @@ export type Database = {
         };
         Relationships: [];
       };
+      google_drive_upload_connection: {
+        Row: {
+          id: boolean;
+          google_email: string;
+          refresh_token: string;
+          access_token: string | null;
+          access_token_expires_at: string | null;
+          connected_by: string | null;
+          connected_at: string;
+        };
+        Insert: {
+          id?: boolean;
+          google_email: string;
+          refresh_token: string;
+          access_token?: string | null;
+          access_token_expires_at?: string | null;
+          connected_by?: string | null;
+          connected_at?: string;
+        };
+        Update: {
+          id?: boolean;
+          google_email?: string;
+          refresh_token?: string;
+          access_token?: string | null;
+          access_token_expires_at?: string | null;
+          connected_by?: string | null;
+          connected_at?: string;
+        };
+        Relationships: [];
+      };
       keywords: {
         Row: {
           id: string;
