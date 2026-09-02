@@ -154,7 +154,7 @@ function EntryForm({
               <p className="text-muted" style={{ fontSize: 12, margin: "0 0 var(--space-1)" }}>
                 기존 첨부파일
               </p>
-              <AttachmentList entry={entry} variant="inline" />
+              <AttachmentList entry={entry} />
             </div>
           )}
         </div>
@@ -174,29 +174,25 @@ function EntryForm({
 
 /* ─────────────────────────── 첨부파일 ─────────────────────────── */
 
-/** variant="toggle"(기본, 목록 카드)는 버튼을 눌러야 URL을 불러오고, "inline"(수정
- * 폼)은 폼이 뜨자마자 바로 불러와 항상 펼쳐 보여준다 — 수정 폼에서 기존 첨부파일이
- * 안 보인다는 혼선이 있어(2026-09-03) 추가했다. */
-function AttachmentList({ entry, variant = "toggle" }: { entry: WorkJournalEntry; variant?: "toggle" | "inline" }) {
+/** 카드가 접혀 있어도(펼치지 않아도) 첨부파일명·링크가 바로 보여야 한다는 피드백으로
+ * (2026-09-03) 클릭해서 불러오는 방식을 없애고 항상 마운트 시 바로 불러온다 — 목록
+ * 카드와 수정 폼 양쪽에서 동일하게 쓴다. */
+function AttachmentList({ entry }: { entry: WorkJournalEntry }) {
   const [urls, setUrls] = useState<Record<string, string> | null>(null);
   const [loading, setLoading] = useState(false);
   const [, startTransition] = useTransition();
 
-  async function load() {
-    if (urls || loading) return;
-    setLoading(true);
-    const result = await getWorkJournalAttachmentUrls(
-      entry.attachments.map((a) => ({ id: a.id, storagePath: a.storagePath, driveFileId: a.driveFileId }))
-    );
-    setUrls(result);
-    setLoading(false);
-  }
-
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
-    if (variant === "inline") void load();
+    setLoading(true);
+    getWorkJournalAttachmentUrls(
+      entry.attachments.map((a) => ({ id: a.id, storagePath: a.storagePath, driveFileId: a.driveFileId }))
+    ).then((result) => {
+      setUrls(result);
+      setLoading(false);
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [variant, entry.id]);
+  }, [entry.id]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
   function handleDelete(attachmentId: string) {
@@ -209,15 +205,10 @@ function AttachmentList({ entry, variant = "toggle" }: { entry: WorkJournalEntry
   if (entry.attachments.length === 0) return null;
 
   return (
-    <div style={{ marginTop: "var(--space-2)", paddingLeft: variant === "inline" ? 0 : "var(--space-3)" }}>
-      {variant === "toggle" && (
-        <button type="button" className="btn btn-ghost" onClick={load} style={{ paddingInline: 0, fontSize: 12 }}>
-          {loading ? "불러오는 중..." : urls ? `첨부파일 ${entry.attachments.length}개` : `첨부파일 ${entry.attachments.length}개 보기`}
-        </button>
-      )}
-      {variant === "inline" && loading && !urls && (
+    <div style={{ marginTop: "var(--space-2)" }}>
+      {loading && !urls && (
         <p className="text-muted" style={{ fontSize: 12, margin: 0 }}>
-          기존 첨부파일 불러오는 중...
+          첨부파일 불러오는 중...
         </p>
       )}
       {urls && (
@@ -313,7 +304,7 @@ function EntryCard({ entry, onEdit }: { entry: WorkJournalEntry; onEdit: () => v
       {displayLines.map((line, i) => (
         <RenderLine key={i} line={line} />
       ))}
-      {expanded && <AttachmentList entry={entry} />}
+      {entry.attachments.length > 0 && <AttachmentList entry={entry} />}
     </div>
   );
 }
