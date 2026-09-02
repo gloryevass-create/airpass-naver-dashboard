@@ -110,24 +110,20 @@ function linkColumn(title: string, links: { label: string; href: string }[]): st
   `;
 }
 
-// 산출내역을 첨부하지 않아도 이 섹션 전체(제목·3개 안내 카드)는 항상 보여주고,
-// 견적서 하이라이트 박스만 "견적내용이 없습니다."로 바뀐다 — 예전엔 산출내역이
-// 없으면 섹션이 통째로 사라졌는데, 그 3개 카드는 산출내역과 무관한 일반 서비스
-// 안내라 항상 노출하는 쪽으로 바꿨다(사용자 확인, 2026-08-30).
+// 2026-08-30엔 산출내역이 없어도 이 섹션(제목·3개 안내 카드)을 항상 보여주고
+// 견적서 하이라이트 박스만 "견적내용이 없습니다."로 바꿨는데, 빈 박스가 오히려
+// 어색하다는 피드백으로 2026-09-03 다시 원래대로 되돌렸다 — 산출내역을 첨부하지
+// 않으면 섹션 전체(3개 카드 포함)가 통째로 빠진다.
 function quotationSectionHtml(quotation: MaterialEmailQuotation): string {
-  const quotationBoxHtml = quotation
-    ? `
-        <div style="font-size:15px;font-weight:600;color:${COLOR.text};margin-bottom:10px;">견적서 원본 PDF 열람 · 다운로드</div>
-        <a href="${escapeHtml(quotation.printUrl)}" style="display:inline-block;background:${COLOR.accent};color:#ffffff;border-radius:0;padding:10px 18px;font-size:13.5px;font-weight:600;font-family:${FONT_HEADING};text-decoration:none;">${escapeHtml(quotation.quoteNumber)} 견적서 보기 →</a>
-    `
-    : `<div style="font-size:14.5px;color:${COLOR.neutral700};">견적내용이 없습니다.</div>`;
+  if (!quotation) return "";
 
   return `
       <h2 style="font-family:${FONT_HEADING};font-weight:600;font-size:22px;color:${COLOR.text};margin:0 0 6px;">견적 및 제품자료 안내</h2>
       <div style="width:36px;height:3px;background:${COLOR.accent};margin-bottom:18px;"></div>
 
       <div style="border:1px solid ${COLOR.divider};background:#ffffff;padding:18px 22px;margin-bottom:28px;">
-        ${quotationBoxHtml}
+        <div style="font-size:15px;font-weight:600;color:${COLOR.text};margin-bottom:10px;">견적서 원본 PDF 열람 · 다운로드</div>
+        <a href="${escapeHtml(quotation.printUrl)}" style="display:inline-block;background:${COLOR.accent};color:#ffffff;border-radius:0;padding:10px 18px;font-size:13.5px;font-weight:600;font-family:${FONT_HEADING};text-decoration:none;">${escapeHtml(quotation.quoteNumber)} 견적서 보기 →</a>
       </div>
 
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:44px;">
