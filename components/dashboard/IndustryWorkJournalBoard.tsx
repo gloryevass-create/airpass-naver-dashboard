@@ -78,14 +78,14 @@ function EntryForm({
   entry: WorkJournalEntry | null;
   members: string[];
   currentUserName: string | null;
-  onDone: () => void;
+  onDone: (saved: boolean) => void;
 }) {
   const action = entry ? updateWorkJournalEntry.bind(null, entry.id) : createWorkJournalEntry;
   const [state, formAction, pending] = useActionState(action, undefined);
   const wasPendingRef = useRef(false);
 
   useEffect(() => {
-    if (wasPendingRef.current && !pending && !state?.error) onDone();
+    if (wasPendingRef.current && !pending && !state?.error) onDone(true);
     wasPendingRef.current = pending;
   }, [pending, state, onDone]);
 
@@ -150,9 +150,12 @@ function EntryForm({
             이미지·PDF·Office 문서·ZIP, 파일당 12MB 이하, 최대 5개
           </p>
           {entry && entry.attachments.length > 0 && (
-            <p className="text-muted" style={{ fontSize: 12, margin: "var(--space-1) 0 0" }}>
-              기존 첨부파일은 상세 화면에서 개별적으로 삭제할 수 있습니다.
-            </p>
+            <div style={{ marginTop: "var(--space-2)" }}>
+              <p className="text-muted" style={{ fontSize: 12, margin: "0 0 var(--space-1)" }}>
+                기존 첨부파일
+              </p>
+              <AttachmentList entry={entry} variant="inline" />
+            </div>
           )}
         </div>
         {state?.error && <p style={{ color: "var(--color-accent-900)", fontSize: 13, marginTop: "var(--space-2)" }}>{state.error}</p>}
@@ -160,7 +163,7 @@ function EntryForm({
           <button type="submit" className="btn btn-primary blueprint" disabled={pending}>
             {pending ? "저장 중..." : entry ? "수정 저장" : "일지 추가"}
           </button>
-          <button type="button" className="btn btn-ghost" onClick={onDone}>
+          <button type="button" className="btn btn-ghost" onClick={() => onDone(false)}>
             취소
           </button>
         </div>
@@ -171,7 +174,10 @@ function EntryForm({
 
 /* ─────────────────────────── 첨부파일 ─────────────────────────── */
 
-function AttachmentList({ entry }: { entry: WorkJournalEntry }) {
+/** variant="toggle"(기본, 목록 카드)는 버튼을 눌러야 URL을 불러오고, "inline"(수정
+ * 폼)은 폼이 뜨자마자 바로 불러와 항상 펼쳐 보여준다 — 수정 폼에서 기존 첨부파일이
+ * 안 보인다는 혼선이 있어(2026-09-03) 추가했다. */
+function AttachmentList({ entry, variant = "toggle" }: { entry: WorkJournalEntry; variant?: "toggle" | "inline" }) {
   const [urls, setUrls] = useState<Record<string, string> | null>(null);
   const [loading, setLoading] = useState(false);
   const [, startTransition] = useTransition();
@@ -186,6 +192,13 @@ function AttachmentList({ entry }: { entry: WorkJournalEntry }) {
     setLoading(false);
   }
 
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    if (variant === "inline") void load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [variant, entry.id]);
+  /* eslint-enable react-hooks/set-state-in-effect */
+
   function handleDelete(attachmentId: string) {
     if (!window.confirm("이 첨부파일을 삭제할까요?")) return;
     startTransition(() => {
@@ -196,10 +209,17 @@ function AttachmentList({ entry }: { entry: WorkJournalEntry }) {
   if (entry.attachments.length === 0) return null;
 
   return (
-    <div style={{ marginTop: "var(--space-2)", paddingLeft: "var(--space-3)" }}>
-      <button type="button" className="btn btn-ghost" onClick={load} style={{ paddingInline: 0, fontSize: 12 }}>
-        {loading ? "불러오는 중..." : urls ? `첨부파일 ${entry.attachments.length}개` : `첨부파일 ${entry.attachments.length}개 보기`}
-      </button>
+    <div style={{ marginTop: "var(--space-2)", paddingLeft: variant === "inline" ? 0 : "var(--space-3)" }}>
+      {variant === "toggle" && (
+        <button type="button" className="btn btn-ghost" onClick={load} style={{ paddingInline: 0, fontSize: 12 }}>
+          {loading ? "불러오는 중..." : urls ? `첨부파일 ${entry.attachments.length}개` : `첨부파일 ${entry.attachments.length}개 보기`}
+        </button>
+      )}
+      {variant === "inline" && loading && !urls && (
+        <p className="text-muted" style={{ fontSize: 12, margin: 0 }}>
+          기존 첨부파일 불러오는 중...
+        </p>
+      )}
       {urls && (
         <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-2)", marginTop: "var(--space-2)" }}>
           {entry.attachments.map((a) => {
@@ -311,6 +331,16 @@ export function IndustryWorkJournalBoard({
 }) {
   const [authorFilter, setAuthorFilter] = useState("전체");
   const [editingId, setEditingId] = useState<string | null | "new">(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const successTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function closeForm(saved: boolean, wasNew: boolean) {
+    setEditingId(null);
+    if (!saved) return;
+    if (successTimerRef.current) clearTimeout(successTimerRef.current);
+    setSuccessMessage(wasNew ? "일지가 등록되었습니다." : "일지가 수정되었습니다.");
+    successTimerRef.current = setTimeout(() => setSuccessMessage(null), 3000);
+  }
 
   const authors = useMemo(() => {
     const set = new Set([...members, ...entries.map((e) => e.authorName)]);
@@ -361,11 +391,26 @@ export function IndustryWorkJournalBoard({
         </button>
       </div>
 
+      {successMessage && (
+        <div
+          className="card blueprint"
+          style={{
+            marginBottom: "var(--space-4)",
+            padding: "var(--space-3) var(--space-4)",
+            background: "var(--color-accent-100)",
+            color: "var(--color-accent-900)",
+            fontSize: 13,
+          }}
+        >
+          {successMessage}
+        </div>
+      )}
+
       {editingId === "new" && (
-        <EntryForm entry={null} members={members} currentUserName={currentUserName} onDone={() => setEditingId(null)} />
+        <EntryForm entry={null} members={members} currentUserName={currentUserName} onDone={(saved) => closeForm(saved, true)} />
       )}
       {editingEntry && (
-        <EntryForm entry={editingEntry} members={members} currentUserName={currentUserName} onDone={() => setEditingId(null)} />
+        <EntryForm entry={editingEntry} members={members} currentUserName={currentUserName} onDone={(saved) => closeForm(saved, false)} />
       )}
 
       {filtered.length === 0 ? (
