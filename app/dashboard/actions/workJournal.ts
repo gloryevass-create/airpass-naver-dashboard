@@ -83,9 +83,10 @@ export async function createWorkJournalEntry(
   for (const file of files) {
     if (isGoogleDriveAttachmentsConfigured) {
       const bytes = new Uint8Array(await file.arrayBuffer());
-      const fileId = await uploadAttachmentToDrive("journal", file.name, bytes, file.type).catch(
-        () => null
-      );
+      const fileId = await uploadAttachmentToDrive("journal", file.name, bytes, file.type).catch((e) => {
+        console.error(`[createWorkJournalEntry] 첨부파일 업로드 실패 (${file.name}):`, e instanceof Error ? e.message : e);
+        return null;
+      });
       if (!fileId) continue;
       await supabase.from("work_journal_attachments").insert({
         entry_id: entry.id,
