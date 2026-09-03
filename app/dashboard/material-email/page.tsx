@@ -1,5 +1,4 @@
 import "@/components/industryTheme.css";
-import Link from "next/link";
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { getMaterialEmailLogs } from "@/lib/queries/materialEmailLogs";
 import { getQuotationSummaries } from "@/lib/queries/quotations";
@@ -7,6 +6,7 @@ import { isGoogleDriveConfigured, listMaterialFiles } from "@/lib/googleDriveMat
 import { isMaterialEmailConfigured } from "@/lib/materialEmail";
 import { matchProductMaterialFiles } from "@/lib/materialEmailTemplate";
 import { MaterialEmailForm } from "@/components/dashboard/MaterialEmailForm";
+import { SentMaterialEmailPreviewButton } from "@/components/dashboard/SentMaterialEmailPreviewButton";
 
 // 서버 컴포넌트(Vercel UTC 런타임)라 timeZone을 명시하지 않으면 실제 한국시간보다
 // 9시간 느리게 표시된다(2026-09-03 관리자 페이지 로그인 기록에서 신고).
@@ -113,12 +113,7 @@ export default async function MaterialEmailPage() {
           {logs.map((l) => (
             <div key={l.id} style={{ border: "1px solid var(--color-divider)", padding: "var(--space-3)", fontSize: 13 }}>
               <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-                <Link
-                  href={`/dashboard/material-email/${l.id}`}
-                  style={{ fontWeight: 600, color: "var(--color-accent-700)", textDecoration: "underline" }}
-                >
-                  {l.subject}
-                </Link>
+                <SentMaterialEmailPreviewButton logId={l.id} subject={l.subject} />
                 <span className="text-muted" style={{ fontSize: 11 }}>
                   {l.senderEmail} · {formatDateTime(l.createdAt)}
                 </span>

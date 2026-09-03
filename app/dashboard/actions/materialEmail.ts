@@ -6,8 +6,9 @@ import { requireAuthedClient } from "@/lib/supabase/authed";
 import { ensureFileShared, listMaterialFiles } from "@/lib/googleDriveMaterials";
 import { sendMaterialEmail as sendMaterialEmailViaResend } from "@/lib/materialEmail";
 import { DEFAULT_MATERIAL_EMAIL_SUBJECT, DEFAULT_MATERIAL_EMAIL_MESSAGE } from "@/lib/materialEmailDefaults";
-import { matchProductMaterialFiles, type MaterialEmailProductLink } from "@/lib/materialEmailTemplate";
+import { buildMaterialEmailHtml, isVideoFileName, matchProductMaterialFiles, type MaterialEmailProductLink } from "@/lib/materialEmailTemplate";
 import { getQuotation } from "@/lib/queries/quotations";
+import { getMaterialEmailLogById } from "@/lib/queries/materialEmailLogs";
 import type { AiMaterialEmailDraft } from "@/lib/aiCommand";
 
 const PATH = "/dashboard/material-email";
@@ -176,4 +177,44 @@ export async function sendMaterialEmailFromAiDraft(draft: AiMaterialEmailDraft):
   const fileIds = (matched.length > 0 ? matched : allFiles).map((f) => f.id);
 
   return performSend(supabase, user, { recipients, subject, message, fileIds, quotationId: null });
+}
+
+/** 발송 이력의 "보낸 메일 보기" 미리보기창(app/dashboard/material-email/page.tsx)이
+ * 호출한다 — 이력에 저장된 제목·안내문·자료 목록·산출내역으로 실제 발송 때와 같은
+ * buildMaterialEmailHtml을 다시 호출해 메일 본문 HTML을 재구성한다. 원문 HTML 자체를
+ * 저장해두지 않아서 완전히 그 순간 그대로는 아니다 — 발신자 서명(이름·직함·핸드폰)과
+ * 회사소개 자료 링크는 지금 시점 기준으로 다시 만들어지고, 문서/동영상 구분은
+ * mimeType을 안 남겨서 파일명 확장자로 근사한다(2026-09-03). */
+export async function getSentMaterialEmailHtml(logId: string): Promise<string | null> {
+  const { supabase } = await requireAuthedClient();
+
+  const log = await getMaterialEmailLogById(supabase, logId);
+  if (!log) return null;
+
+  const [{ data: senderProfile }, quotation, productLinks, baseUrl] = await Promise.all([
+    supabase.from("profiles").select("name, title, phone").eq("id", log.senderId).maybeSingle(),
+    log.quotationId ? getQuotation(supabase, log.quotationId) : Promise.resolve(null),
+    resolveProductLinks().catch(() => []),
+    resolveBaseUrl(),
+  ]);
+
+  const files = log.fileNames.map((name, i) => ({ name, link: log.fileLinks[i] ?? "#" }));
+  const documents = files.filter((f) => !isVideoFileName(f.name));
+  const videos = files.filter((f) => isVideoFileName(f.name));
+
+  return buildMaterialEmailHtml({
+    subject: log.subject,
+    message: log.message,
+    senderName: senderProfile?.name ?? log.senderEmail,
+    senderTitle: senderProfile?.title ?? null,
+    senderEmail: log.senderEmail,
+    senderPhone: senderProfile?.phone ?? null,
+    logoUrl: `${baseUrl}/airpass-logo.png`,
+    documents,
+    videos,
+    quotation: quotation
+      ? { quoteNumber: quotation.quoteNumber, customerName: quotation.customerName, printUrl: `${baseUrl}/quote/${quotation.id}` }
+      : null,
+    productLinks,
+  });
 }
