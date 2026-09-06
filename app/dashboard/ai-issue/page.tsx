@@ -1,6 +1,7 @@
 import "@/components/industryTheme.css";
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { getAiIssues } from "@/lib/queries/aiIssues";
+import { AiHubTabs } from "@/components/dashboard/AiHubTabs";
 
 function formatDate(dateStr: string): string {
   return new Date(`${dateStr}T00:00:00`).toLocaleDateString("ko-KR", {
@@ -24,6 +25,7 @@ export default async function AiIssuePage() {
 
   return (
     <div className="industry-theme" style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 900, margin: "0 auto" }}>
+      <AiHubTabs />
       <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M12 9v4M12 17h.01" />

@@ -7,12 +7,22 @@ import { NavIcon, type IconName } from "@/components/icons/NavIcon";
 import { useMobileNav } from "@/components/MobileNavContext";
 import "./dashboardSidebarTheme.css";
 
-type LeafItem = { href: string; label: string; icon: IconName };
+type LeafItem = { href: string; label: string; icon: IconName; activePrefix?: string };
 type GroupItem = { label: string; icon: IconName; children: LeafItem[] };
 
 function isActivePath(pathname: string | null, href: string): boolean {
   if (!pathname) return false;
   return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+// AI HUB는 AI Tools/AI Review/AI Issue 세 라우트를 탭으로 묶은 단일 사이드바
+// 항목이라(2026-09-06, 사이드바 세로 길이를 줄이기 위해 그룹+자식 3개를 한 줄로
+// 압축), href 하나만으로는 세 라우트 중 어디에 있든 활성 표시가 안 된다 —
+// activePrefix가 있으면 그 접두사로 대신 판정한다.
+function isItemActive(pathname: string | null, item: LeafItem): boolean {
+  if (!pathname) return false;
+  if (item.activePrefix) return pathname.startsWith(item.activePrefix);
+  return isActivePath(pathname, item.href);
 }
 
 // WORKSPACE는 사용자가 Claude Design으로 만든 사이드바 디자인("관리자 페이지
@@ -28,18 +38,13 @@ const TOP_ITEMS: LeafItem[] = [
   { href: "/dashboard/memos", label: "Memo Board", icon: "clipboard" },
   { href: "/dashboard/work-journal", label: "Work Journal", icon: "chat" },
   { href: "/dashboard/meeting-notes", label: "Meeting Notes", icon: "document" },
+  // AI Tools/AI Review/AI Issue 세 라우트를 한 항목으로 묶는다 — 각 페이지 상단
+  // 탭(components/dashboard/AiHubTabs.tsx)으로 서로 이동한다(2026-09-06, 사이드바가
+  // 너무 길어진다는 피드백으로 그룹+자식 3줄 대신 1줄로 압축).
+  { href: "/dashboard/ai-tools", label: "AI HUB", icon: "sparkle", activePrefix: "/dashboard/ai-" },
 ];
 
 const GROUPS: GroupItem[] = [
-  {
-    label: "AI HUB",
-    icon: "sparkle",
-    children: [
-      { href: "/dashboard/ai-tools", label: "AI Tools", icon: "link" },
-      { href: "/dashboard/ai-review", label: "AI Review", icon: "document" },
-      { href: "/dashboard/ai-issue", label: "AI Issue", icon: "alert" },
-    ],
-  },
   {
     label: "영업지원",
     icon: "wallet",
@@ -208,7 +213,7 @@ export function DashboardSidebar({ latestDate }: { latestDate: string | null }) 
 
           <div className="flex flex-col gap-0.5 px-1">
             {TOP_ITEMS.map((item) => (
-              <TopRow key={item.href} item={item} active={isActivePath(pathname, item.href)} showLabel={showLabels} />
+              <TopRow key={item.href} item={item} active={isItemActive(pathname, item)} showLabel={showLabels} />
             ))}
           </div>
 

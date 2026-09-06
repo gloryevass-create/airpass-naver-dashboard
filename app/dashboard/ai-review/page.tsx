@@ -2,6 +2,7 @@ import "@/components/industryTheme.css";
 import Link from "next/link";
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { getAiReviews } from "@/lib/queries/aiReviews";
+import { AiHubTabs } from "@/components/dashboard/AiHubTabs";
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" });
@@ -13,6 +14,7 @@ export default async function AiReviewListPage() {
 
   return (
     <div className="industry-theme" style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 900, margin: "0 auto" }}>
+      <AiHubTabs />
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-4)", flexWrap: "wrap" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">

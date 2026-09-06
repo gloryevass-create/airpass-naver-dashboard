@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import type { AiTool } from "@/lib/queries/aiTools";
 import { createAiTool, updateAiTool, deleteAiTool } from "@/app/dashboard/actions/aiTools";
+import { AiHubTabs } from "@/components/dashboard/AiHubTabs";
 
 // Work Journal과 같은 방식(목록 위에 인라인 카드로 등록/수정 폼이 펼쳐지는 구조)의
 // Industry 테마 화면 — AI 관련 링크를 팀원 누구나 등록해 공유한다(2026-09-06,
@@ -103,6 +104,7 @@ export function AiToolsBoard({ tools, currentUserId }: { tools: AiTool[]; curren
 
   return (
     <div className="industry-theme" style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 900, margin: "0 auto" }}>
+      <AiHubTabs />
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-4)", flexWrap: "wrap" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
