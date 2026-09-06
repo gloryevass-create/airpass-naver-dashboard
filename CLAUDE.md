@@ -459,6 +459,47 @@ URL 발급이 필요한데 그마저도 새 첨부는 거의 다 드라이브를
   (`ad_strategy_memo_comments`)과 완전히 같은 구조 — 삭제 UI는 없고, DELETE
   RLS 정책은 미팅노트 삭제 시 cascade가 막히지 않게 하려는 용도로만 있다.
 
+## AI HUB
+
+사이드바 새 그룹(2026-09-06) — AI Tools/AI Review/AI Issue 세 메뉴.
+
+- **AI Tools**(`/dashboard/ai-tools`): AI 관련 링크를 팀원 누구나 등록하는
+  가벼운 CRUD(`ai_tools` 테이블) — 제목·URL·설명만 있고 첨부파일·댓글은
+  없다. Work Journal처럼 목록 위에 인라인 카드로 등록/수정 폼이 펼쳐지는
+  구조(`components/dashboard/AiToolsBoard.tsx`). URL에 스킴이 없으면
+  `https://`를 자동으로 붙인다(`normalizeUrl`).
+- **AI Review**(`/dashboard/ai-review`): **Meeting Notes를 통째로 복제**했다
+  (`lib/queries/aiReviews.ts`/`app/dashboard/actions/aiReviews.ts`/
+  `components/AiReviewForm.tsx`/`AiReviewCommentForm.tsx` — 파일 하나하나가
+  `meetingNotes.ts`/`MeetingNoteForm.tsx` 등과 거의 line-for-line 동일).
+  마크다운 파일 업로드/붙여넣기, `MarkdownContent`로 렌더링+목차(TOC),
+  팀원 의견(댓글)까지 전부 동일 — 미팅 전용 필드인 참석자·장소만 뺐다.
+  마크다운 렌더링 컴포넌트(`components/dashboard/MarkdownContent.tsx`)는
+  이미 범용으로 만들어져 있어 그대로 재사용했다(원래 Meeting Notes 전용으로
+  이름 붙이지 않은 이유).
+- **AI Issue**(`/dashboard/ai-issue`): 사람이 직접 쓰는 화면이 아니라
+  **매일 아침 자동으로 채워지는 읽기 전용 피드**다. `news_articles`(교육관련
+  뉴스)처럼 네이버 뉴스 검색 API로 모으긴 하지만, **사용자가 관리하는
+  키워드 목록이 아니라 고정된 검색어 세트**로 AI 업계 전반을 넓게
+  훑고(`lib/server/aiIssueCandidates.ts`, 검색어 8개·최근 36시간 이내만),
+  그 후보 풀을 Claude에게 통째로 보여준 뒤 "실제로 이슈인 것"만 최대
+  10개 골라 한 줄 요약과 함께 받는다(`lib/server/aiIssueSelection.ts`,
+  `lib/newsHotKeywordsAi.ts`와 같은 `fetch` + tool_use 직접 호출 패턴 —
+  이 프로젝트엔 `@anthropic-ai/sdk` 의존성이 없다). `app/api/cron/ai-issues/route.ts`가
+  이 둘을 이어붙이고 `ai_issues`(0059, `link` unique)에 upsert
+  (`ignoreDuplicates: true`)한다 — 같은 기사가 다른 날 다시 뽑혀도 조용히
+  건너뛴다.
+  - **호출 경로**: `vercel.json`의 Cron(`0 23 * * *` UTC = 매일 08:00 KST)만
+    이 라우트를 부른다. Vercel이 자동으로 붙이는
+    `Authorization: Bearer $CRON_SECRET` 헤더로만 인증하고, 이 값이 없거나
+    틀리면 401 — 사람이 이 화면에서 직접 "지금 수집" 같은 버튼을 누르는
+    경로는 없다. `proxy.ts`의 `PUBLIC_PATHS`에 `/api/cron`을 추가해야
+    했다(세션 쿠키가 없는 서버-투-서버 호출이라 프록시의 로그인 체크를
+    통과 못 하고 `/login`으로 리다이렉트돼 버렸을 것).
+  - `ai_issues`에는 authenticated용 INSERT 정책 자체가 없다 — 오직
+    `service_role`(cron 라우트의 `createAdminClient()`)만 쓸 수 있다
+    (`news_articles`와 동일한 원칙).
+
 ## 폴더 구조
 
 ```

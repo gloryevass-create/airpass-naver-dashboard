@@ -1539,7 +1539,7 @@ export type Database = {
       notifications: {
         Row: {
           id: string;
-          type: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap" | "news_scrap" | "cooperation" | "marketing" | "quotation" | "meeting_note";
+          type: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap" | "news_scrap" | "cooperation" | "marketing" | "quotation" | "meeting_note" | "ai_review";
           title: string;
           message: string | null;
           link: string | null;
@@ -1547,7 +1547,7 @@ export type Database = {
         };
         Insert: {
           id?: string;
-          type: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap" | "news_scrap" | "cooperation" | "marketing" | "quotation" | "meeting_note";
+          type: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap" | "news_scrap" | "cooperation" | "marketing" | "quotation" | "meeting_note" | "ai_review";
           title: string;
           message?: string | null;
           link?: string | null;
@@ -1555,7 +1555,7 @@ export type Database = {
         };
         Update: {
           id?: string;
-          type?: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap" | "news_scrap" | "cooperation" | "marketing" | "quotation" | "meeting_note";
+          type?: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap" | "news_scrap" | "cooperation" | "marketing" | "quotation" | "meeting_note" | "ai_review";
           title?: string;
           message?: string | null;
           link?: string | null;
@@ -2093,6 +2093,132 @@ export type Database = {
           file_links?: string[];
           quotation_id?: string | null;
           quotation_quote_number?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      ai_tools: {
+        Row: {
+          id: string;
+          author_id: string;
+          author_email: string;
+          title: string;
+          url: string;
+          description: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          author_id: string;
+          author_email: string;
+          title: string;
+          url: string;
+          description?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          author_id?: string;
+          author_email?: string;
+          title?: string;
+          url?: string;
+          description?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      ai_reviews: {
+        Row: {
+          id: string;
+          author_id: string;
+          author_email: string;
+          title: string;
+          content: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          author_id: string;
+          author_email: string;
+          title: string;
+          content: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          author_id?: string;
+          author_email?: string;
+          title?: string;
+          content?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      ai_review_comments: {
+        Row: {
+          id: string;
+          review_id: string;
+          author_id: string;
+          author_email: string;
+          content: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          review_id: string;
+          author_id: string;
+          author_email: string;
+          content: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          review_id?: string;
+          author_id?: string;
+          author_email?: string;
+          content?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      ai_issues: {
+        Row: {
+          id: string;
+          title: string;
+          link: string;
+          description: string | null;
+          summary: string | null;
+          source_query: string | null;
+          published_at: string | null;
+          issue_date: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          link: string;
+          description?: string | null;
+          summary?: string | null;
+          source_query?: string | null;
+          published_at?: string | null;
+          issue_date?: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          link?: string;
+          description?: string | null;
+          summary?: string | null;
+          source_query?: string | null;
+          published_at?: string | null;
+          issue_date?: string;
           created_at?: string;
         };
         Relationships: [];

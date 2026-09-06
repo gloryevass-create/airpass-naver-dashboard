@@ -24,6 +24,7 @@ const TYPE_LABEL: Record<NotificationType, string> = {
   marketing: "마케팅",
   quotation: "산출내역",
   meeting_note: "미팅노트",
+  ai_review: "AI Review",
 };
 
 function relativeTime(iso: string): string {

@@ -32,6 +32,15 @@ const TOP_ITEMS: LeafItem[] = [
 
 const GROUPS: GroupItem[] = [
   {
+    label: "AI HUB",
+    icon: "sparkle",
+    children: [
+      { href: "/dashboard/ai-tools", label: "AI Tools", icon: "link" },
+      { href: "/dashboard/ai-review", label: "AI Review", icon: "document" },
+      { href: "/dashboard/ai-issue", label: "AI Issue", icon: "alert" },
+    ],
+  },
+  {
     label: "영업지원",
     icon: "wallet",
     children: [

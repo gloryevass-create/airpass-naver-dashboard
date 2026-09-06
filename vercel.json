@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/ai-issues",
+      "schedule": "0 23 * * *"
+    }
+  ]
+}

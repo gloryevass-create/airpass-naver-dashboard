@@ -1,0 +1,32 @@
+import "@/components/industryTheme.css";
+import Link from "next/link";
+import { requireAuthedClient } from "@/lib/supabase/authed";
+import { AiReviewForm } from "@/components/AiReviewForm";
+
+export default async function NewAiReviewPage() {
+  await requireAuthedClient();
+
+  return (
+    <div className="industry-theme" style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 800, margin: "0 auto" }}>
+      <Link
+        href="/dashboard/ai-review"
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 6,
+          color: "var(--color-accent-700)",
+          fontSize: 13,
+          textDecoration: "none",
+          marginBottom: "var(--space-5)",
+        }}
+      >
+        ← 목록으로
+      </Link>
+      <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 24, margin: "0 0 var(--space-1)" }}>리뷰 추가</h1>
+      <p style={{ margin: "0 0 var(--space-6)", opacity: 0.6, fontSize: 13 }}>
+        마크다운 파일을 올리거나, 내용을 복사해 붙여넣으세요.
+      </p>
+      <AiReviewForm />
+    </div>
+  );
+}

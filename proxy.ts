@@ -10,6 +10,10 @@ const PUBLIC_PATHS = [
   // 산출내역(견적) 고객 공유용 인쇄 페이지 — 자료메일발송으로 받은 링크를 로그인
   // 없이 열 수 있어야 한다(UUID를 아는 사람만 접근 가능, 사용자 확인 2026-08-28).
   "/quote",
+  // Vercel Cron이 호출하는 API 라우트 — 세션 쿠키가 없는 서버-투-서버 호출이라
+  // 여기서 막으면 안 되고, 라우트 자체의 CRON_SECRET 검증이 진짜 인증이다
+  // (app/api/cron/ai-issues/route.ts, 2026-09-06).
+  "/api/cron",
 ];
 
 function isPublicPath(pathname: string) {
