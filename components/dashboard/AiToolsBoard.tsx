@@ -4,6 +4,7 @@ import { useActionState, useEffect, useMemo, useRef, useState, useTransition } f
 import type { AiTool } from "@/lib/queries/aiTools";
 import { createAiTool, updateAiTool, deleteAiTool } from "@/app/dashboard/actions/aiTools";
 import { AiHubTabs } from "@/components/dashboard/AiHubTabs";
+import { SearchInput } from "@/components/dashboard/SearchInput";
 import { normalizeSearch } from "@/lib/normalizeSearch";
 
 // Work Journal과 같은 방식(목록 위에 인라인 카드로 등록/수정 폼이 펼쳐지는 구조)의
@@ -138,14 +139,7 @@ export function AiToolsBoard({ tools, currentUserId }: { tools: AiTool[]; curren
           팀에서 쓰는 AI 도구·서비스 링크를 함께 모읍니다.
         </p>
 
-        <input
-          type="search"
-          className="input"
-          placeholder="제목·설명·링크로 검색"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{ marginBottom: "var(--space-4)", maxWidth: 320 }}
-        />
+        <SearchInput value={search} onChange={setSearch} placeholder="제목·설명·링크로 검색" />
 
         {editingId === "new" && <ToolForm tool={null} onDone={() => setEditingId(null)} />}
         {editingTool && <ToolForm tool={editingTool} onDone={() => setEditingId(null)} />}

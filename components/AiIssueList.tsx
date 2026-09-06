@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { AiIssue } from "@/lib/queries/aiIssues";
+import { SearchInput } from "@/components/dashboard/SearchInput";
 import { normalizeSearch } from "@/lib/normalizeSearch";
 
 function formatDate(dateStr: string): string {
@@ -39,14 +40,7 @@ export function AiIssueList({ issues }: { issues: AiIssue[] }) {
 
   return (
     <>
-      <input
-        type="search"
-        className="input"
-        placeholder="제목·요약으로 검색"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        style={{ marginBottom: "var(--space-4)", maxWidth: 320 }}
-      />
+      <SearchInput value={search} onChange={setSearch} placeholder="제목·요약으로 검색" />
 
       {filtered.length === 0 ? (
         <div className="card blueprint" style={{ padding: "var(--space-8)", textAlign: "center" }}>

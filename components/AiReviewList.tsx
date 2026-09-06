@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import type { AiReviewListItem } from "@/lib/queries/aiReviews";
+import { SearchInput } from "@/components/dashboard/SearchInput";
 import { normalizeSearch } from "@/lib/normalizeSearch";
 
 function formatDate(iso: string): string {
@@ -22,14 +23,7 @@ export function AiReviewList({ reviews }: { reviews: AiReviewListItem[] }) {
 
   return (
     <>
-      <input
-        type="search"
-        className="input"
-        placeholder="제목·작성자로 검색"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        style={{ marginBottom: "var(--space-4)", maxWidth: 320 }}
-      />
+      <SearchInput value={search} onChange={setSearch} placeholder="제목·작성자로 검색" />
 
       {filtered.length === 0 ? (
         <div className="card blueprint" style={{ padding: "var(--space-8)", textAlign: "center" }}>
