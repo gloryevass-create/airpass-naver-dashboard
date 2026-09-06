@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/types/database.types";
 import { formatMember } from "@/lib/formatMember";
+import { resolveHistoryAttachmentUrls, type HistoryAttachment } from "@/lib/historyAttachments";
 
 type Client = SupabaseClient<Database>;
 
@@ -19,6 +20,7 @@ export type BusinessProjectV2HistoryEntry = {
   createdAt: string;
   updatedAt: string;
   isOwn: boolean;
+  attachments: HistoryAttachment[];
 };
 
 export type BusinessProjectV2 = {
@@ -66,7 +68,7 @@ export async function getBusinessProjectsV2(supabase: Client): Promise<BusinessP
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [{ data }, { data: comments }, { data: history }, authorDisplayById] = await Promise.all([
+  const [{ data }, { data: comments }, { data: history }, { data: attachments }, authorDisplayById] = await Promise.all([
     // 수정(단계 이동 포함)한 사업이 칸반 보드 맨 위로 오도록 생성일이 아니라
     // 최근 수정일 기준 최신순으로 정렬한다(사용자 확인, 2026-08-23).
     supabase.from("business_projects_v2").select("*").order("updated_at", { ascending: false }),
@@ -78,8 +80,20 @@ export async function getBusinessProjectsV2(supabase: Client): Promise<BusinessP
       .from("business_projects_v2_history")
       .select("*")
       .order("created_at", { ascending: true }),
+    supabase.from("business_projects_v2_history_attachments").select("*"),
     fetchAuthorDisplayById(supabase),
   ]);
+
+  const urlByAttachmentId = await resolveHistoryAttachmentUrls(
+    supabase,
+    (attachments ?? []).map((a) => ({ id: a.id, storagePath: a.storage_path, driveFileId: a.drive_file_id }))
+  );
+  const attachmentsByHistory = new Map<string, HistoryAttachment[]>();
+  for (const a of attachments ?? []) {
+    const list = attachmentsByHistory.get(a.history_id) ?? [];
+    list.push({ id: a.id, fileName: a.file_name, url: urlByAttachmentId.get(a.id) ?? null });
+    attachmentsByHistory.set(a.history_id, list);
+  }
 
   const commentsByProject = new Map<string, BusinessProjectV2Comment[]>();
   for (const c of comments ?? []) {
@@ -104,6 +118,7 @@ export async function getBusinessProjectsV2(supabase: Client): Promise<BusinessP
       createdAt: h.created_at,
       updatedAt: h.updated_at,
       isOwn: h.author_id === user?.id,
+      attachments: attachmentsByHistory.get(h.id) ?? [],
     });
     historyByProject.set(h.project_id, list);
   }

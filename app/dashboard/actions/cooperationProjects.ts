@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { formatMember } from "@/lib/formatMember";
+import { resolveHistoryAttachments, validateHistoryAttachmentFiles } from "@/lib/historyAttachments";
 
 const PATH = "/dashboard/cooperation";
 
@@ -148,14 +149,31 @@ export async function createCooperationProjectHistoryEntry(
   const content = String(formData.get("content") ?? "").trim();
   if (!content) return { error: "히스토리 내용을 입력하세요." };
 
-  const { error } = await supabase.from("cooperation_projects_history").insert({
-    project_id: projectId,
-    author_id: user.id,
-    author_email: user.email ?? "",
-    content,
-  });
+  const files = formData.getAll("files").filter((f): f is File => f instanceof File && f.size > 0);
+  const fileError = validateHistoryAttachmentFiles(files);
+  if (fileError) return { error: fileError };
 
-  if (error) return { error: `히스토리 저장 실패: ${error.message}` };
+  const { data: history, error } = await supabase
+    .from("cooperation_projects_history")
+    .insert({
+      project_id: projectId,
+      author_id: user.id,
+      author_email: user.email ?? "",
+      content,
+    })
+    .select("id")
+    .single();
+
+  if (error || !history) return { error: `히스토리 저장 실패: ${error?.message ?? "알 수 없는 오류"}` };
+
+  if (files.length > 0) {
+    const resolved = await resolveHistoryAttachments(supabase, "cooperation", history.id, files);
+    if (resolved.length > 0) {
+      await supabase
+        .from("cooperation_projects_history_attachments")
+        .insert(resolved.map((r) => ({ ...r, history_id: history.id })));
+    }
+  }
 
   revalidatePath(PATH);
   return undefined;

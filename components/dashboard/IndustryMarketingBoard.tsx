@@ -417,6 +417,29 @@ function HistoryRow({ entry }: { entry: MarketingTaskHistoryEntry }) {
           )}
         </div>
       )}
+      {expanded && entry.attachments.length > 0 && (
+        <div style={{ marginTop: 6, display: "flex", flexWrap: "wrap", gap: 6 }}>
+          {entry.attachments.map((a) =>
+            a.url ? (
+              <a
+                key={a.id}
+                href={a.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="tag tag-outline"
+                style={{ fontSize: 11, maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                📎 {a.fileName}
+              </a>
+            ) : (
+              <span key={a.id} className="tag tag-outline" style={{ fontSize: 11 }}>
+                {a.fileName}
+              </span>
+            )
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -442,6 +465,16 @@ function HistorySection({ task }: { task: MarketingTask }) {
       )}
       <form action={formAction} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         <textarea className="input" name="content" required rows={3} placeholder="예: 시안 컨펌 완료, 인쇄 발주" />
+        <input
+          className="input"
+          type="file"
+          name="files"
+          multiple
+          accept="image/jpeg,image/png,image/webp,image/gif,application/pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip"
+        />
+        <p className="text-muted" style={{ fontSize: 11, margin: 0 }}>
+          이미지·PDF·Office 문서·ZIP, 파일당 12MB 이하, 최대 5개
+        </p>
         {state?.error && <p style={{ color: "var(--color-accent-900)", fontSize: 13 }}>{state.error}</p>}
         <button type="submit" className="btn btn-primary" style={{ alignSelf: "flex-start" }} disabled={pending}>
           {pending ? "등록 중..." : "히스토리 등록"}

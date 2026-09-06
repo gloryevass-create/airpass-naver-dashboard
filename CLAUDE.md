@@ -258,6 +258,26 @@ cooperationProjects.ts`, `app/dashboard/actions/marketingTasks.ts`)은 그대로
   Save as defaults)도 SI Business 2와 동일하게 구현했다 — 저장 키만 화면별로
   다르다(`cooperation-board:defaults`, `marketing-board:defaults`).
 
+### 히스토리 첨부파일
+
+SI Business 2/Cooperation/Marketing 세 보드의 "히스토리" 입력 폼에 파일 첨부
+기능을 추가했다(2026-09-06). 세 보드의 히스토리 테이블(`business_projects_v2_history`/
+`cooperation_projects_history`/`marketing_tasks_history`)이 구조적으로 완전히
+동일해서(0058), 파일 검증·업로드·URL 해석 공용 로직을 `lib/historyAttachments.ts`
+하나로 모으고 세 보드의 서버 액션(`create*HistoryEntry`)이 각자 자기 첨부파일
+테이블(`*_history_attachments`, `history_id` FK로 각자 히스토리 테이블을
+가리킴 — 폴리모픽 단일 테이블 대신 3개로 나눠 cascade delete가 자연스럽게
+동작하게 함)에 insert만 따로 한다. `lib/googleDriveAttachments.ts`의
+`AttachmentService`에 `business`/`cooperation`/`marketing`을 추가해 구글드라이브
+루트 폴더 아래 "SI Business"/"Cooperation"/"Marketing" 하위 폴더에 올라간다
+(미설정 시 세 보드가 공유하는 Supabase Storage 버킷 `history-attachments`로
+폴백). 조회 시 URL을 **쿼리 함수 안에서 미리 다 만들어 둔다**(Work
+Journal처럼 카드를 펼칠 때 별도 액션으로 지연 로딩하지 않음) — 구글드라이브
+링크는 API 호출 없이 고정 URL이라 즉시 만들 수 있고, Storage 폴백만 signed
+URL 발급이 필요한데 그마저도 새 첨부는 거의 다 드라이브를 쓰므로 실제로는
+드문 경우라 미리 만들어도 부담이 없다고 판단했다. 히스토리는 삭제 기능
+자체가 없어 첨부파일 삭제 로직도 만들지 않았다(추가만 가능).
+
 ## Work Journal
 
 `/dashboard/work-journal` — Cooperation/Marketing과 같은 방식으로 Claude Design

@@ -1128,6 +1128,36 @@ export type Database = {
         };
         Relationships: [];
       };
+      business_projects_v2_history_attachments: {
+        Row: {
+          id: string;
+          history_id: string;
+          file_name: string;
+          content_type: string | null;
+          storage_path: string | null;
+          drive_file_id: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          history_id: string;
+          file_name: string;
+          content_type?: string | null;
+          storage_path?: string | null;
+          drive_file_id?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          history_id?: string;
+          file_name?: string;
+          content_type?: string | null;
+          storage_path?: string | null;
+          drive_file_id?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       youth_facilities: {
         Row: {
           id: string;
@@ -1860,6 +1890,36 @@ export type Database = {
         };
         Relationships: [];
       };
+      cooperation_projects_history_attachments: {
+        Row: {
+          id: string;
+          history_id: string;
+          file_name: string;
+          content_type: string | null;
+          storage_path: string | null;
+          drive_file_id: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          history_id: string;
+          file_name: string;
+          content_type?: string | null;
+          storage_path?: string | null;
+          drive_file_id?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          history_id?: string;
+          file_name?: string;
+          content_type?: string | null;
+          storage_path?: string | null;
+          drive_file_id?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       marketing_tasks: {
         Row: {
           id: string;
@@ -1962,6 +2022,36 @@ export type Database = {
           content?: string;
           created_at?: string;
           updated_at?: string;
+        };
+        Relationships: [];
+      };
+      marketing_tasks_history_attachments: {
+        Row: {
+          id: string;
+          history_id: string;
+          file_name: string;
+          content_type: string | null;
+          storage_path: string | null;
+          drive_file_id: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          history_id: string;
+          file_name: string;
+          content_type?: string | null;
+          storage_path?: string | null;
+          drive_file_id?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          history_id?: string;
+          file_name?: string;
+          content_type?: string | null;
+          storage_path?: string | null;
+          drive_file_id?: string | null;
+          created_at?: string;
         };
         Relationships: [];
       };

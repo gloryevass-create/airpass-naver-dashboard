@@ -14,12 +14,15 @@ import { refreshDriveAccessToken } from "@/lib/googleDriveUpload/oauth";
 // (airpass.ai@gmail.com)의 OAuth 연결(google_drive_upload_connection, 회사 전체가
 // 공유하는 싱글턴 — app/auth/google-drive-upload/*)로 바꿨다(2026-09-03) — 업로드
 // 용량은 그 계정의 개인 구글 드라이브 용량을 그대로 쓴다.
-export type AttachmentService = "vendor" | "journal" | "memo";
+export type AttachmentService = "vendor" | "journal" | "memo" | "business" | "cooperation" | "marketing";
 
 const SERVICE_FOLDER_NAMES: Record<AttachmentService, string> = {
   vendor: "제조사 관리",
   journal: "Work Journal",
   memo: "Memo Board",
+  business: "SI Business",
+  cooperation: "Cooperation",
+  marketing: "Marketing",
 };
 
 function getRootFolderId(): string {
