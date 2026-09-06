@@ -400,6 +400,39 @@ cooperationProjects.ts`, `app/dashboard/actions/marketingTasks.ts`)은 그대로
 - 첨부파일(이미지·PDF·Office 문서·ZIP, 최대 5개)은 목업에 없던 기능이지만
   실제 운영에 쓰이고 있어 작성/수정/상세 화면에 그대로 유지했다.
 
+## Meeting Notes
+
+`/dashboard/meeting-notes` — 팀원들이 미팅을 lilys.ai에서 각자 개별 계정으로
+기록하고 있어(2026-09-06), API 직접 연동은 하지 않았다 — 계정이 사람마다
+따로라 연동하면 불필요한 남의 기록까지 다 끌려오고, 유저별 계정 연결까지
+따로 구현해야 하는 문제가 있었다(사용자 확인). 대신 lilys.ai의 "MARKDOWN"
+내보내기 결과물을 사람이 직접 파일로 올리거나 텍스트를 복사해 붙여넣으면,
+팀 전체가 한 화면에서 같이 보는 방식으로 구현했다.
+
+- **원본 파일을 저장하지 않는다**: 업로드한 .md 파일이든 붙여넣은 텍스트든
+  `file.text()`로 읽은 마크다운 "텍스트"만 `meeting_notes.content`(postgres
+  text 컬럼)에 그대로 저장한다(`app/dashboard/actions/meetingNotes.ts::resolveContent`).
+  그래서 Work Journal/Memo Board/제조사 관리 첨부파일과 달리 Supabase
+  Storage나 구글드라이브 같은 별도 파일 스토리지 연동이 전혀 필요 없다 —
+  텍스트라 용량 걱정도 없다(최대 2MB로만 제한).
+- **제목 자동 추출**: 제목을 안 적으면 마크다운 첫 `# 제목` 헤딩 줄을
+  정규식으로 찾아 자동으로 쓴다(`resolveTitle`) — lilys.ai 내보내기 결과물
+  최상단에 보통 이런 헤딩이 있어서(스크린샷 확인). 헤딩도 없고 제목도
+  안 적었으면 에러.
+- **렌더링**: `components/dashboard/MarkdownContent.tsx`가 `react-markdown`
+  + `remark-gfm`(표·취소선·체크리스트) + `rehype-slug`(헤딩에 앵커 id
+  부여)로 렌더링한다. 각 마크다운 엘리먼트를 Industry 테마 톤(hex 값이
+  아니라 `var(--color-*)`/`var(--font-*)` 그대로 — 이 컴포넌트는 항상
+  `.industry-theme` 안에서만 쓰이므로)에 맞춰 인라인 스타일로 다시 그린다
+  (이 앱엔 별도 prose 유틸리티 CSS가 없어 다른 Industry 화면들과 같은
+  관례). 상세 화면 우측의 목차(TOC)는 `extractHeadings()`가 같은 원본
+  텍스트에서 `github-slugger`로 헤딩을 미리 뽑아 만드는데, `rehype-slug`도
+  내부적으로 같은 라이브러리를 쓰기 때문에 각 헤딩을 같은 순서로 처리하면
+  TOC 링크의 `#id`가 실제 렌더링된 헤딩의 id와 항상 일치한다.
+- 작성자 본인 또는 admin만 수정·삭제 가능(Memo Board와 동일한 RLS 패턴,
+  `public.is_admin()` 재사용). 등록 시 `notifications`에도 남긴다(팀
+  전체가 새 미팅노트를 알림으로 인지할 수 있게, type='meeting_note').
+
 ## 폴더 구조
 
 ```

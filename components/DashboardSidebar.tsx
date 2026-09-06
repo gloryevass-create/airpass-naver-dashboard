@@ -27,6 +27,7 @@ const TOP_ITEMS: LeafItem[] = [
   { href: "/dashboard/marketing-tasks", label: "Marketing", icon: "list" },
   { href: "/dashboard/memos", label: "Memo Board", icon: "clipboard" },
   { href: "/dashboard/work-journal", label: "Work Journal", icon: "chat" },
+  { href: "/dashboard/meeting-notes", label: "Meeting Notes", icon: "document" },
 ];
 
 const GROUPS: GroupItem[] = [

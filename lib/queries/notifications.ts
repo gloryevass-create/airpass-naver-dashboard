@@ -14,7 +14,8 @@ export type NotificationType =
   | "news_scrap"
   | "cooperation"
   | "marketing"
-  | "quotation";
+  | "quotation"
+  | "meeting_note";
 
 export type Notification = {
   id: string;

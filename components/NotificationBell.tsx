@@ -23,6 +23,7 @@ const TYPE_LABEL: Record<NotificationType, string> = {
   cooperation: "협업",
   marketing: "마케팅",
   quotation: "산출내역",
+  meeting_note: "미팅노트",
 };
 
 function relativeTime(iso: string): string {

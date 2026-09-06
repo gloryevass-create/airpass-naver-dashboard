@@ -1509,7 +1509,7 @@ export type Database = {
       notifications: {
         Row: {
           id: string;
-          type: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap" | "news_scrap" | "cooperation" | "marketing" | "quotation";
+          type: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap" | "news_scrap" | "cooperation" | "marketing" | "quotation" | "meeting_note";
           title: string;
           message: string | null;
           link: string | null;
@@ -1517,7 +1517,7 @@ export type Database = {
         };
         Insert: {
           id?: string;
-          type: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap" | "news_scrap" | "cooperation" | "marketing" | "quotation";
+          type: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap" | "news_scrap" | "cooperation" | "marketing" | "quotation" | "meeting_note";
           title: string;
           message?: string | null;
           link?: string | null;
@@ -1525,7 +1525,7 @@ export type Database = {
         };
         Update: {
           id?: string;
-          type?: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap" | "news_scrap" | "cooperation" | "marketing" | "quotation";
+          type?: "event" | "business" | "youtube" | "budget_low" | "memo" | "budget_scrap" | "prespec_scrap" | "news_scrap" | "cooperation" | "marketing" | "quotation" | "meeting_note";
           title?: string;
           message?: string | null;
           link?: string | null;
@@ -2004,6 +2004,39 @@ export type Database = {
           quotation_id?: string | null;
           quotation_quote_number?: string | null;
           created_at?: string;
+        };
+        Relationships: [];
+      };
+      meeting_notes: {
+        Row: {
+          id: string;
+          author_id: string;
+          author_email: string;
+          title: string;
+          meeting_date: string | null;
+          content: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          author_id: string;
+          author_email: string;
+          title: string;
+          meeting_date?: string | null;
+          content: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          author_id?: string;
+          author_email?: string;
+          title?: string;
+          meeting_date?: string | null;
+          content?: string;
+          created_at?: string;
+          updated_at?: string;
         };
         Relationships: [];
       };
