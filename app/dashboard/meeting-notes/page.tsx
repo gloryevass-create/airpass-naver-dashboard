@@ -2,11 +2,7 @@ import "@/components/industryTheme.css";
 import Link from "next/link";
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { getMeetingNotes } from "@/lib/queries/meetingNotes";
-
-function formatDate(iso: string | null): string {
-  if (!iso) return "";
-  return new Date(`${iso}T00:00:00`).toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" });
-}
+import { MeetingNoteList } from "@/components/MeetingNoteList";
 
 export default async function MeetingNotesPage() {
   const { supabase } = await requireAuthedClient();
@@ -35,32 +31,7 @@ export default async function MeetingNotesPage() {
         lilys.ai에서 내보낸 회의록(마크다운)을 팀 전체가 함께 봅니다.
       </p>
 
-      {notes.length === 0 ? (
-        <div className="card blueprint" style={{ padding: "var(--space-8)", textAlign: "center" }}>
-          <p className="text-muted" style={{ margin: 0 }}>
-            아직 등록된 미팅노트가 없습니다.
-          </p>
-        </div>
-      ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
-          {notes.map((n) => (
-            <Link
-              key={n.id}
-              href={`/dashboard/meeting-notes/${n.id}`}
-              className="card blueprint elev-sm"
-              style={{ display: "block", padding: "var(--space-4) var(--space-5)", background: "#ffffff", textDecoration: "none", color: "inherit" }}
-            >
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-3)", flexWrap: "wrap" }}>
-                <span style={{ fontFamily: "var(--font-heading)", fontWeight: 600, fontSize: 16 }}>{n.title}</span>
-                <span className="text-muted" style={{ fontSize: 12 }}>
-                  {n.authorDisplay}
-                  {n.meetingDate && ` · ${formatDate(n.meetingDate)}`}
-                </span>
-              </div>
-            </Link>
-          ))}
-        </div>
-      )}
+      <MeetingNoteList notes={notes} />
     </div>
   );
 }
