@@ -14,6 +14,10 @@ const PUBLIC_PATHS = [
   // 여기서 막으면 안 되고, 라우트 자체의 CRON_SECRET 검증이 진짜 인증이다
   // (app/api/cron/ai-issues/route.ts, 2026-09-06).
   "/api/cron",
+  // 사용자가 따로 만든 Claude 스킬/서비스가 AI Review에 자동으로 글을 올리는
+  // 수신 엔드포인트 — 위와 같은 이유로 세션 체크를 건너뛴다(AI_REVIEW_INGEST_SECRET
+  // 검증이 진짜 인증, app/api/ai-review/ingest/route.ts, 2026-09-06).
+  "/api/ai-review/ingest",
 ];
 
 function isPublicPath(pathname: string) {
