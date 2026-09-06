@@ -103,43 +103,45 @@ export function AiToolsBoard({ tools, currentUserId }: { tools: AiTool[]; curren
   const editingTool = editingId && editingId !== "new" ? (tools.find((t) => t.id === editingId) ?? null) : null;
 
   return (
-    <div className="industry-theme" style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 900, margin: "0 auto" }}>
+    <div className="industry-theme" style={{ minHeight: "100vh" }}>
       <AiHubTabs />
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-4)", flexWrap: "wrap" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-          </svg>
-          <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 28, margin: 0, color: "var(--color-accent-700)" }}>AI Tools</h1>
+      <div style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 900, margin: "0 auto" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-4)", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+            </svg>
+            <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 28, margin: 0, color: "var(--color-accent-700)" }}>AI Tools</h1>
+          </div>
+          <button type="button" className="btn btn-primary blueprint" onClick={() => setEditingId("new")}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            새 링크 등록
+          </button>
         </div>
-        <button type="button" className="btn btn-primary blueprint" onClick={() => setEditingId("new")}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 5v14M5 12h14" />
-          </svg>
-          새 링크 등록
-        </button>
+        <p className="text-muted" style={{ margin: "var(--space-2) 0 var(--space-6)", fontSize: 13 }}>
+          팀에서 쓰는 AI 도구·서비스 링크를 함께 모읍니다.
+        </p>
+
+        {editingId === "new" && <ToolForm tool={null} onDone={() => setEditingId(null)} />}
+        {editingTool && <ToolForm tool={editingTool} onDone={() => setEditingId(null)} />}
+
+        {tools.length === 0 ? (
+          <div className="card blueprint" style={{ padding: "var(--space-8)", textAlign: "center" }}>
+            <p className="text-muted" style={{ margin: 0 }}>
+              아직 등록된 링크가 없습니다.
+            </p>
+          </div>
+        ) : (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "var(--space-4)" }}>
+            {tools.map((t) => (
+              <ToolCard key={t.id} tool={t} currentUserId={currentUserId} onEdit={() => setEditingId(t.id)} />
+            ))}
+          </div>
+        )}
       </div>
-      <p className="text-muted" style={{ margin: "var(--space-2) 0 var(--space-6)", fontSize: 13 }}>
-        팀에서 쓰는 AI 도구·서비스 링크를 함께 모읍니다.
-      </p>
-
-      {editingId === "new" && <ToolForm tool={null} onDone={() => setEditingId(null)} />}
-      {editingTool && <ToolForm tool={editingTool} onDone={() => setEditingId(null)} />}
-
-      {tools.length === 0 ? (
-        <div className="card blueprint" style={{ padding: "var(--space-8)", textAlign: "center" }}>
-          <p className="text-muted" style={{ margin: 0 }}>
-            아직 등록된 링크가 없습니다.
-          </p>
-        </div>
-      ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "var(--space-4)" }}>
-          {tools.map((t) => (
-            <ToolCard key={t.id} tool={t} currentUserId={currentUserId} onEdit={() => setEditingId(t.id)} />
-          ))}
-        </div>
-      )}
     </div>
   );
 }
