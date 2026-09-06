@@ -1,9 +1,10 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState, useTransition } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import type { AiTool } from "@/lib/queries/aiTools";
 import { createAiTool, updateAiTool, deleteAiTool } from "@/app/dashboard/actions/aiTools";
 import { AiHubTabs } from "@/components/dashboard/AiHubTabs";
+import { normalizeSearch } from "@/lib/normalizeSearch";
 
 // Work Journal과 같은 방식(목록 위에 인라인 카드로 등록/수정 폼이 펼쳐지는 구조)의
 // Industry 테마 화면 — AI 관련 링크를 팀원 누구나 등록해 공유한다(2026-09-06,
@@ -102,6 +103,18 @@ export function AiToolsBoard({ tools, currentUserId }: { tools: AiTool[]; curren
   const [editingId, setEditingId] = useState<string | null | "new">(null);
   const editingTool = editingId && editingId !== "new" ? (tools.find((t) => t.id === editingId) ?? null) : null;
 
+  const [search, setSearch] = useState("");
+  const filteredTools = useMemo(() => {
+    const q = normalizeSearch(search.trim());
+    if (!q) return tools;
+    return tools.filter(
+      (t) =>
+        normalizeSearch(t.title).includes(q) ||
+        normalizeSearch(t.description ?? "").includes(q) ||
+        normalizeSearch(t.url).includes(q)
+    );
+  }, [tools, search]);
+
   return (
     <div className="industry-theme" style={{ minHeight: "100vh" }}>
       <AiHubTabs />
@@ -125,18 +138,27 @@ export function AiToolsBoard({ tools, currentUserId }: { tools: AiTool[]; curren
           팀에서 쓰는 AI 도구·서비스 링크를 함께 모읍니다.
         </p>
 
+        <input
+          type="search"
+          className="input"
+          placeholder="제목·설명·링크로 검색"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{ marginBottom: "var(--space-4)", maxWidth: 320 }}
+        />
+
         {editingId === "new" && <ToolForm tool={null} onDone={() => setEditingId(null)} />}
         {editingTool && <ToolForm tool={editingTool} onDone={() => setEditingId(null)} />}
 
-        {tools.length === 0 ? (
+        {filteredTools.length === 0 ? (
           <div className="card blueprint" style={{ padding: "var(--space-8)", textAlign: "center" }}>
             <p className="text-muted" style={{ margin: 0 }}>
-              아직 등록된 링크가 없습니다.
+              {tools.length === 0 ? "아직 등록된 링크가 없습니다." : "검색 결과가 없습니다."}
             </p>
           </div>
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "var(--space-4)" }}>
-            {tools.map((t) => (
+            {filteredTools.map((t) => (
               <ToolCard key={t.id} tool={t} currentUserId={currentUserId} onEdit={() => setEditingId(t.id)} />
             ))}
           </div>

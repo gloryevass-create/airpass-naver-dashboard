@@ -3,10 +3,7 @@ import Link from "next/link";
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { getAiReviews } from "@/lib/queries/aiReviews";
 import { AiHubTabs } from "@/components/dashboard/AiHubTabs";
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" });
-}
+import { AiReviewList } from "@/components/AiReviewList";
 
 export default async function AiReviewListPage() {
   const { supabase } = await requireAuthedClient();
@@ -34,31 +31,7 @@ export default async function AiReviewListPage() {
           AI 도구·모델·자료에 대한 리뷰나 학습자료를 마크다운으로 공유합니다.
         </p>
 
-        {reviews.length === 0 ? (
-          <div className="card blueprint" style={{ padding: "var(--space-8)", textAlign: "center" }}>
-            <p className="text-muted" style={{ margin: 0 }}>
-              아직 등록된 리뷰가 없습니다.
-            </p>
-          </div>
-        ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
-            {reviews.map((r) => (
-              <Link
-                key={r.id}
-                href={`/dashboard/ai-review/${r.id}`}
-                className="card blueprint elev-sm"
-                style={{ display: "block", padding: "var(--space-4) var(--space-5)", background: "#ffffff", textDecoration: "none", color: "inherit" }}
-              >
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-3)", flexWrap: "wrap" }}>
-                  <span style={{ fontFamily: "var(--font-heading)", fontWeight: 600, fontSize: 16 }}>{r.title}</span>
-                  <span className="text-muted" style={{ fontSize: 12 }}>
-                    {r.authorDisplay} · {formatDate(r.createdAt)}
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
+        <AiReviewList reviews={reviews} />
       </div>
     </div>
   );
