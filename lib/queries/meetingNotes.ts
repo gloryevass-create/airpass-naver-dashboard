@@ -12,15 +12,25 @@ export type MeetingNoteListItem = {
   createdAt: string;
 };
 
+export type MeetingNoteComment = {
+  id: string;
+  authorDisplay: string;
+  content: string;
+  createdAt: string;
+};
+
 export type MeetingNoteDetail = {
   id: string;
   authorId: string;
   authorDisplay: string;
   title: string;
   meetingDate: string | null;
+  attendees: string | null;
+  location: string | null;
   content: string;
   createdAt: string;
   updatedAt: string;
+  comments: MeetingNoteComment[];
 };
 
 /** author_id -> "이름(직함)" 표시용 맵 — ad_strategy_memos(lib/queries/memos.ts)와
@@ -55,8 +65,9 @@ export async function getMeetingNotes(supabase: Client): Promise<MeetingNoteList
 }
 
 export async function getMeetingNoteDetail(supabase: Client, id: string): Promise<MeetingNoteDetail | null> {
-  const [{ data: note }, authorDisplayById] = await Promise.all([
+  const [{ data: note }, { data: comments }, authorDisplayById] = await Promise.all([
     supabase.from("meeting_notes").select("*").eq("id", id).maybeSingle(),
+    supabase.from("meeting_note_comments").select("*").eq("note_id", id).order("created_at", { ascending: true }),
     fetchAuthorDisplayById(supabase),
   ]);
   if (!note) return null;
@@ -67,8 +78,16 @@ export async function getMeetingNoteDetail(supabase: Client, id: string): Promis
     authorDisplay: authorDisplayById.get(note.author_id) ?? note.author_email,
     title: note.title,
     meetingDate: note.meeting_date,
+    attendees: note.attendees,
+    location: note.location,
     content: note.content,
     createdAt: note.created_at,
     updatedAt: note.updated_at,
+    comments: (comments ?? []).map((c) => ({
+      id: c.id,
+      authorDisplay: authorDisplayById.get(c.author_id) ?? c.author_email,
+      content: c.content,
+      createdAt: c.created_at,
+    })),
   };
 }

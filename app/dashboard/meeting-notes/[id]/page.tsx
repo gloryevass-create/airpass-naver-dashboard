@@ -6,10 +6,22 @@ import { getMeetingNoteDetail } from "@/lib/queries/meetingNotes";
 import { deleteMeetingNote } from "@/app/dashboard/actions/meetingNotes";
 import { DeleteMemoButton } from "@/components/DeleteMemoButton";
 import { MarkdownContent, extractHeadings } from "@/components/dashboard/MarkdownContent";
+import { MeetingNoteCommentForm } from "@/components/MeetingNoteCommentForm";
 
 function formatDate(iso: string | null): string {
   if (!iso) return "";
   return new Date(`${iso}T00:00:00`).toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" });
+}
+
+function formatDateTime(iso: string): string {
+  return new Date(iso).toLocaleString("ko-KR", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Asia/Seoul",
+  });
 }
 
 type Params = Promise<{ id: string }>;
@@ -58,13 +70,52 @@ export default async function MeetingNoteDetailPage({ params }: { params: Params
               </div>
             )}
           </div>
-          <p className="text-muted" style={{ fontSize: 13, margin: "0 0 var(--space-6)" }}>
+          <p className="text-muted" style={{ fontSize: 13, margin: "0 0 var(--space-2)" }}>
             {note.authorDisplay}
             {note.meetingDate && ` · 미팅일 ${formatDate(note.meetingDate)}`}
             {` · 등록 ${formatDate(note.createdAt.slice(0, 10))}`}
           </p>
+          {(note.attendees || note.location) && (
+            <div style={{ display: "flex", gap: "var(--space-4)", flexWrap: "wrap", marginBottom: "var(--space-6)" }}>
+              {note.attendees && (
+                <span className="tag tag-outline" style={{ fontSize: 12 }}>
+                  참석자: {note.attendees}
+                </span>
+              )}
+              {note.location && (
+                <span className="tag tag-outline" style={{ fontSize: 12 }}>
+                  장소: {note.location}
+                </span>
+              )}
+            </div>
+          )}
 
           <MarkdownContent content={note.content} />
+
+          <div style={{ marginTop: "var(--space-8)", paddingTop: "var(--space-6)", borderTop: "1px solid var(--color-divider)" }}>
+            <h2 style={{ fontFamily: "var(--font-heading)", fontSize: 16, margin: "0 0 var(--space-4)", display: "flex", alignItems: "center", gap: 6 }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+              </svg>
+              의견 {note.comments.length > 0 && `(${note.comments.length})`}
+            </h2>
+            <div style={{ display: "grid", gap: "var(--space-3)", marginBottom: "var(--space-5)" }}>
+              {note.comments.map((c) => (
+                <div key={c.id} className="card blueprint" style={{ fontSize: 13 }}>
+                  <div className="text-muted" style={{ marginBottom: 6 }}>
+                    {c.authorDisplay} · {formatDateTime(c.createdAt)}
+                  </div>
+                  <div style={{ whiteSpace: "pre-wrap" }}>{c.content}</div>
+                </div>
+              ))}
+              {note.comments.length === 0 && (
+                <p className="text-muted" style={{ fontSize: 13, margin: 0 }}>
+                  아직 의견이 없습니다.
+                </p>
+              )}
+            </div>
+            <MeetingNoteCommentForm noteId={note.id} />
+          </div>
         </div>
 
         {headings.length > 0 && (

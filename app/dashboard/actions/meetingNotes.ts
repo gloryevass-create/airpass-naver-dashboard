@@ -59,6 +59,8 @@ export async function createMeetingNote(
   if (!title) return { error: "제목을 입력하거나, 내용 첫 줄에 '# 제목' 형식의 헤딩을 포함하세요." };
 
   const meetingDate = String(formData.get("meetingDate") ?? "").trim() || null;
+  const attendees = String(formData.get("attendees") ?? "").trim() || null;
+  const location = String(formData.get("location") ?? "").trim() || null;
 
   const { data: note, error } = await supabase
     .from("meeting_notes")
@@ -67,6 +69,8 @@ export async function createMeetingNote(
       author_email: user.email ?? "",
       title,
       meeting_date: meetingDate,
+      attendees,
+      location,
       content,
     })
     .select("id")
@@ -117,10 +121,12 @@ export async function updateMeetingNote(
   if (!title) return { error: "제목을 입력하거나, 내용 첫 줄에 '# 제목' 형식의 헤딩을 포함하세요." };
 
   const meetingDate = String(formData.get("meetingDate") ?? "").trim() || null;
+  const attendees = String(formData.get("attendees") ?? "").trim() || null;
+  const location = String(formData.get("location") ?? "").trim() || null;
 
   const { error } = await supabase
     .from("meeting_notes")
-    .update({ title, meeting_date: meetingDate, content, updated_at: new Date().toISOString() })
+    .update({ title, meeting_date: meetingDate, attendees, location, content, updated_at: new Date().toISOString() })
     .eq("id", noteId);
   if (error) return { error: `수정 실패: ${error.message}` };
 
@@ -142,4 +148,29 @@ export async function deleteMeetingNote(noteId: string, formData: FormData): Pro
 
   revalidatePath(LIST_PATH);
   redirect(LIST_PATH);
+}
+
+export type MeetingNoteCommentState = { error?: string } | undefined;
+
+export async function createMeetingNoteComment(
+  noteId: string,
+  _prevState: MeetingNoteCommentState,
+  formData: FormData
+): Promise<MeetingNoteCommentState> {
+  const { supabase, user } = await requireAuthedClient();
+
+  const content = String(formData.get("content") ?? "").trim();
+  if (!content) return { error: "의견 내용을 입력하세요." };
+
+  const { error } = await supabase.from("meeting_note_comments").insert({
+    note_id: noteId,
+    author_id: user.id,
+    author_email: user.email ?? "",
+    content,
+  });
+
+  if (error) return { error: `의견 저장 실패: ${error.message}` };
+
+  revalidatePath(`/dashboard/meeting-notes/${noteId}`);
+  return undefined;
 }

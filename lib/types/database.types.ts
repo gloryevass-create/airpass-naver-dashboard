@@ -2014,6 +2014,8 @@ export type Database = {
           author_email: string;
           title: string;
           meeting_date: string | null;
+          attendees: string | null;
+          location: string | null;
           content: string;
           created_at: string;
           updated_at: string;
@@ -2024,6 +2026,8 @@ export type Database = {
           author_email: string;
           title: string;
           meeting_date?: string | null;
+          attendees?: string | null;
+          location?: string | null;
           content: string;
           created_at?: string;
           updated_at?: string;
@@ -2034,9 +2038,38 @@ export type Database = {
           author_email?: string;
           title?: string;
           meeting_date?: string | null;
+          attendees?: string | null;
+          location?: string | null;
           content?: string;
           created_at?: string;
           updated_at?: string;
+        };
+        Relationships: [];
+      };
+      meeting_note_comments: {
+        Row: {
+          id: string;
+          note_id: string;
+          author_id: string;
+          author_email: string;
+          content: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          note_id: string;
+          author_id: string;
+          author_email: string;
+          content: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          note_id?: string;
+          author_id?: string;
+          author_email?: string;
+          content?: string;
+          created_at?: string;
         };
         Relationships: [];
       };

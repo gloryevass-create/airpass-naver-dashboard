@@ -432,6 +432,12 @@ cooperationProjects.ts`, `app/dashboard/actions/marketingTasks.ts`)은 그대로
 - 작성자 본인 또는 admin만 수정·삭제 가능(Memo Board와 동일한 RLS 패턴,
   `public.is_admin()` 재사용). 등록 시 `notifications`에도 남긴다(팀
   전체가 새 미팅노트를 알림으로 인지할 수 있게, type='meeting_note').
+- **참석자·장소·팀원 의견**(2026-09-06 추가): `meeting_notes.attendees`/
+  `location`은 자유 텍스트(쉼표로 구분해 적는 정도, 별도 구조화·팀원 목록
+  선택 UI는 없음 — 참석자가 외부인일 수도 있어 자유 텍스트가 더 유연하다고
+  판단). 의견(댓글)은 `meeting_note_comments` 테이블로 Memo Board의 댓글
+  (`ad_strategy_memo_comments`)과 완전히 같은 구조 — 삭제 UI는 없고, DELETE
+  RLS 정책은 미팅노트 삭제 시 cascade가 막히지 않게 하려는 용도로만 있다.
 
 ## 폴더 구조
 

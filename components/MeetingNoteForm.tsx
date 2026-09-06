@@ -44,6 +44,33 @@ export function MeetingNoteForm({ note }: { note?: MeetingNoteDetail }) {
         </div>
       </div>
 
+      <div style={{ display: "flex", gap: "var(--space-4)" }}>
+        <div className="field" style={{ flex: 1 }}>
+          <label htmlFor="attendees">미팅 참석자</label>
+          <input
+            id="attendees"
+            name="attendees"
+            type="text"
+            maxLength={500}
+            placeholder="예: 정윤강, 곽태순, 위보연"
+            defaultValue={note?.attendees ?? ""}
+            className="input"
+          />
+        </div>
+        <div className="field" style={{ flex: 1 }}>
+          <label htmlFor="location">미팅 장소</label>
+          <input
+            id="location"
+            name="location"
+            type="text"
+            maxLength={200}
+            placeholder="예: 본사 회의실 / 온라인(Zoom)"
+            defaultValue={note?.location ?? ""}
+            className="input"
+          />
+        </div>
+      </div>
+
       <div className="field">
         <label>내용</label>
         <div className="seg" style={{ marginBottom: "var(--space-2)", width: "fit-content" }}>
