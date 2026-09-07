@@ -108,7 +108,7 @@ export function QuotationPrintView({
                   <th className="border border-hairline px-2 py-1.5">규격</th>
                   <th className="border border-hairline px-2 py-1.5">수량</th>
                   <th className="border border-hairline px-2 py-1.5">단위</th>
-                  <th className="border border-hairline px-2 py-1.5">단가(VAT 포함)</th>
+                  <th className="border border-hairline px-2 py-1.5 text-xs whitespace-nowrap">단가(VAT 포함)</th>
                   <th className="border border-hairline px-2 py-1.5">금액</th>
                   <th className="border border-hairline px-2 py-1.5">비고</th>
                 </tr>
