@@ -1023,18 +1023,23 @@ export function QuotationBoard({
             <table className="table">
               <thead>
                 <tr>
+                  <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>번호</th>
+                  <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>산출일자</th>
                   <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>기관명·산출번호</th>
                   <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>산출명</th>
                   <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>연결 사업</th>
-                  <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>산출일자</th>
                   <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>담당</th>
                   <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>금액</th>
                   <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>관리</th>
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((q) => (
+                {filtered.map((q, index) => (
                   <tr key={q.id}>
+                    <td className="text-muted">{index + 1}</td>
+                    <td className="text-muted" style={{ whiteSpace: "nowrap" }}>
+                      {formatDate(q.quoteDate)}
+                    </td>
                     <td>
                       <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                         <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8 }}>
@@ -1055,9 +1060,6 @@ export function QuotationBoard({
                       ) : (
                         <span className="text-muted">-</span>
                       )}
-                    </td>
-                    <td className="text-muted" style={{ whiteSpace: "nowrap" }}>
-                      {formatDate(q.quoteDate)}
                     </td>
                     <td className="text-muted">{q.managerName || "-"}</td>
                     <td style={{ fontWeight: 600, whiteSpace: "nowrap" }}>{formatCurrency(q.totalAmount)}원</td>
@@ -1083,7 +1085,7 @@ export function QuotationBoard({
                 ))}
                 {filtered.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="text-muted" style={{ textAlign: "center", padding: "var(--space-6)" }}>
+                    <td colSpan={8} className="text-muted" style={{ textAlign: "center", padding: "var(--space-6)" }}>
                       {quotations.length === 0 ? "등록된 산출내역이 없습니다." : "검색 결과가 없습니다."}
                     </td>
                   </tr>
