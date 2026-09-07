@@ -100,7 +100,7 @@ export function QuotationPrintView({
           </div>
 
           <div className="mt-6 overflow-x-auto">
-            <table className="w-full min-w-[560px] border-collapse text-sm">
+            <table className="w-full min-w-[560px] border-collapse text-xs">
               <thead>
                 <tr className="border-y-2 border-ink bg-[#f5f5f7]">
                   <th className="border border-hairline px-2 py-1.5">No</th>
@@ -108,7 +108,7 @@ export function QuotationPrintView({
                   <th className="border border-hairline px-2 py-1.5">규격</th>
                   <th className="border border-hairline px-2 py-1.5">수량</th>
                   <th className="border border-hairline px-2 py-1.5">단위</th>
-                  <th className="border border-hairline px-2 py-1.5 text-xs whitespace-nowrap">단가(VAT 포함)</th>
+                  <th className="border border-hairline px-2 py-1.5 whitespace-nowrap">단가(VAT 포함)</th>
                   <th className="border border-hairline px-2 py-1.5">금액</th>
                   <th className="border border-hairline px-2 py-1.5">비고</th>
                 </tr>
