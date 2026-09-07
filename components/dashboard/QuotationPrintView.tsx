@@ -15,10 +15,10 @@ function formatDate(value: string | null): string {
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex border-t border-hairline first:border-t-0">
-      <div className="w-24 shrink-0 bg-[#f5f5f7] px-3 py-2 text-xs font-medium text-ink-mute print:bg-[#f5f5f7]">
+      <div className="w-24 shrink-0 bg-[#f5f5f7] px-3 py-2 text-center text-sm font-medium text-ink-mute print:bg-[#f5f5f7]">
         {label}
       </div>
-      <div className="flex-1 px-3 py-2 text-xs font-bold text-ink">{value}</div>
+      <div className="flex-1 px-3 py-2 text-center text-sm font-bold text-ink">{value}</div>
     </div>
   );
 }
@@ -69,7 +69,7 @@ export function QuotationPrintView({
         <div className="p-8">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:items-start">
             <div className="flex flex-col overflow-hidden rounded-sm border border-hairline">
-              <div className="bg-[#f5f5f7] px-3 py-2 text-xs font-bold text-ink">산출정보</div>
+              <div className="bg-[#f5f5f7] px-3 py-2 text-center text-sm font-bold text-ink">산출정보</div>
               <InfoRow label="수신" value={`${quotation.customerName} 귀중`} />
               <InfoRow label="산출명" value={quotation.projectTitle || "-"} />
               <InfoRow label="산출번호" value={quotation.quoteNumber} />
@@ -78,7 +78,7 @@ export function QuotationPrintView({
               {quotation.managerName && <InfoRow label="담당자" value={quotation.managerName} />}
             </div>
             <div className="relative flex flex-col overflow-hidden rounded-sm border border-hairline">
-              <div className="bg-[#f5f5f7] px-3 py-2 text-xs font-bold text-ink">공급자</div>
+              <div className="bg-[#f5f5f7] px-3 py-2 text-center text-sm font-bold text-ink">공급자</div>
               <InfoRow label="상호" value={QUOTATION_SUPPLIER.name} />
               <InfoRow label="사업자번호" value={QUOTATION_SUPPLIER.businessNumber} />
               <InfoRow label="대표자" value={QUOTATION_SUPPLIER.representative} />
@@ -152,14 +152,14 @@ export function QuotationPrintView({
               </div>
               <div className="flex items-start justify-between py-1.5">
                 <div>
-                  <span className="text-sm font-bold text-primary">공급가액</span>
+                  <span className="font-bold text-primary">공급가액</span>
                   <p className="mt-0.5 text-[10px] text-ink-mute">세액 참고 · 품목금액 기준</p>
                 </div>
-                <span className="text-sm font-bold tabular-nums text-primary">{formatCurrency(quotation.supplyAmount)}원</span>
+                <span className="font-bold tabular-nums text-primary">{formatCurrency(quotation.supplyAmount)}원</span>
               </div>
               <div className="flex items-baseline justify-between py-1.5">
-                <span className="text-sm font-bold text-primary">부가세</span>
-                <span className="text-sm font-bold tabular-nums text-primary">{formatCurrency(quotation.taxAmount)}원</span>
+                <span className="font-bold text-primary">부가세</span>
+                <span className="font-bold tabular-nums text-primary">{formatCurrency(quotation.taxAmount)}원</span>
               </div>
             </div>
           </div>
