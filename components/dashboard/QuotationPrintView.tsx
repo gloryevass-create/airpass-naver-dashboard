@@ -15,10 +15,10 @@ function formatDate(value: string | null): string {
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex border-t border-hairline first:border-t-0">
-      <div className="w-24 shrink-0 bg-[#f5f5f7] px-3 py-2 text-center text-[13px] font-medium text-ink-mute print:bg-[#f5f5f7]">
+      <div className="w-24 shrink-0 bg-[#f5f5f7] px-3 py-1 text-center text-[12px] font-medium text-ink-mute print:bg-[#f5f5f7]">
         {label}
       </div>
-      <div className="flex-1 px-3 py-2 text-center text-[13px] font-bold text-ink">{value}</div>
+      <div className="flex-1 px-3 py-1 text-center text-[12px] font-bold text-ink">{value}</div>
     </div>
   );
 }
@@ -66,23 +66,23 @@ export function QuotationPrintView({
           <span className="w-28 text-right text-[11px] text-white/60">{formatDate(quotation.quoteDate)}</span>
         </div>
 
-        <div className="p-8">
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-[2fr_3fr] sm:items-stretch">
+        <div className="p-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-[2fr_3fr] sm:items-stretch">
             <div className="flex flex-col overflow-hidden rounded-sm border border-hairline">
-              <div className="bg-[#f5f5f7] px-3 py-2 text-center text-sm font-bold text-ink">산출정보</div>
+              <div className="bg-[#f5f5f7] px-3 py-1.5 text-center text-xs font-bold text-ink">산출정보</div>
               <InfoRow label="수신" value={`${quotation.customerName} 귀중`} />
               <InfoRow label="산출명" value={quotation.projectTitle || "-"} />
               <InfoRow label="산출번호" value={quotation.quoteNumber} />
               <InfoRow label="산출일자" value={formatDate(quotation.quoteDate)} />
               <InfoRow label="유효기간" value={quotation.validUntil ? `${formatDate(quotation.validUntil)}까지` : "-"} />
               {quotation.managerName && <InfoRow label="담당자" value={quotation.managerName} />}
-              <div className="flex flex-1 flex-col justify-center border-t border-hairline bg-white px-3 py-2">
-                <p className="text-xs text-ink-mute">산출금액 (VAT 포함)</p>
-                <p className="mt-0.5 text-lg font-bold tabular-nums text-primary">{formatCurrency(quotation.totalAmount)}원</p>
+              <div className="flex flex-1 flex-col justify-center border-t border-hairline bg-white px-3 py-1.5">
+                <p className="text-[10px] text-ink-mute">산출금액 (VAT 포함)</p>
+                <p className="mt-0.5 text-sm font-bold tabular-nums text-primary">{formatCurrency(quotation.totalAmount)}원</p>
               </div>
             </div>
             <div className="relative flex flex-col overflow-hidden rounded-sm border border-hairline">
-              <div className="bg-[#f5f5f7] px-3 py-2 text-center text-sm font-bold text-ink">공급자</div>
+              <div className="bg-[#f5f5f7] px-3 py-1.5 text-center text-xs font-bold text-ink">공급자</div>
               <InfoRow label="상호" value={QUOTATION_SUPPLIER.name} />
               <InfoRow label="사업자번호" value={QUOTATION_SUPPLIER.businessNumber} />
               <InfoRow label="대표자" value={QUOTATION_SUPPLIER.representative} />
@@ -93,12 +93,12 @@ export function QuotationPrintView({
               <InfoRow label="FAX" value={QUOTATION_SUPPLIER.fax} />
               {quotation.includeStamp && (
                 // eslint-disable-next-line @next/next/no-img-element -- 고정 크기 도장 이미지, next/image 최적화 불필요
-                <img src="/quotation-stamp.png" alt="직인" className="absolute right-4 top-12 h-14 w-14" />
+                <img src="/quotation-stamp.png" alt="직인" className="absolute right-4 top-10 h-12 w-12" />
               )}
             </div>
           </div>
 
-          <div className="mt-6 overflow-x-auto">
+          <div className="mt-4 overflow-x-auto">
             <table className="w-full min-w-[560px] border-collapse text-xs">
               <thead>
                 <tr className="border-y-2 border-ink bg-[#f5f5f7]">
