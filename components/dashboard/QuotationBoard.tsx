@@ -8,6 +8,7 @@ import type { Quotation, QuotationItem } from "@/lib/queries/quotations";
 import type { ProductCatalogItem } from "@/lib/queries/productCatalog";
 import { createQuotation, updateQuotation, deleteQuotation } from "@/app/dashboard/actions/quotations";
 import { QUOTATION_SUPPLIER } from "@/lib/quotationCompany";
+import { SearchInput } from "@/components/dashboard/SearchInput";
 
 function SearchIcon({ size = 14 }: { size?: number }) {
   return (
@@ -1006,14 +1007,7 @@ export function QuotationBoard({
       ) : (
         <div style={{ display: "flex", flexDirection: "column", border: "1px solid var(--color-divider)", borderRadius: 8, boxShadow: "var(--shadow-sm)", background: "#ffffff", overflow: "hidden" }}>
           <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "var(--space-3)", padding: "var(--space-4)", fontSize: 13 }}>
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="기관명·사업명·산출번호 검색"
-              className="input"
-              style={{ width: 240 }}
-            />
+            <SearchInput value={search} onChange={setSearch} placeholder="기관명·사업명·산출번호 검색" style={{ width: 240, marginBottom: 0 }} />
             <span className="text-muted" style={{ fontSize: 12 }}>
               전체 <strong style={{ color: "var(--color-text)" }}>{quotations.length.toLocaleString("ko-KR")}</strong>건 중{" "}
               <strong style={{ color: "var(--color-text)" }}>{filtered.length.toLocaleString("ko-KR")}</strong>건 표시 중입니다.

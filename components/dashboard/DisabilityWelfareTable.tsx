@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { DisabilityWelfareCenter } from "@/lib/queries/disabilityWelfareCenters";
+import { SearchIconInput } from "@/components/dashboard/SearchInput";
 
 type SortKey = "facilityName" | "provinceName" | "facilityType" | "establishmentDate";
 
@@ -179,13 +180,7 @@ export function DisabilityWelfareTable({ centers }: { centers: DisabilityWelfare
             </option>
           ))}
         </select>
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="시설명 검색"
-          className="rounded-sm border border-hairline px-3 py-1.5 text-ink outline-none focus:border-primary"
-        />
+        <SearchIconInput value={search} onChange={setSearch} placeholder="시설명 검색" />
         <span className="text-xs font-bold text-ink-mute">
           전체 {sorted.length.toLocaleString("ko-KR")}곳 중 {visible.length.toLocaleString("ko-KR")}곳 표시
         </span>

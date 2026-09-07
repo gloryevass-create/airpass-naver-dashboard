@@ -51,3 +51,45 @@ export function SearchInput({
     </div>
   );
 }
+
+// 공공데이터 DB 목록 화면들(청소년수련시설/장애인단체 등)은 Industry 테마가 아니라
+// 일반 Tailwind 톤을 쓰기 때문에(className="input"이 없음) 위 SearchInput을 그대로
+// 못 쓴다 — 같은 돋보기 아이콘을 그 화면들에도 일괄 적용하려고 Tailwind 버전을
+// 별도로 뽑았다(2026-09-07).
+export function SearchIconInput({
+  value,
+  onChange,
+  placeholder,
+  className,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  className?: string;
+}) {
+  return (
+    <div className="relative">
+      <svg
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-ink-mute opacity-70"
+      >
+        <circle cx="11" cy="11" r="7" />
+        <path d="m21 21-4.3-4.3" />
+      </svg>
+      <input
+        type="search"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className={`rounded-sm border border-hairline py-1.5 pl-8 pr-3 text-ink outline-none focus:border-primary ${className ?? ""}`}
+      />
+    </div>
+  );
+}

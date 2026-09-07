@@ -4,6 +4,7 @@ import { useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import type { Vendor, VendorDocumentType } from "@/lib/queries/vendors";
 import { saveVendor, deleteVendor, uploadVendorDocument, deleteVendorDocument } from "@/app/dashboard/actions/vendors";
+import { SearchInput } from "@/components/dashboard/SearchInput";
 
 const DOCUMENT_LABELS: Record<VendorDocumentType, string> = {
   business_registration: "사업자등록증",
@@ -217,13 +218,7 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
             + 새 업체
           </button>
         </div>
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="업체명·사업자번호·담당자 검색"
-          className="input"
-        />
+        <SearchInput value={search} onChange={setSearch} placeholder="업체명·사업자번호·담당자 검색" style={{ maxWidth: "none", marginBottom: 0 }} />
         <div style={{ margin: "0 calc(var(--space-4) * -1)", display: "flex", maxHeight: "calc(100vh - 280px)", flexDirection: "column", gap: 2, overflowY: "auto" }}>
           {filtered.map((v) => (
             <button

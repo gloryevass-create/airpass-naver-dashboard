@@ -17,6 +17,7 @@ import {
   parseProductCatalogWorkbook,
   type ProductCatalogImportRow,
 } from "@/lib/productCatalogXlsx";
+import { SearchInput } from "@/components/dashboard/SearchInput";
 
 function formatWon(value: number | null): string {
   if (value == null) return "-";
@@ -367,14 +368,7 @@ export function ProductCatalogTable({
 
       <div style={{ display: "flex", flexDirection: "column", border: "1px solid var(--color-divider)", borderRadius: 8, boxShadow: "var(--shadow-sm)", background: "#ffffff", overflow: "hidden" }}>
         <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "var(--space-3)", padding: "var(--space-4)", fontSize: 13 }}>
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="제품명·규격·비고 검색"
-            className="input"
-            style={{ width: 220 }}
-          />
+          <SearchInput value={search} onChange={setSearch} placeholder="제품명·규격·비고 검색" style={{ width: 220, marginBottom: 0 }} />
           <span className="text-muted" style={{ fontSize: 12 }}>
             전체 <strong style={{ color: "var(--color-text)" }}>{products.length.toLocaleString("ko-KR")}</strong>건 중{" "}
             <strong style={{ color: "var(--color-text)" }}>{filtered.length.toLocaleString("ko-KR")}</strong>건 표시 중입니다.
