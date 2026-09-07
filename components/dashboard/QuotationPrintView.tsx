@@ -67,7 +67,7 @@ export function QuotationPrintView({
         </div>
 
         <div className="p-8">
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-[2fr_3fr] sm:items-start">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-[2fr_3fr] sm:items-stretch">
             <div className="flex flex-col overflow-hidden rounded-sm border border-hairline">
               <div className="bg-[#f5f5f7] px-3 py-2 text-center text-sm font-bold text-ink">산출정보</div>
               <InfoRow label="수신" value={`${quotation.customerName} 귀중`} />
@@ -76,7 +76,7 @@ export function QuotationPrintView({
               <InfoRow label="산출일자" value={formatDate(quotation.quoteDate)} />
               <InfoRow label="유효기간" value={quotation.validUntil ? `${formatDate(quotation.validUntil)}까지` : "-"} />
               {quotation.managerName && <InfoRow label="담당자" value={quotation.managerName} />}
-              <div className="border-t border-hairline bg-[#f5f5f7] px-3 py-2">
+              <div className="flex flex-1 flex-col justify-center border-t border-hairline bg-white px-3 py-2">
                 <p className="text-xs text-ink-mute">산출금액 (VAT 포함)</p>
                 <p className="mt-0.5 text-lg font-bold tabular-nums text-primary">{formatCurrency(quotation.totalAmount)}원</p>
               </div>
