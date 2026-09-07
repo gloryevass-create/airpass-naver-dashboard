@@ -261,6 +261,12 @@ function isBlankItem(item: QuotationItem): boolean {
 
 function itemFromProduct(p: ProductCatalogItem): QuotationItem {
   const unitPrice = p.unitPrice ?? 0;
+  // 제품 카탈로그의 "비고"에서 자동 인식된 조달채널·조달번호(detectProcurement(),
+  // app/dashboard/actions/productCatalog.ts)가 있으면 품목 선택 시 이 비고란에도
+  // 그대로 옮겨 적는다 — 예전엔 productId만 연결되고 조달정보는 어디에도 안
+  // 보였는데, 인쇄본까지 그대로 나가는 이 비고 칸에 채워서 산출내역에서도
+  // 바로 확인할 수 있게 한다(사용자 확인, 2026-09-07).
+  const note = p.procurementChannel && p.procurementNumber ? `${p.procurementChannel} : ${p.procurementNumber}` : "";
   return {
     id: crypto.randomUUID(),
     productId: p.id,
@@ -270,7 +276,7 @@ function itemFromProduct(p: ProductCatalogItem): QuotationItem {
     quantity: 1,
     unitPrice,
     amount: unitPrice,
-    note: "",
+    note,
   };
 }
 
