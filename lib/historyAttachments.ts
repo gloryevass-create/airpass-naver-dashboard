@@ -1,7 +1,7 @@
 import "server-only";
-import { randomUUID } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/types/database.types";
+import { safeStorageFileName } from "@/lib/storageKey";
 import {
   driveFileViewUrl,
   isGoogleDriveAttachmentsConfigured,
@@ -85,7 +85,7 @@ export async function resolveHistoryAttachments(
       continue;
     }
 
-    const path = `${service}/${historyId}/${randomUUID()}-${file.name}`;
+    const path = `${service}/${historyId}/${safeStorageFileName(file.name)}`;
     const { error } = await supabase.storage
       .from(HISTORY_ATTACHMENTS_BUCKET)
       .upload(path, file, { contentType: file.type });

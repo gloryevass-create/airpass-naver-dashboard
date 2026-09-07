@@ -1,11 +1,11 @@
 "use server";
 
-import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { extractVendorInfoFromDocument } from "@/lib/vendorDocumentAi";
 import type { VendorDocumentType } from "@/lib/queries/vendors";
 import { deleteAttachmentFromDrive, isGoogleDriveAttachmentsConfigured, uploadAttachmentToDrive } from "@/lib/googleDriveAttachments";
+import { safeStorageFileName } from "@/lib/storageKey";
 
 const PATH = "/dashboard/vendors";
 
@@ -148,7 +148,7 @@ export async function uploadVendorDocument(formData: FormData): Promise<UploadVe
     return { ok: true, vendorId, extracted };
   }
 
-  const path = `${vendorId}/${randomUUID()}-${file.name}`;
+  const path = `${vendorId}/${safeStorageFileName(file.name)}`;
   const { error: uploadError } = await supabase.storage.from("vendor-documents").upload(path, bytes, {
     contentType: file.type,
   });

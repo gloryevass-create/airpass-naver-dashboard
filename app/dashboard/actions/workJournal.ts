@@ -1,6 +1,5 @@
 "use server";
 
-import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import {
@@ -9,6 +8,7 @@ import {
   isGoogleDriveAttachmentsConfigured,
   uploadAttachmentToDrive,
 } from "@/lib/googleDriveAttachments";
+import { safeStorageFileName } from "@/lib/storageKey";
 
 const PATH = "/dashboard/work-journal";
 const BUCKET = "journal-attachments";
@@ -97,7 +97,7 @@ export async function createWorkJournalEntry(
       });
       continue;
     }
-    const path = `${entry.id}/${randomUUID()}-${file.name}`;
+    const path = `${entry.id}/${safeStorageFileName(file.name)}`;
     const { error: uploadError } = await supabase.storage.from(BUCKET).upload(path, file, {
       contentType: file.type,
     });

@@ -1,12 +1,12 @@
 "use server";
 
-import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import type { MemoCategory } from "@/lib/queries/memos";
 import { formatMember } from "@/lib/formatMember";
 import { deleteAttachmentFromDrive, isGoogleDriveAttachmentsConfigured, uploadAttachmentToDrive } from "@/lib/googleDriveAttachments";
+import { safeStorageFileName } from "@/lib/storageKey";
 
 const CATEGORIES: MemoCategory[] = ["business", "cooperation", "marketing", "etc"];
 
@@ -106,7 +106,7 @@ export async function createMemo(_prevState: CreateMemoState, formData: FormData
       });
       continue;
     }
-    const path = `${memo.id}/${randomUUID()}-${file.name}`;
+    const path = `${memo.id}/${safeStorageFileName(file.name)}`;
     const { error: uploadError } = await supabase.storage.from("memo-attachments").upload(path, file, {
       contentType: file.type,
     });
@@ -235,7 +235,7 @@ export async function updateMemo(
       });
       continue;
     }
-    const path = `${memoId}/${randomUUID()}-${file.name}`;
+    const path = `${memoId}/${safeStorageFileName(file.name)}`;
     const { error: uploadError } = await supabase.storage.from("memo-attachments").upload(path, file, {
       contentType: file.type,
     });

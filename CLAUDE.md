@@ -150,6 +150,24 @@ HTML 템플릿(`buildMaterialEmailHtml`)과는 완전히 별개다(그건 안 �
   signed URL(TTL 있음, 조회마다 API 호출 필요)과 달리 개별 조회 시점의 API 호출이 없다.
   Work Journal의 `getWorkJournalAttachmentUrls()` 반환 키는 이 전환으로 `storage_path`
   대신 첨부파일 `id`로 통일했다(구글드라이브 첨부는 `storage_path`가 없어서).
+- **다시 Supabase Storage가 기본(2026-09-07)**: Supabase를 유료 플랜으로 전환해
+  스토리지 용량이 100GB로 늘어나면서 구글드라이브로 옮길 이유가 없어져,
+  `GOOGLE_DRIVE_ATTACHMENTS_ROOT_FOLDER_ID`를 비워 `isGoogleDriveAttachmentsConfigured()`가
+  다시 false를 반환하게 했다 — 코드는 손대지 않고 환경변수만 비웠다(나중에 용량
+  문제가 재발하면 값을 다시 채우고 관리자 페이지에서 구글드라이브 계정만 재연결하면
+  됨, OAuth 연결 인프라 자체는 그대로 남겨둠). 이 시점에 구글드라이브에 남아있던
+  기존 첨부파일 전부(당시 Work Journal 1건뿐)를 실제로 다운로드해 Supabase
+  Storage로 옮기고 `storage_path`를 채우고 `drive_file_id`를 지웠다.
+  - **이 작업 중 발견한 버그**: Storage 오브젝트 키에 한글(비ASCII) 문자가 들어가면
+    Supabase Storage가 `"Invalid key"`로 거부한다는 걸 실측으로 확인했다 —
+    `encodeURIComponent`로 퍼센트 인코딩해도 소용없다(클라이언트/백엔드가 다시
+    디코딩한 뒤 검사해서 원래 문자로 돌아옴). 구글드라이브가 기본이던 동안은 한글
+    파일명이 전부 Drive로만 갔기 때문에 이 버그가 안 드러났었다. `lib/storageKey.ts::safeStorageFileName()`로
+    수정 — Storage 키에는 원본 파일명 대신 확장자만 살린 `randomUUID()`를 쓰고,
+    사람이 보는 원본 파일명은 항상 DB 컬럼(`file_name`/`original_name`)에서만
+    가져온다. Work Journal/Memo Board/제조사 관리/히스토리 첨부 전부(`app/dashboard/actions/workJournal.ts`,
+    `app/dashboard/memos/actions.ts`, `app/dashboard/actions/vendors.ts`,
+    `lib/historyAttachments.ts`)가 이 함수를 쓴다.
 
 ## 산출내역 관리
 
