@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useMemo, useRef, useState, useTransition, type CSSProperties, type MouseEvent } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState, useTransition, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { AnimatePresence, Reorder, useDragControls } from "framer-motion";
@@ -945,53 +945,6 @@ function QuotationForm({
   );
 }
 
-function QuotationCard({
-  quotation,
-  onEdit,
-  onPrintClick,
-}: {
-  quotation: Quotation;
-  onEdit: () => void;
-  onPrintClick: (e: MouseEvent) => void;
-}) {
-  return (
-    <div
-      onClick={onEdit}
-      className="card"
-      style={{ cursor: "pointer", display: "flex", flexDirection: "column", gap: "var(--space-3)", background: "#ffffff", borderRadius: 8, boxShadow: "var(--shadow-sm)" }}
-    >
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-3)", flexWrap: "wrap" }}>
-        <div style={{ minWidth: 0, flex: 1 }}>
-          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8 }}>
-            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 15, fontWeight: 700 }}>{quotation.customerName}</span>
-            <span style={{ flex: "none", fontSize: 12, fontWeight: 500, color: "var(--color-accent-700)" }}>{quotation.quoteNumber}</span>
-            <span className={quotation.status === "final" ? "tag tag-accent" : "tag tag-neutral"}>
-              {quotation.status === "final" ? "최종" : "임시"}
-            </span>
-          </div>
-          <div style={{ marginTop: 6, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8, fontSize: 11 }} className="text-muted">
-            {quotation.projectTitle && <span className="tag tag-outline">{quotation.projectTitle}</span>}
-            {quotation.businessProjectTitle && <span className="tag tag-accent">SI Business · {quotation.businessProjectTitle}</span>}
-            <span>산출일자 {formatDate(quotation.quoteDate)}</span>
-            {quotation.managerName && <span>담당 {quotation.managerName}</span>}
-          </div>
-        </div>
-        <div style={{ display: "flex", flex: "none", alignItems: "center", gap: "var(--space-4)" }}>
-          <span style={{ fontSize: 18, fontWeight: 700 }}>{formatCurrency(quotation.totalAmount)}원</span>
-          <div style={{ display: "flex", gap: 8 }}>
-            <Link href={`/dashboard/quotations/${quotation.id}/print`} target="_blank" onClick={onPrintClick} className="btn btn-secondary" style={{ fontSize: 12 }}>
-              인쇄
-            </Link>
-            <button type="button" onClick={onEdit} className="btn btn-primary" style={{ fontSize: 12 }}>
-              산출내역 수정
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export function QuotationBoard({
   quotations,
   members,
@@ -1051,29 +1004,98 @@ export function QuotationBoard({
           )}
         </div>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", border: "1px solid var(--color-divider)", borderRadius: 8, boxShadow: "var(--shadow-sm)", background: "#ffffff", padding: "var(--space-2) var(--space-4)" }}>
+        <div style={{ display: "flex", flexDirection: "column", border: "1px solid var(--color-divider)", borderRadius: 8, boxShadow: "var(--shadow-sm)", background: "#ffffff", overflow: "hidden" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "var(--space-3)", padding: "var(--space-4)", fontSize: 13 }}>
             <input
+              type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="기관명·사업명·산출번호 검색"
-              style={{ flex: 1, border: 0, background: "transparent", fontSize: 14, outline: "none" }}
+              className="input"
+              style={{ width: 240 }}
             />
-            <span className="text-muted" style={{ flex: "none", fontSize: 13, fontWeight: 500 }}>{filtered.length}건</span>
-            <button type="button" onClick={() => setEditingId("new")} className="btn btn-primary" style={{ flex: "none" }}>
-              + 새 산출내역 만들기
-            </button>
+            <span className="text-muted" style={{ fontSize: 12 }}>
+              전체 <strong style={{ color: "var(--color-text)" }}>{quotations.length.toLocaleString("ko-KR")}</strong>건 중{" "}
+              <strong style={{ color: "var(--color-text)" }}>{filtered.length.toLocaleString("ko-KR")}</strong>건 표시 중입니다.
+            </span>
+            <div style={{ marginLeft: "auto" }}>
+              <button type="button" onClick={() => setEditingId("new")} className="btn btn-primary">
+                + 새 산출내역 만들기
+              </button>
+            </div>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
-            {filtered.map((q) => (
-              <QuotationCard key={q.id} quotation={q} onEdit={() => setEditingId(q.id)} onPrintClick={(e) => e.stopPropagation()} />
-            ))}
-            {filtered.length === 0 && (
-              <p className="text-muted" style={{ border: "1px solid var(--color-divider)", borderRadius: 8, boxShadow: "var(--shadow-sm)", background: "#ffffff", padding: "var(--space-6)", textAlign: "center", fontSize: 13 }}>
-                {quotations.length === 0 ? "등록된 산출내역이 없습니다." : "검색 결과가 없습니다."}
-              </p>
-            )}
+          <div style={{ maxHeight: "70vh", overflow: "auto", borderTop: "1px solid var(--color-divider)" }}>
+            <table className="table">
+              <thead>
+                <tr>
+                  <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>기관명·산출번호</th>
+                  <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>산출명</th>
+                  <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>연결 사업</th>
+                  <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>산출일자</th>
+                  <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>담당</th>
+                  <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>금액</th>
+                  <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>관리</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((q) => (
+                  <tr key={q.id}>
+                    <td>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8 }}>
+                          <span style={{ whiteSpace: "normal", fontWeight: 600 }}>{q.customerName}</span>
+                          <span className={q.status === "final" ? "tag tag-accent" : "tag tag-neutral"}>
+                            {q.status === "final" ? "최종" : "임시"}
+                          </span>
+                        </div>
+                        <span className="text-muted" style={{ fontSize: 12 }}>{q.quoteNumber}</span>
+                      </div>
+                    </td>
+                    <td className="text-muted" style={{ whiteSpace: "normal" }}>
+                      {q.projectTitle || "-"}
+                    </td>
+                    <td>
+                      {q.businessProjectTitle ? (
+                        <span className="tag tag-outline">{q.businessProjectTitle}</span>
+                      ) : (
+                        <span className="text-muted">-</span>
+                      )}
+                    </td>
+                    <td className="text-muted" style={{ whiteSpace: "nowrap" }}>
+                      {formatDate(q.quoteDate)}
+                    </td>
+                    <td className="text-muted">{q.managerName || "-"}</td>
+                    <td style={{ fontWeight: 600, whiteSpace: "nowrap" }}>{formatCurrency(q.totalAmount)}원</td>
+                    <td>
+                      <div style={{ display: "flex", justifyContent: "center", gap: 8 }}>
+                        <Link href={`/dashboard/quotations/${q.id}/print`} target="_blank" className="btn btn-ghost" style={{ fontSize: 12 }}>
+                          인쇄
+                        </Link>
+                        <button type="button" onClick={() => setEditingId(q.id)} className="btn btn-ghost" style={{ fontSize: 12 }}>
+                          수정
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(q.id)}
+                          className="btn btn-ghost"
+                          style={{ fontSize: 12, color: "var(--color-accent-900)" }}
+                        >
+                          삭제
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {filtered.length === 0 && (
+                  <tr>
+                    <td colSpan={7} className="text-muted" style={{ textAlign: "center", padding: "var(--space-6)" }}>
+                      {quotations.length === 0 ? "등록된 산출내역이 없습니다." : "검색 결과가 없습니다."}
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
