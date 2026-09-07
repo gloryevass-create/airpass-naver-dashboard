@@ -1023,7 +1023,7 @@ export function QuotationBoard({
             <table className="table">
               <thead>
                 <tr>
-                  <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>번호</th>
+                  <th style={{ position: "sticky", top: 0, background: "#ffffff", paddingLeft: "var(--space-4)" }}>번호</th>
                   <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>산출일자</th>
                   <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>기관명·산출번호</th>
                   <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>산출명</th>
@@ -1036,7 +1036,7 @@ export function QuotationBoard({
               <tbody>
                 {filtered.map((q, index) => (
                   <tr key={q.id}>
-                    <td className="text-muted">{index + 1}</td>
+                    <td className="text-muted" style={{ paddingLeft: "var(--space-4)" }}>{index + 1}</td>
                     <td className="text-muted" style={{ whiteSpace: "nowrap" }}>
                       {formatDate(q.quoteDate)}
                     </td>
