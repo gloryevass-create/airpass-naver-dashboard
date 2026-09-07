@@ -466,6 +466,7 @@ export function ProductCatalogTable({
               onClick={handleBulkAssign}
               disabled={selected.size === 0 || bulkVendorId === "__choose__"}
               className="btn btn-primary"
+              style={{ flex: "none", whiteSpace: "nowrap" }}
             >
               적용
             </button>
