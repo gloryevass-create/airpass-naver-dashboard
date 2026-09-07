@@ -9,6 +9,12 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: "2026-09-08",
+    items: [
+      "산출내역 목록의 \"인쇄\" 버튼이 헤더·사이드바가 같이 보이는 내부 화면 대신, 문서만 뜨는 공개 인쇄 페이지를 진짜 팝업 창으로 띄우도록 변경",
+    ],
+  },
+  {
     date: "2026-09-07",
     items: [
       "AI Issue 날짜 오분류 버그 수정 — 크론 실행 시각(UTC) 대신 한국 시간 기준으로 날짜를 명시하도록 변경",

@@ -212,8 +212,14 @@ HTML 템플릿(`buildMaterialEmailHtml`)과는 완전히 별개다(그건 안 �
   `window.print()`) 버튼만 뜬다. RLS를 anon까지 열어주는 대신 이 서버 컴포넌트에서만
   `createAdminClient()`(service_role)로 id 하나만 조회한다 — 구글드라이브 공유
   링크와 같은 "UUID를 아는 사람만 접근" 모델(사용자 확인, 2026-08-28). 내부 직원용
-  `/dashboard/quotations/[id]/print`(로그인 필요, 인쇄 버튼 하나만)는 그대로 유지 —
-  견적서 목록·SI Business 프로젝트 상세의 "인쇄" 링크는 계속 이쪽을 가리킨다.
+  `/dashboard/quotations/[id]/print`(로그인 필요, 인쇄 버튼 하나만)는 그대로 유지하고
+  SI Business 프로젝트 상세의 "인쇄" 링크는 계속 이쪽을 가리킨다 — 다만 이 경로는
+  `app/dashboard/layout.tsx` 안에 있어서 평범하게 새 탭으로 열면 헤더·사이드바까지
+  같이 보인다(실제 인쇄할 때만 `print:hidden`으로 가려짐). **산출내역 목록의 "인쇄"
+  버튼만은 예외**: "팝업으로 견적서만 나오게 해달라"는 요청(2026-09-08)에 맞춰
+  헤더·사이드바가 아예 없는 `/quote/[id]`를 `window.open(...,"popup,width=...")`으로
+  진짜 팝업 창으로 띄우도록 바꿨다(`QuotationBoard.tsx::openQuotationPopup`) — 내부
+  직원이 봐도 어차피 같은 문서라 공개 페이지를 재사용해도 무방하다고 판단.
 
 ## 마케팅분석 (네이버키워드/네이버블로그/유튜브채널분석)
 

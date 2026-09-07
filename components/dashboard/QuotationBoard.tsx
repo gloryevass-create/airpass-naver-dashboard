@@ -32,6 +32,17 @@ function todayStr(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
+// 목록의 "인쇄" 버튼은 로그인 필요한 내부용 /dashboard/quotations/[id]/print(대시보드
+// 레이아웃 안이라 헤더·사이드바가 같이 뜬다) 대신, 고객 공유용 공개 페이지
+// /quote/[id](app/quote/[id], 대시보드 레이아웃 바깥이라 문서만 뜬다)를 진짜 팝업
+// 창으로 띄운다 — "팝업으로 견적서만 나오게 해달라"는 요청(2026-09-08)에 맞춰
+// 헤더/사이드바 없이 문서만 보이게 하려면 이 경로가 필요했다. window.open의
+// 세 번째 인자에 width/height 등 창 속성을 하나라도 주면 새 탭이 아니라 별도
+// 팝업 창으로 뜬다.
+function openQuotationPopup(id: string) {
+  window.open(`/quote/${id}`, "quotationPreview", "popup,width=880,height=1000,scrollbars=yes,resizable=yes,noopener,noreferrer");
+}
+
 function emptyItem(): QuotationItem {
   return {
     id: crypto.randomUUID(),
@@ -1065,9 +1076,9 @@ export function QuotationBoard({
                     <td style={{ fontWeight: 600, whiteSpace: "nowrap" }}>{formatCurrency(q.totalAmount)}원</td>
                     <td>
                       <div style={{ display: "flex", justifyContent: "center", gap: 8 }}>
-                        <Link href={`/dashboard/quotations/${q.id}/print`} target="_blank" className="btn btn-ghost" style={{ fontSize: 12 }}>
+                        <button type="button" onClick={() => openQuotationPopup(q.id)} className="btn btn-ghost" style={{ fontSize: 12 }}>
                           인쇄
-                        </Link>
+                        </button>
                         <button type="button" onClick={() => setEditingId(q.id)} className="btn btn-ghost" style={{ fontSize: 12 }}>
                           수정
                         </button>
