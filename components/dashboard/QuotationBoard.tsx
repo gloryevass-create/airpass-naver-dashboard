@@ -640,6 +640,10 @@ function QuotationForm({
   // margin_rate, 협력사는 commission_rate) — ProductCatalogTable.tsx가 목록·CSV·폼에서
   // 쓰는 것과 같은 분기다. 여기서는 마진율만 보고 있어서 협력사 공급 품목(예: 수수료
   // 25%짜리 VR기기)의 수익이 항상 0으로 계산되던 버그가 있었다(사용자 신고, 2026-09-08).
+  // margin_rate/commission_rate는 procurement_fee_rate와 마찬가지로 DB에 이미 소수
+  // 형태(0.6 = 60%)로 저장돼 있다(ProductCatalogTable.tsx::formatRate가 표시할 때만
+  // *100 함) — 그런데 여기서 한 번 더 /100을 해서 마진이 100배 작게(0.6%가 아니라
+  // 0.006%로) 계산되는 두 번째 버그가 있었다(사용자가 수치로 재확인, 2026-09-08).
   // 이 값들은 QuotationPrintView(인쇄용 화면)에는 애초에 전달하지 않아 밖으로
   // 나가는 문서에는 절대 노출되지 않는다(사용자 확인, 2026-08-27).
   const estimatedProfit = items.reduce((sum, it) => {
@@ -647,7 +651,7 @@ function QuotationForm({
     const product = productById.get(it.productId);
     if (!product) return sum;
     const rate = (product.supplyType === "partner" ? product.commissionRate : product.marginRate) ?? 0;
-    return sum + Math.round(it.amount * (rate / 100));
+    return sum + Math.round(it.amount * rate);
   }, 0);
   const consortiumPayment = executionType === "컨소" ? Math.round(estimatedProfit * (consortiumRate / 100)) : 0;
   const finalProfit = estimatedProfit - consortiumPayment - extraInternalCost;
