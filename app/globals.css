@@ -64,3 +64,14 @@ select:not(:disabled),
 [role="button"] {
   cursor: pointer;
 }
+
+/* 브라우저는 인쇄 시 배경색(레터헤드 진한 남색 바, 표 헤더 회색 등)을 "배경 그래픽"으로
+   취급해 기본적으로 생략한다 — 사용자가 인쇄 대화상자에서 "배경 그래픽" 옵션을 켜야만
+   보였다. print-color-adjust: exact로 강제해서 그 옵션 없이도 항상 배경색이 그대로
+   인쇄되게 한다(산출내역 인쇄 화면에서 실측 확인, 2026-09-07). */
+@media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
