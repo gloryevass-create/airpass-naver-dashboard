@@ -672,7 +672,7 @@ function QuotationForm({
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)", padding: "var(--space-4)" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-3)", alignItems: "start" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "2fr 3fr", gap: "var(--space-4)", alignItems: "start" }}>
           {/* 산출정보 */}
           <div style={{ display: "flex", flexDirection: "column", overflow: "hidden", border: "1px solid var(--color-divider)" }}>
             <div style={{ borderBottom: "1px solid var(--color-divider)", padding: "6px 0", textAlign: "center", fontSize: 11, fontWeight: 700, letterSpacing: "0.3em", color: "#4b5563" }}>
@@ -715,6 +715,10 @@ function QuotationForm({
             </div>
             <BusinessProjectField projects={businessProjects} value={businessProjectId} onChange={setBusinessProjectId} />
             <input type="hidden" name="businessProjectId" value={businessProjectId ?? ""} />
+            <div style={{ borderTop: "1px solid var(--color-divider)", background: "var(--color-surface)", padding: "8px 12px" }}>
+              <p className="text-muted" style={{ margin: 0, fontSize: 11 }}>산출금액 (VAT 포함)</p>
+              <p style={{ margin: "2px 0 0", fontSize: 18, fontWeight: 700, color: "var(--color-accent-700)" }}>{formatCurrency(total)}원</p>
+            </div>
           </div>
 
           {/* 공급자 (고정 정보) */}
@@ -761,12 +765,6 @@ function QuotationForm({
               )}
             </div>
           </div>
-        </div>
-
-        {/* 산출금액 요약 바 — 인쇄본과 동일하게 상단에 크게 강조 */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", border: "1px solid var(--color-divider)", background: "var(--color-surface)", padding: "var(--space-3) var(--space-4)" }}>
-          <span className="text-muted" style={{ fontSize: 12, fontWeight: 500 }}>산출금액 (VAT 포함)</span>
-          <span style={{ fontSize: 20, fontWeight: 700, color: "var(--color-accent-700)" }}>{formatCurrency(total)}원</span>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
