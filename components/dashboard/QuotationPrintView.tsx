@@ -90,6 +90,7 @@ export function QuotationPrintView({
               <InfoRow label="업태" value={QUOTATION_SUPPLIER.businessType} />
               <InfoRow label="종목" value={QUOTATION_SUPPLIER.businessItems} />
               <InfoRow label="TEL" value={QUOTATION_SUPPLIER.phone} />
+              <InfoRow label="FAX" value={QUOTATION_SUPPLIER.fax} />
               {quotation.includeStamp && (
                 <span className="absolute right-4 top-12 flex h-12 w-12 items-center justify-center rounded-full border-2 border-semantic-error text-sm font-bold text-semantic-error">
                   인

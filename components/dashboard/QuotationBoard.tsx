@@ -735,7 +735,12 @@ function QuotationForm({
               <InfoRow label="사업자번호" value={QUOTATION_SUPPLIER.businessNumber} />
               <InfoRow label="대표자" value={QUOTATION_SUPPLIER.representative} />
               <InfoRow label="주소" value={QUOTATION_SUPPLIER.address} />
-              <InfoRow label="전화번호" value={QUOTATION_SUPPLIER.phone} />
+              <InfoSplitRow
+                leftLabel="전화번호"
+                leftValue={QUOTATION_SUPPLIER.phone}
+                rightLabel="팩스번호"
+                rightValue={QUOTATION_SUPPLIER.fax}
+              />
               <InfoSplitRow
                 leftLabel="업태"
                 leftValue={QUOTATION_SUPPLIER.businessType}
