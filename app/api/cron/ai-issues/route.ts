@@ -26,6 +26,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ ok: true, inserted: 0, candidates: candidates.length, note: "이슈로 선별된 항목 없음" });
     }
 
+    // issue_date는 DB 컬럼 기본값(current_date, UTC 기준)에 맡기지 않고 여기서
+    // 한국시간 날짜로 직접 채운다 — 크론이 UTC 23:00(=KST 다음날 08:00)에 실행돼서
+    // DB 기본값을 쓰면 "오늘 아침" 수집분이 "어제" 날짜로 잘못 찍히는 버그가 있었다
+    // (2026-09-07 실측 확인).
+    const issueDate = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Seoul" });
+
     const admin = createAdminClient();
     const rows = selected.map(({ index, summary }) => {
       const c = candidates[index];
@@ -36,6 +42,7 @@ export async function GET(request: NextRequest) {
         summary,
         source_query: c.query,
         published_at: c.publishedAt,
+        issue_date: issueDate,
       };
     });
 
