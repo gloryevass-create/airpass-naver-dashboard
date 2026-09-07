@@ -2,7 +2,6 @@
 
 import { useActionState, useEffect, useMemo, useRef, useState, useTransition, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
-import Link from "next/link";
 import { AnimatePresence, Reorder, useDragControls } from "framer-motion";
 import type { Quotation, QuotationItem } from "@/lib/queries/quotations";
 import type { ProductCatalogItem } from "@/lib/queries/productCatalog";
@@ -611,7 +610,7 @@ function QuotationForm({
   );
   const [discountAmount, setDiscountAmount] = useState(quotation?.discountAmount ?? 0);
   const [extraAmount, setExtraAmount] = useState(quotation?.extraAmount ?? 0);
-  const [includeStamp, setIncludeStamp] = useState(quotation?.includeStamp ?? false);
+  const [includeStamp, setIncludeStamp] = useState(quotation?.includeStamp ?? true);
   const [executionType, setExecutionType] = useState(quotation?.executionType ?? "직영");
   const [consortiumRate, setConsortiumRate] = useState(quotation?.consortiumRate ?? 0);
   const [extraInternalCost, setExtraInternalCost] = useState(quotation?.extraInternalCost ?? 0);
@@ -841,9 +840,9 @@ function QuotationForm({
             취소
           </button>
           {quotation && (
-            <Link href={`/dashboard/quotations/${quotation.id}/print`} target="_blank" className="btn btn-secondary">
+            <button type="button" onClick={() => openQuotationPopup(quotation.id)} className="btn btn-secondary">
               인쇄용 보기
-            </Link>
+            </button>
           )}
         </div>
       </div>
@@ -1054,7 +1053,9 @@ export function QuotationBoard({
                     <td>
                       <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                         <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8 }}>
-                          <span style={{ whiteSpace: "normal", fontWeight: 600 }}>{q.customerName}</span>
+                          <span onClick={() => setEditingId(q.id)} className="detail-link" style={{ cursor: "pointer", whiteSpace: "normal", fontWeight: 600 }}>
+                            {q.customerName}
+                          </span>
                           <span className={q.status === "final" ? "tag tag-accent" : "tag tag-neutral"}>
                             {q.status === "final" ? "최종" : "임시"}
                           </span>
