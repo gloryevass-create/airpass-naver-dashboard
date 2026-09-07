@@ -715,9 +715,9 @@ function QuotationForm({
             </div>
             <BusinessProjectField projects={businessProjects} value={businessProjectId} onChange={setBusinessProjectId} />
             <input type="hidden" name="businessProjectId" value={businessProjectId ?? ""} />
-            <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", borderTop: "1px solid var(--color-divider)", background: "#ffffff", padding: "8px 12px" }}>
-              <p className="text-muted" style={{ margin: 0, fontSize: 11 }}>산출금액 (VAT 포함)</p>
-              <p style={{ margin: "2px 0 0", fontSize: 18, fontWeight: 700, color: "var(--color-accent-700)" }}>{formatCurrency(total)}원</p>
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", borderTop: "1px solid var(--color-divider)", background: "#ffffff", padding: "6px 12px" }}>
+              <p className="text-muted" style={{ margin: 0, fontSize: 10 }}>산출금액 (VAT 포함)</p>
+              <p style={{ margin: "2px 0 0", fontSize: 14, fontWeight: 700, color: "var(--color-accent-700)" }}>{formatCurrency(total)}원</p>
             </div>
           </div>
 
