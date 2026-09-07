@@ -15,10 +15,10 @@ function formatDate(value: string | null): string {
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex border-t border-hairline first:border-t-0">
-      <div className="w-24 shrink-0 bg-[#f5f5f7] px-3 py-2 text-center text-sm font-medium text-ink-mute print:bg-[#f5f5f7]">
+      <div className="w-24 shrink-0 bg-[#f5f5f7] px-3 py-2 text-center text-[13px] font-medium text-ink-mute print:bg-[#f5f5f7]">
         {label}
       </div>
-      <div className="flex-1 px-3 py-2 text-center text-sm font-bold text-ink">{value}</div>
+      <div className="flex-1 px-3 py-2 text-center text-[13px] font-bold text-ink">{value}</div>
     </div>
   );
 }
@@ -67,7 +67,7 @@ export function QuotationPrintView({
         </div>
 
         <div className="p-8">
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:items-start">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-[2fr_3fr] sm:items-start">
             <div className="flex flex-col overflow-hidden rounded-sm border border-hairline">
               <div className="bg-[#f5f5f7] px-3 py-2 text-center text-sm font-bold text-ink">산출정보</div>
               <InfoRow label="수신" value={`${quotation.customerName} 귀중`} />
