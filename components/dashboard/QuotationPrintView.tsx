@@ -92,9 +92,8 @@ export function QuotationPrintView({
               <InfoRow label="TEL" value={QUOTATION_SUPPLIER.phone} />
               <InfoRow label="FAX" value={QUOTATION_SUPPLIER.fax} />
               {quotation.includeStamp && (
-                <span className="absolute right-4 top-12 flex h-12 w-12 items-center justify-center rounded-full border-2 border-semantic-error text-sm font-bold text-semantic-error">
-                  인
-                </span>
+                // eslint-disable-next-line @next/next/no-img-element -- 고정 크기 도장 이미지, next/image 최적화 불필요
+                <img src="/quotation-stamp.png" alt="직인" className="absolute right-4 top-12 h-14 w-14" />
               )}
             </div>
           </div>

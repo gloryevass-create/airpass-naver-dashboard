@@ -748,25 +748,12 @@ function QuotationForm({
                 rightValue={QUOTATION_SUPPLIER.businessItems}
               />
               {includeStamp && (
-                <span
-                  style={{
-                    position: "absolute",
-                    right: 12,
-                    top: 40,
-                    display: "flex",
-                    height: 44,
-                    width: 44,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderRadius: "50%",
-                    border: "2px solid var(--color-accent-900)",
-                    fontSize: 12,
-                    fontWeight: 700,
-                    color: "var(--color-accent-900)",
-                  }}
-                >
-                  인
-                </span>
+                // eslint-disable-next-line @next/next/no-img-element -- 고정 크기 도장 이미지, next/image 최적화 불필요
+                <img
+                  src="/quotation-stamp.png"
+                  alt="직인"
+                  style={{ position: "absolute", right: 12, top: 40, height: 52, width: 52 }}
+                />
               )}
             </div>
           </div>
