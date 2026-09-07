@@ -634,14 +634,20 @@ function QuotationForm({
   }, 0);
   const total = adjustedAmount + procurementFeeAmount;
 
-  // 내부용 수익 분석 — 제품 카탈로그에서 고른 품목만 마진율을 알 수 있어 계산에
+  // 내부용 수익 분석 — 제품 카탈로그에서 고른 품목만 수익률을 알 수 있어 계산에
   // 넣고, 직접 입력한 품목은 마진을 알 수 없으니 추측하지 않고 0으로 둔다.
+  // 공급방식에 따라 우리 수익이 되는 컬럼이 다르다(product_catalog: 직공급은
+  // margin_rate, 협력사는 commission_rate) — ProductCatalogTable.tsx가 목록·CSV·폼에서
+  // 쓰는 것과 같은 분기다. 여기서는 마진율만 보고 있어서 협력사 공급 품목(예: 수수료
+  // 25%짜리 VR기기)의 수익이 항상 0으로 계산되던 버그가 있었다(사용자 신고, 2026-09-08).
   // 이 값들은 QuotationPrintView(인쇄용 화면)에는 애초에 전달하지 않아 밖으로
   // 나가는 문서에는 절대 노출되지 않는다(사용자 확인, 2026-08-27).
   const estimatedProfit = items.reduce((sum, it) => {
     if (!it.productId) return sum;
-    const marginRate = productById.get(it.productId)?.marginRate ?? 0;
-    return sum + Math.round(it.amount * (marginRate / 100));
+    const product = productById.get(it.productId);
+    if (!product) return sum;
+    const rate = (product.supplyType === "partner" ? product.commissionRate : product.marginRate) ?? 0;
+    return sum + Math.round(it.amount * (rate / 100));
   }, 0);
   const consortiumPayment = executionType === "컨소" ? Math.round(estimatedProfit * (consortiumRate / 100)) : 0;
   const finalProfit = estimatedProfit - consortiumPayment - extraInternalCost;
@@ -937,8 +943,8 @@ function QuotationForm({
             <span style={{ color: "var(--color-text)" }}>{marginPercent.toFixed(1)}%</span>
           </div>
           <p className="text-muted" style={{ margin: 0, fontSize: 10 }}>
-            제품 카탈로그의 마진율을 기준으로 계산되며(직접 입력한 품목은 마진율을 몰라 0으로 처리),
-            인쇄·PDF 화면에는 표시되지 않습니다.
+            제품 카탈로그의 마진율(직공급)·수수료율(협력사)을 기준으로 계산되며(직접 입력한 품목은
+            수익률을 몰라 0으로 처리), 인쇄·PDF 화면에는 표시되지 않습니다.
           </p>
         </div>
 
