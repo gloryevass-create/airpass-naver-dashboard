@@ -12,9 +12,10 @@ import { MobileNavProvider } from "@/components/MobileNavContext";
 // --font-sans를 덮어쓴다. industryTheme.css의 --font-heading/--font-body가
 // var(--font-sans)를 그대로 참조하도록 통일해 둔 덕분에, 이 값 하나만 최상위
 // 래퍼에 인라인으로 얹으면 그 안의 모든 Industry 테마 화면까지 한 번에 반영된다.
-// 사이드바(dashboardSidebarTheme.css)도 처음엔 Pretendard를 하드코딩해서 영향을
-// 안 받았는데, 사용자가 사이드바도 같이 바뀌길 원해서(2026-09-08) 그 파일도
-// var(--font-sans)를 참조하도록 바꿔 이제 함께 반영된다.
+// 사이드바는 본문과 별도 설정(profiles.sidebar_font_preference, 2026-09-08 추가)을
+// 쓴다 — DashboardSidebar에 fontOverrideStyle을 따로 넘겨 그 컴포넌트의 nav
+// 루트에서 --font-sans를 다시 덮어쓴다(CSS 변수는 더 안쪽에서 재선언하면 그
+// 서브트리에서 이기므로, 최상위의 본문용 값과 자연스럽게 분리된다).
 // 산출내역 인쇄본/고객 공개 페이지(/quote)는 이 레이아웃 바깥이라 항상 고정값.
 const SYSTEM_FONT_STACK =
   '-apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", "Apple SD Gothic Neo", Roboto, Helvetica, Arial, sans-serif';
@@ -49,13 +50,15 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const { supabase, user } = await requireAuthedClient();
 
   const [{ data: profile }, latestDate, notifications, teamMembers] = await Promise.all([
-    supabase.from("profiles").select("role, name, title, font_preference").eq("id", user.id).single(),
+    supabase.from("profiles").select("role, name, title, font_preference, sidebar_font_preference").eq("id", user.id).single(),
     getLatestDataDate(),
     getNotifications(supabase, user.id),
     getTeamMemberNames(supabase),
   ]);
 
   const fontOverrideStyle: CSSProperties = (profile?.font_preference && FONT_OVERRIDES[profile.font_preference]) || {};
+  const sidebarFontOverrideStyle: CSSProperties =
+    (profile?.sidebar_font_preference && FONT_OVERRIDES[profile.sidebar_font_preference]) || {};
 
   return (
     <MobileNavProvider>
@@ -79,7 +82,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           teamMembers={teamMembers}
         />
         <div className="flex min-h-0 flex-1 overflow-x-hidden print:overflow-visible">
-          <DashboardSidebar latestDate={latestDate} />
+          <DashboardSidebar latestDate={latestDate} fontOverrideStyle={sidebarFontOverrideStyle} />
           <div className="min-w-0 flex-1 overflow-y-auto print:h-auto print:overflow-visible">{children}</div>
         </div>
       </div>

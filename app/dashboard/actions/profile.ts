@@ -8,11 +8,23 @@ const PATH = "/dashboard/account/profile";
 
 export type UpdateProfileState = { error?: string; success?: boolean } | undefined;
 
+const ALLOWED_FONT_PREFERENCES = ["system", "gmarket", "nanumsquare", "noto", "omudaye"] as const;
+type FontPreference = "pretendard" | (typeof ALLOWED_FONT_PREFERENCES)[number];
+
+// 본문 폰트(font_preference)와 사이드바 폰트(sidebar_font_preference)가 같은
+// 허용값 목록을 공유해서(2026-09-08, 사이드바 별도 설정 추가) 파싱 로직을 하나로
+// 뽑아 재사용한다.
+function parseFontPreference(raw: FormDataEntryValue | null): FontPreference {
+  const value = String(raw ?? "");
+  return (ALLOWED_FONT_PREFERENCES as readonly string[]).includes(value) ? (value as FontPreference) : "pretendard";
+}
+
 /** profiles에는 의도적으로 authenticated self-update RLS 정책이 없다(같은 행의
  * role을 사용자가 스스로 admin으로 바꿔치기하는 걸 막기 위해 — app/login/actions.ts의
  * recordLogin과 동일한 이유). 그래서 여기서도 세션 클라이언트로 "본인이 맞는지"만
- * 확인한 뒤, admin(service_role) 클라이언트로 title/google_email/phone/font_preference
- * 네 컬럼만 골라서 갱신한다 — role·email·name 등은 이 액션이 절대 건드리지 않는다. */
+ * 확인한 뒤, admin(service_role) 클라이언트로 title/google_email/phone/font_preference/
+ * sidebar_font_preference 다섯 컬럼만 골라서 갱신한다 — role·email·name 등은 이
+ * 액션이 절대 건드리지 않는다. */
 export async function updateOwnProfile(
   _prevState: UpdateProfileState,
   formData: FormData
@@ -22,14 +34,8 @@ export async function updateOwnProfile(
   const title = String(formData.get("title") ?? "").trim() || null;
   const googleEmail = String(formData.get("googleEmail") ?? "").trim() || null;
   const phone = String(formData.get("phone") ?? "").trim() || null;
-  const fontPreferenceRaw = String(formData.get("fontPreference") ?? "");
-  const ALLOWED_FONT_PREFERENCES = ["system", "gmarket", "nanumsquare", "noto", "omudaye"] as const;
-  type FontPreference = "pretendard" | (typeof ALLOWED_FONT_PREFERENCES)[number];
-  const fontPreference: FontPreference = (
-    ALLOWED_FONT_PREFERENCES as readonly string[]
-  ).includes(fontPreferenceRaw)
-    ? (fontPreferenceRaw as FontPreference)
-    : "pretendard";
+  const fontPreference = parseFontPreference(formData.get("fontPreference"));
+  const sidebarFontPreference = parseFontPreference(formData.get("sidebarFontPreference"));
 
   if (googleEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(googleEmail)) {
     return { error: "구글 이메일 형식이 올바르지 않습니다." };
@@ -38,7 +44,13 @@ export async function updateOwnProfile(
   const admin = createAdminClient();
   const { error } = await admin
     .from("profiles")
-    .update({ title, google_email: googleEmail, phone, font_preference: fontPreference })
+    .update({
+      title,
+      google_email: googleEmail,
+      phone,
+      font_preference: fontPreference,
+      sidebar_font_preference: sidebarFontPreference,
+    })
     .eq("id", user.id);
 
   if (error) return { error: `저장 실패: ${error.message}` };

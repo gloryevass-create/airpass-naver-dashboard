@@ -30,6 +30,7 @@ export type Database = {
           google_email: string | null;
           phone: string | null;
           font_preference: "pretendard" | "system" | "gmarket" | "nanumsquare" | "noto" | "omudaye";
+          sidebar_font_preference: "pretendard" | "system" | "gmarket" | "nanumsquare" | "noto" | "omudaye";
           role: "admin" | "member" | "guest";
           created_at: string;
           last_login_at: string | null;
@@ -43,6 +44,7 @@ export type Database = {
           google_email?: string | null;
           phone?: string | null;
           font_preference?: "pretendard" | "system" | "gmarket" | "nanumsquare" | "noto" | "omudaye";
+          sidebar_font_preference?: "pretendard" | "system" | "gmarket" | "nanumsquare" | "noto" | "omudaye";
           role?: "admin" | "member" | "guest";
           created_at?: string;
           last_login_at?: string | null;
@@ -56,6 +58,7 @@ export type Database = {
           google_email?: string | null;
           phone?: string | null;
           font_preference?: "pretendard" | "system" | "gmarket" | "nanumsquare" | "noto" | "omudaye";
+          sidebar_font_preference?: "pretendard" | "system" | "gmarket" | "nanumsquare" | "noto" | "omudaye";
           role?: "admin" | "member" | "guest";
           created_at?: string;
           last_login_at?: string | null;

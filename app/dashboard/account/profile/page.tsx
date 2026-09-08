@@ -43,6 +43,7 @@ export default async function ProfilePage() {
           googleEmail={profile?.google_email ?? ""}
           phone={profile?.phone ?? ""}
           fontPreference={profile?.font_preference ?? "pretendard"}
+          sidebarFontPreference={profile?.sidebar_font_preference ?? "pretendard"}
         />
       </div>
     </div>

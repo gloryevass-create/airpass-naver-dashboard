@@ -2,7 +2,7 @@
 
 import Link, { useLinkStatus } from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, type MouseEvent } from "react";
+import { useEffect, useState, type CSSProperties, type MouseEvent } from "react";
 import { NavIcon, type IconName } from "@/components/icons/NavIcon";
 import { useMobileNav } from "@/components/MobileNavContext";
 import "./dashboardSidebarTheme.css";
@@ -154,7 +154,19 @@ function SubRow({ item, active }: { item: LeafItem; active: boolean }) {
   );
 }
 
-export function DashboardSidebar({ latestDate }: { latestDate: string | null }) {
+export function DashboardSidebar({
+  latestDate,
+  fontOverrideStyle,
+}: {
+  latestDate: string | null;
+  // 사이드바 전용 개인 폰트 설정(profiles.sidebar_font_preference, 2026-09-08) —
+  // app/dashboard/layout.tsx가 본문(--font-sans)과 별도로 계산해서 넘겨준다.
+  // .ds-sidebar가 dashboardSidebarTheme.css에서 var(--font-sans, Pretendard)를
+  // 참조하므로, 이 nav 루트에 --font-sans를 다시 덮어쓰면 본문과 다른 값이어도
+  // 이 안에서만 우선 적용된다(CSS 변수는 더 안쪽에서 재선언하면 그 서브트리에서
+  // 이긴다).
+  fontOverrideStyle?: CSSProperties;
+}) {
   const pathname = usePathname();
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(() => new Set(DEFAULT_COLLAPSED_GROUPS));
   const [railCollapsed, setRailCollapsed] = useState(false);
@@ -188,6 +200,7 @@ export function DashboardSidebar({ latestDate }: { latestDate: string | null }) 
         className={`ds-sidebar fixed inset-y-0 left-0 z-40 flex h-full w-64 shrink-0 flex-col border-r border-hairline transition-transform duration-200 print:hidden md:static md:z-auto md:translate-x-0 ${
           open ? "translate-x-0" : "-translate-x-full"
         } ${railCollapsed ? "md:w-[72px]" : "md:w-56"}`}
+        style={fontOverrideStyle}
       >
         {/* WORKSPACE(브랜드 박스 + 상단 고정 목록)는 스크롤 없이 항상 그 자리에
             있고, 그 아래 접이식 그룹 목록만 자체 스크롤한다 — 디자인 원본과
