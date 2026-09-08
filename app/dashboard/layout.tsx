@@ -11,9 +11,10 @@ import { MobileNavProvider } from "@/components/MobileNavContext";
 // 고르면 app/globals.css가 전역 기본값으로 쓰는 Pretendard 대신 이 값으로
 // --font-sans를 덮어쓴다. industryTheme.css의 --font-heading/--font-body가
 // var(--font-sans)를 그대로 참조하도록 통일해 둔 덕분에, 이 값 하나만 최상위
-// 래퍼에 인라인으로 얹으면 그 안의 모든 Industry 테마 화면까지 한 번에 반영된다
-// (사이드바는 dashboardSidebarTheme.css가 자체 원칙상 CSS 변수를 안 쓰고
-// Pretendard를 하드코딩해 둬서 이 설정의 영향을 받지 않는다 — 사용자 확인).
+// 래퍼에 인라인으로 얹으면 그 안의 모든 Industry 테마 화면까지 한 번에 반영된다.
+// 사이드바(dashboardSidebarTheme.css)도 처음엔 Pretendard를 하드코딩해서 영향을
+// 안 받았는데, 사용자가 사이드바도 같이 바뀌길 원해서(2026-09-08) 그 파일도
+// var(--font-sans)를 참조하도록 바꿔 이제 함께 반영된다.
 // 산출내역 인쇄본/고객 공개 페이지(/quote)는 이 레이아웃 바깥이라 항상 고정값.
 const SYSTEM_FONT_STACK =
   '-apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", "Apple SD Gothic Neo", Roboto, Helvetica, Arial, sans-serif';
