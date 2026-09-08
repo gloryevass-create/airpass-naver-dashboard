@@ -42,6 +42,7 @@ export default async function ProfilePage() {
           title={profile?.title ?? ""}
           googleEmail={profile?.google_email ?? ""}
           phone={profile?.phone ?? ""}
+          fontPreference={profile?.font_preference ?? "pretendard"}
         />
       </div>
     </div>

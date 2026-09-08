@@ -29,6 +29,7 @@ export type Database = {
           title: string | null;
           google_email: string | null;
           phone: string | null;
+          font_preference: "pretendard" | "system";
           role: "admin" | "member" | "guest";
           created_at: string;
           last_login_at: string | null;
@@ -41,6 +42,7 @@ export type Database = {
           title?: string | null;
           google_email?: string | null;
           phone?: string | null;
+          font_preference?: "pretendard" | "system";
           role?: "admin" | "member" | "guest";
           created_at?: string;
           last_login_at?: string | null;
@@ -53,6 +55,7 @@ export type Database = {
           title?: string | null;
           google_email?: string | null;
           phone?: string | null;
+          font_preference?: "pretendard" | "system";
           role?: "admin" | "member" | "guest";
           created_at?: string;
           last_login_at?: string | null;
