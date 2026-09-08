@@ -17,6 +17,12 @@ import { MobileNavProvider } from "@/components/MobileNavContext";
 // 산출내역 인쇄본/고객 공개 페이지(/quote)는 이 레이아웃 바깥이라 항상 고정값.
 const SYSTEM_FONT_STACK =
   '-apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", "Apple SD Gothic Neo", Roboto, Helvetica, Arial, sans-serif';
+// G마켓 산스(2026-09-08 추가, 사용자 제공 @font-face) — 300/500/700 세 굵기만 있어
+// industryTheme.css가 기본으로 쓰는 --font-heading-weight: 600이 정확히 없다.
+// 이 폰트를 고른 사람만 700(Bold)로 같이 덮어써서 헤딩이 어중간한 굵기로
+// 대체되지 않게 한다(가장 눈에 띄는 요소라 우선 처리, 본문 400은 브라우저의
+// 가장 가까운 굵기 자동 대체에 맡김).
+const GMARKET_FONT_STACK = '"GMarketSans", -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { supabase, user } = await requireAuthedClient();
@@ -29,7 +35,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
   ]);
 
   const fontOverrideStyle: CSSProperties =
-    profile?.font_preference === "system" ? ({ "--font-sans": SYSTEM_FONT_STACK } as CSSProperties) : {};
+    profile?.font_preference === "system"
+      ? ({ "--font-sans": SYSTEM_FONT_STACK } as CSSProperties)
+      : profile?.font_preference === "gmarket"
+        ? ({ "--font-sans": GMARKET_FONT_STACK, "--font-heading-weight": 700 } as CSSProperties)
+        : {};
 
   return (
     <MobileNavProvider>

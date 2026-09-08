@@ -18,7 +18,7 @@ export function ProfileForm({
   title: string;
   googleEmail: string;
   phone: string;
-  fontPreference: "pretendard" | "system";
+  fontPreference: "pretendard" | "system" | "gmarket";
 }) {
   const [state, formAction, pending] = useActionState(updateOwnProfile, initialState);
 
@@ -50,6 +50,7 @@ export function ProfileForm({
           <select className="input" id="fontPreference" name="fontPreference" defaultValue={fontPreference}>
             <option value="pretendard">Pretendard (기본)</option>
             <option value="system">시스템 기본 폰트</option>
+            <option value="gmarket">G마켓 산스</option>
           </select>
         </div>
       </div>

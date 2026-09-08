@@ -23,7 +23,8 @@ export async function updateOwnProfile(
   const googleEmail = String(formData.get("googleEmail") ?? "").trim() || null;
   const phone = String(formData.get("phone") ?? "").trim() || null;
   const fontPreferenceRaw = String(formData.get("fontPreference") ?? "");
-  const fontPreference = fontPreferenceRaw === "system" ? "system" : "pretendard";
+  const fontPreference =
+    fontPreferenceRaw === "system" ? "system" : fontPreferenceRaw === "gmarket" ? "gmarket" : "pretendard";
 
   if (googleEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(googleEmail)) {
     return { error: "구글 이메일 형식이 올바르지 않습니다." };
