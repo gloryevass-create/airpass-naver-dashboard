@@ -78,6 +78,18 @@
   font-display: swap;
 }
 
+/* 오뮤 다예쁨체(OmuDaye) — 여섯 번째 선택지(2026-09-08, 사용자 제공 코드 그대로).
+   손글씨풍 폰트라 애초에 굵기가 normal(400) 한 종류뿐이다 — 이런 폰트에 헤딩용
+   굵은 글씨를 강제로 합성(synthetic bold)하면 획 두께가 고르지 않게 뭉개져
+   보기 안 좋으므로, app/dashboard/layout.tsx에서 --font-heading-weight도
+   400으로 같이 낮춰서 헤딩과 본문이 같은(유일한) 굵기를 쓰게 한다. */
+@font-face {
+  font-family: "OmuDaye";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/omyu_pretty.woff2") format("woff2");
+  font-weight: normal;
+  font-display: swap;
+}
+
 /* Color tokens — DESIGN.md (Apple-inspired, reinterpreted for a data-dense business
    dashboard: Apple's own parchment page canvas (#f5f5f7) with white raised surfaces
    (cards/table headers/dropdowns) on top, near-black ink, a single quiet Action Blue

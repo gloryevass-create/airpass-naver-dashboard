@@ -30,6 +30,10 @@ const NANUMSQUARE_FONT_STACK = '"NanumSquare", -apple-system, BlinkMacSystemFont
 // 본고딕/Noto Sans KR(2026-09-08 추가) — 100~900 9단계가 전부 있어 600이 정확히
 // 있다. G마켓 산스/나눔스퀘어와 달리 --font-heading-weight를 덮어쓸 필요가 없다.
 const NOTO_FONT_STACK = '"Noto Sans KR", -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif';
+// 오뮤 다예쁨체(2026-09-08 추가) — 손글씨풍 폰트라 굵기가 normal(400) 하나뿐이다.
+// 헤딩용 600을 그대로 두면 브라우저가 합성 굵게(synthetic bold)를 적용해 손글씨
+// 획이 뭉개져 보이므로, 헤딩도 400으로 낮춰 유일한 실제 굵기를 그대로 쓴다.
+const OMUDAYE_FONT_STACK = '"OmuDaye", -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif';
 
 // 선택지가 늘어날수록 삼항연산자 체인이 읽기 어려워져서 맵으로 정리한다 — pretendard는
 // globals.css 전역 기본값을 그대로 쓰므로 이 맵에 없으면(기본값) 아무것도 덮어쓰지 않는다.
@@ -38,6 +42,7 @@ const FONT_OVERRIDES: Record<string, CSSProperties> = {
   gmarket: { "--font-sans": GMARKET_FONT_STACK, "--font-heading-weight": 700 } as CSSProperties,
   nanumsquare: { "--font-sans": NANUMSQUARE_FONT_STACK, "--font-heading-weight": 700 } as CSSProperties,
   noto: { "--font-sans": NOTO_FONT_STACK } as CSSProperties,
+  omudaye: { "--font-sans": OMUDAYE_FONT_STACK, "--font-heading-weight": 400 } as CSSProperties,
 };
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {

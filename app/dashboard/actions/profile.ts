@@ -23,7 +23,7 @@ export async function updateOwnProfile(
   const googleEmail = String(formData.get("googleEmail") ?? "").trim() || null;
   const phone = String(formData.get("phone") ?? "").trim() || null;
   const fontPreferenceRaw = String(formData.get("fontPreference") ?? "");
-  const ALLOWED_FONT_PREFERENCES = ["system", "gmarket", "nanumsquare", "noto"] as const;
+  const ALLOWED_FONT_PREFERENCES = ["system", "gmarket", "nanumsquare", "noto", "omudaye"] as const;
   type FontPreference = "pretendard" | (typeof ALLOWED_FONT_PREFERENCES)[number];
   const fontPreference: FontPreference = (
     ALLOWED_FONT_PREFERENCES as readonly string[]
