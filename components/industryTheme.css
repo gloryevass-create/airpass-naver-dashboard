@@ -7,7 +7,6 @@
  * 페이지 바깥에는 전혀 영향을 주지 않는다. 이 테마를 쓰는 페이지들
  * (app/dashboard/business3, app/dashboard/events2)이 공용으로 import한다.
  */
-@import url("https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;700&family=Barlow+Condensed:wght@400;600&display=swap");
 
 .industry-theme {
   /* 이 페이지만 다른 회색 톤(#f2f2f3)을 쓰면 나머지 대시보드 배경(app/globals.css의
@@ -40,13 +39,17 @@
   --color-accent-800: #2c455d;
   --color-accent-900: #1d2d3d;
 
-  /* Barlow/Barlow Condensed는 라틴 문자 전용이라 한글 글리프가 없다 — 한글은
-     "맑은 고딕"(Malgun Gothic)을 명시로 지정해서 OS 자동 대체(맥은 보통 Apple SD
-     Gothic Neo)에 맡기지 않고 항상 같은 한글 폰트로 렌더링되게 한다(사용자 확인,
-     2026-08-31). 영문/숫자는 그대로 Barlow 계열이 먼저 매칭된다. */
-  --font-heading: "Barlow Condensed", "Malgun Gothic", system-ui, sans-serif;
+  /* Barlow/Barlow Condensed는 라틴 문자 전용이라 한글 글리프가 없어, 한글 텍스트가
+     전부 OS 기본 한글 폰트로 폴백되고("SI Business"처럼 영문+한글 혼용 제목에서
+     영문만 Barlow, 한글은 전혀 다른 서체로 나란히 보임 — 심지어 "41,781,440원"처럼
+     숫자와 옆 한글 단위 사이에서도 발생), 컴퓨터마다 폴백 한글 폰트가 달라 보이는
+     문제까지 있었다(사용자 확인, 2026-09-08) — Pretendard(한글·라틴·숫자를 한 세트로
+     그린 폰트, app/globals.css에서 전역 로드)로 통일해 이 불일치를 해결한다.
+     Barlow Condensed 같은 "폭이 좁은(condensed)" 변형은 Pretendard에 없어서 제목이
+     상대적으로 덜 촘촘해 보일 수 있다(트레이드오프로 감수). */
+  --font-heading: var(--font-sans);
   --font-heading-weight: 600;
-  --font-body: "Barlow", "Malgun Gothic", system-ui, sans-serif;
+  --font-body: var(--font-sans);
 
   /* 원본 디자인 시스템 CSS는 1/2/3/4/6/8만 정의했지만(3.4px 단위 배수), 여러
      목업 HTML은 5/7/9도 그대로 참조한다 — 정의되지 않은 CSS 변수는 조용히

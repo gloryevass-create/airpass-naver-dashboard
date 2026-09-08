@@ -13,7 +13,21 @@
 - Recharts (차트)
 - `googleapis`(구글드라이브 자료 목록/공유 링크) + `nodemailer`(자료메일발송, SMTP 직접 로그인)
 - Vercel 배포
-- 시스템 폰트 스택 사용 (`next/font/google` 미사용 — 네트워크 제한 환경 빌드 실패 방지)
+- 폰트: Pretendard로 전면 통일(2026-09-08, `next/font/google` 미사용 원칙은 그대로
+  유지 — `app/globals.css` 최상단 `@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@...")`처럼
+  브라우저가 페이지 로드 시점에 받아오는 방식이라 빌드 타임 네트워크 의존이
+  없음). 이전엔 `globals.css`의 시스템 폰트 스택과 `industryTheme.css`의
+  Barlow/Barlow Condensed(구글 폰트)가 화면별로 나뉘어 쓰였는데, Barlow는 한글
+  글리프가 없어 한글 텍스트가 전부 OS 기본 한글 폰트로 폴백되면서 컴퓨터마다
+  다르게 보이고, "41,781,440원"처럼 숫자(Barlow)와 옆 한글 단위(OS 폰트) 사이에도
+  서체가 갈리는 문제가 있었다(사용자 실측 확인) — Pretendard(한글·라틴·숫자를
+  한 세트로 그린 폰트)로 통일해 해결했다. `industryTheme.css`의
+  `--font-heading`/`--font-body`는 이제 `var(--font-sans)`를 그대로 참조한다
+  (Barlow Condensed 같은 "폭이 좁은" 변형은 Pretendard에 없어 제목이 예전보다
+  덜 촘촘해 보일 수 있음, 트레이드오프로 감수). `components/dashboardSidebarTheme.css`도
+  같은 이유로 Pretendard로 맞췄다. `lib/materialEmailTemplate.ts`(고객에게 나가는
+  이메일 본문 HTML)는 수신자의 메일 클라이언트가 렌더링하는 별개 영역이라 이
+  변경 대상에서 제외했다(그대로 Barlow 가정 유지).
 
 ## 인증 설계
 

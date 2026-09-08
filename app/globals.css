@@ -1,3 +1,16 @@
+/* Pretendard — 한글·라틴·숫자를 한 세트로 그린 오픈소스 폰트(SIL OFL). 기존 시스템
+   폰트 스택과 industryTheme.css의 Barlow가 서로 달라 화면마다 폰트가 다르게 보이고,
+   Barlow는 한글 글리프가 없어 한글 텍스트가 전부 OS 기본 한글 폰트로 폴백되며
+   "숫자는 Barlow, 옆 한글 단위는 맑은 고딕"처럼 한 문구 안에서도 서체가 섞이던
+   문제를 사용자가 진단해 전체 통일을 요청함(2026-09-08). next/font/google이 아니라
+   industryTheme.css의 기존 Barlow @import와 동일한 방식(브라우저가 페이지 로드
+   시점에 받아옴)이라 "네트워크 제한 환경 빌드 실패 방지" 원칙과 충돌하지 않는다.
+   공식 동적 서브셋 배포본 — 실제 쓰인 한글 음절만 필요한 조각으로 나눠 받아와
+   가변 폰트 전체를 매번 받는 것보다 가볍다.
+   @import "tailwindcss"가 빌드 시 일반 CSS 규칙으로 통째로 확장돼서, 이 뒤에
+   @import를 두면 "@import must precede all rules" 에러가 난다 — 그래서 반드시
+   tailwindcss import보다 앞에 와야 한다(실측 확인, 2026-09-08). */
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css");
 @import "tailwindcss";
 
 /* Color tokens — DESIGN.md (Apple-inspired, reinterpreted for a data-dense business
@@ -38,9 +51,11 @@
   --color-hairline: var(--color-hairline);
   --color-semantic-error: var(--color-semantic-error);
   --color-semantic-success: var(--color-semantic-success);
-  /* system font stack only — next/font/google is avoided project-wide, see AGENTS.md */
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic",
-    "Apple SD Gothic Neo", Roboto, Helvetica, Arial, sans-serif;
+  /* Pretendard로 통일(2026-09-08) — next/font/google이 아니라 위 @import(브라우저가
+     페이지 로드 시점에 받아옴)로 불러오므로 "네트워크 제한 환경 빌드 실패 방지"
+     원칙과 무관. 로드 실패 시엔 기존 시스템 폰트 스택으로 자연스럽게 폴백된다. */
+  --font-sans: Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Malgun Gothic", "Apple SD Gothic Neo", Roboto, Helvetica, Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
     monospace;
 

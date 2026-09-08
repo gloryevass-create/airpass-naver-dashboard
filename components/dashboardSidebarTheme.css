@@ -17,7 +17,10 @@
   --sb-accent-100: #eef6ff;
   --sb-accent-300: #b5d9fd;
   --sb-accent-700: #416180;
-  font-family: "Barlow", -apple-system, BlinkMacSystemFont, sans-serif;
+  /* Pretendard로 통일(2026-09-08, app/globals.css에서 전역 로드) — Barlow는 한글
+     글리프가 없어 사이드바 메뉴 한글 라벨이 항상 OS 기본 한글 폰트로 폴백되던
+     문제를 해결한다. */
+  font-family: Pretendard, -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif;
   background: var(--sb-bg);
 }
 
