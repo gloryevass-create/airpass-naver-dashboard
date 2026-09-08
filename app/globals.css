@@ -39,6 +39,39 @@
   font-display: swap;
 }
 
+/* 나눔스퀘어(NanumSquare) — 네 번째 선택지(2026-09-08). 300/400/700/800 네 굵기가
+   있어 GMarket Sans와 달리 400이 정확히 있다 — 본문은 그대로 400을 쓰면 되고,
+   600만 없어서 헤딩은 GMarket Sans와 같은 이유로 700으로 덮어쓴다
+   (app/dashboard/layout.tsx). */
+@font-face {
+  font-family: "NanumSquare";
+  src: url("https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@2.0/NanumSquareL.woff2") format("woff2"),
+    url("https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@2.0/NanumSquareL.woff") format("woff");
+  font-weight: 300;
+  font-display: swap;
+}
+@font-face {
+  font-family: "NanumSquare";
+  src: url("https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@2.0/NanumSquareR.woff2") format("woff2"),
+    url("https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@2.0/NanumSquareR.woff") format("woff");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "NanumSquare";
+  src: url("https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@2.0/NanumSquareB.woff2") format("woff2"),
+    url("https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@2.0/NanumSquareB.woff") format("woff");
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "NanumSquare";
+  src: url("https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@2.0/NanumSquareEB.woff2") format("woff2"),
+    url("https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@2.0/NanumSquareEB.woff") format("woff");
+  font-weight: 800;
+  font-display: swap;
+}
+
 /* Color tokens — DESIGN.md (Apple-inspired, reinterpreted for a data-dense business
    dashboard: Apple's own parchment page canvas (#f5f5f7) with white raised surfaces
    (cards/table headers/dropdowns) on top, near-black ink, a single quiet Action Blue

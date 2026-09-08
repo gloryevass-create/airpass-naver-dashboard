@@ -29,7 +29,7 @@ export type Database = {
           title: string | null;
           google_email: string | null;
           phone: string | null;
-          font_preference: "pretendard" | "system" | "gmarket";
+          font_preference: "pretendard" | "system" | "gmarket" | "nanumsquare";
           role: "admin" | "member" | "guest";
           created_at: string;
           last_login_at: string | null;
@@ -42,7 +42,7 @@ export type Database = {
           title?: string | null;
           google_email?: string | null;
           phone?: string | null;
-          font_preference?: "pretendard" | "system" | "gmarket";
+          font_preference?: "pretendard" | "system" | "gmarket" | "nanumsquare";
           role?: "admin" | "member" | "guest";
           created_at?: string;
           last_login_at?: string | null;
@@ -55,7 +55,7 @@ export type Database = {
           title?: string | null;
           google_email?: string | null;
           phone?: string | null;
-          font_preference?: "pretendard" | "system" | "gmarket";
+          font_preference?: "pretendard" | "system" | "gmarket" | "nanumsquare";
           role?: "admin" | "member" | "guest";
           created_at?: string;
           last_login_at?: string | null;
