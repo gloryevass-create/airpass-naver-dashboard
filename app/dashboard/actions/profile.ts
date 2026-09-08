@@ -8,7 +8,7 @@ const PATH = "/dashboard/account/profile";
 
 export type UpdateProfileState = { error?: string; success?: boolean } | undefined;
 
-const ALLOWED_FONT_PREFERENCES = ["system", "gmarket", "nanumsquare", "noto", "omudaye"] as const;
+const ALLOWED_FONT_PREFERENCES = ["system", "gmarket", "nanumsquare", "noto", "omudaye", "lineseed"] as const;
 type FontPreference = "pretendard" | (typeof ALLOWED_FONT_PREFERENCES)[number];
 
 // 본문 폰트(font_preference)와 사이드바 폰트(sidebar_font_preference)가 같은

@@ -14,6 +14,7 @@ const FONT_OPTIONS = [
   { value: "nanumsquare", label: "나눔스퀘어" },
   { value: "noto", label: "본고딕 (Noto Sans KR)" },
   { value: "omudaye", label: "오뮤 다예쁨체" },
+  { value: "lineseed", label: "LINE Seed" },
 ] as const;
 
 type FontPreference = (typeof FONT_OPTIONS)[number]["value"];

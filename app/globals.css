@@ -90,6 +90,28 @@
   font-display: swap;
 }
 
+/* LINE Seed — 일곱 번째 선택지(2026-09-08, 사용자 제공 코드 그대로). 100/400/700
+   세 굵기만 있어 GMarket Sans/나눔스퀘어와 같은 이유로 600이 정확히 없다 —
+   app/dashboard/layout.tsx에서 헤딩용 --font-heading-weight도 700으로 덮어쓴다. */
+@font-face {
+  font-family: "LineSeed";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_11-01@1.0/LINESeedKR-Th.woff2") format("woff2");
+  font-weight: 100;
+  font-display: swap;
+}
+@font-face {
+  font-family: "LineSeed";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_11-01@1.0/LINESeedKR-Rg.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "LineSeed";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_11-01@1.0/LINESeedKR-Bd.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+
 /* Color tokens — DESIGN.md (Apple-inspired, reinterpreted for a data-dense business
    dashboard: Apple's own parchment page canvas (#f5f5f7) with white raised surfaces
    (cards/table headers/dropdowns) on top, near-black ink, a single quiet Action Blue

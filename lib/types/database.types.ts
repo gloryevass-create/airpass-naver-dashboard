@@ -29,8 +29,8 @@ export type Database = {
           title: string | null;
           google_email: string | null;
           phone: string | null;
-          font_preference: "pretendard" | "system" | "gmarket" | "nanumsquare" | "noto" | "omudaye";
-          sidebar_font_preference: "pretendard" | "system" | "gmarket" | "nanumsquare" | "noto" | "omudaye";
+          font_preference: "pretendard" | "system" | "gmarket" | "nanumsquare" | "noto" | "omudaye" | "lineseed";
+          sidebar_font_preference: "pretendard" | "system" | "gmarket" | "nanumsquare" | "noto" | "omudaye" | "lineseed";
           role: "admin" | "member" | "guest";
           created_at: string;
           last_login_at: string | null;
@@ -43,8 +43,8 @@ export type Database = {
           title?: string | null;
           google_email?: string | null;
           phone?: string | null;
-          font_preference?: "pretendard" | "system" | "gmarket" | "nanumsquare" | "noto" | "omudaye";
-          sidebar_font_preference?: "pretendard" | "system" | "gmarket" | "nanumsquare" | "noto" | "omudaye";
+          font_preference?: "pretendard" | "system" | "gmarket" | "nanumsquare" | "noto" | "omudaye" | "lineseed";
+          sidebar_font_preference?: "pretendard" | "system" | "gmarket" | "nanumsquare" | "noto" | "omudaye" | "lineseed";
           role?: "admin" | "member" | "guest";
           created_at?: string;
           last_login_at?: string | null;
@@ -57,8 +57,8 @@ export type Database = {
           title?: string | null;
           google_email?: string | null;
           phone?: string | null;
-          font_preference?: "pretendard" | "system" | "gmarket" | "nanumsquare" | "noto" | "omudaye";
-          sidebar_font_preference?: "pretendard" | "system" | "gmarket" | "nanumsquare" | "noto" | "omudaye";
+          font_preference?: "pretendard" | "system" | "gmarket" | "nanumsquare" | "noto" | "omudaye" | "lineseed";
+          sidebar_font_preference?: "pretendard" | "system" | "gmarket" | "nanumsquare" | "noto" | "omudaye" | "lineseed";
           role?: "admin" | "member" | "guest";
           created_at?: string;
           last_login_at?: string | null;
