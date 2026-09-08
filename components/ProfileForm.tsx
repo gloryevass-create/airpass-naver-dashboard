@@ -18,7 +18,7 @@ export function ProfileForm({
   title: string;
   googleEmail: string;
   phone: string;
-  fontPreference: "pretendard" | "system" | "gmarket" | "nanumsquare";
+  fontPreference: "pretendard" | "system" | "gmarket" | "nanumsquare" | "noto";
 }) {
   const [state, formAction, pending] = useActionState(updateOwnProfile, initialState);
 
@@ -52,6 +52,7 @@ export function ProfileForm({
             <option value="system">시스템 기본 폰트</option>
             <option value="gmarket">G마켓 산스</option>
             <option value="nanumsquare">나눔스퀘어</option>
+            <option value="noto">본고딕 (Noto Sans KR)</option>
           </select>
         </div>
       </div>

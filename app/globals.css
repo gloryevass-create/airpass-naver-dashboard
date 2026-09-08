@@ -11,6 +11,12 @@
    @import를 두면 "@import must precede all rules" 에러가 난다 — 그래서 반드시
    tailwindcss import보다 앞에 와야 한다(실측 확인, 2026-09-08). */
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css");
+/* 본고딕(Noto Sans KR) — 개인별 폰트 설정 다섯 번째 선택지(2026-09-08, 사용자
+   제공 구글 폰트 "earlyaccess" 레거시 CDN). 위와 같은 이유로 tailwindcss import
+   보다 앞에 와야 한다. 100~900 9단계 굵기가 전부 있어 GMarket Sans/나눔스퀘어와
+   달리 600이 정확히 있다 — app/dashboard/layout.tsx에서 --font-heading-weight를
+   따로 덮어쓸 필요가 없다. */
+@import url("https://fonts.googleapis.com/earlyaccess/notosanskr.css");
 @import "tailwindcss";
 
 /* G마켓 산스 — 개인별 폰트 설정(profiles.font_preference)의 세 번째 선택지로

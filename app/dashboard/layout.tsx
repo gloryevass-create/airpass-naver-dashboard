@@ -26,6 +26,9 @@ const GMARKET_FONT_STACK = '"GMarketSans", -apple-system, BlinkMacSystemFont, "M
 // 나눔스퀘어(2026-09-08 추가) — 300/400/700/800 네 굵기가 있어 본문 400은
 // 그대로 맞지만 헤딩용 600은 역시 없어서 G마켓 산스와 같은 이유로 700을 쓴다.
 const NANUMSQUARE_FONT_STACK = '"NanumSquare", -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif';
+// 본고딕/Noto Sans KR(2026-09-08 추가) — 100~900 9단계가 전부 있어 600이 정확히
+// 있다. G마켓 산스/나눔스퀘어와 달리 --font-heading-weight를 덮어쓸 필요가 없다.
+const NOTO_FONT_STACK = '"Noto Sans KR", -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif';
 
 // 선택지가 늘어날수록 삼항연산자 체인이 읽기 어려워져서 맵으로 정리한다 — pretendard는
 // globals.css 전역 기본값을 그대로 쓰므로 이 맵에 없으면(기본값) 아무것도 덮어쓰지 않는다.
@@ -33,6 +36,7 @@ const FONT_OVERRIDES: Record<string, CSSProperties> = {
   system: { "--font-sans": SYSTEM_FONT_STACK } as CSSProperties,
   gmarket: { "--font-sans": GMARKET_FONT_STACK, "--font-heading-weight": 700 } as CSSProperties,
   nanumsquare: { "--font-sans": NANUMSQUARE_FONT_STACK, "--font-heading-weight": 700 } as CSSProperties,
+  noto: { "--font-sans": NOTO_FONT_STACK } as CSSProperties,
 };
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
