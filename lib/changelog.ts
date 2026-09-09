@@ -9,6 +9,12 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: "2026-09-09",
+    items: [
+      "담당자 다중선택 목록 버그 수정 — member 권한 사용자가 SI Business/Cooperation/Marketing/Work Journal/Calendar 등에서 담당자를 지정할 때 팀원 전체가 아니라 본인 이름 하나만 보이던 문제(profiles 조회 권한이 본인 행으로 제한돼 있었음, id/name만 노출하는 전용 뷰로 우회)",
+    ],
+  },
+  {
     date: "2026-09-08",
     items: [
       "산출내역 목록의 \"인쇄\" 버튼이 헤더·사이드바가 같이 보이는 내부 화면 대신, 문서만 뜨는 공개 인쇄 페이지를 진짜 팝업 창으로 띄우도록 변경",

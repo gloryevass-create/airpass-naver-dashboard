@@ -2446,7 +2446,17 @@ export type Database = {
         Relationships: [];
       };
     };
-    Views: Record<string, never>;
+    Views: {
+      // profiles의 select RLS를 우회해 id/name만 노출하는 뷰(0067) —
+      // lib/queries/teamMembers.ts::getTeamMemberNames() 전용.
+      team_member_names: {
+        Row: {
+          id: string;
+          name: string | null;
+        };
+        Relationships: [];
+      };
+    };
     Functions: Record<string, never>;
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
