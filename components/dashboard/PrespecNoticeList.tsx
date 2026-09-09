@@ -146,8 +146,8 @@ export function PrespecNoticeList({
               </th>
               <th className="px-4 py-2 font-medium">키워드</th>
               <th className="px-4 py-2 font-medium">구분</th>
-              <th className="min-w-[240px] px-4 py-2 font-medium">사업명</th>
-              <th className="px-4 py-2 font-medium">발주기관</th>
+              <th className="min-w-[360px] px-4 py-2 font-medium">사업명</th>
+              <th className="max-w-[140px] px-4 py-2 font-medium">발주기관</th>
               <th className="px-4 py-2 font-medium">배정예산</th>
               <th className="px-4 py-2 font-medium">등록일</th>
               <th className="px-4 py-2 font-medium">의견마감일</th>
@@ -175,7 +175,7 @@ export function PrespecNoticeList({
                   </span>
                 </td>
                 <td className="px-4 py-2 text-ink-mute">{BUSINESS_TYPE_LABEL[n.businessType]}</td>
-                <td className="min-w-[240px] px-4 py-2 whitespace-normal">
+                <td className="min-w-[360px] px-4 py-2 whitespace-normal">
                   {scrapedIds.has(n.id) && <span className="mr-1 text-primary">★</span>}
                   {n.specDocUrls[0] ? (
                     <a
@@ -190,7 +190,7 @@ export function PrespecNoticeList({
                     n.title
                   )}
                 </td>
-                <td className="px-4 py-2 text-ink-mute">{n.noticeInst ?? "-"}</td>
+                <td className="max-w-[140px] whitespace-normal px-4 py-2 text-ink-mute">{n.noticeInst ?? "-"}</td>
                 <td className="px-4 py-2">{formatWon(n.budgetAmount)}</td>
                 <td className="px-4 py-2 text-ink-mute">{formatDate(n.registeredAt)}</td>
                 <td className="px-4 py-2 text-ink-mute">{formatDate(n.opinionCloseAt)}</td>

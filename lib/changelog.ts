@@ -13,6 +13,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     items: [
       "담당자 다중선택 목록 버그 수정 — member 권한 사용자가 SI Business/Cooperation/Marketing/Work Journal/Calendar 등에서 담당자를 지정할 때 팀원 전체가 아니라 본인 이름 하나만 보이던 문제(profiles 조회 권한이 본인 행으로 제한돼 있었음, id/name만 노출하는 전용 뷰로 우회)",
       "사전규격 목록의 사업명 열이 너무 좁아 한 글자씩 줄바꿈되던 문제 수정 — 조달입찰공고 목록과 같은 너비로 맞춤",
+      "사전규격 목록: 사업명 열 너비를 더 넓히고 발주기관 열은 줄여서 비중 조정",
     ],
   },
   {
