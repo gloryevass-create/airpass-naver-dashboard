@@ -9,6 +9,12 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: "2026-09-10",
+    items: [
+      "회원정보 수정 화면: 본문/사이드바 폰트 드롭다운 아래에 실제 그 폰트로 렌더링되는 미리보기 문구 추가 — 드롭다운 이름만 봐서는 실제 어떤 폰트가 적용된 건지 알 수 없다는 문제 해결",
+    ],
+  },
+  {
     date: "2026-09-09",
     items: [
       "담당자 다중선택 목록 버그 수정 — member 권한 사용자가 SI Business/Cooperation/Marketing/Work Journal/Calendar 등에서 담당자를 지정할 때 팀원 전체가 아니라 본인 이름 하나만 보이던 문제(profiles 조회 권한이 본인 행으로 제한돼 있었음, id/name만 노출하는 전용 뷰로 우회)",

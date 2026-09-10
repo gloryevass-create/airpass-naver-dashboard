@@ -3,20 +3,19 @@
 import { revalidatePath } from "next/cache";
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { FONT_OPTIONS, type FontPreferenceId } from "@/lib/fontPreferences";
 
 const PATH = "/dashboard/account/profile";
 
 export type UpdateProfileState = { error?: string; success?: boolean } | undefined;
 
-const ALLOWED_FONT_PREFERENCES = ["system", "gmarket", "nanumsquare", "noto", "omudaye", "lineseed"] as const;
-type FontPreference = "pretendard" | (typeof ALLOWED_FONT_PREFERENCES)[number];
-
 // 본문 폰트(font_preference)와 사이드바 폰트(sidebar_font_preference)가 같은
-// 허용값 목록을 공유해서(2026-09-08, 사이드바 별도 설정 추가) 파싱 로직을 하나로
-// 뽑아 재사용한다.
-function parseFontPreference(raw: FormDataEntryValue | null): FontPreference {
+// 허용값 목록을 공유한다(2026-09-08, 사이드바 별도 설정 추가; 2026-09-10부터
+// lib/fontPreferences.ts를 단일 출처로 참조 — ProfileForm.tsx의 드롭다운·미리보기와
+// 항상 같은 목록을 쓰도록).
+function parseFontPreference(raw: FormDataEntryValue | null): FontPreferenceId {
   const value = String(raw ?? "");
-  return (ALLOWED_FONT_PREFERENCES as readonly string[]).includes(value) ? (value as FontPreference) : "pretendard";
+  return FONT_OPTIONS.some((opt) => opt.id === value) ? (value as FontPreferenceId) : "pretendard";
 }
 
 /** profiles에는 의도적으로 authenticated self-update RLS 정책이 없다(같은 행의

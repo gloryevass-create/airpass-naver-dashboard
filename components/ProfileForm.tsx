@@ -1,23 +1,27 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState, type CSSProperties } from "react";
 import { updateOwnProfile, type UpdateProfileState } from "@/app/dashboard/actions/profile";
+import { FONT_OPTIONS, PRETENDARD_DEFAULT_STACK, type FontPreferenceId } from "@/lib/fontPreferences";
 
 const initialState: UpdateProfileState = undefined;
 
-// 본문 폰트/사이드바 폰트 두 드롭다운이 같은 선택지를 쓴다(2026-09-08, 사이드바
-// 별도 설정 추가) — 옵션 목록을 여기 한 곳에만 두고 재사용한다.
-const FONT_OPTIONS = [
-  { value: "pretendard", label: "Pretendard (기본)" },
-  { value: "system", label: "시스템 기본 폰트" },
-  { value: "gmarket", label: "G마켓 산스" },
-  { value: "nanumsquare", label: "나눔스퀘어" },
-  { value: "noto", label: "본고딕 (Noto Sans KR)" },
-  { value: "omudaye", label: "오뮤 다예쁨체" },
-  { value: "lineseed", label: "LINE Seed" },
-] as const;
+const PREVIEW_TEXT = "가나다 ABC 123 — 실제 이 폰트로 보입니다";
 
-type FontPreference = (typeof FONT_OPTIONS)[number]["value"];
+function fontStackFor(id: FontPreferenceId): string {
+  return FONT_OPTIONS.find((opt) => opt.id === id)?.stack ?? PRETENDARD_DEFAULT_STACK;
+}
+
+/** 드롭다운에 적힌 이름만 봐서는 실제 어떤 폰트가 적용된 건지 알 수 없다는
+ * 피드백(2026-09-10)으로 추가 — 선택을 바꿀 때마다(저장 전에도) 그 폰트의 실제
+ * font-family로 렌더링되는 샘플 문구를 보여준다. */
+function FontPreview({ fontId }: { fontId: FontPreferenceId }) {
+  return (
+    <p style={{ margin: "6px 0 0", fontSize: 13, fontFamily: fontStackFor(fontId) } as CSSProperties}>
+      {PREVIEW_TEXT}
+    </p>
+  );
+}
 
 export function ProfileForm({
   name,
@@ -33,10 +37,14 @@ export function ProfileForm({
   title: string;
   googleEmail: string;
   phone: string;
-  fontPreference: FontPreference;
-  sidebarFontPreference: FontPreference;
+  fontPreference: FontPreferenceId;
+  sidebarFontPreference: FontPreferenceId;
 }) {
   const [state, formAction, pending] = useActionState(updateOwnProfile, initialState);
+  // 폰트 두 필드만 컨트롤드로 관리한다 — 저장 전 실시간 미리보기를 그리려면
+  // 현재 선택값을 리액트 상태로 알아야 한다(나머지 필드는 그대로 defaultValue).
+  const [selectedFont, setSelectedFont] = useState<FontPreferenceId>(fontPreference);
+  const [selectedSidebarFont, setSelectedSidebarFont] = useState<FontPreferenceId>(sidebarFontPreference);
 
   return (
     <form action={formAction} style={{ maxWidth: 640 }}>
@@ -61,15 +69,23 @@ export function ProfileForm({
           <label htmlFor="phone">핸드폰번호</label>
           <input className="input" id="phone" name="phone" type="tel" defaultValue={phone} placeholder="010-1234-5678" />
         </div>
+        <div />
         <div className="field">
           <label htmlFor="fontPreference">본문 폰트</label>
-          <select className="input" id="fontPreference" name="fontPreference" defaultValue={fontPreference}>
+          <select
+            className="input"
+            id="fontPreference"
+            name="fontPreference"
+            value={selectedFont}
+            onChange={(e) => setSelectedFont(e.target.value as FontPreferenceId)}
+          >
             {FONT_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
+              <option key={opt.id} value={opt.id}>
                 {opt.label}
               </option>
             ))}
           </select>
+          <FontPreview fontId={selectedFont} />
         </div>
         <div className="field">
           <label htmlFor="sidebarFontPreference">사이드바 폰트</label>
@@ -77,20 +93,22 @@ export function ProfileForm({
             className="input"
             id="sidebarFontPreference"
             name="sidebarFontPreference"
-            defaultValue={sidebarFontPreference}
+            value={selectedSidebarFont}
+            onChange={(e) => setSelectedSidebarFont(e.target.value as FontPreferenceId)}
           >
             {FONT_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
+              <option key={opt.id} value={opt.id}>
                 {opt.label}
               </option>
             ))}
           </select>
+          <FontPreview fontId={selectedSidebarFont} />
         </div>
       </div>
       <p className="text-muted" style={{ fontSize: 12, margin: "0 0 var(--space-5)" }}>
         이름·회사메일·역할은 관리자만 변경할 수 있습니다. 폰트는 본인 화면에만 적용되며, 산출내역
         인쇄본·고객 공개 페이지에는 영향을 주지 않습니다. 본문 폰트와 사이드바 폰트는 서로 다르게
-        고를 수 있습니다.
+        고를 수 있습니다. 드롭다운 아래 문구가 실제 그 폰트로 미리 보여집니다.
       </p>
       {state?.error && (
         <p style={{ color: "var(--color-accent-900)", fontSize: 13, marginBottom: "var(--space-3)" }}>{state.error}</p>
