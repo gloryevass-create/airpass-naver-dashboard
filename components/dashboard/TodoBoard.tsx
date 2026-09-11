@@ -144,8 +144,8 @@ function TodoRow({ todo, onEdit }: { todo: Todo; onEdit: () => void }) {
         <span
           style={{
             fontFamily: "var(--font-heading)",
-            fontWeight: 600,
-            fontSize: 15,
+            fontWeight: 400,
+            fontSize: 13,
             textDecoration: todo.isCompleted ? "line-through" : "none",
             overflow: "hidden",
             textOverflow: "ellipsis",
