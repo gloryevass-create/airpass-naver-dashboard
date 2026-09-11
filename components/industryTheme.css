@@ -278,3 +278,21 @@
   text-decoration: underline;
   color: var(--color-accent-800);
 }
+
+/* — Calendar 모바일 전용(2026-09-12) — 다른 Industry 테마 화면에는 영향 없음 — */
+@media (max-width: 767px) {
+  /* 인라인 style의 padding(shorthand)을 이겨야 해서 !important 필요 */
+  .industry-theme .calendar-page-content {
+    padding-left: var(--space-2) !important;
+    padding-right: var(--space-2) !important;
+  }
+  .industry-theme .calendar-top-bar {
+    padding-left: var(--space-3) !important;
+    padding-right: var(--space-3) !important;
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+  .industry-theme .day-item-dot {
+    display: none;
+  }
+}

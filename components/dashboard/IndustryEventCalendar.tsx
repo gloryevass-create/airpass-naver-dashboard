@@ -179,6 +179,7 @@ function TopSettingsBar({
 
   return (
     <div
+      className="calendar-top-bar"
       style={{
         display: "flex",
         alignItems: "center",
@@ -536,7 +537,7 @@ function EventPill({ event, onClick, big }: { event: TeamEventV2; onClick: () =>
         overflow: "hidden",
       }}
     >
-      <span style={{ flex: "none", width: 6, height: 6, borderRadius: "50%", background: tagDotColor(event.tags[0]) }} />
+      <span className="day-item-dot" style={{ flex: "none", width: 6, height: 6, borderRadius: "50%", background: tagDotColor(event.tags[0]) }} />
       <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{event.title}</span>
     </button>
   );
@@ -565,7 +566,7 @@ function GoogleEventPill({ event, big }: { event: GoogleCalendarEvent; big?: boo
         overflow: "hidden",
       }}
     >
-      <span style={{ flex: "none", width: 6, height: 6, borderRadius: "50%", background: GOOGLE_DOT_COLOR }} />
+      <span className="day-item-dot" style={{ flex: "none", width: 6, height: 6, borderRadius: "50%", background: GOOGLE_DOT_COLOR }} />
       <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{event.title}</span>
     </a>
   );
@@ -744,7 +745,7 @@ export function IndustryEventCalendar({
   return (
     <div className="industry-theme" style={{ minHeight: "100vh", background: "#ffffff" }}>
       <TopSettingsBar view={view} onViewChange={setView} showGoogleEvents={showGoogleEvents} onShowGoogleEventsChange={setShowGoogleEvents} />
-      <div style={{ padding: "var(--space-8)", maxWidth: 1400, margin: 0 }}>
+      <div className="calendar-page-content" style={{ padding: "var(--space-8)", maxWidth: 1400, margin: 0 }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "var(--space-4)", flexWrap: "wrap" }}>
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
