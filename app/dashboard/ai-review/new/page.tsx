@@ -7,7 +7,7 @@ export default async function NewAiReviewPage() {
   await requireAuthedClient();
 
   return (
-    <div className="industry-theme" style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 800, margin: "0 auto" }}>
+    <div className="industry-theme" style={{ background: "#ffffff", padding: "var(--space-8) var(--space-6)", maxWidth: 800, margin: 0 }}>
       <Link
         href="/dashboard/ai-review"
         style={{

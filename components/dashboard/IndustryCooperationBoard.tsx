@@ -817,16 +817,16 @@ export function IndustryCooperationBoard({ projects, members }: { projects: Coop
 
   if (editingProject) {
     return (
-      <div className="industry-theme" style={{ padding: "var(--space-8)", maxWidth: 1400, margin: "0 auto" }}>
+      <div className="industry-theme" style={{ background: "#ffffff", padding: "var(--space-8)", maxWidth: 1400, margin: 0 }}>
         <ProjectDetail project={editingProject} members={members} onClose={() => setEditingId(null)} />
       </div>
     );
   }
 
   return (
-    <div className="industry-theme" style={{ minHeight: "100vh" }}>
+    <div className="industry-theme" style={{ background: "#ffffff", minHeight: "100vh" }}>
       <TopSettingsBar showArchived={showArchived} onShowArchivedChange={setShowArchived} view={view} onViewChange={setView} />
-      <div style={{ padding: "var(--space-8)", maxWidth: 1400, margin: "0 auto" }}>
+      <div style={{ padding: "var(--space-8)", maxWidth: 1400, margin: 0 }}>
       <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />

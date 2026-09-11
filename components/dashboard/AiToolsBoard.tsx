@@ -117,9 +117,9 @@ export function AiToolsBoard({ tools, currentUserId }: { tools: AiTool[]; curren
   }, [tools, search]);
 
   return (
-    <div className="industry-theme" style={{ minHeight: "100vh" }}>
+    <div className="industry-theme" style={{ background: "#ffffff", minHeight: "100vh" }}>
       <AiHubTabs />
-      <div style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 900, margin: "0 auto" }}>
+      <div style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 900, margin: 0 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-4)", flexWrap: "wrap" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">

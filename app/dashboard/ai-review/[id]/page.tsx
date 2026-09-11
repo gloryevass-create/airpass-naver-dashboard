@@ -38,7 +38,7 @@ export default async function AiReviewDetailPage({ params }: { params: Params })
   const headings = extractHeadings(review.content);
 
   return (
-    <div className="industry-theme" style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 1180, margin: "0 auto" }}>
+    <div className="industry-theme" style={{ background: "#ffffff", padding: "var(--space-8) var(--space-6)", maxWidth: 1180, margin: 0 }}>
       <Link
         href="/dashboard/ai-review"
         style={{

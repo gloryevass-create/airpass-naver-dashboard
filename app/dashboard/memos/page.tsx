@@ -15,7 +15,7 @@ export default async function MemosPage() {
   const memos = await getMemos(supabase);
 
   return (
-    <div className="industry-theme" style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 1100, margin: "0 auto" }}>
+    <div className="industry-theme" style={{ background: "#ffffff", padding: "var(--space-8) var(--space-6)", maxWidth: 1100, margin: 0 }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "var(--space-4)", marginBottom: "var(--space-2)" }}>
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>

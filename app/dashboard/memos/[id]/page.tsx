@@ -65,7 +65,7 @@ export default async function MemoDetailPage({
   );
 
   return (
-    <div className="industry-theme" style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 800, margin: "0 auto" }}>
+    <div className="industry-theme" style={{ background: "#ffffff", padding: "var(--space-8) var(--space-6)", maxWidth: 800, margin: 0 }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
         <Link
           href="/dashboard/memos"

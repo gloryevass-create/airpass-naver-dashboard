@@ -236,8 +236,8 @@ export function TodoBoard({ todos }: { todos: Todo[] }) {
   }, [todos, filter]);
 
   return (
-    <div className="industry-theme" style={{ minHeight: "100vh" }}>
-      <div style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 1400, margin: "0 auto" }}>
+    <div className="industry-theme" style={{ background: "#ffffff", minHeight: "100vh" }}>
+      <div style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 1400, margin: 0 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-4)", flexWrap: "wrap" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
             <NavIcon name="checkSquare" width={22} height={22} stroke="var(--color-accent)" strokeWidth={1.5} />

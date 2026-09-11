@@ -346,7 +346,7 @@ export function IndustryWorkJournalBoard({
   const editingEntry = editingId && editingId !== "new" ? (entries.find((e) => e.id === editingId) ?? null) : null;
 
   return (
-    <div className="industry-theme" style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 1180, margin: "0 auto" }}>
+    <div className="industry-theme" style={{ background: "#ffffff", padding: "var(--space-8) var(--space-6)", maxWidth: 1180, margin: 0 }}>
       <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />

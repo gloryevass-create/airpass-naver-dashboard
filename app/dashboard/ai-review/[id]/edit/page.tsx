@@ -18,7 +18,7 @@ export default async function EditAiReviewPage({ params }: { params: Params }) {
   if (review.authorId !== user.id && profile?.role !== "admin") notFound();
 
   return (
-    <div className="industry-theme" style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 800, margin: "0 auto" }}>
+    <div className="industry-theme" style={{ background: "#ffffff", padding: "var(--space-8) var(--space-6)", maxWidth: 800, margin: 0 }}>
       <Link
         href={`/dashboard/ai-review/${review.id}`}
         style={{
