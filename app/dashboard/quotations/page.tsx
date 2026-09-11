@@ -22,7 +22,7 @@ export default async function QuotationsPage() {
           <path d="M6 3h12v17.5l-2.5-1.5-2 1.5-2-1.5-2 1.5-2-1.5L6 20.5z" />
           <path d="M8.5 8h7M8.5 11.5h7M8.5 15h4" />
         </svg>
-        <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 28, margin: 0, color: "var(--color-accent-700)" }}>산출내역 작성·보관</h1>
+        <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 22, margin: 0, color: "var(--color-accent-700)" }}>산출내역 작성·보관</h1>
       </div>
       <p className="text-muted" style={{ margin: "var(--space-2) 0 var(--space-6)", fontSize: 13 }}>
         제품 카탈로그 정보로 산출내역을 작성·수정·삭제하고 인쇄용 화면으로 출력합니다.

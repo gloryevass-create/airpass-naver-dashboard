@@ -29,7 +29,7 @@ export default async function KeywordsPage({ searchParams }: { searchParams: Sea
           <circle cx="11" cy="11" r="7" />
           <path d="m21 21-4.3-4.3" />
         </svg>
-        <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 28, margin: 0, color: "var(--color-accent-700)" }}>네이버키워드</h1>
+        <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 22, margin: 0, color: "var(--color-accent-700)" }}>네이버키워드</h1>
       </div>
       <p className="text-muted" style={{ margin: "var(--space-2) 0 var(--space-6)", fontSize: 13 }}>
         네이버 검색광고 키워드 실적과 경쟁사 대비 노출순위를 모니터링합니다.

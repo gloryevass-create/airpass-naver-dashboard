@@ -23,7 +23,7 @@ export default async function YoutubePage({ searchParams }: { searchParams: Sear
           <rect x="2" y="5" width="20" height="14" rx="3" />
           <path d="m10 9 5 3-5 3z" fill="var(--color-accent)" stroke="none" />
         </svg>
-        <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 28, margin: 0, color: "var(--color-accent-700)" }}>유튜브채널분석</h1>
+        <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 22, margin: 0, color: "var(--color-accent-700)" }}>유튜브채널분석</h1>
       </div>
       <p className="text-muted" style={{ margin: "var(--space-2) 0 var(--space-6)", fontSize: 13 }}>
         에어패스 공식 유튜브 채널(

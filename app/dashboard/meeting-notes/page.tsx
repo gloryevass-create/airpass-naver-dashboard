@@ -19,7 +19,7 @@ export default async function MeetingNotesPage() {
             <path d="M9 12h6" />
             <path d="M9 16h6" />
           </svg>
-          <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 28, margin: 0, color: "var(--color-accent-700)" }}>Meeting Notes</h1>
+          <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 22, margin: 0, color: "var(--color-accent-700)" }}>Meeting Notes</h1>
         </div>
         <Link href="/dashboard/meeting-notes/new" className="btn btn-primary blueprint">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
