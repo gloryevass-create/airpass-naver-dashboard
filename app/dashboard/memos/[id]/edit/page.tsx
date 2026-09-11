@@ -19,7 +19,8 @@ export default async function EditMemoPage({ params }: { params: Params }) {
   if (!canModify) redirect(`/dashboard/memos/${id}`);
 
   return (
-    <div className="industry-theme" style={{ background: "#ffffff", padding: "var(--space-8) var(--space-6)", maxWidth: 800, margin: 0 }}>
+    <div className="industry-theme" style={{ minHeight: "100vh", background: "#ffffff" }}>
+      <div style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 800, margin: 0 }}>
       <Link
         href={`/dashboard/memos/${id}`}
         style={{
@@ -44,6 +45,7 @@ export default async function EditMemoPage({ params }: { params: Params }) {
         <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 24, margin: 0 }}>메모 수정</h1>
       </div>
       <MemoEditForm memo={memo} />
+      </div>
     </div>
   );
 }

@@ -7,7 +7,8 @@ export default async function NewMemoPage() {
   await requireAuthedClient();
 
   return (
-    <div className="industry-theme" style={{ background: "#ffffff", padding: "var(--space-8) var(--space-6)", maxWidth: 800, margin: 0 }}>
+    <div className="industry-theme" style={{ minHeight: "100vh", background: "#ffffff" }}>
+      <div style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 800, margin: 0 }}>
       <Link
         href="/dashboard/memos"
         style={{
@@ -33,6 +34,7 @@ export default async function NewMemoPage() {
       </div>
       <p style={{ margin: "0 0 var(--space-6)", opacity: 0.6, fontSize: 13 }}>작성자와 작성일은 자동으로 기록됩니다.</p>
       <MemoForm />
+      </div>
     </div>
   );
 }

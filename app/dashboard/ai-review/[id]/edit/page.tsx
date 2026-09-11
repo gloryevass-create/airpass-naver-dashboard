@@ -18,7 +18,8 @@ export default async function EditAiReviewPage({ params }: { params: Params }) {
   if (review.authorId !== user.id && profile?.role !== "admin") notFound();
 
   return (
-    <div className="industry-theme" style={{ background: "#ffffff", padding: "var(--space-8) var(--space-6)", maxWidth: 800, margin: 0 }}>
+    <div className="industry-theme" style={{ minHeight: "100vh", background: "#ffffff" }}>
+      <div style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 800, margin: 0 }}>
       <Link
         href={`/dashboard/ai-review/${review.id}`}
         style={{
@@ -35,6 +36,7 @@ export default async function EditAiReviewPage({ params }: { params: Params }) {
       </Link>
       <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 24, margin: "0 0 var(--space-6)" }}>리뷰 수정</h1>
       <AiReviewForm review={review} />
+      </div>
     </div>
   );
 }

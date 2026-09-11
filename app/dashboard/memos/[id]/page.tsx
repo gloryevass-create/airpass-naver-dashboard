@@ -65,7 +65,8 @@ export default async function MemoDetailPage({
   );
 
   return (
-    <div className="industry-theme" style={{ background: "#ffffff", padding: "var(--space-8) var(--space-6)", maxWidth: 800, margin: 0 }}>
+    <div className="industry-theme" style={{ minHeight: "100vh", background: "#ffffff" }}>
+      <div style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 800, margin: 0 }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
         <Link
           href="/dashboard/memos"
@@ -163,6 +164,7 @@ export default async function MemoDetailPage({
           {memo.comments.length === 0 && <p className="text-muted" style={{ fontSize: 13, margin: 0 }}>아직 댓글이 없습니다.</p>}
         </div>
         <MemoCommentForm memoId={memo.id} />
+      </div>
       </div>
     </div>
   );

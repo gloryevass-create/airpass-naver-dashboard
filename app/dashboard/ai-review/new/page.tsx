@@ -7,7 +7,8 @@ export default async function NewAiReviewPage() {
   await requireAuthedClient();
 
   return (
-    <div className="industry-theme" style={{ background: "#ffffff", padding: "var(--space-8) var(--space-6)", maxWidth: 800, margin: 0 }}>
+    <div className="industry-theme" style={{ minHeight: "100vh", background: "#ffffff" }}>
+      <div style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 800, margin: 0 }}>
       <Link
         href="/dashboard/ai-review"
         style={{
@@ -27,6 +28,7 @@ export default async function NewAiReviewPage() {
         마크다운 파일을 올리거나, 내용을 복사해 붙여넣으세요.
       </p>
       <AiReviewForm />
+      </div>
     </div>
   );
 }
