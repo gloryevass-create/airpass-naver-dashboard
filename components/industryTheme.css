@@ -282,9 +282,13 @@
 /* — Calendar/Business/Cooperation/Marketing 모바일 전용(2026-09-12) — 다른
    Industry 테마 화면(Work Journal 등)에는 영향 없음 — */
 @media (max-width: 767px) {
-  /* 인라인 style의 padding(shorthand)을 이겨야 해서 !important 필요 */
-  .industry-theme .calendar-page-content,
-  .industry-theme .board-page-content {
+  /* board-page-content(Business/Cooperation/Marketing/To-Do/Memo Board/
+     Work Journal/Meeting Notes/AI HUB)는 좌우 여백을 줄였더니 오히려 답답해
+     보인다는 피드백으로 원래 여백(var(--space-8), 인라인 값 그대로)으로
+     되돌렸다(2026-09-12) — Calendar만 7열 그리드라 여백을 줄여야 칸이
+     넓어지는 실질적 이득이 있어 그대로 유지한다. 인라인 style의
+     padding(shorthand)을 이겨야 해서 !important 필요. */
+  .industry-theme .calendar-page-content {
     padding-left: var(--space-2) !important;
     padding-right: var(--space-2) !important;
   }
