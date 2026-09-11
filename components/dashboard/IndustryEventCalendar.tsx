@@ -696,12 +696,15 @@ export function IndustryEventCalendar({
   // 커서가 현재 서버에서 불러온 달(month)을 벗어나면(주/일 보기에서 달 경계를
   // 넘어가는 경우 포함) 그 달의 데이터를 새로 불러와야 한다 — URL의 month·day를
   // 갱신해 서버 컴포넌트가 다시 조회하게 한다(기존 EventMonthNav와 같은 방식).
+  // cursor는 항상 즉시 갱신한다 — router.push만 하고 넘어가면, 이 컴포넌트
+  // 인스턴스가 리마운트되지 않는 한 useState(initialCursor)가 새 prop으로
+  // 다시 초기화되지 않아 periodLabel(cursor 기반)이 예전 달에 멈춰 있는 채
+  // 그리드(month prop 기반이라 바로 갱신됨)만 새 달로 바뀌는 불일치가
+  // 있었다(사용자 확인, 2026-09-12).
   function navigateTo(newCursor: string) {
     const newMonth = newCursor.slice(0, 7);
-    if (newMonth === month) {
-      setCursor(newCursor);
-      return;
-    }
+    setCursor(newCursor);
+    if (newMonth === month) return;
     router.push(`/dashboard/calendar?month=${newMonth}&day=${newCursor}`);
   }
 
