@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { MeetingNoteListItem } from "@/lib/queries/meetingNotes";
 import { SearchInput } from "@/components/dashboard/SearchInput";
 import { normalizeSearch } from "@/lib/normalizeSearch";
+import { NavIcon } from "@/components/icons/NavIcon";
 
 function formatDate(iso: string | null): string {
   if (!iso) return "";
@@ -42,7 +43,10 @@ export function MeetingNoteList({ notes }: { notes: MeetingNoteListItem[] }) {
               style={{ display: "block", padding: "var(--space-4) var(--space-5)", background: "#ffffff", textDecoration: "none", color: "inherit" }}
             >
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-3)", flexWrap: "wrap" }}>
-                <span style={{ fontFamily: "var(--font-heading)", fontWeight: 600, fontSize: 14 }}>{n.title}</span>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "var(--font-heading)", fontWeight: 600, fontSize: 14 }}>
+                  <NavIcon name="document" width={14} height={14} stroke="var(--color-accent)" style={{ flexShrink: 0 }} />
+                  {n.title}
+                </span>
                 <span className="text-muted" style={{ fontSize: 12 }}>
                   {n.authorDisplay}
                   {n.meetingDate && ` · ${formatDate(n.meetingDate)}`}
