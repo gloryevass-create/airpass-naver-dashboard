@@ -533,6 +533,28 @@ PRD의 "사용자 계정" 요구사항(가입/로그인/데이터 격리)을 이
   그대로 재사용, 새 시크릿 아님). 유료 Pro 플랜으로 올리면 `vercel.json`에
   `"schedule": "*/5 * * * *"`로 추가해도 된다.
 
+## 알림벨 브라우저 푸시
+
+상단 알림벨(`NotificationBell.tsx`, `notifications` 테이블)이 새 항목을 받을 때
+구독한 팀원 전원에게 Web Push도 함께 보낸다(2026-09-12, 할 일 알람 인프라를
+그대로 확장). `notifications`는 이 앱의 여러 서버 액션뿐 아니라 별도 저장소
+(airpass-naver-monitor)가 유튜브 업로드/광고비 부족 건을 service_role로 직접
+삽입하기도 해서, 호출부를 일일이 고치는 대신 **DB 트리거**로 insert 시점
+자체를 가로챈다(`enqueue_notification_push()`, 0069 — `profiles`의
+`on_auth_user_created` 트리거와 같은 패턴) — 새 알림이 생기면 트리거가
+`notification_push_queue`에 큐잉하고, `app/api/cron/notification-push`가 할 일
+알람 크론과 같은 주기(외부 스케줄러 5분)로 큐를 비우며 그 시점의
+`push_subscriptions` 전원에게 발송한다. 수신자를 특정 담당자로 좁히지 않고
+**구독한 팀원 전원**에게 보낸다(사용자 확인, 2026-09-12) — 알림 종류마다
+담당자 개념이 다르고 일부(유튜브 업로드 등)는 담당자가 아예 없어 특정
+난이도가 커진다고 판단.
+
+- 구독 켜기 버튼(`PushNotificationToggle.tsx`)을 헤더 알림벨 옆에도 뒀다 —
+  기존엔 `/dashboard/todos`의 배너에서만 켤 수 있어서, 할 일을 안 쓰는
+  팀원은 알림벨 푸시를 켤 방법이 없었다. 구독 로직(`usePushSubscription`
+  훅으로 추출)은 할 일 알람과 완전히 동일해서 `push_subscriptions` 행 하나로
+  두 종류의 알림을 모두 받는다 — 별도로 두 번 켤 필요 없음.
+
 ## AI HUB
 
 사이드바 새 그룹(2026-09-06) — AI Tools/AI Review/AI Issue 세 메뉴.

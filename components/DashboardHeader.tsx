@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { NavIcon } from "@/components/icons/NavIcon";
 import { NotificationBell } from "@/components/NotificationBell";
+import { PushNotificationToggle } from "@/components/PushNotificationToggle";
 import { AiCommandBar } from "@/components/dashboard/AiCommandBar";
 import { useMobileNav } from "@/components/MobileNavContext";
 import { formatMember } from "@/lib/formatMember";
@@ -70,6 +71,7 @@ export function DashboardHeader({
         <AiCommandBar members={teamMembers} currentUserName={name ?? email} />
       </div>
       <div className="flex items-center gap-2 text-sm md:gap-4">
+        <PushNotificationToggle />
         <NotificationBell initialNotifications={notifications} userId={userId} />
         <div ref={menuRef} className="relative">
           <button

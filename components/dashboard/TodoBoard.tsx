@@ -2,7 +2,8 @@
 
 import { useActionState, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import type { Todo, TodoPriority } from "@/lib/queries/todos";
-import { createTodo, updateTodo, deleteTodo, toggleTodoComplete, savePushSubscription } from "@/app/dashboard/actions/todos";
+import { createTodo, updateTodo, deleteTodo, toggleTodoComplete } from "@/app/dashboard/actions/todos";
+import { usePushSubscription } from "@/lib/hooks/usePushSubscription";
 
 const PRIORITY_LABEL: Record<TodoPriority, string> = { high: "높음", medium: "보통", low: "낮음" };
 const PRIORITY_COLOR: Record<TodoPriority, string> = {
@@ -22,60 +23,8 @@ function formatDateTimeLocal(iso: string | null): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
-function urlBase64ToUint8Array(base64String: string): BufferSource {
-  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
-  const rawData = atob(base64);
-  return Uint8Array.from([...rawData].map((c) => c.charCodeAt(0))).buffer;
-}
-
 function NotificationSetupBanner() {
-  const [status, setStatus] = useState<"idle" | "unsupported" | "denied" | "granted" | "loading">("idle");
-
-  // 알림 지원 여부·권한 상태는 브라우저에서만 읽을 수 있어(Notification API)
-  // 마운트 후에 반영한다 — 서버 렌더링 HTML과 클라이언트 초기값이 달라지는
-  // 하이드레이션 경고를 피하기 위함(IndustryEventCalendar.tsx와 동일한 패턴).
-  /* eslint-disable react-hooks/set-state-in-effect */
-  useEffect(() => {
-    if (typeof window === "undefined" || !("Notification" in window) || !("serviceWorker" in navigator)) {
-      setStatus("unsupported");
-      return;
-    }
-    setStatus(Notification.permission === "granted" ? "granted" : "idle");
-  }, []);
-
-  async function enableNotifications() {
-    setStatus("loading");
-    try {
-      const permission = await Notification.requestPermission();
-      if (permission !== "granted") {
-        setStatus("denied");
-        return;
-      }
-      const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
-      if (!vapidPublicKey) {
-        setStatus("unsupported");
-        return;
-      }
-      const registration = await navigator.serviceWorker.register("/sw.js");
-      const existing = await registration.pushManager.getSubscription();
-      const subscription =
-        existing ??
-        (await registration.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
-        }));
-      const json = subscription.toJSON();
-      await savePushSubscription({
-        endpoint: json.endpoint!,
-        p256dh: json.keys!.p256dh!,
-        auth: json.keys!.auth!,
-      });
-      setStatus("granted");
-    } catch {
-      setStatus("denied");
-    }
-  }
+  const { status, enable } = usePushSubscription();
 
   if (status === "granted" || status === "unsupported") return null;
 
@@ -98,7 +47,7 @@ function NotificationSetupBanner() {
           : "할 일 알람을 브라우저 알림으로 받으려면 알림 권한을 허용해주세요."}
       </p>
       {status !== "denied" && (
-        <button type="button" className="btn btn-primary blueprint" onClick={enableNotifications} disabled={status === "loading"}>
+        <button type="button" className="btn btn-primary blueprint" onClick={enable} disabled={status === "loading"}>
           {status === "loading" ? "설정 중..." : "알림 허용"}
         </button>
       )}

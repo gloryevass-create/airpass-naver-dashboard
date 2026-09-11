@@ -2487,6 +2487,27 @@ export type Database = {
         };
         Relationships: [];
       };
+      notification_push_queue: {
+        Row: {
+          id: string;
+          notification_id: string;
+          processed: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          notification_id: string;
+          processed?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          notification_id?: string;
+          processed?: boolean;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       push_subscriptions: {
         Row: {
           id: string;

@@ -125,24 +125,3 @@ export async function toggleTodoComplete(todoId: string, isCompleted: boolean): 
   revalidatePath(PATH);
 }
 
-export async function savePushSubscription(subscription: {
-  endpoint: string;
-  p256dh: string;
-  auth: string;
-}): Promise<{ error?: string }> {
-  const { supabase, user } = await requireAuthedClient();
-
-  const { error } = await supabase
-    .from("push_subscriptions")
-    .upsert(
-      { user_id: user.id, endpoint: subscription.endpoint, p256dh: subscription.p256dh, auth: subscription.auth },
-      { onConflict: "endpoint" }
-    );
-  if (error) return { error: error.message };
-  return {};
-}
-
-export async function deletePushSubscription(endpoint: string): Promise<void> {
-  const { supabase, user } = await requireAuthedClient();
-  await supabase.from("push_subscriptions").delete().eq("endpoint", endpoint).eq("user_id", user.id);
-}
