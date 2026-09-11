@@ -300,7 +300,7 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
               JPG·PNG·WebP·PDF, 파일당 12MB 이하
             </span>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "var(--space-3)" }}>
+          <div className="vendor-doc-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: "var(--space-3)" }}>
             {DOCUMENT_TYPES.map((type) => {
               const docs = selected?.documents.filter((d) => d.documentType === type) ?? [];
               return (
@@ -370,7 +370,7 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
               사업자등록증에서 자동 입력
             </span>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-3)" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: "var(--space-3)" }}>
             {inputField("companyName", "업체명 *")}
             {inputField("businessNumber", "사업자등록번호")}
             {inputField("representativeName", "대표자")}
@@ -389,7 +389,7 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
               통장 사본에서 자동 입력
             </span>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "var(--space-3)" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "var(--space-3)" }}>
             {inputField("bankName", "은행")}
             {inputField("accountNumber", "계좌번호")}
             {inputField("accountHolder", "예금주")}
@@ -403,7 +403,7 @@ export function VendorManager({ vendors }: { vendors: Vendor[] }) {
               명함에서 자동 입력
             </span>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-3)" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: "var(--space-3)" }}>
             {inputField("contactName", "담당자")}
             {inputField("contactTitle", "직함")}
             {inputField("contactPhone", "연락처")}

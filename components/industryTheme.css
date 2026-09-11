@@ -321,4 +321,11 @@
   .industry-theme .day-item-pill {
     font-size: 10px !important;
   }
+  /* 제조사 관리(VendorManager)의 업체 문서 4열 그리드는 모바일 폭에 비해
+     칸이 너무 좁아져 2열로 줄인다(2026-09-12) — 그리드 자체가 화면 밖으로
+     넘치던 것(minmax(0,1fr) 누락)은 컴포넌트 쪽에서 이미 고쳤고, 이건
+     읽기 편하게 하는 추가 조정. */
+  .industry-theme .vendor-doc-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
 }
