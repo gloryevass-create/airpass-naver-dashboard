@@ -306,4 +306,15 @@
   .industry-theme .board-view-toggle {
     display: none;
   }
+  /* 캘린더 월/주 보기 날짜 칸이 7열이라 좁아서 일정 제목이 금방 잘린다
+     (2026-09-12) — 칸 좌우 padding을 줄이고 글자를 살짝 작게 해서 더 많은
+     글자가 보이게 한다. padding은 인라인 shorthand를 이겨야 해서 !important
+     필요, font-size도 인라인 값이라 마찬가지. */
+  .industry-theme .day-card {
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+  }
+  .industry-theme .day-item-pill {
+    font-size: 10px !important;
+  }
 }

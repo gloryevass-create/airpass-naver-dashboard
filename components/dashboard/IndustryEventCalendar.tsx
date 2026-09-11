@@ -521,6 +521,7 @@ function EventPill({ event, onClick, big }: { event: TeamEventV2; onClick: () =>
     <button
       type="button"
       onClick={onClick}
+      className={big ? undefined : "day-item-pill"}
       style={{
         display: "flex",
         alignItems: "center",
@@ -553,6 +554,7 @@ function GoogleEventPill({ event, big }: { event: GoogleCalendarEvent; big?: boo
       href={event.htmlLink || undefined}
       target="_blank"
       rel="noopener noreferrer"
+      className={big ? undefined : "day-item-pill"}
       style={{
         display: "flex",
         alignItems: "center",
@@ -921,6 +923,7 @@ export function IndustryEventCalendar({
             return (
               <div
                 key={day}
+                className="day-card"
                 style={{
                   minHeight: 420,
                   padding: "var(--space-2)",
