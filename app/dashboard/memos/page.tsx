@@ -37,6 +37,7 @@ export default async function MemosPage() {
         </Link>
       </div>
 
+      <div style={{ overflowX: "auto" }}>
       <table className="table" style={{ marginTop: "var(--space-6)" }}>
         <thead>
           <tr>
@@ -89,6 +90,7 @@ export default async function MemosPage() {
           )}
         </tbody>
       </table>
+      </div>
       </div>
     </div>
   );
