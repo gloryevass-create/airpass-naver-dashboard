@@ -291,10 +291,12 @@
   /* 환경설정 바(기본값 저장 등)는 모바일에서 화면을 너무 차지해 완전히 숨긴다 —
      Reset/Save as defaults 자체를 못 쓰게 되지만, 이 설정은 컴퓨터에서 한 번
      정해두면 되는 값이라 모바일 전용 UI를 따로 만들 필요는 없다고 판단(사용자
-     확인). */
+     확인). 이 바는 인라인 style에 display: "flex"가 이미 박혀 있어(React
+     style 속성) !important 없이는 외부 스타일시트 규칙이 못 이긴다 — 실제
+     기기에서 안 숨겨지던 버그를 여기서 잡음(2026-09-12). */
   .industry-theme .calendar-top-bar,
   .industry-theme .board-top-bar {
-    display: none;
+    display: none !important;
   }
   .industry-theme .day-item-dot {
     display: none;
