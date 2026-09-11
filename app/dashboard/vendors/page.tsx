@@ -8,7 +8,8 @@ export default async function VendorsPage() {
   const vendors = await getVendors(supabase);
 
   return (
-    <div className="industry-theme" style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 1400, margin: "0 auto" }}>
+    <div className="industry-theme" style={{ minHeight: "100vh", background: "#ffffff" }}>
+      <div style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 1400, margin: 0 }}>
       <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M3 7.5A2.5 2.5 0 0 1 5.5 5H18a2 2 0 0 1 2 2v1" />
@@ -23,6 +24,7 @@ export default async function VendorsPage() {
       </p>
 
       <VendorManager vendors={vendors} />
+      </div>
     </div>
   );
 }
