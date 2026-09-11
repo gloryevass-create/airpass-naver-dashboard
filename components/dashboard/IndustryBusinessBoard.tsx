@@ -149,6 +149,7 @@ function TopSettingsBar({
 
   return (
     <div
+      className="board-top-bar"
       style={{
         display: "flex",
         alignItems: "center",
@@ -890,6 +891,15 @@ export function IndustryBusinessBoard({
   }, []);
   /* eslint-enable react-hooks/set-state-in-effect */
 
+  // 칸반은 드래그 인터랙션 위주라 좁은 화면(모바일)에 안 맞아, 저장된 기본값이
+  // 칸반이어도 모바일에서는 무시하고 리스트로 강제한다(사용자 확인, 2026-09-12).
+  // 전환 버튼 자체도 CSS(board-view-toggle)로 숨겨 칸반으로 못 돌아가게 한다.
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    if (window.matchMedia("(max-width: 767px)").matches) setView("list");
+  }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
+
   const editingProject = editingId ? (projects.find((p) => p.id === editingId) ?? null) : null;
 
   const visible = useMemo(
@@ -942,7 +952,7 @@ export function IndustryBusinessBoard({
 
   if (editingProject) {
     return (
-      <div className="industry-theme" style={{ padding: "var(--space-8)", maxWidth: 1400, margin: 0, background: "#ffffff", minHeight: "100vh" }}>
+      <div className="industry-theme board-page-content" style={{ padding: "var(--space-8)", maxWidth: 1400, margin: 0, background: "#ffffff", minHeight: "100vh" }}>
         <ProjectDetail project={editingProject} members={members} quotations={quotations} onClose={() => setEditingId(null)} />
       </div>
     );
@@ -956,7 +966,7 @@ export function IndustryBusinessBoard({
         view={view}
         onViewChange={setView}
       />
-      <div style={{ padding: "var(--space-8)", maxWidth: 1400, margin: 0 }}>
+      <div className="board-page-content" style={{ padding: "var(--space-8)", maxWidth: 1400, margin: 0 }}>
       <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M4 7h16v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z" />
@@ -1030,7 +1040,7 @@ export function IndustryBusinessBoard({
           완료·보류 포함
         </label>
         <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
-          <div className="seg">
+          <div className="seg board-view-toggle">
             <button type="button" className={`seg-opt${view === "kanban" ? " active" : ""}`} onClick={() => setView("kanban")} style={{ border: 0 }}>
               목록
             </button>

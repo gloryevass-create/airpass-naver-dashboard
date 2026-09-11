@@ -279,20 +279,29 @@
   color: var(--color-accent-800);
 }
 
-/* — Calendar 모바일 전용(2026-09-12) — 다른 Industry 테마 화면에는 영향 없음 — */
+/* — Calendar/Business/Cooperation/Marketing 모바일 전용(2026-09-12) — 다른
+   Industry 테마 화면(Work Journal 등)에는 영향 없음 — */
 @media (max-width: 767px) {
   /* 인라인 style의 padding(shorthand)을 이겨야 해서 !important 필요 */
-  .industry-theme .calendar-page-content {
+  .industry-theme .calendar-page-content,
+  .industry-theme .board-page-content {
     padding-left: var(--space-2) !important;
     padding-right: var(--space-2) !important;
   }
-  .industry-theme .calendar-top-bar {
-    padding-left: var(--space-3) !important;
-    padding-right: var(--space-3) !important;
-    flex-wrap: wrap;
-    row-gap: 6px;
+  /* 환경설정 바(기본값 저장 등)는 모바일에서 화면을 너무 차지해 완전히 숨긴다 —
+     Reset/Save as defaults 자체를 못 쓰게 되지만, 이 설정은 컴퓨터에서 한 번
+     정해두면 되는 값이라 모바일 전용 UI를 따로 만들 필요는 없다고 판단(사용자
+     확인). */
+  .industry-theme .calendar-top-bar,
+  .industry-theme .board-top-bar {
+    display: none;
   }
   .industry-theme .day-item-dot {
+    display: none;
+  }
+  /* 칸반은 드래그 인터랙션 위주라 좁은 화면에 안 맞아, 전환 버튼 자체를 숨기고
+     리스트만 쓰게 한다(JS 쪽에서도 마운트 시 view를 강제로 "list"로 바꿈). */
+  .industry-theme .board-view-toggle {
     display: none;
   }
 }
