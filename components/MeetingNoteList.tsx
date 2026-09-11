@@ -42,7 +42,7 @@ export function MeetingNoteList({ notes }: { notes: MeetingNoteListItem[] }) {
               style={{ display: "block", padding: "var(--space-4) var(--space-5)", background: "#ffffff", textDecoration: "none", color: "inherit" }}
             >
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-3)", flexWrap: "wrap" }}>
-                <span style={{ fontFamily: "var(--font-heading)", fontWeight: 600, fontSize: 16 }}>{n.title}</span>
+                <span style={{ fontFamily: "var(--font-heading)", fontWeight: 600, fontSize: 14 }}>{n.title}</span>
                 <span className="text-muted" style={{ fontSize: 12 }}>
                   {n.authorDisplay}
                   {n.meetingDate && ` · ${formatDate(n.meetingDate)}`}
