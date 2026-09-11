@@ -198,19 +198,43 @@ function TodoRow({ todo, onEdit }: { todo: Todo; onEdit: () => void }) {
   );
 }
 
+type TodoFilter = "all" | "today" | "pending" | "done" | "high";
+
+const FILTERS: { key: TodoFilter; label: string }[] = [
+  { key: "all", label: "전체" },
+  { key: "today", label: "오늘" },
+  { key: "pending", label: "미완료" },
+  { key: "done", label: "완료" },
+  { key: "high", label: "높은 우선순위" },
+];
+
+function isToday(dueDate: string): boolean {
+  return new Date(dueDate).toDateString() === new Date().toDateString();
+}
+
 export function TodoBoard({ todos }: { todos: Todo[] }) {
   const [editingId, setEditingId] = useState<string | null | "new">(null);
   const editingTodo = editingId && editingId !== "new" ? (todos.find((t) => t.id === editingId) ?? null) : null;
-  const [showCompleted, setShowCompleted] = useState(false);
+  const [filter, setFilter] = useState<TodoFilter>("all");
 
-  const { pending, done } = useMemo(
-    () => ({ pending: todos.filter((t) => !t.isCompleted), done: todos.filter((t) => t.isCompleted) }),
-    [todos]
-  );
+  const filteredTodos = useMemo(() => {
+    switch (filter) {
+      case "today":
+        return todos.filter((t) => t.dueDate && isToday(t.dueDate));
+      case "pending":
+        return todos.filter((t) => !t.isCompleted);
+      case "done":
+        return todos.filter((t) => t.isCompleted);
+      case "high":
+        return todos.filter((t) => t.priority === "high");
+      default:
+        return todos;
+    }
+  }, [todos, filter]);
 
   return (
     <div className="industry-theme" style={{ minHeight: "100vh" }}>
-      <div style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 720, margin: "0 auto" }}>
+      <div style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 1400, margin: "0 auto" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-4)", flexWrap: "wrap" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -235,35 +259,27 @@ export function TodoBoard({ todos }: { todos: Todo[] }) {
         {editingId === "new" && <TodoForm todo={null} onDone={() => setEditingId(null)} />}
         {editingTodo && <TodoForm todo={editingTodo} onDone={() => setEditingId(null)} />}
 
-        {pending.length === 0 ? (
+        <div className="seg" style={{ marginBottom: "var(--space-4)" }}>
+          {FILTERS.map((f) => (
+            <div
+              key={f.key}
+              className={`seg-opt ${filter === f.key ? "active" : ""}`}
+              onClick={() => setFilter(f.key)}
+            >
+              {f.label}
+            </div>
+          ))}
+        </div>
+
+        {filteredTodos.length === 0 ? (
           <div className="card blueprint" style={{ padding: "var(--space-8)", textAlign: "center" }}>
-            <p className="text-muted" style={{ margin: 0 }}>미완료 할 일이 없습니다.</p>
+            <p className="text-muted" style={{ margin: 0 }}>조건에 맞는 할 일이 없습니다.</p>
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
-            {pending.map((t) => (
+            {filteredTodos.map((t) => (
               <TodoRow key={t.id} todo={t} onEdit={() => setEditingId(t.id)} />
             ))}
-          </div>
-        )}
-
-        {done.length > 0 && (
-          <div style={{ marginTop: "var(--space-6)" }}>
-            <button
-              type="button"
-              className="btn btn-ghost"
-              style={{ fontSize: 12 }}
-              onClick={() => setShowCompleted((v) => !v)}
-            >
-              완료된 할 일 {done.length}개 {showCompleted ? "접기" : "펼치기"}
-            </button>
-            {showCompleted && (
-              <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)", marginTop: "var(--space-3)" }}>
-                {done.map((t) => (
-                  <TodoRow key={t.id} todo={t} onEdit={() => setEditingId(t.id)} />
-                ))}
-              </div>
-            )}
           </div>
         )}
       </div>
