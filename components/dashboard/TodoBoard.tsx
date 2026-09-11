@@ -128,48 +128,70 @@ function TodoRow({ todo, onEdit }: { todo: Todo; onEdit: () => void }) {
       className="card blueprint elev-sm"
       style={{
         display: "flex",
-        alignItems: "flex-start",
+        flexDirection: "row",
+        alignItems: "center",
         gap: "var(--space-3)",
-        padding: "var(--space-4) var(--space-5)",
+        padding: "var(--space-3) var(--space-5)",
         background: "#ffffff",
         opacity: todo.isCompleted ? 0.6 : 1,
       }}
     >
-      <input type="checkbox" checked={todo.isCompleted} onChange={handleToggle} style={{ marginTop: 4, width: 16, height: 16, flexShrink: 0 }} />
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", flexWrap: "wrap" }}>
-          <span
-            style={{
-              fontFamily: "var(--font-heading)",
-              fontWeight: 600,
-              fontSize: 15,
-              textDecoration: todo.isCompleted ? "line-through" : "none",
-            }}
-          >
-            {todo.title}
-          </span>
-          <span style={{ fontSize: 11, fontWeight: 700, color: PRIORITY_COLOR[todo.priority] }}>{PRIORITY_LABEL[todo.priority]}</span>
-          {todo.alarmAt && (
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-              <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-            </svg>
-          )}
-        </div>
-        <p className="text-muted" style={{ fontSize: 12, margin: "4px 0 0" }}>
-          {todo.dueDate ? (
-            <span style={{ color: isOverdue ? "var(--color-accent-900)" : undefined }}>기한 {formatDate(todo.dueDate)}</span>
-          ) : (
-            "기한 없음"
-          )}
-        </p>
+      <input type="checkbox" checked={todo.isCompleted} onChange={handleToggle} style={{ width: 16, height: 16, flexShrink: 0 }} />
+      <div style={{ flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
+        <span
+          style={{
+            fontFamily: "var(--font-heading)",
+            fontWeight: 600,
+            fontSize: 15,
+            textDecoration: todo.isCompleted ? "line-through" : "none",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            minWidth: 0,
+          }}
+        >
+          {todo.title}
+        </span>
+        <span style={{ fontSize: 11, fontWeight: 700, color: PRIORITY_COLOR[todo.priority], flexShrink: 0 }}>{PRIORITY_LABEL[todo.priority]}</span>
+        {todo.alarmAt && (
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+          </svg>
+        )}
+        <span className="text-muted" style={{ fontSize: 12, flexShrink: 0, color: isOverdue ? "var(--color-accent-900)" : undefined }}>
+          {todo.dueDate ? formatDate(todo.dueDate) : "기한 없음"}
+        </span>
       </div>
-      <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
-        <button type="button" className="btn btn-ghost" style={{ fontSize: 11, padding: "2px 6px", minHeight: "auto" }} onClick={onEdit}>
-          수정
+      <div style={{ display: "flex", gap: 2, flexShrink: 0 }}>
+        <button
+          type="button"
+          className="btn btn-ghost"
+          aria-label="수정"
+          title="수정"
+          style={{ width: 26, height: 26, padding: 0, minHeight: "auto", display: "flex", alignItems: "center", justifyContent: "center" }}
+          onClick={onEdit}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 20h9" />
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
+          </svg>
         </button>
-        <button type="button" className="btn btn-ghost" style={{ fontSize: 11, padding: "2px 6px", minHeight: "auto" }} onClick={handleDelete}>
-          삭제
+        <button
+          type="button"
+          className="btn btn-ghost"
+          aria-label="삭제"
+          title="삭제"
+          style={{ width: 26, height: 26, padding: 0, minHeight: "auto", display: "flex", alignItems: "center", justifyContent: "center" }}
+          onClick={handleDelete}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 6h18" />
+            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+            <path d="M10 11v6" />
+            <path d="M14 11v6" />
+          </svg>
         </button>
       </div>
     </div>
