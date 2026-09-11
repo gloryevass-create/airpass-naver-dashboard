@@ -2445,6 +2445,75 @@ export type Database = {
         };
         Relationships: [];
       };
+      todos: {
+        Row: {
+          id: string;
+          owner_id: string;
+          title: string;
+          due_date: string | null;
+          priority: "high" | "medium" | "low";
+          is_completed: boolean;
+          completed_at: string | null;
+          alarm_at: string | null;
+          alarm_sent: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          owner_id: string;
+          title: string;
+          due_date?: string | null;
+          priority?: "high" | "medium" | "low";
+          is_completed?: boolean;
+          completed_at?: string | null;
+          alarm_at?: string | null;
+          alarm_sent?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          owner_id?: string;
+          title?: string;
+          due_date?: string | null;
+          priority?: "high" | "medium" | "low";
+          is_completed?: boolean;
+          completed_at?: string | null;
+          alarm_at?: string | null;
+          alarm_sent?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      push_subscriptions: {
+        Row: {
+          id: string;
+          user_id: string;
+          endpoint: string;
+          p256dh: string;
+          auth: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          endpoint: string;
+          p256dh: string;
+          auth: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          endpoint?: string;
+          p256dh?: string;
+          auth?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       // profiles의 select RLS를 우회해 id/name만 노출하는 뷰(0067) —

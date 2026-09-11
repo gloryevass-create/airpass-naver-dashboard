@@ -9,6 +9,13 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: "2026-09-11",
+    items: [
+      "새 메뉴 \"할 일\"(/dashboard/todos) 추가 — Manyfast로 작성한 PRD를 이식. 제목·기한·우선순위로 개인 할 일을 등록/수정하고 완료 처리(완료 항목은 접어서 숨김). 다른 기능과 달리 본인 것만 보고 고칠 수 있는 완전한 개인 소유 데이터(RLS에 admin 우회 없음).",
+      "할 일별 브라우저 알람 기능 추가 — Web Push(VAPID) + 서비스워커(public/sw.js)로 알람 시각에 브라우저 알림 발송. 5분마다 도는 알람 발송 크론(/api/cron/todo-alarms)은 Vercel Hobby 플랜의 cron 하루 1회 제한 때문에 vercel.json이 아니라 외부 무료 스케줄러(cron-job.org)로 호출한다.",
+    ],
+  },
+  {
     date: "2026-09-10",
     items: [
       "회원정보 수정 화면: 본문/사이드바 폰트 드롭다운 아래에 실제 그 폰트로 렌더링되는 미리보기 문구 추가 — 드롭다운 이름만 봐서는 실제 어떤 폰트가 적용된 건지 알 수 없다는 문제 해결",

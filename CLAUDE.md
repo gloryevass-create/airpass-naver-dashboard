@@ -499,6 +499,40 @@ URL 발급이 필요한데 그마저도 새 첨부는 거의 다 드라이브를
   (`ad_strategy_memo_comments`)과 완전히 같은 구조 — 삭제 UI는 없고, DELETE
   RLS 정책은 미팅노트 삭제 시 cascade가 막히지 않게 하려는 용도로만 있다.
 
+## 할 일 (Todos)
+
+`/dashboard/todos` — Manyfast(AI 제품 기획 도구)로 작성해 둔 "할 일 관리 서비스" PRD를
+이 대시보드의 새 메뉴로 통합했다(2026-09-11). 이 앱의 다른 모든 기능(SI Business/
+Cooperation/Marketing/Memo Board 등)은 **팀 전체가 공유**하고 작성자 또는 admin이
+수정할 수 있는데, 이 기능은 PRD가 요구한 대로 **완전히 개인 소유** 데이터다 — RLS가
+`owner_id = auth.uid()`만 허용하고 admin 우회 정책이 아예 없다(다른 사용자는 select도
+안 됨). 새 계정 시스템은 만들지 않았다 — 기존 Supabase Auth(이메일+비밀번호, RLS)가
+PRD의 "사용자 계정" 요구사항(가입/로그인/데이터 격리)을 이미 충족한다.
+
+- `todos`(0068) 테이블 하나: 제목·기한(`due_date`, 선택)·우선순위(`high`/`medium`/`low`,
+  기본 보통)·완료 상태·알람 시각(`alarm_at`, 선택). 목록은 미완료를 기한 임박순으로
+  먼저 보여주고, 완료된 항목은 기본적으로 접어서 숨긴다(PRD의 열린 질문에 대한
+  권장 옵션을 그대로 채택 — `AiToolsBoard`/`Work Journal`과 같은 "목록 위에 인라인
+  카드로 폼이 펼쳐지는" 구조, Industry 테마).
+- **알람은 앱 푸시가 아니라 브라우저 Web Push**로 구현했다(PRD는 "앱 푸시"를
+  요구했지만 이 프로젝트엔 네이티브 앱이 없어 사용자 확인 후 브라우저 알림으로
+  대체) — `lib/webPush.ts`(`web-push` 패키지, VAPID 키), `public/sw.js`(최소
+  서비스워커, push/notificationclick만 처리). 사용자가 `/dashboard/todos`의
+  "알림 허용" 배너를 눌러야 `push_subscriptions`(0068, 본인 행만 RLS)에 구독 정보가
+  저장된다. VAPID 키는 `npx web-push generate-vapid-keys`로 한 번 생성해 고정
+  (`NEXT_PUBLIC_VAPID_PUBLIC_KEY`/`VAPID_PRIVATE_KEY`/`VAPID_SUBJECT`) — 키를
+  바꾸면 기존에 저장된 모든 구독이 무효화된다.
+- **알람 발송 크론이 `vercel.json`에 없다**: `app/api/cron/todo-alarms`가 `alarm_at`이
+  지났고 아직 안 보냈고 완료되지 않은 할 일을 찾아 소유자의 모든 구독에 발송하고
+  `alarm_sent`를 채우는데(만료된 구독은 410/404 응답으로 감지해 즉시 삭제), 5분
+  단위로 자주 돌아야 정시 알림에 가까워진다. 이 프로젝트는 **Vercel Hobby(무료)
+  플랜**이라 Vercel Cron이 스케줄과 무관하게 하루 1회로 강제 제한된다(2026-09-11
+  확인) — 그래서 다른 크론(AI Issue)과 달리 Vercel Cron을 쓰지 않고, **외부 무료
+  스케줄러(cron-job.org 등)**가 5분마다 `Authorization: Bearer $CRON_SECRET` 헤더로
+  이 라우트를 직접 호출하도록 사용자가 별도 설정해야 한다(기존 `CRON_SECRET` 값을
+  그대로 재사용, 새 시크릿 아님). 유료 Pro 플랜으로 올리면 `vercel.json`에
+  `"schedule": "*/5 * * * *"`로 추가해도 된다.
+
 ## AI HUB
 
 사이드바 새 그룹(2026-09-06) — AI Tools/AI Review/AI Issue 세 메뉴.
