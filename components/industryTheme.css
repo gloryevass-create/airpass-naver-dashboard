@@ -337,4 +337,18 @@
   .industry-theme .ad-stats-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
+  /* 캘린더 상단 안내 문구는 모바일에서 화면만 차지해 숨긴다(2026-09-12). */
+  .industry-theme .calendar-subtitle {
+    display: none;
+  }
+  /* Prev/Next/오늘/월주일 토글 + "새 일정 추가" 버튼 줄이 좁은 화면에서 줄바꿈
+     되면 버튼이 왼쪽 정렬로 떨어져 보인다 — 한 줄을 유지하고 넘치면 가로
+     스크롤로 오른쪽 끝(버튼)까지 갈 수 있게 한다(2026-09-12). */
+  .industry-theme .calendar-toolbar-row {
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+  }
+  .industry-theme .calendar-toolbar-row > * {
+    flex-shrink: 0;
+  }
 }
