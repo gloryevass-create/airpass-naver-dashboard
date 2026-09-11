@@ -328,4 +328,13 @@
   .industry-theme .vendor-doc-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
+  /* 마케팅분석(네이버키워드/네이버블로그)의 차트+표 2열 섹션도 같은 이유로
+     모바일에서 화면 밖으로 넘쳤다 — 1열로 쌓는다(2026-09-12). */
+  .industry-theme .two-col-section {
+    grid-template-columns: 1fr !important;
+  }
+  .industry-theme .kpi-grid,
+  .industry-theme .ad-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
 }

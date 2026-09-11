@@ -120,7 +120,7 @@ export function AdAccountStatsPanel({ data }: { data: DashboardData["adAccountSt
         </p>
       ) : (
         <>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "var(--space-4)", opacity: isPending ? 0.4 : 1, transition: "opacity 0.15s" }}>
+          <div className="ad-stats-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: "var(--space-4)", opacity: isPending ? 0.4 : 1, transition: "opacity 0.15s" }}>
             <div style={{ border: "1px solid var(--color-divider)", padding: "var(--space-3)" }}>
               <p style={{ margin: 0, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#d9342b" }}>총 노출수</p>
               <p style={{ margin: "4px 0 0", fontSize: 22, fontWeight: 700, fontFamily: "var(--font-heading)" }}>
