@@ -36,6 +36,13 @@ function tagDotColor(tag: string | undefined): string {
   return TAG_DOT_COLORS[tag] ?? DEFAULT_DOT_COLOR;
 }
 
+// 휴일 태그가 붙은 일정이 있는 날은 점 표시만으로는 눈에 잘 안 띄어서(2026-09-12,
+// 사용자 요청) 날짜 칸 배경 전체를 옅은 빨강으로 칠한다 — 점 색(TAG_DOT_COLORS.휴일)과
+// 같은 계열이라 통일감을 준다.
+function isHolidayDay(items: DayItem[]): boolean {
+  return items.some((item) => item.kind === "team" && item.event.tags?.includes("휴일"));
+}
+
 function toKstDateStr(iso: string) {
   const d = new Date(iso);
   const kst = new Date(d.getTime() + 9 * 60 * 60 * 1000);
@@ -825,6 +832,7 @@ export function IndustryEventCalendar({
                 const inMonth = day.slice(0, 7) === month;
                 const dayEvts = dayItems(day, events, visibleGoogleEvents);
                 const isToday = day === todayStr;
+                const isHoliday = isHolidayDay(dayEvts);
                 const MAX = 3;
                 return (
                   <div
@@ -833,7 +841,7 @@ export function IndustryEventCalendar({
                     style={{
                       height: 112,
                       padding: "var(--space-2)",
-                      background: "#ffffff",
+                      background: isHoliday ? "color-mix(in srgb, #ef4444 10%, #ffffff)" : "#ffffff",
                       border: "1px solid color-mix(in srgb, var(--color-text) 8%, transparent)",
                       display: "flex",
                       flexDirection: "column",
@@ -908,13 +916,14 @@ export function IndustryEventCalendar({
           {weekDays.map((day, i) => {
             const dayEvts = dayItems(day, events, visibleGoogleEvents);
             const isToday = day === todayStr;
+            const isHoliday = isHolidayDay(dayEvts);
             return (
               <div
                 key={day}
                 style={{
                   minHeight: 420,
                   padding: "var(--space-2)",
-                  background: "#ffffff",
+                  background: isHoliday ? "color-mix(in srgb, #ef4444 10%, #ffffff)" : "#ffffff",
                   border: "1px solid color-mix(in srgb, var(--color-text) 8%, transparent)",
                   display: "flex",
                   flexDirection: "column",
@@ -982,7 +991,7 @@ export function IndustryEventCalendar({
           style={{
             maxWidth: 640,
             padding: "var(--space-4)",
-            background: "#ffffff",
+            background: isHolidayDay(dayEventItems) ? "color-mix(in srgb, #ef4444 10%, #ffffff)" : "#ffffff",
             border: "1px solid color-mix(in srgb, var(--color-text) 8%, transparent)",
             display: "flex",
             flexDirection: "column",
