@@ -80,6 +80,9 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    // manifest.json/sw.js는 PWA "홈 화면에 추가"가 로그인 여부와 무관하게
+    // 항상 읽을 수 있어야 해서 이미지 확장자와 같이 세션 체크를 건너뛴다
+    // (2026-09-12, 이미지 확장자 제외 목록에 이미 있던 것과 같은 이유).
+    "/((?!_next/static|_next/image|favicon.ico|manifest.json|sw.js|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

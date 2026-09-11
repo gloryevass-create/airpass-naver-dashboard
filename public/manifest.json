@@ -1,0 +1,13 @@
+{
+  "name": "Strategic Agent",
+  "short_name": "Strategic Agent",
+  "description": "에어패스 네이버 키워드광고·블로그 경쟁사 모니터링 대시보드",
+  "start_url": "/dashboard/calendar",
+  "display": "standalone",
+  "background_color": "#f5f5f7",
+  "theme_color": "#262b3a",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
