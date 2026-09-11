@@ -40,6 +40,7 @@ function NotificationSetupBanner() {
         padding: "var(--space-4) var(--space-5)",
         marginBottom: "var(--space-4)",
         background: "#fff",
+        borderRadius: "var(--radius-lg)",
       }}
     >
       <p className="text-muted" style={{ margin: 0, fontSize: 13 }}>
@@ -67,7 +68,7 @@ function TodoForm({ todo, onDone }: { todo: Todo | null; onDone: (saved: boolean
   }, [pending, state, onDone]);
 
   return (
-    <div className="card blueprint elev-md" style={{ marginBottom: "var(--space-4)", padding: "var(--space-5) var(--space-6)", background: "#ffffff" }}>
+    <div className="card blueprint elev-md" style={{ marginBottom: "var(--space-4)", padding: "var(--space-5) var(--space-6)", background: "#ffffff", borderRadius: "var(--radius-lg)" }}>
       <div className="card-kicker">{todo ? "할 일 수정" : "새 할 일 등록"}</div>
       <form action={formAction} style={{ marginTop: "var(--space-3)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
         <div className="field">
@@ -135,6 +136,7 @@ function TodoRow({ todo, onEdit }: { todo: Todo; onEdit: () => void }) {
         padding: "var(--space-3) var(--space-5)",
         background: "#ffffff",
         opacity: todo.isCompleted ? 0.6 : 1,
+        borderRadius: "var(--radius-lg)",
       }}
     >
       <input type="checkbox" checked={todo.isCompleted} onChange={handleToggle} style={{ width: 16, height: 16, flexShrink: 0 }} />
@@ -270,7 +272,7 @@ export function TodoBoard({ todos }: { todos: Todo[] }) {
         </div>
 
         {filteredTodos.length === 0 ? (
-          <div className="card blueprint" style={{ padding: "var(--space-8)", textAlign: "center" }}>
+          <div className="card blueprint" style={{ padding: "var(--space-8)", textAlign: "center", borderRadius: "var(--radius-lg)" }}>
             <p className="text-muted" style={{ margin: 0 }}>조건에 맞는 할 일이 없습니다.</p>
           </div>
         ) : (
