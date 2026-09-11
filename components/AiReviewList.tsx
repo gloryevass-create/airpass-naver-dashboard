@@ -41,7 +41,7 @@ export function AiReviewList({ reviews }: { reviews: AiReviewListItem[] }) {
               style={{ display: "block", padding: "var(--space-4) var(--space-5)", background: "#ffffff", textDecoration: "none", color: "inherit" }}
             >
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-3)", flexWrap: "wrap" }}>
-                <span style={{ fontFamily: "var(--font-heading)", fontWeight: 600, fontSize: 16 }}>{r.title}</span>
+                <span style={{ fontFamily: "var(--font-heading)", fontWeight: 600, fontSize: 14 }}>{r.title}</span>
                 <span className="text-muted" style={{ fontSize: 12 }}>
                   {r.authorDisplay} · {formatDate(r.createdAt)}
                 </span>
