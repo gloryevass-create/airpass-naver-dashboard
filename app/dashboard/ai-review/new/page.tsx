@@ -8,7 +8,7 @@ export default async function NewAiReviewPage() {
 
   return (
     <div className="industry-theme" style={{ minHeight: "100vh", background: "#ffffff" }}>
-      <div style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 800, margin: 0 }}>
+      <div className="board-page-content" style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 800, margin: 0 }}>
       <Link
         href="/dashboard/ai-review"
         style={{

@@ -40,7 +40,7 @@ export default async function MeetingNoteDetailPage({ params }: { params: Params
 
   return (
     <div className="industry-theme" style={{ minHeight: "100vh", background: "#ffffff" }}>
-      <div style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 1180, margin: 0 }}>
+      <div className="board-page-content" style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 1180, margin: 0 }}>
       <Link
         href="/dashboard/meeting-notes"
         style={{
