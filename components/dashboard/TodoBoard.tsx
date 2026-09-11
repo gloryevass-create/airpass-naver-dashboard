@@ -4,6 +4,7 @@ import { useActionState, useEffect, useMemo, useRef, useState, useTransition } f
 import type { Todo, TodoPriority } from "@/lib/queries/todos";
 import { createTodo, updateTodo, deleteTodo, toggleTodoComplete } from "@/app/dashboard/actions/todos";
 import { usePushSubscription } from "@/lib/hooks/usePushSubscription";
+import { NavIcon } from "@/components/icons/NavIcon";
 
 const PRIORITY_LABEL: Record<TodoPriority, string> = { high: "높음", medium: "보통", low: "낮음" };
 const PRIORITY_COLOR: Record<TodoPriority, string> = {
@@ -237,11 +238,8 @@ export function TodoBoard({ todos }: { todos: Todo[] }) {
       <div style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 1400, margin: "0 auto" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-4)", flexWrap: "wrap" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="m9 11 3 3L22 4" />
-              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-            </svg>
-            <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 28, margin: 0, color: "var(--color-accent-700)" }}>할 일</h1>
+            <NavIcon name="checkSquare" width={22} height={22} stroke="var(--color-accent)" strokeWidth={1.5} />
+            <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 28, margin: 0, color: "var(--color-accent-700)" }}>To-Do</h1>
           </div>
           <button type="button" className="btn btn-primary blueprint" onClick={() => setEditingId("new")}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
