@@ -33,9 +33,9 @@ function isItemActive(pathname: string | null, item: LeafItem): boolean {
 const TOP_ITEMS: LeafItem[] = [
   { href: "/dashboard/calendar", label: "Calendar", icon: "calendar" },
   { href: "/dashboard/business", label: "Business", icon: "briefcase" },
-  { href: "/dashboard/todos", label: "To-Do", icon: "checkSquare" },
   { href: "/dashboard/cooperation", label: "Cooperation", icon: "share" },
   { href: "/dashboard/marketing-tasks", label: "Marketing", icon: "list" },
+  { href: "/dashboard/todos", label: "To-Do", icon: "checkSquare" },
   { href: "/dashboard/memos", label: "Memo Board", icon: "clipboard" },
   { href: "/dashboard/work-journal", label: "Work Journal", icon: "chat" },
   { href: "/dashboard/meeting-notes", label: "Meeting Notes", icon: "document" },
