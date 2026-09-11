@@ -735,9 +735,9 @@ export function IndustryEventCalendar({
   const dayEventItems = view === "day" ? dayItems(cursor, events, visibleGoogleEvents) : [];
 
   return (
-    <div className="industry-theme" style={{ minHeight: "100vh" }}>
+    <div className="industry-theme" style={{ minHeight: "100vh", background: "#ffffff" }}>
       <TopSettingsBar view={view} onViewChange={setView} showGoogleEvents={showGoogleEvents} onShowGoogleEventsChange={setShowGoogleEvents} />
-      <div style={{ padding: "var(--space-8)", maxWidth: 1400, margin: "0 auto" }}>
+      <div style={{ padding: "var(--space-8)", maxWidth: 1400, margin: 0 }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "var(--space-4)", flexWrap: "wrap" }}>
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
