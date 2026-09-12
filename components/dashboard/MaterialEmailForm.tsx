@@ -173,7 +173,7 @@ function QuotationPicker({
           className="btn btn-secondary"
           style={{ minWidth: 0, flex: 1, justifyContent: "flex-start", overflow: "hidden" }}
         >
-          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 13, fontWeight: 400 }}>
             🔍 {selected ? `${selected.quoteNumber} · ${selected.customerName}` : `산출내역 검색 (${quotations.length}건)`}
           </span>
         </button>
@@ -468,7 +468,8 @@ export function MaterialEmailForm({
 
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-          <span style={{ fontSize: 14, fontWeight: 500 }}>
+          <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, fontWeight: 500 }}>
+            <NavIcon name="paperclip" width={14} height={14} stroke="var(--color-accent)" />
             보낼 자료 선택 {selected.size > 0 && `(${selected.size}개 선택됨)`}
           </span>
           <input
