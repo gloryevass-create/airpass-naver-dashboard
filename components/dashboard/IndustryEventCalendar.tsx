@@ -762,7 +762,7 @@ export function IndustryEventCalendar({
             </svg>
             <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 22, margin: 0, color: "var(--color-accent-700)" }}>Calendar</h1>
           </div>
-          <p className="text-muted calendar-subtitle" style={{ margin: "var(--space-2) 0 0", fontSize: 14 }}>
+          <p className="text-muted calendar-subtitle" style={{ margin: "var(--space-2) 0 0", fontSize: 12 }}>
             개인 구글계정을 등록하고 연동하면 캘린더에서 개인 일정도 확인이 가능합니다.(본인 일정에만 노출)
           </p>
         </div>
