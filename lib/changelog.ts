@@ -9,6 +9,12 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: "2026-09-13",
+    items: [
+      "AI Review 목록을 Meeting Notes와 동일하게 월별 그룹 보기로 개선(최신 달이 위로, 제목 앞 문서 아이콘 추가)",
+    ],
+  },
+  {
     date: "2026-09-12",
     items: [
       "상단 알림벨(사업변경/메모/유튜브업로드/예산부족 등 팀 공유 알림 13종)이 새로 뜰 때 구독한 팀원 전원에게 브라우저 푸시도 함께 발송 — DB 트리거로 알림 생성 시점을 가로채 큐에 쌓고, 별도 크론(/api/cron/notification-push)이 5분마다 발송",
