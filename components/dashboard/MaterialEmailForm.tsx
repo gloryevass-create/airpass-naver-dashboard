@@ -472,14 +472,30 @@ export function MaterialEmailForm({
             <NavIcon name="paperclip" width={14} height={14} stroke="var(--color-accent)" />
             보낼 자료 선택 {selected.size > 0 && `(${selected.size}개 선택됨)`}
           </span>
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="자료명 검색"
-            className="input"
-            style={{ width: 192, fontSize: 12, minHeight: 30 }}
-          />
+          <div style={{ position: "relative", width: 192 }}>
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", opacity: 0.45, pointerEvents: "none" }}
+            >
+              <circle cx="11" cy="11" r="7" />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="자료명 검색"
+              className="input"
+              style={{ width: "100%", fontSize: 12, minHeight: 30, paddingLeft: 24 }}
+            />
+          </div>
         </div>
         {filtered.length === 0 ? (
           <p className="text-muted" style={{ border: "1px solid var(--color-divider)", padding: "var(--space-4)", textAlign: "center", fontSize: 13 }}>
