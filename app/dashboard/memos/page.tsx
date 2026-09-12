@@ -28,7 +28,7 @@ export default async function MemosPage() {
             </svg>
             <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 22, margin: 0, color: "var(--color-accent-700)" }}>Memo Board</h1>
           </div>
-          <p style={{ margin: "var(--space-2) 0 0", opacity: 0.65, fontSize: 14 }}>
+          <p style={{ margin: "var(--space-2) 0 0", opacity: 0.65, fontSize: 13 }}>
             업무별 의견이나 결정사항들을 기록합니다.
           </p>
         </div>
