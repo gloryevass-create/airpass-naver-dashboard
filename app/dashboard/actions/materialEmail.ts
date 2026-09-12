@@ -77,7 +77,7 @@ async function performSend(
   const videos = files.filter((f) => f.mimeType.startsWith("video/"));
 
   const baseUrl = await resolveBaseUrl();
-  const logoUrl = `${baseUrl}/airpass-logo.png`;
+  const logoUrl = `${baseUrl}/material-email-banner.png`;
 
   let quotation: { id: string; quoteNumber: string; customerName: string; printUrl: string } | null = null;
   if (quotationId) {
@@ -209,7 +209,7 @@ export async function getSentMaterialEmailHtml(logId: string): Promise<string | 
     senderTitle: senderProfile?.title ?? null,
     senderEmail: log.senderEmail,
     senderPhone: senderProfile?.phone ?? null,
-    logoUrl: `${baseUrl}/airpass-logo.png`,
+    logoUrl: `${baseUrl}/material-email-banner.png`,
     documents,
     videos,
     quotation: quotation

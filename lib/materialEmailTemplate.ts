@@ -206,8 +206,8 @@ export function buildMaterialEmailHtml(params: {
   <div style="width:100%;max-width:900px;margin:0 auto;padding:32px 24px 80px;box-sizing:border-box;">
     <div style="border:1px solid ${COLOR.divider};background:#ffffff;">
 
-      <div style="padding:28px 40px;">
-        <img src="${escapeHtml(logoUrl)}" alt="airpass" style="height:26px;object-fit:contain;display:block;" />
+      <div style="line-height:0;">
+        <img src="${escapeHtml(logoUrl)}" alt="airpass" width="852" style="width:100%;max-width:852px;height:auto;display:block;" />
       </div>
 
       <div style="padding:0 40px;border-top:1px solid ${COLOR.divider};">
