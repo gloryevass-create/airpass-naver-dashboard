@@ -782,13 +782,13 @@ export function IndustryEventCalendar({
       )}
 
       <div className="calendar-toolbar-row" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "var(--space-6)", marginBottom: "var(--space-4)", flexWrap: "wrap", gap: "var(--space-3)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-1)", flexWrap: "wrap" }}>
           <button type="button" className="btn btn-secondary btn-icon" onClick={prevPeriod} aria-label="이전">
-            ←
+            &lt;
           </button>
-          <h2 style={{ minWidth: 190, textAlign: "center", margin: 0, fontSize: 24, fontFamily: "var(--font-heading)" }}>{periodLabel}</h2>
+          <h2 style={{ minWidth: 150, textAlign: "center", margin: 0, fontSize: 18, fontFamily: "var(--font-heading)" }}>{periodLabel}</h2>
           <button type="button" className="btn btn-secondary btn-icon" onClick={nextPeriod} aria-label="다음">
-            →
+            &gt;
           </button>
           <button type="button" className="btn btn-secondary" onClick={goToday} style={{ marginLeft: "var(--space-2)" }}>
             오늘
