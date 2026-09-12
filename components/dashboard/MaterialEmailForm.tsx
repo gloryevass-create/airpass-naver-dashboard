@@ -480,7 +480,7 @@ export function MaterialEmailForm({
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
           <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, fontWeight: 500 }}>
             <NavIcon name="paperclip" width={14} height={14} stroke="var(--color-accent)" />
-            보낼 자료 선택 {selected.size > 0 && `(${selected.size}개 선택됨)`}
+            자료 선택 {selected.size > 0 && `(${selected.size}개 선택됨)`}
           </span>
           <div style={{ position: "relative", width: 192 }}>
             <svg
