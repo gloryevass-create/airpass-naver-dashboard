@@ -124,6 +124,27 @@ export async function moveBusinessProjectV2Stage(id: string, stage: string | nul
   revalidateBusinessPaths();
 }
 
+/** 즐겨찾기는 팀 공유가 아니라 로그인한 본인 것만 켜고 끈다(제품 카탈로그
+ * toggleProductFavorite와 동일한 패턴, 2026-09-12). */
+export async function toggleBusinessProjectV2Favorite(projectId: string): Promise<void> {
+  const { supabase, user } = await requireAuthedClient();
+
+  const { data: existing } = await supabase
+    .from("business_projects_v2_favorites")
+    .select("id")
+    .eq("user_id", user.id)
+    .eq("project_id", projectId)
+    .maybeSingle();
+
+  if (existing) {
+    await supabase.from("business_projects_v2_favorites").delete().eq("id", existing.id);
+  } else {
+    await supabase.from("business_projects_v2_favorites").insert({ user_id: user.id, project_id: projectId });
+  }
+
+  revalidateBusinessPaths();
+}
+
 export type BusinessProjectV2CommentState = { error?: string } | undefined;
 
 export async function createBusinessProjectV2Comment(

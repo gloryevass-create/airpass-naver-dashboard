@@ -1128,6 +1128,27 @@ export type Database = {
         };
         Relationships: [];
       };
+      business_projects_v2_favorites: {
+        Row: {
+          id: string;
+          user_id: string;
+          project_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          project_id: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          project_id?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       business_projects_v2_history: {
         Row: {
           id: string;

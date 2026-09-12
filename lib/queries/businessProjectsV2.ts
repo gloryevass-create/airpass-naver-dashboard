@@ -48,6 +48,7 @@ export type BusinessProjectV2 = {
   updatedAt: string;
   comments: BusinessProjectV2Comment[];
   history: BusinessProjectV2HistoryEntry[];
+  isFavorite: boolean;
 };
 
 /** author_id -> "이름(직함)" 표시용 맵(광고전략메모와 동일한 패턴). */
@@ -68,21 +69,29 @@ export async function getBusinessProjectsV2(supabase: Client): Promise<BusinessP
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [{ data }, { data: comments }, { data: history }, { data: attachments }, authorDisplayById] = await Promise.all([
-    // 수정(단계 이동 포함)한 사업이 칸반 보드 맨 위로 오도록 생성일이 아니라
-    // 최근 수정일 기준 최신순으로 정렬한다(사용자 확인, 2026-08-23).
-    supabase.from("business_projects_v2").select("*").order("updated_at", { ascending: false }),
-    supabase
-      .from("business_projects_v2_comments")
-      .select("*")
-      .order("created_at", { ascending: true }),
-    supabase
-      .from("business_projects_v2_history")
-      .select("*")
-      .order("created_at", { ascending: true }),
-    supabase.from("business_projects_v2_history_attachments").select("*"),
-    fetchAuthorDisplayById(supabase),
-  ]);
+  const [{ data }, { data: comments }, { data: history }, { data: attachments }, authorDisplayById, { data: favorites }] =
+    await Promise.all([
+      // 수정(단계 이동 포함)한 사업이 칸반 보드 맨 위로 오도록 생성일이 아니라
+      // 최근 수정일 기준 최신순으로 정렬한다(사용자 확인, 2026-08-23).
+      supabase.from("business_projects_v2").select("*").order("updated_at", { ascending: false }),
+      supabase
+        .from("business_projects_v2_comments")
+        .select("*")
+        .order("created_at", { ascending: true }),
+      supabase
+        .from("business_projects_v2_history")
+        .select("*")
+        .order("created_at", { ascending: true }),
+      supabase.from("business_projects_v2_history_attachments").select("*"),
+      fetchAuthorDisplayById(supabase),
+      // 즐겨찾기는 제품 카탈로그(0034)와 같은 방식 — 팀 공유 목록은 그대로 두고
+      // 로그인한 본인 즐겨찾기만 조회한다(2026-09-12, Business 칸반·리스트 적용).
+      user
+        ? supabase.from("business_projects_v2_favorites").select("project_id").eq("user_id", user.id)
+        : Promise.resolve({ data: [] as { project_id: string }[] }),
+    ]);
+
+  const favoriteIds = new Set((favorites ?? []).map((f) => f.project_id));
 
   const urlByAttachmentId = await resolveHistoryAttachmentUrls(
     supabase,
@@ -148,5 +157,6 @@ export async function getBusinessProjectsV2(supabase: Client): Promise<BusinessP
     updatedAt: p.updated_at,
     comments: commentsByProject.get(p.id) ?? [],
     history: historyByProject.get(p.id) ?? [],
+    isFavorite: favoriteIds.has(p.id),
   }));
 }

@@ -10,6 +10,7 @@ import {
   updateBusinessProjectV2,
   deleteBusinessProjectV2,
   moveBusinessProjectV2Stage,
+  toggleBusinessProjectV2Favorite,
   createBusinessProjectV2Comment,
   deleteBusinessProjectV2Comment,
   createBusinessProjectV2HistoryEntry,
@@ -806,11 +807,13 @@ function KanbanCard({
   onOpen,
   onDragStart,
   onDragEnd,
+  onToggleFavorite,
 }: {
   project: BusinessProjectV2;
   onOpen: () => void;
   onDragStart: (e: DragEvent<HTMLDivElement>) => void;
   onDragEnd: () => void;
+  onToggleFavorite: (id: string) => void;
 }) {
   const [, startTransition] = useTransition();
 
@@ -826,8 +829,21 @@ function KanbanCard({
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
       className="kanban-card card elev-sm"
+      style={{ background: project.isFavorite ? "var(--color-accent-100)" : undefined }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, fontWeight: 500, marginBottom: 6 }}>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleFavorite(project.id);
+          }}
+          title={project.isFavorite ? "즐겨찾기 해제" : "즐겨찾기 추가"}
+          className="btn btn-ghost btn-icon"
+          style={{ color: project.isFavorite ? "#e3a51b" : undefined, fontSize: 14, padding: 0, minHeight: "auto", flex: "none" }}
+        >
+          {project.isFavorite ? "★" : "☆"}
+        </button>
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" strokeWidth="1.5" style={{ flex: "none" }}>
           <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
         </svg>
@@ -887,6 +903,24 @@ export function IndustryBusinessBoard({
   const [dragOverStage, setDragOverStage] = useState<string | null>(null);
   const draggingIdRef = useRef<string | null>(null);
   const [, startTransition] = useTransition();
+  // 제품 카탈로그의 즐겨찾기와 동일한 낙관적 업데이트 패턴(2026-09-12) — 클릭
+  // 즉시 화면에 반영하고, revalidatePath로 서버 데이터가 다시 내려올 때 자연히
+  // 합쳐진다.
+  const [favoriteOverrides, setFavoriteOverrides] = useState<Map<string, boolean>>(new Map());
+
+  const projectsWithFavorites = useMemo(
+    () =>
+      projects.map((p) => (favoriteOverrides.has(p.id) ? { ...p, isFavorite: favoriteOverrides.get(p.id)! } : p)),
+    [projects, favoriteOverrides]
+  );
+
+  function handleToggleFavorite(id: string) {
+    const current = projectsWithFavorites.find((p) => p.id === id)?.isFavorite ?? false;
+    setFavoriteOverrides((prev) => new Map(prev).set(id, !current));
+    startTransition(async () => {
+      await toggleBusinessProjectV2Favorite(id);
+    });
+  }
 
   // 저장된 기본값은 브라우저에서만 읽을 수 있어(localStorage) 마운트 후에
   // 반영한다 — 처음부터 읽어서 초기 state로 쓰면 서버가 렌더링한 HTML(항상
@@ -913,8 +947,11 @@ export function IndustryBusinessBoard({
   const editingProject = editingId ? (projects.find((p) => p.id === editingId) ?? null) : null;
 
   const visible = useMemo(
-    () => (showArchived ? projects : projects.filter((p) => !TERMINAL_STATUSES.has(p.status))),
-    [projects, showArchived]
+    () =>
+      showArchived
+        ? projectsWithFavorites
+        : projectsWithFavorites.filter((p) => !TERMINAL_STATUSES.has(p.status)),
+    [projectsWithFavorites, showArchived]
   );
 
   const counts = useMemo(() => {
@@ -930,9 +967,13 @@ export function IndustryBusinessBoard({
       code: codeOf(name),
       name,
       label: name.slice(1),
-      items: visible.filter((p) => p.stage === name).sort((a, b) => stageIndex(a.stage ?? "") - stageIndex(b.stage ?? "")),
+      items: visible
+        .filter((p) => p.stage === name)
+        .sort((a, b) => Number(b.isFavorite) - Number(a.isFavorite) || stageIndex(a.stage ?? "") - stageIndex(b.stage ?? "")),
     }));
-    const unclassified = visible.filter((p) => !p.stage);
+    const unclassified = visible
+      .filter((p) => !p.stage)
+      .sort((a, b) => Number(b.isFavorite) - Number(a.isFavorite));
     if (unclassified.length > 0) cols.push({ code: "-", name: "미분류", label: "미분류", items: unclassified });
     return cols;
   }, [visible]);
@@ -966,9 +1007,11 @@ export function IndustryBusinessBoard({
       if (listAssigneeFilter && !p.assignees.includes(listAssigneeFilter)) return false;
       return true;
     });
-    return [...rows].sort((a, b) =>
-      listSort === "latest" ? b.updatedAt.localeCompare(a.updatedAt) : a.updatedAt.localeCompare(b.updatedAt)
-    );
+    return [...rows].sort((a, b) => {
+      const favDiff = Number(b.isFavorite) - Number(a.isFavorite);
+      if (favDiff !== 0) return favDiff;
+      return listSort === "latest" ? b.updatedAt.localeCompare(a.updatedAt) : a.updatedAt.localeCompare(b.updatedAt);
+    });
   }, [visible, listSearch, listStatusFilter, listStageFilter, listWorkTypeFilter, listAssigneeFilter, listSort]);
 
   function handleDragStart(e: DragEvent<HTMLDivElement>, id: string) {
@@ -1152,6 +1195,7 @@ export function IndustryBusinessBoard({
                   onOpen={() => setEditingId(p.id)}
                   onDragStart={(e) => handleDragStart(e, p.id)}
                   onDragEnd={handleDragEnd}
+                  onToggleFavorite={handleToggleFavorite}
                 />
               ))}
               {col.items.length === 0 && (
@@ -1233,13 +1277,25 @@ export function IndustryBusinessBoard({
             </thead>
             <tbody>
               {listVisible.map((p) => (
-                <tr key={p.id} onClick={() => setEditingId(p.id)} style={{ cursor: "pointer" }}>
+                <tr key={p.id} onClick={() => setEditingId(p.id)} style={{ cursor: "pointer", background: p.isFavorite ? "var(--color-accent-100)" : undefined }}>
                   <td style={{ fontFamily: "var(--font-heading)", fontWeight: 600 }}>
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }} className="detail-link">
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleToggleFavorite(p.id);
+                        }}
+                        title={p.isFavorite ? "즐겨찾기 해제" : "즐겨찾기 추가"}
+                        className="btn btn-ghost btn-icon"
+                        style={{ color: p.isFavorite ? "#e3a51b" : undefined, fontSize: 14, padding: 0, minHeight: "auto", flex: "none" }}
+                      >
+                        {p.isFavorite ? "★" : "☆"}
+                      </button>
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" strokeWidth="1.5" style={{ flex: "none" }}>
                         <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
                       </svg>
-                      {p.title}
+                      <span className="detail-link">{p.title}</span>
                     </span>
                   </td>
                   <td>{p.orgName ?? "-"}</td>
