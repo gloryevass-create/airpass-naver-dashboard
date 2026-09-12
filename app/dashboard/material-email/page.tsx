@@ -7,7 +7,7 @@ import { isMaterialEmailConfigured } from "@/lib/materialEmail";
 import { matchProductMaterialFiles } from "@/lib/materialEmailTemplate";
 import { MaterialEmailForm } from "@/components/dashboard/MaterialEmailForm";
 import { SentMaterialEmailPreviewButton } from "@/components/dashboard/SentMaterialEmailPreviewButton";
-import { DeleteMemoButton } from "@/components/DeleteMemoButton";
+import { DeleteIconButton } from "@/components/DeleteIconButton";
 import { deleteMaterialEmailLog } from "@/app/dashboard/actions/materialEmail";
 
 // 서버 컴포넌트(Vercel UTC 런타임)라 timeZone을 명시하지 않으면 실제 한국시간보다
@@ -123,7 +123,7 @@ export default async function MaterialEmailPage() {
                   <span className="text-muted" style={{ fontSize: 11 }}>
                     {l.senderEmail} · {formatDateTime(l.createdAt)}
                   </span>
-                  {isAdmin && <DeleteMemoButton action={deleteMaterialEmailLog.bind(null, l.id)} />}
+                  {isAdmin && <DeleteIconButton action={deleteMaterialEmailLog.bind(null, l.id)} />}
                 </div>
               </div>
               <p className="text-muted" style={{ margin: "4px 0 0", fontSize: 11 }}>
