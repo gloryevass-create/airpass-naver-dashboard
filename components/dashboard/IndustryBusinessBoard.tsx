@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useMemo, useRef, useState, useTransition, type DragEvent } from "react";
 import Link from "next/link";
+import { NavIcon, type IconName } from "@/components/icons/NavIcon";
 import type { BusinessProjectV2, BusinessProjectV2HistoryEntry } from "@/lib/queries/businessProjectsV2";
 import type { Quotation } from "@/lib/queries/quotations";
 import {
@@ -21,6 +22,16 @@ import {
 const STAGES = ["Ⅰ영업진행", "Ⅱ사업제안", "Ⅲ제안서작성", "Ⅳ사업수행", "Ⅴ사업완료"];
 const STATUSES = ["시작 전", "진행 중", "완료", "보류", "실패"];
 const TERMINAL_STATUSES = new Set(["완료", "실패", "보류"]);
+
+// 칸반 단계 헤더의 로마숫자 코드 대신 아이콘으로 표시(2026-09-12, 사용자 확인).
+const STAGE_ICONS: Record<string, IconName> = {
+  영업진행: "megaphone",
+  사업제안: "chat",
+  제안서작성: "document",
+  사업수행: "briefcase",
+  사업완료: "checkSquare",
+  미분류: "tag",
+};
 
 function formatDate(value: string | null): string | null {
   if (!value) return null;
@@ -1122,8 +1133,12 @@ export function IndustryBusinessBoard({
                   marginBottom: "var(--space-3)",
                 }}
               >
-                <span style={{ fontFamily: "var(--font-heading)", fontWeight: 600, fontSize: 14, flex: 1 }}>
-                  <span style={{ color: "var(--color-accent-700)", marginRight: 5 }}>{col.code}</span>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "var(--font-heading)", fontWeight: 600, fontSize: 14, flex: 1 }}>
+                  <NavIcon
+                    name={STAGE_ICONS[col.label] ?? "tag"}
+                    className="h-4 w-4 shrink-0"
+                    style={{ color: "var(--color-accent-700)" }}
+                  />
                   {col.label}
                 </span>
                 <span className="text-muted" style={{ fontSize: 12 }}>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useMemo, useRef, useState, useTransition, type DragEvent } from "react";
+import { NavIcon, type IconName } from "@/components/icons/NavIcon";
 import type { CooperationProject, CooperationProjectHistoryEntry } from "@/lib/queries/cooperationProjects";
 import {
   createCooperationProject,
@@ -23,6 +24,17 @@ const RELATION_TYPES = ["콘텐츠/하드웨어", "공동생산 판매", "제품
 const WORK_TYPES = ["아이디어", "시장조사", "기획", "개발", "상품화", "제품생산", "조달등록", "자료", "판매", "첫 미팅"];
 const STATUSES = ["시작 전", "진행 중", "완료", "종료"];
 const TERMINAL_STATUSES = new Set(["완료", "종료"]);
+
+// 칸반 그룹 헤더의 첫 글자 코드 대신 아이콘으로 표시(2026-09-12, 사용자 확인).
+const RELATION_ICONS: Record<string, IconName> = {
+  "콘텐츠/하드웨어": "pie",
+  "공동생산 판매": "share",
+  "제품 판매": "tag",
+  자재구매: "wallet",
+  일반: "list",
+  비즈니스협업: "link",
+  미분류: "menu",
+};
 
 function formatDate(value: string | null): string | null {
   if (!value) return null;
@@ -998,8 +1010,12 @@ export function IndustryCooperationBoard({ projects, members }: { projects: Coop
                   marginBottom: "var(--space-3)",
                 }}
               >
-                <span style={{ fontFamily: "var(--font-heading)", fontWeight: 600, fontSize: 14, flex: 1 }}>
-                  <span style={{ color: "var(--color-accent-700)", marginRight: 5 }}>{col.code}</span>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "var(--font-heading)", fontWeight: 600, fontSize: 14, flex: 1 }}>
+                  <NavIcon
+                    name={RELATION_ICONS[col.label] ?? "menu"}
+                    className="h-4 w-4 shrink-0"
+                    style={{ color: "var(--color-accent-700)" }}
+                  />
                   {col.label}
                 </span>
                 <span className="text-muted" style={{ fontSize: 12 }}>

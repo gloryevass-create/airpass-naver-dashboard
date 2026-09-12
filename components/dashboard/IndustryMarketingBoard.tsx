@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useMemo, useRef, useState, useTransition, type DragEvent } from "react";
+import { NavIcon, type IconName } from "@/components/icons/NavIcon";
 import type { MarketingTask, MarketingTaskHistoryEntry } from "@/lib/queries/marketingTasks";
 import {
   createMarketingTask,
@@ -20,6 +21,28 @@ const CATEGORIES = ["문서", "영상", "사진", "웹페이지", "광고"];
 const WORK_TYPES = ["브로슈어", "매뉴얼", "홈페이지", "SNS", "영상", "기타"];
 const STAGES = ["기획", "제작", "수행"];
 const STATUSES = ["시작 전", "진행 중", "완료", "종료"];
+
+// 칸반 그룹 헤더의 첫 글자 코드 대신 아이콘으로 표시(2026-09-12, 사용자 확인).
+// "사진"은 NavIcon 세트에 카메라 아이콘이 없어 이 컴포넌트에서만 인라인으로 그린다.
+const CATEGORY_ICONS: Record<string, IconName> = {
+  문서: "document",
+  영상: "play",
+  웹페이지: "link",
+  광고: "megaphone",
+  미분류: "menu",
+};
+
+function CategoryIcon({ label }: { label: string }) {
+  if (label === "사진") {
+    return (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+        <circle cx="12" cy="13" r="4" />
+      </svg>
+    );
+  }
+  return <NavIcon name={CATEGORY_ICONS[label] ?? "menu"} className="h-4 w-4 shrink-0" style={{ color: "var(--color-accent-700)" }} />;
+}
 const TERMINAL_STATUSES = new Set(["완료", "종료"]);
 
 function formatDate(value: string | null): string | null {
@@ -987,8 +1010,8 @@ export function IndustryMarketingBoard({ tasks, members }: { tasks: MarketingTas
                   marginBottom: "var(--space-3)",
                 }}
               >
-                <span style={{ fontFamily: "var(--font-heading)", fontWeight: 600, fontSize: 14, flex: 1 }}>
-                  <span style={{ color: "var(--color-accent-700)", marginRight: 5 }}>{col.code}</span>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "var(--font-heading)", fontWeight: 600, fontSize: 14, flex: 1 }}>
+                  <CategoryIcon label={col.label} />
                   {col.label}
                 </span>
                 <span className="text-muted" style={{ fontSize: 12 }}>
