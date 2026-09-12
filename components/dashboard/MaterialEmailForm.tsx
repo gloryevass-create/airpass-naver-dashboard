@@ -7,6 +7,7 @@ import { sendMaterialEmailAction, type SendMaterialEmailState } from "@/app/dash
 import { AI_MATERIAL_EMAIL_DRAFT_KEY, type AiMaterialEmailDraft } from "@/lib/aiMaterialEmailDraft";
 import { DEFAULT_MATERIAL_EMAIL_SUBJECT, DEFAULT_MATERIAL_EMAIL_MESSAGE } from "@/lib/materialEmailDefaults";
 import { buildMaterialEmailHtml } from "@/lib/materialEmailTemplate";
+import { NavIcon } from "@/components/icons/NavIcon";
 
 const initialState: SendMaterialEmailState = undefined;
 
@@ -161,7 +162,10 @@ function QuotationPicker({
 
   return (
     <div ref={panelRef} className="field" style={{ position: "relative" }}>
-      <label>산출내역(견적) 첨부 — 선택 안 함</label>
+      <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, fontWeight: 500, color: "var(--color-text)" }}>
+        <NavIcon name="receipt" width={14} height={14} stroke="var(--color-accent)" />
+        산출내역(견적) 첨부 — 선택 안 함
+      </label>
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <button
           type="button"
@@ -406,7 +410,10 @@ export function MaterialEmailForm({
         </p>
       )}
       <div className="field">
-        <label htmlFor="recipients">받는 사람 이메일 (쉼표 또는 줄바꿈으로 여러 명 입력)</label>
+        <label htmlFor="recipients" style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, fontWeight: 500, color: "var(--color-text)" }}>
+          <NavIcon name="user" width={14} height={14} stroke="var(--color-accent)" />
+          받는 사람 이메일 (쉼표 또는 줄바꿈으로 여러 명 입력)
+        </label>
         <textarea
           id="recipients"
           name="recipients"
@@ -420,7 +427,10 @@ export function MaterialEmailForm({
       </div>
 
       <div className="field">
-        <label htmlFor="subject">제목</label>
+        <label htmlFor="subject" style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, fontWeight: 500, color: "var(--color-text)" }}>
+          <NavIcon name="document" width={14} height={14} stroke="var(--color-accent)" />
+          제목
+        </label>
         <input
           id="subject"
           name="subject"
@@ -434,7 +444,10 @@ export function MaterialEmailForm({
       </div>
 
       <div className="field">
-        <label htmlFor="message">안내 내용</label>
+        <label htmlFor="message" style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, fontWeight: 500, color: "var(--color-text)" }}>
+          <NavIcon name="chat" width={14} height={14} stroke="var(--color-accent)" />
+          안내 내용
+        </label>
         <textarea
           id="message"
           name="message"
