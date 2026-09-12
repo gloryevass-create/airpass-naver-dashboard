@@ -38,7 +38,7 @@ export default async function MemosPage() {
       </div>
 
       <div style={{ overflowX: "auto" }}>
-      <table className="table" style={{ marginTop: "var(--space-6)" }}>
+      <table className="table list-table" style={{ marginTop: "var(--space-6)" }}>
         <thead>
           <tr>
             <th style={{ width: 120 }}>구분</th>
