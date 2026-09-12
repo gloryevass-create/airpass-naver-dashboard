@@ -56,7 +56,7 @@ export default async function MeetingNoteDetailPage({ params }: { params: Params
         ← 목록으로
       </Link>
 
-      <div style={{ display: "flex", gap: "var(--space-8)", alignItems: "flex-start" }}>
+      <div className="meeting-note-detail-row" style={{ display: "flex", gap: "var(--space-8)", alignItems: "flex-start" }}>
         <div className="card blueprint elev-sm" style={{ flex: 1, minWidth: 0, padding: "var(--space-6) var(--space-8)", background: "#ffffff" }}>
           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "var(--space-4)", flexWrap: "wrap" }}>
             <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 28, margin: "0 0 var(--space-2)", color: "var(--color-accent-700)" }}>
@@ -121,6 +121,7 @@ export default async function MeetingNoteDetailPage({ params }: { params: Params
 
         {headings.length > 0 && (
           <nav
+            className="meeting-note-toc"
             style={{
               width: 220,
               flexShrink: 0,
