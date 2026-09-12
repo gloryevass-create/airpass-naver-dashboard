@@ -981,31 +981,17 @@ export function IndustryMarketingBoard({ tasks, members }: { tasks: MarketingTas
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: 10,
-                  paddingBottom: "var(--space-3)",
-                  borderBottom: "1px solid var(--color-divider)",
+                  gap: 6,
+                  paddingBottom: "var(--space-2)",
+                  borderBottom: "2px solid var(--color-accent-700)",
                   marginBottom: "var(--space-3)",
                 }}
               >
-                <span
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: 26,
-                    height: 26,
-                    flex: "none",
-                    background: "var(--color-accent-900)",
-                    color: "var(--color-bg)",
-                    fontFamily: "var(--font-heading)",
-                    fontWeight: 600,
-                    fontSize: 13,
-                  }}
-                >
-                  {col.code}
+                <span style={{ fontFamily: "var(--font-heading)", fontWeight: 600, fontSize: 14, flex: 1 }}>
+                  <span style={{ color: "var(--color-accent-700)", marginRight: 5 }}>{col.code}</span>
+                  {col.label}
                 </span>
-                <span style={{ fontFamily: "var(--font-heading)", fontWeight: 600, fontSize: 14, flex: 1 }}>{col.label}</span>
-                <span style={{ fontFamily: "var(--font-heading)", fontWeight: 600, fontSize: 15, color: "var(--color-accent-700)" }}>
+                <span className="text-muted" style={{ fontSize: 12 }}>
                   {col.items.length}
                 </span>
               </div>
