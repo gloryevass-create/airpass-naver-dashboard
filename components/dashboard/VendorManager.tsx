@@ -16,7 +16,7 @@ const DOCUMENT_HINTS: Record<VendorDocumentType, string> = {
   business_registration: "업체명·사업자번호·대표자·주소·업태·종목",
   bankbook: "은행·계좌번호·예금주",
   business_card: "담당자·직함·연락처·이메일",
-  product_material: "카탈로그·브로슈어 등 참고자료(여러 건 첨부 가능)",
+  product_material: "카탈로그·브로슈어 등 참고자료(여러 건 첨부)",
 };
 const DOCUMENT_TYPES = Object.keys(DOCUMENT_LABELS) as VendorDocumentType[];
 
