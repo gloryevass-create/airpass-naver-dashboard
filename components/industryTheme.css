@@ -415,9 +415,9 @@
    표에만 적용된다. */
 .industry-theme .list-table thead th {
   background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--color-accent) 10%, transparent),
-    color-mix(in srgb, var(--color-text) 4%, transparent)
+    to top,
+    color-mix(in srgb, var(--color-text) 4%, transparent),
+    color-mix(in srgb, var(--color-accent) 22%, transparent)
   );
   text-transform: none;
   letter-spacing: 0;
