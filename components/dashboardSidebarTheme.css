@@ -38,12 +38,12 @@
   background: #ffffff;
   border: 1px solid var(--sb-border);
   border-radius: 4px;
-  padding: 10px 12px;
+  padding: 7px 12px;
   width: 100%;
 }
 .ds-sidebar-brand.collapsed {
   justify-content: center;
-  padding: 10px;
+  padding: 7px;
 }
 
 /* WORKSPACE 앞 별(sparkle) 아이콘 깜빡임(2026-08-30, 사용자 확인). */
