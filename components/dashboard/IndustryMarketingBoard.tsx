@@ -8,6 +8,7 @@ import {
   updateMarketingTask,
   deleteMarketingTask,
   moveMarketingTaskCategory,
+  toggleMarketingTaskFavorite,
   createMarketingTaskComment,
   deleteMarketingTaskComment,
   createMarketingTaskHistoryEntry,
@@ -709,11 +710,13 @@ function KanbanCard({
   onOpen,
   onDragStart,
   onDragEnd,
+  onToggleFavorite,
 }: {
   task: MarketingTask;
   onOpen: () => void;
   onDragStart: (e: DragEvent<HTMLDivElement>) => void;
   onDragEnd: () => void;
+  onToggleFavorite: (id: string) => void;
 }) {
   const [, startTransition] = useTransition();
 
@@ -724,8 +727,26 @@ function KanbanCard({
   }
 
   return (
-    <div draggable onDragStart={onDragStart} onDragEnd={onDragEnd} className="kanban-card card elev-sm">
+    <div
+      draggable
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+      className="kanban-card card elev-sm"
+      style={{ background: task.isFavorite ? "var(--color-accent-100)" : undefined }}
+    >
       <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, fontWeight: 500, marginBottom: 6 }}>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleFavorite(task.id);
+          }}
+          title={task.isFavorite ? "즐겨찾기 해제" : "즐겨찾기 추가"}
+          className="btn btn-ghost btn-icon"
+          style={{ color: task.isFavorite ? "#e3a51b" : undefined, fontSize: 14, padding: 0, minHeight: "auto", flex: "none" }}
+        >
+          {task.isFavorite ? "★" : "☆"}
+        </button>
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" strokeWidth="1.5" style={{ flex: "none" }}>
           <rect x="3" y="3" width="18" height="18" rx="2" />
           <path d="M3 9h18M9 21V9" />
@@ -778,6 +799,21 @@ export function IndustryMarketingBoard({ tasks, members }: { tasks: MarketingTas
   const [dragOverCategory, setDragOverCategory] = useState<string | null>(null);
   const draggingIdRef = useRef<string | null>(null);
   const [, startTransition] = useTransition();
+  // SI Business 즐겨찾기와 동일한 낙관적 업데이트 패턴(2026-09-12).
+  const [favoriteOverrides, setFavoriteOverrides] = useState<Map<string, boolean>>(new Map());
+
+  const tasksWithFavorites = useMemo(
+    () => tasks.map((t) => (favoriteOverrides.has(t.id) ? { ...t, isFavorite: favoriteOverrides.get(t.id)! } : t)),
+    [tasks, favoriteOverrides]
+  );
+
+  function handleToggleFavorite(id: string) {
+    const current = tasksWithFavorites.find((t) => t.id === id)?.isFavorite ?? false;
+    setFavoriteOverrides((prev) => new Map(prev).set(id, !current));
+    startTransition(async () => {
+      await toggleMarketingTaskFavorite(id);
+    });
+  }
 
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
@@ -801,8 +837,11 @@ export function IndustryMarketingBoard({ tasks, members }: { tasks: MarketingTas
   const editingTask = editingId ? (tasks.find((t) => t.id === editingId) ?? null) : null;
 
   const visible = useMemo(
-    () => (showArchived ? tasks : tasks.filter((t) => !TERMINAL_STATUSES.has(t.status))),
-    [tasks, showArchived]
+    () =>
+      showArchived
+        ? tasksWithFavorites
+        : tasksWithFavorites.filter((t) => !TERMINAL_STATUSES.has(t.status)),
+    [tasksWithFavorites, showArchived]
   );
 
   const counts = useMemo(() => {
@@ -814,13 +853,14 @@ export function IndustryMarketingBoard({ tasks, members }: { tasks: MarketingTas
 
   const columns = useMemo(() => {
     const codeOf = (name: string) => name.slice(0, 1);
+    const byFavorite = (a: MarketingTask, b: MarketingTask) => Number(b.isFavorite) - Number(a.isFavorite);
     const cols = CATEGORIES.map((name) => ({
       code: codeOf(name),
       name,
       label: name,
-      items: visible.filter((t) => t.category === name),
+      items: visible.filter((t) => t.category === name).sort(byFavorite),
     }));
-    const unclassified = visible.filter((t) => !t.category);
+    const unclassified = visible.filter((t) => !t.category).sort(byFavorite);
     if (unclassified.length > 0) cols.push({ code: "-", name: "미분류", label: "미분류", items: unclassified });
     return cols;
   }, [visible]);
@@ -849,9 +889,11 @@ export function IndustryMarketingBoard({ tasks, members }: { tasks: MarketingTas
       if (listAssigneeFilter && !t.assignees.includes(listAssigneeFilter)) return false;
       return true;
     });
-    return [...rows].sort((a, b) =>
-      listSort === "latest" ? b.updatedAt.localeCompare(a.updatedAt) : a.updatedAt.localeCompare(b.updatedAt)
-    );
+    return [...rows].sort((a, b) => {
+      const favDiff = Number(b.isFavorite) - Number(a.isFavorite);
+      if (favDiff !== 0) return favDiff;
+      return listSort === "latest" ? b.updatedAt.localeCompare(a.updatedAt) : a.updatedAt.localeCompare(b.updatedAt);
+    });
   }, [visible, listSearch, listStatusFilter, listCategoryFilter, listWorkTypeFilter, listAssigneeFilter, listSort]);
 
   function handleDragStart(e: DragEvent<HTMLDivElement>, id: string) {
@@ -1025,6 +1067,7 @@ export function IndustryMarketingBoard({ tasks, members }: { tasks: MarketingTas
                   onOpen={() => setEditingId(t.id)}
                   onDragStart={(e) => handleDragStart(e, t.id)}
                   onDragEnd={handleDragEnd}
+                  onToggleFavorite={handleToggleFavorite}
                 />
               ))}
               {col.items.length === 0 && (
@@ -1106,10 +1149,22 @@ export function IndustryMarketingBoard({ tasks, members }: { tasks: MarketingTas
             </thead>
             <tbody>
               {listVisible.map((t) => (
-                <tr key={t.id} onClick={() => setEditingId(t.id)} style={{ cursor: "pointer" }}>
+                <tr key={t.id} onClick={() => setEditingId(t.id)} style={{ cursor: "pointer", background: t.isFavorite ? "var(--color-accent-100)" : undefined }}>
                   <td style={{ fontFamily: "var(--font-heading)", fontWeight: 600 }}>
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }} className="detail-link">
-                      {t.title}
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleToggleFavorite(t.id);
+                        }}
+                        title={t.isFavorite ? "즐겨찾기 해제" : "즐겨찾기 추가"}
+                        className="btn btn-ghost btn-icon"
+                        style={{ color: t.isFavorite ? "#e3a51b" : undefined, fontSize: 14, padding: 0, minHeight: "auto", flex: "none" }}
+                      >
+                        {t.isFavorite ? "★" : "☆"}
+                      </button>
+                      <span className="detail-link">{t.title}</span>
                     </span>
                   </td>
                   <td>{t.category ?? "미분류"}</td>

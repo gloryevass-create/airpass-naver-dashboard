@@ -8,6 +8,7 @@ import {
   updateCooperationProject,
   deleteCooperationProject,
   moveCooperationProjectRelation,
+  toggleCooperationProjectFavorite,
   createCooperationProjectComment,
   deleteCooperationProjectComment,
   createCooperationProjectHistoryEntry,
@@ -698,11 +699,13 @@ function KanbanCard({
   onOpen,
   onDragStart,
   onDragEnd,
+  onToggleFavorite,
 }: {
   project: CooperationProject;
   onOpen: () => void;
   onDragStart: (e: DragEvent<HTMLDivElement>) => void;
   onDragEnd: () => void;
+  onToggleFavorite: (id: string) => void;
 }) {
   const [, startTransition] = useTransition();
 
@@ -713,8 +716,26 @@ function KanbanCard({
   }
 
   return (
-    <div draggable onDragStart={onDragStart} onDragEnd={onDragEnd} className="kanban-card card elev-sm">
+    <div
+      draggable
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+      className="kanban-card card elev-sm"
+      style={{ background: project.isFavorite ? "var(--color-accent-100)" : undefined }}
+    >
       <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, fontWeight: 500, marginBottom: 6 }}>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleFavorite(project.id);
+          }}
+          title={project.isFavorite ? "즐겨찾기 해제" : "즐겨찾기 추가"}
+          className="btn btn-ghost btn-icon"
+          style={{ color: project.isFavorite ? "#e3a51b" : undefined, fontSize: 14, padding: 0, minHeight: "auto", flex: "none" }}
+        >
+          {project.isFavorite ? "★" : "☆"}
+        </button>
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" strokeWidth="1.5" style={{ flex: "none" }}>
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
           <circle cx="9" cy="7" r="4" />
@@ -769,6 +790,22 @@ export function IndustryCooperationBoard({ projects, members }: { projects: Coop
   const [dragOverRelation, setDragOverRelation] = useState<string | null>(null);
   const draggingIdRef = useRef<string | null>(null);
   const [, startTransition] = useTransition();
+  // SI Business 즐겨찾기와 동일한 낙관적 업데이트 패턴(2026-09-12).
+  const [favoriteOverrides, setFavoriteOverrides] = useState<Map<string, boolean>>(new Map());
+
+  const projectsWithFavorites = useMemo(
+    () =>
+      projects.map((p) => (favoriteOverrides.has(p.id) ? { ...p, isFavorite: favoriteOverrides.get(p.id)! } : p)),
+    [projects, favoriteOverrides]
+  );
+
+  function handleToggleFavorite(id: string) {
+    const current = projectsWithFavorites.find((p) => p.id === id)?.isFavorite ?? false;
+    setFavoriteOverrides((prev) => new Map(prev).set(id, !current));
+    startTransition(async () => {
+      await toggleCooperationProjectFavorite(id);
+    });
+  }
 
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
@@ -792,8 +829,11 @@ export function IndustryCooperationBoard({ projects, members }: { projects: Coop
   const editingProject = editingId ? (projects.find((p) => p.id === editingId) ?? null) : null;
 
   const visible = useMemo(
-    () => (showArchived ? projects : projects.filter((p) => !TERMINAL_STATUSES.has(p.status))),
-    [projects, showArchived]
+    () =>
+      showArchived
+        ? projectsWithFavorites
+        : projectsWithFavorites.filter((p) => !TERMINAL_STATUSES.has(p.status)),
+    [projectsWithFavorites, showArchived]
   );
 
   const counts = useMemo(() => {
@@ -805,13 +845,14 @@ export function IndustryCooperationBoard({ projects, members }: { projects: Coop
 
   const columns = useMemo(() => {
     const codeOf = (name: string) => name.slice(0, 1);
+    const byFavorite = (a: CooperationProject, b: CooperationProject) => Number(b.isFavorite) - Number(a.isFavorite);
     const cols = RELATION_TYPES.map((name) => ({
       code: codeOf(name),
       name,
       label: name,
-      items: visible.filter((p) => p.relationType === name),
+      items: visible.filter((p) => p.relationType === name).sort(byFavorite),
     }));
-    const unclassified = visible.filter((p) => !p.relationType);
+    const unclassified = visible.filter((p) => !p.relationType).sort(byFavorite);
     if (unclassified.length > 0) cols.push({ code: "-", name: "미분류", label: "미분류", items: unclassified });
     return cols;
   }, [visible]);
@@ -847,9 +888,11 @@ export function IndustryCooperationBoard({ projects, members }: { projects: Coop
         return false;
       return true;
     });
-    return [...rows].sort((a, b) =>
-      listSort === "latest" ? b.updatedAt.localeCompare(a.updatedAt) : a.updatedAt.localeCompare(b.updatedAt)
-    );
+    return [...rows].sort((a, b) => {
+      const favDiff = Number(b.isFavorite) - Number(a.isFavorite);
+      if (favDiff !== 0) return favDiff;
+      return listSort === "latest" ? b.updatedAt.localeCompare(a.updatedAt) : a.updatedAt.localeCompare(b.updatedAt);
+    });
   }, [visible, listSearch, listStatusFilter, listRelationFilter, listWorkTypeFilter, listAssigneeFilter, listSort]);
 
   function handleDragStart(e: DragEvent<HTMLDivElement>, id: string) {
@@ -1029,6 +1072,7 @@ export function IndustryCooperationBoard({ projects, members }: { projects: Coop
                   onOpen={() => setEditingId(p.id)}
                   onDragStart={(e) => handleDragStart(e, p.id)}
                   onDragEnd={handleDragEnd}
+                  onToggleFavorite={handleToggleFavorite}
                 />
               ))}
               {col.items.length === 0 && (
@@ -1110,10 +1154,22 @@ export function IndustryCooperationBoard({ projects, members }: { projects: Coop
             </thead>
             <tbody>
               {listVisible.map((p) => (
-                <tr key={p.id} onClick={() => setEditingId(p.id)} style={{ cursor: "pointer" }}>
+                <tr key={p.id} onClick={() => setEditingId(p.id)} style={{ cursor: "pointer", background: p.isFavorite ? "var(--color-accent-100)" : undefined }}>
                   <td style={{ fontFamily: "var(--font-heading)", fontWeight: 600 }}>
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }} className="detail-link">
-                      {p.title}
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleToggleFavorite(p.id);
+                        }}
+                        title={p.isFavorite ? "즐겨찾기 해제" : "즐겨찾기 추가"}
+                        className="btn btn-ghost btn-icon"
+                        style={{ color: p.isFavorite ? "#e3a51b" : undefined, fontSize: 14, padding: 0, minHeight: "auto", flex: "none" }}
+                      >
+                        {p.isFavorite ? "★" : "☆"}
+                      </button>
+                      <span className="detail-link">{p.title}</span>
                     </span>
                   </td>
                   <td>{p.company ?? "-"}</td>

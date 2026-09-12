@@ -104,6 +104,27 @@ export async function moveCooperationProjectRelation(id: string, relationType: s
   revalidatePath(PATH);
 }
 
+/** 즐겨찾기는 팀 공유가 아니라 로그인한 본인 것만 켜고 끈다(SI Business
+ * toggleBusinessProjectV2Favorite와 동일한 패턴, 2026-09-12). */
+export async function toggleCooperationProjectFavorite(projectId: string): Promise<void> {
+  const { supabase, user } = await requireAuthedClient();
+
+  const { data: existing } = await supabase
+    .from("cooperation_projects_favorites")
+    .select("id")
+    .eq("user_id", user.id)
+    .eq("project_id", projectId)
+    .maybeSingle();
+
+  if (existing) {
+    await supabase.from("cooperation_projects_favorites").delete().eq("id", existing.id);
+  } else {
+    await supabase.from("cooperation_projects_favorites").insert({ user_id: user.id, project_id: projectId });
+  }
+
+  revalidatePath(PATH);
+}
+
 export type CooperationProjectCommentState = { error?: string } | undefined;
 
 export async function createCooperationProjectComment(

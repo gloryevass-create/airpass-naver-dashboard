@@ -1911,6 +1911,27 @@ export type Database = {
         };
         Relationships: [];
       };
+      cooperation_projects_favorites: {
+        Row: {
+          id: string;
+          user_id: string;
+          project_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          project_id: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          project_id?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       cooperation_projects_history: {
         Row: {
           id: string;
@@ -2042,6 +2063,27 @@ export type Database = {
           author_id?: string;
           author_email?: string;
           content?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      marketing_tasks_favorites: {
+        Row: {
+          id: string;
+          user_id: string;
+          task_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          task_id: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          task_id?: string;
           created_at?: string;
         };
         Relationships: [];

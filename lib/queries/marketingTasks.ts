@@ -39,6 +39,7 @@ export type MarketingTask = {
   updatedAt: string;
   comments: MarketingTaskComment[];
   history: MarketingTaskHistoryEntry[];
+  isFavorite: boolean;
 };
 
 /** author_id -> "이름(직함)" 표시용 맵(광고전략메모/SI Business/협업과 동일한 패턴). */
@@ -59,21 +60,28 @@ export async function getMarketingTasks(supabase: Client): Promise<MarketingTask
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [{ data }, { data: comments }, { data: history }, { data: attachments }, authorDisplayById] = await Promise.all([
-    // 수정(분류 이동 포함)한 업무가 칸반 보드 맨 위로 오도록 생성일이 아니라
-    // 최근 수정일 기준 최신순으로 정렬한다(SI Business와 동일, 사용자 확인 2026-08-23).
-    supabase.from("marketing_tasks").select("*").order("updated_at", { ascending: false }),
-    supabase
-      .from("marketing_tasks_comments")
-      .select("*")
-      .order("created_at", { ascending: true }),
-    supabase
-      .from("marketing_tasks_history")
-      .select("*")
-      .order("created_at", { ascending: true }),
-    supabase.from("marketing_tasks_history_attachments").select("*"),
-    fetchAuthorDisplayById(supabase),
-  ]);
+  const [{ data }, { data: comments }, { data: history }, { data: attachments }, authorDisplayById, { data: favorites }] =
+    await Promise.all([
+      // 수정(분류 이동 포함)한 업무가 칸반 보드 맨 위로 오도록 생성일이 아니라
+      // 최근 수정일 기준 최신순으로 정렬한다(SI Business와 동일, 사용자 확인 2026-08-23).
+      supabase.from("marketing_tasks").select("*").order("updated_at", { ascending: false }),
+      supabase
+        .from("marketing_tasks_comments")
+        .select("*")
+        .order("created_at", { ascending: true }),
+      supabase
+        .from("marketing_tasks_history")
+        .select("*")
+        .order("created_at", { ascending: true }),
+      supabase.from("marketing_tasks_history_attachments").select("*"),
+      fetchAuthorDisplayById(supabase),
+      // 즐겨찾기는 SI Business(0072)와 동일한 방식(2026-09-12).
+      user
+        ? supabase.from("marketing_tasks_favorites").select("task_id").eq("user_id", user.id)
+        : Promise.resolve({ data: [] as { task_id: string }[] }),
+    ]);
+
+  const favoriteIds = new Set((favorites ?? []).map((f) => f.task_id));
 
   const urlByAttachmentId = await resolveHistoryAttachmentUrls(
     supabase,
@@ -130,5 +138,6 @@ export async function getMarketingTasks(supabase: Client): Promise<MarketingTask
     updatedAt: t.updated_at,
     comments: commentsByTask.get(t.id) ?? [],
     history: historyByTask.get(t.id) ?? [],
+    isFavorite: favoriteIds.has(t.id),
   }));
 }

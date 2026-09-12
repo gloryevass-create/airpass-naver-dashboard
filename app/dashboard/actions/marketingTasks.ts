@@ -102,6 +102,27 @@ export async function moveMarketingTaskCategory(id: string, category: string | n
   revalidatePath(PATH);
 }
 
+/** 즐겨찾기는 팀 공유가 아니라 로그인한 본인 것만 켜고 끈다(SI Business
+ * toggleBusinessProjectV2Favorite와 동일한 패턴, 2026-09-12). */
+export async function toggleMarketingTaskFavorite(taskId: string): Promise<void> {
+  const { supabase, user } = await requireAuthedClient();
+
+  const { data: existing } = await supabase
+    .from("marketing_tasks_favorites")
+    .select("id")
+    .eq("user_id", user.id)
+    .eq("task_id", taskId)
+    .maybeSingle();
+
+  if (existing) {
+    await supabase.from("marketing_tasks_favorites").delete().eq("id", existing.id);
+  } else {
+    await supabase.from("marketing_tasks_favorites").insert({ user_id: user.id, task_id: taskId });
+  }
+
+  revalidatePath(PATH);
+}
+
 export type MarketingTaskCommentState = { error?: string } | undefined;
 
 export async function createMarketingTaskComment(
