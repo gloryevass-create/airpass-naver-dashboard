@@ -1040,17 +1040,17 @@ export function QuotationBoard({
           </div>
 
           <div style={{ maxHeight: "70vh", overflow: "auto", borderTop: "1px solid var(--color-divider)" }}>
-            <table className="table">
+            <table className="table gradient-table-head">
               <thead>
                 <tr>
-                  <th style={{ position: "sticky", top: 0, background: "#ffffff", paddingLeft: "var(--space-4)" }}>번호</th>
-                  <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>산출일자</th>
-                  <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>기관명·산출번호</th>
-                  <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>산출명</th>
-                  <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>연결 사업</th>
-                  <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>담당</th>
-                  <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>금액</th>
-                  <th style={{ position: "sticky", top: 0, background: "#ffffff" }}>관리</th>
+                  <th style={{ position: "sticky", top: 0, paddingLeft: "var(--space-4)" }}>번호</th>
+                  <th style={{ position: "sticky", top: 0 }}>산출일자</th>
+                  <th style={{ position: "sticky", top: 0 }}>기관명·산출번호</th>
+                  <th style={{ position: "sticky", top: 0 }}>산출명</th>
+                  <th style={{ position: "sticky", top: 0 }}>연결 사업</th>
+                  <th style={{ position: "sticky", top: 0 }}>담당</th>
+                  <th style={{ position: "sticky", top: 0 }}>금액</th>
+                  <th style={{ position: "sticky", top: 0 }}>관리</th>
                 </tr>
               </thead>
               <tbody>

@@ -413,12 +413,15 @@
    또렷한 굵은 글자로 필터바와 시각적으로 구분되게 한다(2026-09-12). 다른
    화면(Memo Board 등)이 쓰는 기본 .table th와는 별개로 이 클래스가 붙은
    표에만 적용된다. */
-.industry-theme .list-table thead th {
+.industry-theme .list-table thead th,
+.industry-theme .gradient-table-head thead th {
   background: linear-gradient(
     to top,
     color-mix(in srgb, var(--color-text) 4%, transparent),
     color-mix(in srgb, var(--color-accent) 22%, transparent)
   );
+}
+.industry-theme .list-table thead th {
   text-transform: none;
   letter-spacing: 0;
   font-size: 12.5px;
