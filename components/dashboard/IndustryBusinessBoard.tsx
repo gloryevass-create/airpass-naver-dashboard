@@ -1220,7 +1220,7 @@ export function IndustryBusinessBoard({
           </select>
         </div>
         <div style={{ overflowX: "auto" }}>
-          <table className="table">
+          <table className="table list-table">
             <thead>
               <tr>
                 <th>사업명</th>

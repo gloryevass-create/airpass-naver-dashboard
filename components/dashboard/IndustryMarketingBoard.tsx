@@ -1084,7 +1084,7 @@ export function IndustryMarketingBoard({ tasks, members }: { tasks: MarketingTas
           </select>
         </div>
         <div style={{ overflowX: "auto" }}>
-          <table className="table">
+          <table className="table list-table">
             <thead>
               <tr>
                 <th>업무명</th>

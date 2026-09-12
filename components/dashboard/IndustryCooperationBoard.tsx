@@ -1095,7 +1095,7 @@ export function IndustryCooperationBoard({ projects, members }: { projects: Coop
           </select>
         </div>
         <div style={{ overflowX: "auto" }}>
-          <table className="table">
+          <table className="table list-table">
             <thead>
               <tr>
                 <th>이름</th>

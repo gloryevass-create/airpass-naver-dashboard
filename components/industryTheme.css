@@ -409,3 +409,20 @@
   color: var(--color-accent-700);
   font-weight: 600;
 }
+
+/* 필터바 바로 아래 표 헤더(구분 타이틀) 줄 — 참고 이미지처럼 옅은 배경 띠 +
+   또렷한 굵은 글자로 필터바와 시각적으로 구분되게 한다(2026-09-12). 다른
+   화면(Memo Board 등)이 쓰는 기본 .table th와는 별개로 이 클래스가 붙은
+   표에만 적용된다. */
+.industry-theme .list-table thead th {
+  background: color-mix(in srgb, var(--color-text) 5%, transparent);
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--color-text);
+  padding: 10px var(--space-3);
+}
+.industry-theme .list-table tbody td {
+  padding: var(--space-3);
+}
