@@ -422,6 +422,9 @@
     color-mix(in srgb, var(--color-text) 4%, transparent),
     color-mix(in srgb, var(--color-accent) 22%, transparent)
   );
+  /* 기본 .table th의 border-bottom이 그라데이션 띠 위에 선으로 겹쳐 보여서
+     이 헤더에서만 없앤다(2026-09-12, 사용자 확인). */
+  border-bottom: none;
 }
 .industry-theme .list-table thead th {
   text-transform: none;
