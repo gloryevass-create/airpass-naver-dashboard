@@ -7,6 +7,8 @@ import { isMaterialEmailConfigured } from "@/lib/materialEmail";
 import { matchProductMaterialFiles } from "@/lib/materialEmailTemplate";
 import { MaterialEmailForm } from "@/components/dashboard/MaterialEmailForm";
 import { SentMaterialEmailPreviewButton } from "@/components/dashboard/SentMaterialEmailPreviewButton";
+import { DeleteMemoButton } from "@/components/DeleteMemoButton";
+import { deleteMaterialEmailLog } from "@/app/dashboard/actions/materialEmail";
 
 // 서버 컴포넌트(Vercel UTC 런타임)라 timeZone을 명시하지 않으면 실제 한국시간보다
 // 9시간 느리게 표시된다(2026-09-03 관리자 페이지 로그인 기록에서 신고).
@@ -62,10 +64,12 @@ export default async function MaterialEmailPage() {
     getQuotationSummaries(supabase),
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) return null;
-      const { data } = await supabase.from("profiles").select("name, title, email, phone").eq("id", user.id).single();
+      const { data } = await supabase.from("profiles").select("name, title, email, phone, role").eq("id", user.id).single();
       return data;
     }),
   ]);
+
+  const isAdmin = profile?.role === "admin";
 
   const files = missing.length === 0 ? await listMaterialFiles() : [];
   const productLinkLabels = matchProductMaterialFiles(files).map(({ label, fileId }) => ({
@@ -115,9 +119,12 @@ export default async function MaterialEmailPage() {
             <div key={l.id} style={{ border: "1px solid var(--color-divider)", padding: "var(--space-3)", fontSize: 13 }}>
               <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
                 <SentMaterialEmailPreviewButton logId={l.id} subject={l.subject} />
-                <span className="text-muted" style={{ fontSize: 11 }}>
-                  {l.senderEmail} · {formatDateTime(l.createdAt)}
-                </span>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span className="text-muted" style={{ fontSize: 11 }}>
+                    {l.senderEmail} · {formatDateTime(l.createdAt)}
+                  </span>
+                  {isAdmin && <DeleteMemoButton action={deleteMaterialEmailLog.bind(null, l.id)} />}
+                </div>
               </div>
               <p className="text-muted" style={{ margin: "4px 0 0", fontSize: 11 }}>
                 받는 사람: {l.recipientEmails.join(", ")}

@@ -206,6 +206,15 @@ export async function sendMaterialEmailFromAiDraft(draft: AiMaterialEmailDraft):
   return performSend(supabase, user, { recipients, subject, message, fileIds, quotationId: null });
 }
 
+/** 발송이력 삭제(2026-09-12) — admin만 삭제 버튼이 노출되지만(page.tsx), 실제
+ * 권한 강제는 여기서가 아니라 DB RLS(0071, public.is_admin())가 한다 — 화면
+ * 노출을 우회해 직접 호출해도 admin이 아니면 delete가 조용히 0행 처리된다. */
+export async function deleteMaterialEmailLog(logId: string): Promise<void> {
+  const { supabase } = await requireAuthedClient();
+  await supabase.from("material_email_logs").delete().eq("id", logId);
+  revalidatePath(PATH);
+}
+
 /** 발송 이력의 "보낸 메일 보기" 미리보기창(app/dashboard/material-email/page.tsx)이
  * 호출한다 — 이력에 저장된 제목·안내문·자료 목록·산출내역으로 실제 발송 때와 같은
  * buildMaterialEmailHtml을 다시 호출해 메일 본문 HTML을 재구성한다. 원문 HTML 자체를
