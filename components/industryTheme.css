@@ -149,6 +149,9 @@
      맞춰 함께 줄임(아래 참고). */
   padding: 5px calc(var(--space-3) * 1.2);
   border-radius: 0;
+  /* 폰트별 줄높이 차이로 .seg-opt(목록/리스트 토글)와 실제 렌더링 높이가
+     미세하게 어긋나던 것을 고정 높이로 맞춘다(2026-09-12, 사용자 확인). */
+  min-height: 29px;
 }
 .industry-theme .btn svg { display: block; }
 .industry-theme .btn:disabled { opacity: 0.45; cursor: not-allowed; }
@@ -189,6 +192,8 @@
 .industry-theme .seg-opt {
   display: inline-flex; align-items: center; gap: 6px;
   padding: 5px 12px; font-size: 13px; cursor: pointer;
+  /* .seg 바깥 테두리(1px 위아래)를 더해야 .btn과 같은 29px 전체 높이가 된다. */
+  min-height: 27px;
 }
 .industry-theme .seg-opt + .seg-opt { border-left: 1px solid var(--color-divider); }
 .industry-theme .seg-opt.active { background: var(--color-accent); color: var(--color-bg); }
