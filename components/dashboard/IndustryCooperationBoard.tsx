@@ -1047,7 +1047,7 @@ export function IndustryCooperationBoard({ projects, members }: { projects: Coop
           ))}
         </div>
       ) : (
-        <>
+        <div className="list-view-wrap" style={{ display: "flex", flexDirection: "column" }}>
         <div className="list-filter-bar">
           <div className="list-filter-search">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -1133,7 +1133,7 @@ export function IndustryCooperationBoard({ projects, members }: { projects: Coop
             </tbody>
           </table>
         </div>
-        </>
+        </div>
       )}
       </div>
 
