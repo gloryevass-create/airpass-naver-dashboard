@@ -414,7 +414,11 @@
    화면(Memo Board 등)이 쓰는 기본 .table th와는 별개로 이 클래스가 붙은
    표에만 적용된다. */
 .industry-theme .list-table thead th {
-  background: color-mix(in srgb, var(--color-text) 5%, transparent);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--color-accent) 10%, transparent),
+    color-mix(in srgb, var(--color-text) 4%, transparent)
+  );
   text-transform: none;
   letter-spacing: 0;
   font-size: 12.5px;
