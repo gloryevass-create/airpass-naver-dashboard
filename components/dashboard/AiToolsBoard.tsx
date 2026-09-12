@@ -139,7 +139,9 @@ export function AiToolsBoard({ tools, currentUserId }: { tools: AiTool[]; curren
           팀에서 쓰는 AI 도구·서비스 링크를 함께 모읍니다.
         </p>
 
-        <SearchInput value={search} onChange={setSearch} placeholder="제목·설명·링크로 검색" />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", marginBottom: "var(--space-4)" }}>
+          <SearchInput value={search} onChange={setSearch} placeholder="제목·설명·링크로 검색" style={{ maxWidth: "none", marginBottom: 0 }} />
+        </div>
 
         {editingId === "new" && <ToolForm tool={null} onDone={() => setEditingId(null)} />}
         {editingTool && <ToolForm tool={editingTool} onDone={() => setEditingId(null)} />}
