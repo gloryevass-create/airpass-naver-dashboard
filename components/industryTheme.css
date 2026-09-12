@@ -383,7 +383,7 @@
   width: 100%;
   padding: 7px 12px 7px 32px;
   border: 1px solid var(--color-divider);
-  border-radius: 999px;
+  border-radius: 8px;
   font-size: 13px;
   font-family: var(--font-body);
   background: color-mix(in srgb, var(--color-text) 4%, transparent);
@@ -396,7 +396,7 @@
 .industry-theme .list-filter-select {
   padding: 7px 30px 7px 14px;
   border: 1px solid var(--color-divider);
-  border-radius: 999px;
+  border-radius: 8px;
   font-size: 13px;
   font-family: var(--font-body);
   background: #ffffff;
