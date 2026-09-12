@@ -802,6 +802,35 @@ export function IndustryMarketingBoard({ tasks, members }: { tasks: MarketingTas
     return cols;
   }, [visible]);
 
+  // 리스트 뷰 전용 검색·필터·정렬 — 칸반 뷰(columns/visible)는 그대로 두고
+  // 표 화면에만 적용한다(참고 이미지의 상단 필터바, 2026-09-12).
+  const [listSearch, setListSearch] = useState("");
+  const [listStatusFilter, setListStatusFilter] = useState("");
+  const [listCategoryFilter, setListCategoryFilter] = useState("");
+  const [listWorkTypeFilter, setListWorkTypeFilter] = useState("");
+  const [listAssigneeFilter, setListAssigneeFilter] = useState("");
+  const [listSort, setListSort] = useState<"latest" | "oldest">("latest");
+
+  const listAssigneeOptions = useMemo(
+    () => Array.from(new Set(tasks.flatMap((t) => t.assignees))).sort(),
+    [tasks]
+  );
+
+  const listVisible = useMemo(() => {
+    const q = listSearch.trim().toLowerCase();
+    const rows = visible.filter((t) => {
+      if (q && !`${t.title} ${t.assignees.join(" ")}`.toLowerCase().includes(q)) return false;
+      if (listStatusFilter && t.status !== listStatusFilter) return false;
+      if (listCategoryFilter && t.category !== listCategoryFilter) return false;
+      if (listWorkTypeFilter && t.workType !== listWorkTypeFilter) return false;
+      if (listAssigneeFilter && !t.assignees.includes(listAssigneeFilter)) return false;
+      return true;
+    });
+    return [...rows].sort((a, b) =>
+      listSort === "latest" ? b.updatedAt.localeCompare(a.updatedAt) : a.updatedAt.localeCompare(b.updatedAt)
+    );
+  }, [visible, listSearch, listStatusFilter, listCategoryFilter, listWorkTypeFilter, listAssigneeFilter, listSort]);
+
   function handleDragStart(e: DragEvent<HTMLDivElement>, id: string) {
     draggingIdRef.current = id;
     e.dataTransfer.effectAllowed = "move";
@@ -1007,6 +1036,53 @@ export function IndustryMarketingBoard({ tasks, members }: { tasks: MarketingTas
           ))}
         </div>
       ) : (
+        <>
+        <div className="list-filter-bar">
+          <div className="list-filter-search">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="7" />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
+            <input
+              type="search"
+              placeholder="업무명·담당자 검색"
+              value={listSearch}
+              onChange={(e) => setListSearch(e.target.value)}
+            />
+          </div>
+          <select className="list-filter-select" value={listStatusFilter} onChange={(e) => setListStatusFilter(e.target.value)}>
+            <option value="">전체 상태</option>
+            {STATUSES.map((s) => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
+          <select className="list-filter-select" value={listCategoryFilter} onChange={(e) => setListCategoryFilter(e.target.value)}>
+            <option value="">전체 분류</option>
+            {CATEGORIES.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+          <select className="list-filter-select" value={listWorkTypeFilter} onChange={(e) => setListWorkTypeFilter(e.target.value)}>
+            <option value="">전체 사업방식</option>
+            {WORK_TYPES.map((w) => (
+              <option key={w} value={w}>{w}</option>
+            ))}
+          </select>
+          <select className="list-filter-select" value={listAssigneeFilter} onChange={(e) => setListAssigneeFilter(e.target.value)}>
+            <option value="">전체 담당자</option>
+            {listAssigneeOptions.map((a) => (
+              <option key={a} value={a}>{a}</option>
+            ))}
+          </select>
+          <select
+            className="list-filter-select list-filter-sort"
+            value={listSort}
+            onChange={(e) => setListSort(e.target.value as "latest" | "oldest")}
+          >
+            <option value="latest">최신순</option>
+            <option value="oldest">오래된순</option>
+          </select>
+        </div>
         <div style={{ overflowX: "auto" }}>
           <table className="table">
             <thead>
@@ -1020,7 +1096,7 @@ export function IndustryMarketingBoard({ tasks, members }: { tasks: MarketingTas
               </tr>
             </thead>
             <tbody>
-              {visible.map((t) => (
+              {listVisible.map((t) => (
                 <tr key={t.id} onClick={() => setEditingId(t.id)} style={{ cursor: "pointer" }}>
                   <td style={{ fontFamily: "var(--font-heading)", fontWeight: 600 }}>
                     <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }} className="detail-link">
@@ -1036,7 +1112,7 @@ export function IndustryMarketingBoard({ tasks, members }: { tasks: MarketingTas
                   <td>{t.assignees.join(", ") || "-"}</td>
                 </tr>
               ))}
-              {visible.length === 0 && (
+              {listVisible.length === 0 && (
                 <tr>
                   <td colSpan={6} style={{ textAlign: "center", padding: "var(--space-6)" }} className="text-muted">
                     조건에 맞는 업무가 없습니다.
@@ -1046,6 +1122,7 @@ export function IndustryMarketingBoard({ tasks, members }: { tasks: MarketingTas
             </tbody>
           </table>
         </div>
+        </>
       )}
       </div>
 

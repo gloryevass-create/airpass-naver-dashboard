@@ -352,3 +352,60 @@
     flex-shrink: 0;
   }
 }
+
+/* — 리스트 뷰 상단 필터바(Business/Cooperation/Marketing, 2026-09-12) — 참고
+   이미지(검색+드롭다운 필터 여러 개, 둥근 알약 모양)를 재현한 것. Industry
+   테마 나머지 UI(.input/.btn 등)는 각진 모서리를 유지하는 게 원칙이지만,
+   이 바만 참고 디자인대로 둥글게 만들어 달라는 요청이라 별도 클래스로
+   스코프했다(사용자 확인). */
+.industry-theme .list-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 0 var(--space-3);
+  margin-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-divider);
+}
+.industry-theme .list-filter-search {
+  position: relative;
+  flex: 1 1 220px;
+  min-width: 180px;
+}
+.industry-theme .list-filter-search svg {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.45;
+  pointer-events: none;
+}
+.industry-theme .list-filter-search input {
+  width: 100%;
+  padding: 7px 12px 7px 32px;
+  border: 1px solid var(--color-divider);
+  border-radius: 999px;
+  font-size: 13px;
+  font-family: var(--font-body);
+  background: color-mix(in srgb, var(--color-text) 4%, transparent);
+  color: var(--color-text);
+  outline: none;
+}
+.industry-theme .list-filter-search input:focus {
+  border-color: var(--color-accent);
+}
+.industry-theme .list-filter-select {
+  padding: 7px 30px 7px 14px;
+  border: 1px solid var(--color-divider);
+  border-radius: 999px;
+  font-size: 13px;
+  font-family: var(--font-body);
+  background: #ffffff;
+  color: var(--color-text);
+  cursor: pointer;
+}
+.industry-theme .list-filter-sort {
+  border-color: var(--color-accent);
+  color: var(--color-accent-700);
+  font-weight: 600;
+}
