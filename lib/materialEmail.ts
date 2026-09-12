@@ -18,6 +18,18 @@ export const isMaterialEmailConfigured = Boolean(
     process.env.MATERIAL_EMAIL_SMTP_PASSWORD
 );
 
+export type MaterialEmailSmtpConfig = {
+  host: string;
+  port: number;
+  user: string;
+  password: string;
+  fromName: string | null;
+};
+
+// 개인 SMTP 계정 지원(2026-09-13) — 어떤 계정(공용 vs 본인)을 쓸지 고르는
+// 판단은 호출부(app/dashboard/actions/materialEmail.ts::performSend)가 하고,
+// 이 함수는 결정된 smtp 설정을 그대로 받아 발송만 한다(이 파일은 env를 직접
+// 읽지 않음 — 공용 계정이 기본값이라는 사실도 호출부 책임).
 export async function sendMaterialEmail(params: {
   to: string[];
   subject: string;
@@ -31,17 +43,9 @@ export async function sendMaterialEmail(params: {
   videos: MaterialEmailFileLink[];
   quotation: MaterialEmailQuotation;
   productLinks: MaterialEmailProductLink[];
+  smtp: MaterialEmailSmtpConfig;
 }): Promise<void> {
-  const host = process.env.MATERIAL_EMAIL_SMTP_HOST;
-  const port = Number(process.env.MATERIAL_EMAIL_SMTP_PORT);
-  const user = process.env.MATERIAL_EMAIL_SMTP_USER;
-  const password = process.env.MATERIAL_EMAIL_SMTP_PASSWORD;
-  if (!host || !port || !user || !password) {
-    throw new Error(
-      "MATERIAL_EMAIL_SMTP_HOST/MATERIAL_EMAIL_SMTP_PORT/MATERIAL_EMAIL_SMTP_USER/MATERIAL_EMAIL_SMTP_PASSWORD가 설정되지 않았습니다."
-    );
-  }
-  const fromName = process.env.MATERIAL_EMAIL_FROM_NAME;
+  const { host, port, user, password, fromName } = params.smtp;
 
   const html = buildMaterialEmailHtml({
     subject: params.subject,

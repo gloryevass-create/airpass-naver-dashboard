@@ -2,10 +2,14 @@ import "@/components/industryTheme.css";
 import Link from "next/link";
 import { requireAuthedClient } from "@/lib/supabase/authed";
 import { ProfileForm } from "@/components/ProfileForm";
+import { getMySmtpAccountUser } from "@/lib/queries/smtpAccount";
 
 export default async function ProfilePage() {
   const { supabase, user } = await requireAuthedClient();
-  const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
+  const [{ data: profile }, smtpUser] = await Promise.all([
+    supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
+    getMySmtpAccountUser(supabase, user.id),
+  ]);
 
   return (
     <div className="industry-theme" style={{ padding: "var(--space-8) var(--space-6)", minHeight: "auto" }}>
@@ -44,6 +48,7 @@ export default async function ProfilePage() {
           phone={profile?.phone ?? ""}
           fontPreference={profile?.font_preference ?? "pretendard"}
           sidebarFontPreference={profile?.sidebar_font_preference ?? "pretendard"}
+          smtpUser={smtpUser}
         />
       </div>
     </div>

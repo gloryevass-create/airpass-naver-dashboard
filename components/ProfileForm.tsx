@@ -1,10 +1,16 @@
 "use client";
 
-import { useActionState, useState, type CSSProperties } from "react";
+import { useActionState, useState, useTransition, type CSSProperties } from "react";
 import { updateOwnProfile, type UpdateProfileState } from "@/app/dashboard/actions/profile";
+import {
+  saveMaterialEmailSmtpAccount,
+  deleteMaterialEmailSmtpAccount,
+  type SmtpAccountState,
+} from "@/app/dashboard/actions/smtpAccount";
 import { FONT_OPTIONS, PRETENDARD_DEFAULT_STACK, type FontPreferenceId } from "@/lib/fontPreferences";
 
 const initialState: UpdateProfileState = undefined;
+const initialSmtpState: SmtpAccountState = undefined;
 
 const PREVIEW_TEXT = "가나다 ABC 123 — 실제 이 폰트로 보입니다";
 
@@ -23,6 +29,76 @@ function FontPreview({ fontId }: { fontId: FontPreferenceId }) {
   );
 }
 
+/** 자료메일발송 개인 SMTP 계정 등록/해제(2026-09-13) — 등록해두면 자료메일발송이
+ * 공용 계정 대신 이 계정으로 보내고, 비밀번호는 절대 다시 채워 보여주지 않는다
+ * (보안 — 서버가 클라이언트로 내려보내지도 않음). updateOwnProfile과는 별개
+ * 액션이라 독립된 폼 + 저장 버튼으로 뒀다. */
+function SmtpAccountSection({ smtpUser }: { smtpUser: string | null }) {
+  const [state, formAction, pending] = useActionState(saveMaterialEmailSmtpAccount, initialSmtpState);
+  const [isDeleting, startDelete] = useTransition();
+
+  function handleDelete() {
+    if (!window.confirm("본인 SMTP 계정을 삭제하고 공용 계정으로 되돌릴까요?")) return;
+    startDelete(async () => {
+      await deleteMaterialEmailSmtpAccount();
+    });
+  }
+
+  return (
+    <div style={{ marginTop: "var(--space-8)", paddingTop: "var(--space-6)", borderTop: "1px solid var(--color-divider)" }}>
+      <h2 style={{ fontFamily: "var(--font-heading)", fontSize: 16, margin: "0 0 var(--space-2)" }}>자료메일발송 SMTP 계정</h2>
+      <p className="text-muted" style={{ fontSize: 12, margin: "0 0 var(--space-4)" }}>
+        {smtpUser
+          ? `현재 본인 계정(${smtpUser})으로 발송됩니다.`
+          : "등록해두면 자료메일발송이 공용 계정 대신 본인 계정으로 보냅니다. 등록하지 않으면 지금처럼 공용 계정으로 발송됩니다."}
+        메일 서버(호스트·포트)는 공용과 동일하고, 이메일·비밀번호만 개인별입니다.
+      </p>
+      <form action={formAction} style={{ maxWidth: 640 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-4)", marginBottom: "var(--space-3)" }}>
+          <div className="field">
+            <label htmlFor="smtpUser">SMTP 계정 이메일</label>
+            <input
+              className="input"
+              id="smtpUser"
+              name="smtpUser"
+              type="email"
+              defaultValue={smtpUser ?? ""}
+              placeholder="example@airpass.co.kr"
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="smtpPassword">SMTP 비밀번호</label>
+            <input
+              className="input"
+              id="smtpPassword"
+              name="smtpPassword"
+              type="password"
+              placeholder={smtpUser ? "변경하지 않으려면 비워두세요" : "비밀번호 입력"}
+              autoComplete="new-password"
+            />
+          </div>
+        </div>
+        {state?.error && (
+          <p style={{ color: "var(--color-accent-900)", fontSize: 13, marginBottom: "var(--space-3)" }}>{state.error}</p>
+        )}
+        {state?.success && (
+          <p style={{ color: "var(--color-accent-700)", fontSize: 13, marginBottom: "var(--space-3)" }}>저장되었습니다.</p>
+        )}
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: "var(--space-2)" }}>
+          {smtpUser && (
+            <button type="button" className="btn btn-secondary" onClick={handleDelete} disabled={isDeleting}>
+              {isDeleting ? "삭제 중..." : "기본 계정으로 되돌리기"}
+            </button>
+          )}
+          <button type="submit" className="btn btn-primary" disabled={pending}>
+            {pending ? "저장 중..." : "저장"}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
 export function ProfileForm({
   name,
   companyEmail,
@@ -31,6 +107,7 @@ export function ProfileForm({
   phone,
   fontPreference,
   sidebarFontPreference,
+  smtpUser,
 }: {
   name: string | null;
   companyEmail: string;
@@ -39,6 +116,7 @@ export function ProfileForm({
   phone: string;
   fontPreference: FontPreferenceId;
   sidebarFontPreference: FontPreferenceId;
+  smtpUser: string | null;
 }) {
   const [state, formAction, pending] = useActionState(updateOwnProfile, initialState);
   // 폰트 두 필드만 컨트롤드로 관리한다 — 저장 전 실시간 미리보기를 그리려면
@@ -47,6 +125,7 @@ export function ProfileForm({
   const [selectedSidebarFont, setSelectedSidebarFont] = useState<FontPreferenceId>(sidebarFontPreference);
 
   return (
+    <>
     <form action={formAction} style={{ maxWidth: 640 }}>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-4)", marginBottom: "var(--space-3)" }}>
         <div className="field">
@@ -122,5 +201,7 @@ export function ProfileForm({
         </button>
       </div>
     </form>
+    <SmtpAccountSection smtpUser={smtpUser} />
+    </>
   );
 }

@@ -93,6 +93,30 @@ export type Database = {
         };
         Relationships: [];
       };
+      material_email_smtp_accounts: {
+        Row: {
+          user_id: string;
+          smtp_user: string;
+          smtp_password: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          smtp_user: string;
+          smtp_password: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          smtp_user?: string;
+          smtp_password?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       google_drive_upload_connection: {
         Row: {
           id: boolean;

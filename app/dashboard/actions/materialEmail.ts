@@ -101,6 +101,32 @@ async function performSend(
   const senderEmail = profile?.email ?? user.email ?? "";
   const senderPhone = profile?.phone ?? null;
 
+  // 개인 SMTP 계정이 등록돼 있으면 그 계정(+ 본인 이름 표시)으로, 없으면
+  // 공용 계정(고정 표시이름)으로 보낸다(사용자 확인, 2026-09-13). 호스트/포트는
+  // 개인 계정 여부와 무관하게 항상 공용 값을 쓴다(같은 회사 메일 서버).
+  const host = process.env.MATERIAL_EMAIL_SMTP_HOST;
+  const port = Number(process.env.MATERIAL_EMAIL_SMTP_PORT);
+  if (!host || !port) return { error: "메일 서버 설정(MATERIAL_EMAIL_SMTP_HOST/PORT)이 없습니다." };
+
+  const { data: personalSmtp } = await supabase
+    .from("material_email_smtp_accounts")
+    .select("smtp_user, smtp_password")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  const smtp = personalSmtp
+    ? { host, port, user: personalSmtp.smtp_user, password: personalSmtp.smtp_password, fromName: senderName || null }
+    : {
+        host,
+        port,
+        user: process.env.MATERIAL_EMAIL_SMTP_USER ?? "",
+        password: process.env.MATERIAL_EMAIL_SMTP_PASSWORD ?? "",
+        fromName: process.env.MATERIAL_EMAIL_FROM_NAME ?? null,
+      };
+  if (!smtp.user || !smtp.password) {
+    return { error: "메일 서버 설정(MATERIAL_EMAIL_SMTP_USER/PASSWORD)이 없습니다." };
+  }
+
   try {
     await sendMaterialEmailViaResend({
       to: recipients,
@@ -115,6 +141,7 @@ async function performSend(
       videos,
       quotation,
       productLinks,
+      smtp,
     });
   } catch (e) {
     return { error: `메일 발송 실패: ${e instanceof Error ? e.message : "알 수 없는 오류"}` };
