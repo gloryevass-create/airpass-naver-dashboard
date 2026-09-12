@@ -211,10 +211,10 @@ export function buildMaterialEmailHtml(params: {
       </div>
 
       <div style="padding:0 40px;border-top:1px solid ${COLOR.divider};">
-        <div style="font-family:${FONT_HEADING};font-weight:600;font-size:26px;color:${COLOR.text};padding:20px 0;">${escapeHtml(subject)}</div>
+        <div style="font-family:${FONT_HEADING};font-weight:600;font-size:19px;color:${COLOR.text};padding:20px 0;">${escapeHtml(subject)}</div>
       </div>
 
-      <div style="padding:8px 40px 44px;border-top:1px solid ${COLOR.divider};">
+      <div style="padding:8px 40px 44px;">
 
         <p style="font-size:15px;color:${COLOR.text};line-height:1.7;margin:28px 0 32px;white-space:pre-wrap;">${escapeHtml(message)}</p>
 
