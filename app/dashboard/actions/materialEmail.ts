@@ -149,7 +149,7 @@ async function performSend(
 
   await supabase.from("material_email_logs").insert({
     sender_id: user.id,
-    sender_email: user.email ?? "",
+    sender_email: senderEmail,
     recipient_emails: recipients,
     subject,
     message,
