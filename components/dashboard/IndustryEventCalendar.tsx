@@ -821,6 +821,7 @@ export function IndustryEventCalendar({
                 style={{
                   padding: "var(--space-2)",
                   fontFamily: "var(--font-heading)",
+                  fontWeight: 700,
                   fontSize: 12,
                   letterSpacing: "0.05em",
                   textTransform: "uppercase",
@@ -952,6 +953,7 @@ export function IndustryEventCalendar({
                       fontSize: 11,
                       textTransform: "uppercase",
                       fontFamily: "var(--font-heading)",
+                      fontWeight: 700,
                       color: i === 0 ? "#ef4444" : "color-mix(in srgb, var(--color-text) 60%, transparent)",
                     }}
                   >
