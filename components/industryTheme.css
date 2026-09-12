@@ -270,7 +270,9 @@
 /* — kanban drag & drop — */
 .industry-theme .col-drop { transition: background 0.15s; }
 .industry-theme .col-drop.drag-over { background: var(--color-accent-100); }
-.industry-theme .kanban-card { cursor: grab; }
+/* 칸반 카드만 예외적으로 라운드 처리(2026-09-12, 사용자 확인) — 나머지
+   Industry 테마 카드는 그대로 사각 모서리(.card, border-radius:0) 유지. */
+.industry-theme .kanban-card { cursor: grab; border-radius: 8px; }
 .industry-theme .kanban-card:active { cursor: grabbing; }
 
 /* — clickable titles that open the detail view — */

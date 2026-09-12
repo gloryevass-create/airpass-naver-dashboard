@@ -818,8 +818,7 @@ function KanbanCard({
     >
       <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, fontWeight: 500, marginBottom: 6 }}>
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" strokeWidth="1.5" style={{ flex: "none" }}>
-          <path d="M4 7h16v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z" />
-          <path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
         </svg>
         <span onClick={onOpen} style={{ cursor: "pointer" }} className="detail-link">
           {project.title}
@@ -1117,31 +1116,17 @@ export function IndustryBusinessBoard({
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: 10,
-                  paddingBottom: "var(--space-3)",
-                  borderBottom: "1px solid var(--color-divider)",
+                  gap: 6,
+                  paddingBottom: "var(--space-2)",
+                  borderBottom: "2px solid var(--color-accent-700)",
                   marginBottom: "var(--space-3)",
                 }}
               >
-                <span
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: 26,
-                    height: 26,
-                    flex: "none",
-                    background: "var(--color-accent-900)",
-                    color: "var(--color-bg)",
-                    fontFamily: "var(--font-heading)",
-                    fontWeight: 600,
-                    fontSize: 13,
-                  }}
-                >
-                  {col.code}
+                <span style={{ fontFamily: "var(--font-heading)", fontWeight: 600, fontSize: 14, flex: 1 }}>
+                  <span style={{ color: "var(--color-accent-700)", marginRight: 5 }}>{col.code}</span>
+                  {col.label}
                 </span>
-                <span style={{ fontFamily: "var(--font-heading)", fontWeight: 600, fontSize: 15, flex: 1 }}>{col.label}</span>
-                <span style={{ fontFamily: "var(--font-heading)", fontWeight: 600, fontSize: 15, color: "var(--color-accent-700)" }}>
+                <span className="text-muted" style={{ fontSize: 12 }}>
                   {col.items.length}
                 </span>
               </div>
@@ -1237,8 +1222,7 @@ export function IndustryBusinessBoard({
                   <td style={{ fontFamily: "var(--font-heading)", fontWeight: 600 }}>
                     <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }} className="detail-link">
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" strokeWidth="1.5" style={{ flex: "none" }}>
-                        <path d="M4 7h16v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z" />
-                        <path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
                       </svg>
                       {p.title}
                     </span>
