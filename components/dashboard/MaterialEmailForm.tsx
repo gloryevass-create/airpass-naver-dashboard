@@ -344,7 +344,7 @@ export function MaterialEmailForm({
   // 미리보기에서는 자리표시 링크(#)를 쓴다(사용자 확인, 2026-08-28).
   const previewHtml = useMemo(() => {
     const selectedFiles = files.filter((f) => selected.has(f.id));
-    return buildMaterialEmailHtml({
+    const html = buildMaterialEmailHtml({
       subject: subject || "(제목 없음)",
       message: message || "(안내 내용 없음)",
       senderName: senderName || "-",
@@ -359,6 +359,16 @@ export function MaterialEmailForm({
         : null,
       productLinks: productLinkLabels.map((p) => ({ label: p.label, link: p.matched ? "#" : null })),
     });
+    // 자리표시 링크(href="#")를 이 iframe(srcDoc) 안에서 클릭하면, 상대 경로가
+    // "about:srcdoc"이 아니라 이 화면(부모 문서)의 실제 URL을 기준으로 풀려서
+    // iframe이 실제 대시보드 페이지를 통째로 다시 불러와버렸다(마치 메일
+    // 작성 화면으로 돌아온 것처럼 보이는 버그, 2026-09-12 사용자 확인). 실제
+    // 발송 메일(buildMaterialEmailHtml 원본)은 건드리지 않고, 미리보기
+    // 전용으로 클릭을 막는 스크립트만 덧붙인다.
+    return html.replace(
+      "</head>",
+      `<script>document.addEventListener("click",function(e){var a=e.target.closest("a");if(a)e.preventDefault();});</script></head>`
+    );
   }, [files, selected, subject, message, senderName, senderTitle, senderEmail, senderPhone, selectedQuotation, productLinkLabels]);
 
   function toggle(id: string) {
