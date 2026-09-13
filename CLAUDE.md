@@ -1,8 +1,9 @@
 @AGENTS.md
 
-# airpass-naver-dashboard
+# airpass-strategic-agent
 
-에어패스 마케팅팀이 네이버 키워드광고·블로그 경쟁사 모니터링 결과를 확인하는 웹 대시보드.
+에어패스 마케팅팀이 네이버 키워드광고·블로그 경쟁사 모니터링 결과를 확인하는 웹 대시보드로
+시작해 회사 전반 업무 도구로 확장된 대시보드(옛 저장소명 `airpass-naver-dashboard`).
 데이터를 직접 수집하지 않는다 — 별도 저장소 `airpass-naver-monitor`(모니터링 에이전트, cron으로 매일 실행)가
 같은 Supabase 프로젝트에 `service_role` 키로 데이터를 채워 넣고, 이 앱은 읽기 전용으로 보여준다.
 

@@ -1,8 +1,9 @@
-# airpass-naver-dashboard
+# airpass-strategic-agent
 
-에어패스 네이버 마케팅 모니터링 — 웹 대시보드. 팀원이 로그인해서 네이버 키워드광고·블로그 경쟁사
-모니터링 결과를 확인하는 화면이다. 데이터 자체는 별도 저장소 `airpass-naver-monitor`(모니터링
-에이전트)가 매일 자동으로 채워 넣는다. 두 프로젝트는 같은 Supabase 프로젝트를 공유한다.
+에어패스 팀 전체가 쓰는 업무 대시보드(SI Business/Cooperation/Marketing/Calendar/자료메일발송/
+산출내역/AI HUB/할 일 등). 네이버 키워드광고·블로그 경쟁사 모니터링 결과 확인 화면에서 시작했지만
+(그 데이터는 별도 저장소 `airpass-naver-monitor`가 매일 자동으로 채워 넣고, 두 프로젝트는 같은
+Supabase 프로젝트를 공유한다) 이후 회사 전반의 업무 도구로 계속 확장됐다.
 
 아키텍처·인증/DB 설계는 [`CLAUDE.md`](./CLAUDE.md)를 참고하세요.
 
